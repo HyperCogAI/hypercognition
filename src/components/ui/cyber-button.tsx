@@ -8,15 +8,15 @@ const cyberButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary text-primary-foreground shadow hover:bg-primary/90 glow-primary",
-        destructive: "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90 glow-destructive",
-        outline: "border border-primary bg-transparent text-primary shadow-sm hover:bg-primary hover:text-primary-foreground hover:glow-primary",
-        secondary: "bg-secondary text-secondary-foreground shadow-sm hover:bg-secondary/80 glow-secondary",
-        ghost: "hover:bg-accent hover:text-accent-foreground",
+        default: "bg-primary/90 text-primary-foreground shadow hover:bg-primary transition-all duration-300",
+        destructive: "bg-destructive/80 text-destructive-foreground shadow-sm hover:bg-destructive transition-all duration-300",
+        outline: "border border-primary/30 bg-transparent text-primary shadow-sm hover:bg-primary/5 hover:border-primary/50 transition-all duration-300",
+        secondary: "bg-secondary/80 text-secondary-foreground shadow-sm hover:bg-secondary transition-all duration-300",
+        ghost: "hover:bg-muted/50 hover:text-accent-foreground transition-all duration-300",
         link: "text-primary underline-offset-4 hover:underline",
-        cyber: "bg-gradient-to-r from-primary to-secondary text-primary-foreground shadow-lg hover:shadow-xl glow-primary hover:scale-105 transition-all duration-300",
-        neon: "bg-transparent border-2 border-accent text-accent hover:bg-accent hover:text-accent-foreground glow-accent hover:shadow-2xl",
-        ai: "bg-gradient-to-r from-secondary to-primary text-primary-foreground shadow-lg glow-secondary pulse-glow hover:scale-105 transition-all duration-300"
+        cyber: "bg-gradient-to-r from-primary/80 to-accent/80 text-primary-foreground shadow-lg hover:shadow-xl hover:from-primary hover:to-accent transition-all duration-300",
+        neon: "bg-transparent border border-accent/50 text-accent hover:bg-accent/10 hover:border-accent transition-all duration-300",
+        ai: "bg-gradient-to-r from-secondary/70 to-primary/70 text-primary-foreground shadow-lg hover:from-secondary hover:to-primary transition-all duration-300"
       },
       size: {
         default: "h-9 px-4 py-2",

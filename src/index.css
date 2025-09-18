@@ -2,51 +2,51 @@
 @tailwind components;
 @tailwind utilities;
 
-/* CryptoDEX AI Design System - Dark Cyberpunk Theme with Neon Accents */
+/* HyperCognition AI Design System - Deep Black with Blue Accents */
 
 @layer base {
   :root {
-    /* Dark Base Colors */
-    --background: 222 15% 6%;
-    --foreground: 210 40% 98%;
+    /* Deep Black Base */
+    --background: 0 0% 3%;
+    --foreground: 210 20% 92%;
 
-    /* Card System */
-    --card: 222 20% 8%;
-    --card-foreground: 210 40% 95%;
-    --card-glow: 222 25% 12%;
+    /* Card System - Subtle Dark Variants */
+    --card: 0 0% 5%;
+    --card-foreground: 210 15% 88%;
+    --card-glow: 220 15% 8%;
 
     /* Interactive Elements */
-    --popover: 222 25% 10%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 210 15% 90%;
 
-    /* Brand Colors - Electric Cyber Theme */
-    --primary: 195 100% 50%;
-    --primary-foreground: 222 15% 6%;
-    --primary-glow: 195 100% 70%;
+    /* Primary - Subtle Blue Blend */
+    --primary: 220 100% 60%;
+    --primary-foreground: 0 0% 98%;
+    --primary-glow: 220 100% 75%;
 
-    /* Secondary - Purple Cyber */
-    --secondary: 270 80% 45%;
-    --secondary-foreground: 210 40% 98%;
-    --secondary-glow: 270 100% 70%;
+    /* Secondary - Deeper Blue */
+    --secondary: 230 50% 25%;
+    --secondary-foreground: 210 20% 95%;
+    --secondary-glow: 230 60% 40%;
 
-    /* Muted Elements */
-    --muted: 222 20% 15%;
-    --muted-foreground: 215 15% 65%;
+    /* Muted Elements - Very Dark */
+    --muted: 0 0% 8%;
+    --muted-foreground: 215 10% 55%;
 
-    /* Accent - Neon Green for Profits */
-    --accent: 140 100% 50%;
-    --accent-foreground: 222 15% 6%;
-    --accent-glow: 140 100% 70%;
+    /* Accent - Soft Blue Glow */
+    --accent: 210 100% 65%;
+    --accent-foreground: 0 0% 5%;
+    --accent-glow: 210 100% 80%;
 
-    /* Danger - Red for Losses */
-    --destructive: 0 85% 55%;
-    --destructive-foreground: 210 40% 98%;
-    --destructive-glow: 0 100% 70%;
+    /* Danger - Subtle Red */
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 210 15% 95%;
+    --destructive-glow: 0 70% 65%;
 
     /* UI Elements */
-    --border: 222 20% 20%;
-    --input: 222 25% 12%;
-    --ring: 195 100% 50%;
+    --border: 220 10% 15%;
+    --input: 0 0% 6%;
+    --ring: 220 100% 60%;
 
     /* Design Tokens */
     --radius: 0.75rem;
@@ -121,7 +121,7 @@
 
   body {
     @apply bg-background text-foreground overflow-x-hidden;
-    background: linear-gradient(135deg, hsl(var(--background)), hsl(222 20% 8%));
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(0 0% 4%));
     min-height: 100vh;
   }
 

@@ -1,7 +1,7 @@
 import { Navigation } from "@/components/layout/Navigation"
 import { Hero } from "@/components/sections/Hero"
-import { Features } from "@/components/sections/Features"
-import { CTA } from "@/components/sections/CTA"
+import { HyperFeatures } from "@/components/sections/HyperFeatures"
+import { HyperCTA } from "@/components/sections/HyperCTA"
 
 const Index = () => {
   return (
@@ -9,8 +9,8 @@ const Index = () => {
       <Navigation />
       <main>
         <Hero />
-        <Features />
-        <CTA />
+        <HyperFeatures />
+        <HyperCTA />
       </main>
     </div>
   );

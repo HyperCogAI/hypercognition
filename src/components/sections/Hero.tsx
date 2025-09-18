@@ -18,53 +18,51 @@ export function Hero() {
       <div className="relative z-10 container mx-auto px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/20 bg-primary/10 px-4 py-2 text-sm font-medium text-primary glow-primary">
+          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-sm font-medium text-primary backdrop-blur-sm">
             <Bot className="h-4 w-4" />
-            AI-Powered Trading Revolution
+            🧠 HyperCognition AI
           </div>
           
           {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold bg-gradient-to-r from-primary via-secondary to-accent bg-clip-text text-transparent">
-            Next-Gen DEX
-            <br />
-            <span className="gradient-animated bg-clip-text text-transparent">
-              AI Trading Bots
+          <h1 className="text-5xl md:text-7xl font-bold text-white">
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              AI-Native DeFi
             </span>
+            <br />
+            <span className="text-white/90">Ecosystem</span>
           </h1>
           
           {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-            Experience the future of decentralized trading with our intelligent AI bots. 
-            Maximize profits, minimize risks, trade smarter.
+          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Deploy autonomous trading agents that continuously evolve through reinforcement learning.
+            Build, customize, and monetize AI-powered trading strategies in the first truly intelligent DeFi platform.
           </p>
           
           {/* Stats Row */}
-          <div className="grid grid-cols-3 gap-4 md:gap-8 max-w-2xl mx-auto py-8">
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-accent">$2.5B+</div>
-              <div className="text-sm text-muted-foreground">Total Volume</div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8">
+            <div className="text-center p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm">
+              <div className="text-3xl md:text-4xl font-bold text-primary">1M+</div>
+              <div className="text-sm text-muted-foreground">AI Agents Deployed</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-primary">98.7%</div>
-              <div className="text-sm text-muted-foreground">Uptime</div>
+            <div className="text-center p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm">
+              <div className="text-3xl md:text-4xl font-bold text-accent">$850M</div>
+              <div className="text-sm text-muted-foreground">TVL Managed</div>
             </div>
-            <div className="text-center">
-              <div className="text-3xl md:text-4xl font-bold text-secondary">10K+</div>
-              <div className="text-sm text-muted-foreground">Active Traders</div>
+            <div className="text-center p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm">
+              <div className="text-3xl md:text-4xl font-bold text-primary-glow">94%</div>
+              <div className="text-sm text-muted-foreground">Success Rate</div>
             </div>
           </div>
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <CyberButton variant="cyber" size="xl" className="group">
-              Launch App
+            <CyberButton variant="default" size="xl" className="group bg-gradient-to-r from-primary to-accent hover:from-primary-glow hover:to-accent text-white border-0">
+              Launch Platform
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </CyberButton>
             
-            <CyberButton variant="neon" size="xl" className="group">
-              <Zap className="h-5 w-5" />
-              Create AI Bot
-              <TrendingUp className="h-5 w-5 group-hover:scale-110 transition-transform" />
+            <CyberButton variant="outline" size="xl" className="border-primary/30 text-primary hover:bg-primary/5">
+              Deploy AI Agent
             </CyberButton>
           </div>
         </div>
