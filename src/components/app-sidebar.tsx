@@ -65,9 +65,9 @@ export function AppSidebar() {
         {/* Wallet Section */}
         {!isCollapsed && (
           <div className="p-4 border-b border-border/30">
-            <CyberButton variant="cyber" size="sm" className="w-full justify-center">
-              <Wallet className="h-4 w-4" />
-              Connect Wallet
+            <CyberButton variant="neon" size="sm" className="w-full justify-center">
+              <Wallet className="h-4 w-4 text-white" />
+              <span className="text-white">Connect Wallet</span>
             </CyberButton>
           </div>
         )}

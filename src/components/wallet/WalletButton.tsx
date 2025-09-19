@@ -14,8 +14,8 @@ export const WalletButton = () => {
   if (isConnecting) {
     return (
       <CyberButton variant="neon" size="sm" disabled>
-        <Wallet className="h-4 w-4" />
-        Connecting...
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connecting...</span>
       </CyberButton>
     )
   }
@@ -23,8 +23,8 @@ export const WalletButton = () => {
   if (!isConnected) {
     return (
       <CyberButton variant="neon" size="sm" onClick={connectWallet}>
-        <Wallet className="h-4 w-4" />
-        Connect Wallet
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connect Wallet</span>
       </CyberButton>
     )
   }
