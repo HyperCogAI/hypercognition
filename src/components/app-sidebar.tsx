@@ -85,7 +85,7 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end={item.url === "/"}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(240_3.7%_7%)]' : ''}`}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
@@ -109,7 +109,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(240_3.7%_7%)]' : ''}`}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && (
@@ -139,7 +139,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to="/settings"
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(240_3.7%_7%)]' : ''}`}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
                       <Settings className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">Settings</span>}
