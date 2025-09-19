@@ -7,12 +7,8 @@ import { HyperCTA } from "@/components/sections/HyperCTA"
 const Index = () => {
   return (
     <div className="min-h-screen bg-background">
-      <Navigation />
       <main>
-        <Hero />
         <AgentMarketplace />
-        <HyperFeatures />
-        <HyperCTA />
       </main>
     </div>
   );

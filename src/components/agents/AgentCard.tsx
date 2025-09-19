@@ -1,8 +1,12 @@
+import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { Star } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { usePriceSimulation } from "@/hooks/usePriceSimulation"
+import { useFavorites } from "@/contexts/FavoritesContext"
 
 interface Agent {
   id: string
@@ -23,15 +27,28 @@ interface AgentCardProps {
 export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
   const navigate = useNavigate()
   const priceData = usePriceSimulation(parseFloat(agent.fdv?.replace(/[$m,]/g, '') || '7.41'))
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites()
+  const [isHovered, setIsHovered] = useState(false)
   
   const handleClick = () => {
     navigate(`/agent/${agent.id}`)
   }
 
+  const handleFavoriteClick = (e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isFavorite(agent.id)) {
+      removeFromFavorites(agent.id)
+    } else {
+      addToFavorites(agent.id)
+    }
+  }
+
   return (
     <div 
-      className="flex items-center justify-between p-3 hover:bg-card/50 rounded-lg transition-all duration-200 cursor-pointer hover:scale-[1.02] animate-fade-in" 
+      className="flex items-center justify-between p-3 hover:bg-card/50 rounded-lg transition-all duration-200 cursor-pointer hover:scale-[1.02] animate-fade-in group" 
       onClick={handleClick}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => setIsHovered(false)}
     >
       <div className="flex items-center gap-3">
         <div className="relative">
@@ -52,13 +69,32 @@ export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
         </div>
       </div>
       
-      <div className="text-right">
-        <div className="font-semibold text-sm">${priceData.current.toFixed(2)}m</div>
-        <div className={cn(
-          "text-xs font-medium",
-          priceData.changePercent >= 0 ? "text-green-400" : "text-red-400"
-        )}>
-          {priceData.changePercent >= 0 ? '+' : ''}{priceData.changePercent.toFixed(2)}%
+      <div className="flex items-center gap-2">
+        <Button
+          variant="ghost"
+          size="sm"
+          className={cn(
+            "h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity",
+            isHovered && "opacity-100"
+          )}
+          onClick={handleFavoriteClick}
+        >
+          <Star 
+            className={cn(
+              "h-4 w-4 transition-colors",
+              isFavorite(agent.id) ? "fill-yellow-400 text-yellow-400" : "text-muted-foreground hover:text-yellow-400"
+            )}
+          />
+        </Button>
+        
+        <div className="text-right">
+          <div className="font-semibold text-sm">${priceData.current.toFixed(2)}m</div>
+          <div className={cn(
+            "text-xs font-medium",
+            priceData.changePercent >= 0 ? "text-green-400" : "text-red-400"
+          )}>
+            {priceData.changePercent >= 0 ? '+' : ''}{priceData.changePercent.toFixed(2)}%
+          </div>
         </div>
       </div>
     </div>

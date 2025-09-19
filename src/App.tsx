@@ -6,6 +6,9 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WagmiProvider } from 'wagmi'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { config } from './config/wagmi'
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { AppSidebar } from "@/components/app-sidebar"
+import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import Index from "./pages/Index";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
@@ -25,20 +28,33 @@ createWeb3Modal({
 const App = () => (
   <WagmiProvider config={config}>
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/agent/:id" element={<AgentDetail />} />
-            <Route path="/create-agent" element={<CreateAgent />} />
-            <Route path="/portfolio" element={<Portfolio />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </TooltipProvider>
+      <FavoritesProvider>
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <BrowserRouter>
+            <SidebarProvider>
+              <div className="min-h-screen flex w-full">
+                <AppSidebar />
+                <main className="flex-1 relative">
+                  {/* Global sidebar trigger */}
+                  <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20 p-2">
+                    <SidebarTrigger />
+                  </div>
+                  <Routes>
+                    <Route path="/" element={<Index />} />
+                    <Route path="/agent/:id" element={<AgentDetail />} />
+                    <Route path="/create-agent" element={<CreateAgent />} />
+                    <Route path="/portfolio" element={<Portfolio />} />
+                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                    <Route path="*" element={<NotFound />} />
+                  </Routes>
+                </main>
+              </div>
+            </SidebarProvider>
+          </BrowserRouter>
+        </TooltipProvider>
+      </FavoritesProvider>
     </QueryClientProvider>
   </WagmiProvider>
 );
