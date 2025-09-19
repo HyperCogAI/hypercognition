@@ -41,16 +41,16 @@ export function AppSidebar() {
   }
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-gradient-to-r from-primary/20 to-secondary/20 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-primary/5 hover:text-primary transition-all duration-300"
+    isActive ? "bg-gradient-to-r from-primary/20 to-secondary/20 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-white/5 hover:text-white transition-all duration-300 text-white/80"
 
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-border/20 backdrop-blur-md"
+      className="border-r border-white/10 backdrop-blur-md"
     >
-      <SidebarContent className="bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-md border-r border-primary/10 shadow-2xl">
+      <SidebarContent className="bg-black/80 backdrop-blur-md border-r border-white/10 shadow-2xl">
         {/* Logo */}
-        <div className="p-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="p-4 border-b border-white/10 bg-black/60">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary shadow-lg shadow-primary/30">
               <Zap className="h-4 w-4 text-primary-foreground" />
@@ -60,7 +60,7 @@ export function AppSidebar() {
                 <h1 className="font-bold text-sm bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   HyperCognition
                 </h1>
-                <p className="text-xs text-muted-foreground/80">AI Agent DEX</p>
+                <p className="text-xs text-white/70">AI Agent DEX</p>
               </div>
             )}
           </div>
@@ -68,7 +68,7 @@ export function AppSidebar() {
 
         {/* Wallet Section */}
         {!isCollapsed && (
-          <div className="p-4 border-b border-primary/10">
+          <div className="p-4 border-b border-white/10">
             <CyberButton variant="cyber" size="sm" className="w-full justify-start">
               <Wallet className="h-4 w-4" />
               Connect Wallet
@@ -78,7 +78,7 @@ export function AppSidebar() {
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-primary/80 tracking-wider uppercase">
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-white/80 tracking-wider uppercase">
             {isCollapsed ? "•••" : "Main"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -92,7 +92,7 @@ export function AppSidebar() {
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}
                     >
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {!isCollapsed && <span className="font-medium text-white">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -103,7 +103,7 @@ export function AppSidebar() {
 
         {/* Trading Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-secondary/80 tracking-wider uppercase">
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-white/80 tracking-wider uppercase">
             {isCollapsed ? "•••" : "Trading"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -118,7 +118,7 @@ export function AppSidebar() {
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && (
                         <div className="flex items-center justify-between w-full">
-                          <span className="font-medium">{item.title}</span>
+                          <span className="font-medium text-white">{item.title}</span>
                           {item.title === "Favorites" && (
                             <Badge variant="secondary" className="text-xs bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/30">
                               3
@@ -135,7 +135,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings at bottom */}
-        <div className="mt-auto border-t border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
+        <div className="mt-auto border-t border-white/10 bg-black/60">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -146,7 +146,7 @@ export function AppSidebar() {
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}
                     >
                       <Settings className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
-                      {!isCollapsed && <span className="font-medium">Settings</span>}
+                      {!isCollapsed && <span className="font-medium text-white">Settings</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
