@@ -68,7 +68,7 @@ export function AppSidebar() {
             <CyberButton 
               variant="outline" 
               size="sm" 
-              className="w-full mx-2 border-gradient-to-r from-blue-600 to-cyan-400 border bg-transparent text-foreground hover:bg-blue-600/10"
+              className="w-fit justify-center mx-2 border bg-transparent text-foreground hover:bg-blue-600/10 rounded-md"
               style={{
                 borderImage: 'linear-gradient(to right, #2563eb, #22d3ee) 1'
               }}
