@@ -7,12 +7,12 @@ import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
-// Mock data for AI agents
+// Mock data for AI agents - Unique names for HyperCognition
 const trendingAgents = [
   {
     id: "1",
-    name: "Waveform",
-    symbol: "WAVE",
+    name: "NeuralFlow",
+    symbol: "NFLOW",
     avatar: "/placeholder.svg",
     fdv: "$7.41m",
     change: "+15.55%",
@@ -21,8 +21,8 @@ const trendingAgents = [
   },
   {
     id: "2", 
-    name: "ArAIstotle",
-    symbol: "ARIS",
+    name: "CogniCore",
+    symbol: "COGNI",
     avatar: "/placeholder.svg",
     fdv: "$20.37m",
     change: "-13.12%",
@@ -31,8 +31,8 @@ const trendingAgents = [
   },
   {
     id: "3",
-    name: "G.A.M.E",
-    symbol: "GAME", 
+    name: "SynthMind",
+    symbol: "SYNTH", 
     avatar: "/placeholder.svg",
     fdv: "$15.19m",
     change: "-12.24%",
@@ -41,8 +41,8 @@ const trendingAgents = [
   },
   {
     id: "4",
-    name: "Axelrod",
-    symbol: "AXEL",
+    name: "QuantBot",
+    symbol: "QBOT",
     avatar: "/placeholder.svg", 
     fdv: "$7.36m",
     change: "-21.22%",
@@ -51,8 +51,8 @@ const trendingAgents = [
   },
   {
     id: "5",
-    name: "Ribbita", 
-    symbol: "RIB",
+    name: "HyperLink", 
+    symbol: "HLINK",
     avatar: "/placeholder.svg",
     fdv: "$206.93m",
     change: "-3.66%",
@@ -61,8 +61,8 @@ const trendingAgents = [
   },
   {
     id: "6",
-    name: "Fyni AI",
-    symbol: "FYNI",
+    name: "MetaBrain",
+    symbol: "MBRAIN",
     avatar: "/placeholder.svg",
     fdv: "$3.43m", 
     change: "-12.95%",
@@ -74,8 +74,8 @@ const trendingAgents = [
 const fundamentalAgents = [
   {
     id: "7",
-    name: "Shekel Agentic Capital",
-    symbol: "SHEK", 
+    name: "CryptoSage Capital",
+    symbol: "SAGE", 
     avatar: "/placeholder.svg",
     buyback: "$133.91k",
     revenue: "$382.02k",
@@ -83,8 +83,8 @@ const fundamentalAgents = [
   },
   {
     id: "8",
-    name: "717ai",
-    symbol: "717AI",
+    name: "AlphaNode",
+    symbol: "ALPHA",
     avatar: "/placeholder.svg", 
     buyback: "$165.45k",
     revenue: "$35.01k",
@@ -92,8 +92,8 @@ const fundamentalAgents = [
   },
   {
     id: "9",
-    name: "Loky", 
-    symbol: "LOKY",
+    name: "DeepThink", 
+    symbol: "THINK",
     avatar: "/placeholder.svg",
     buyback: "$57.37k",
     revenue: "$113.48k",
@@ -101,8 +101,8 @@ const fundamentalAgents = [
   },
   {
     id: "10",
-    name: "Super Connector",
-    symbol: "CONN",
+    name: "OmniLink Protocol",
+    symbol: "OMNI",
     avatar: "/placeholder.svg",
     buyback: "$11.89k", 
     revenue: "$108.72k",
