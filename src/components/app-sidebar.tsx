@@ -59,11 +59,6 @@ export function AppSidebar() {
               alt="HyperCognition Logo" 
               className="h-8 w-auto object-contain"
             />
-            {!isCollapsed && (
-              <div>
-                <p className="text-xs text-muted-foreground">AI Agent DEX</p>
-              </div>
-            )}
           </div>
         </div>
 
