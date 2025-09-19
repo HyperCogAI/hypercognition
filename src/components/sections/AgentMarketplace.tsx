@@ -1,3 +1,4 @@
+import { useState, useEffect } from "react"
 import { Search, TrendingUp, BarChart3, Network } from "lucide-react"
 import { AgentCard } from "@/components/agents/AgentCard"
 import { AgentFundamentals } from "@/components/agents/AgentFundamentals"
@@ -6,6 +7,7 @@ import { SpotlightAgent } from "@/components/agents/SpotlightAgent"
 import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
 
 // Mock data for AI agents - Unique names for HyperCognition
 const trendingAgents = [
@@ -111,6 +113,25 @@ const fundamentalAgents = [
 ]
 
 export const AgentMarketplace = () => {
+  const [searchTerm, setSearchTerm] = useState("")
+  const [isLoading, setIsLoading] = useState(true)
+  
+  // Simulate loading
+  useEffect(() => {
+    const timer = setTimeout(() => setIsLoading(false), 1500)
+    return () => clearTimeout(timer)
+  }, [])
+  
+  // Filter agents based on search term
+  const filteredTrendingAgents = trendingAgents.filter(agent =>
+    agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    agent.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+  )
+  
+  const filteredFundamentalAgents = fundamentalAgents.filter(agent =>
+    agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    agent.symbol.toLowerCase().includes(searchTerm.toLowerCase())
+  )
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       {/* Header */}
@@ -120,6 +141,8 @@ export const AgentMarketplace = () => {
           <SearchInput 
             placeholder="Search agents..." 
             className="w-80"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50">
             <BarChart3 className="h-4 w-4 mr-2" />
@@ -141,9 +164,25 @@ export const AgentMarketplace = () => {
             <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
             <div className="text-xs text-muted-foreground mb-4">FDV/Price %Δ</div>
             <div className="space-y-3">
-              {trendingAgents.map((agent) => (
-                <AgentCard key={agent.id} agent={agent} variant="trending" />
-              ))}
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <AgentCardSkeleton key={i} />
+                ))
+              ) : filteredTrendingAgents.length > 0 ? (
+                filteredTrendingAgents.map((agent, index) => (
+                  <div
+                    key={agent.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <AgentCard agent={agent} variant="trending" />
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8 animate-fade-in">
+                  No agents found matching "{searchTerm}"
+                </div>
+              )}
             </div>
           </div>
 
@@ -156,9 +195,25 @@ export const AgentMarketplace = () => {
             <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
             <div className="text-xs text-muted-foreground mb-4">All Time Buyback / Revenue</div>
             <div className="space-y-3">
-              {fundamentalAgents.map((agent) => (
-                <AgentFundamentals key={agent.id} agent={agent} />
-              ))}
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <AgentCardSkeleton key={i} />
+                ))
+              ) : filteredFundamentalAgents.length > 0 ? (
+                filteredFundamentalAgents.map((agent, index) => (
+                  <div
+                    key={agent.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
+                    <AgentFundamentals agent={agent} />
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8 animate-fade-in">
+                  No agents found matching "{searchTerm}"
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -198,7 +253,10 @@ export const AgentMarketplace = () => {
             </div>
             <div className="text-right">
               <div className="text-xl font-bold mb-2">Fair launch for all Virgens</div>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => window.location.href = '/create-agent'}
+              >
                 Create Agent
               </Button>
             </div>

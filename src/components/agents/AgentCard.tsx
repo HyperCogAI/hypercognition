@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
@@ -19,8 +20,17 @@ interface AgentCardProps {
 }
 
 export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
+  const navigate = useNavigate()
+  
+  const handleClick = () => {
+    navigate(`/agent/${agent.id}`)
+  }
+
   return (
-    <div className="flex items-center justify-between p-3 hover:bg-card/50 rounded-lg transition-colors cursor-pointer">
+    <div 
+      className="flex items-center justify-between p-3 hover:bg-card/50 rounded-lg transition-all duration-200 cursor-pointer hover:scale-[1.02] animate-fade-in" 
+      onClick={handleClick}
+    >
       <div className="flex items-center gap-3">
         <div className="relative">
           <Avatar className="h-10 w-10">

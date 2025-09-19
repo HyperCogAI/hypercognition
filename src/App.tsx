@@ -7,6 +7,8 @@ import { WagmiProvider } from 'wagmi'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { config } from './config/wagmi'
 import Index from "./pages/Index";
+import { AgentDetail } from "./pages/AgentDetail";
+import { CreateAgent } from "./pages/CreateAgent";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -28,6 +30,8 @@ const App = () => (
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Index />} />
+            <Route path="/agent/:id" element={<AgentDetail />} />
+            <Route path="/create-agent" element={<CreateAgent />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
