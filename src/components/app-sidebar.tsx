@@ -65,15 +65,9 @@ export function AppSidebar() {
         {/* Wallet Section */}
         {!isCollapsed && (
           <div className="p-4 border-b border-border/30">
-            <div className="w-fit mx-2 bg-gradient-to-r from-blue-600 to-cyan-400 p-[1px] rounded-md overflow-hidden">
-              <CyberButton 
-                variant="outline" 
-                size="sm" 
-                className="w-fit justify-center bg-background border-none text-foreground hover:bg-blue-600/10 rounded-[calc(0.375rem-1px)]"
-              >
-                <Wallet className="h-4 w-4" />
-                <span>Connect Wallet</span>
-              </CyberButton>
+            <div className="px-4 py-3 rounded-lg transition-all duration-300 hover:bg-background hover:text-foreground text-muted-foreground flex items-center gap-3 group cursor-pointer">
+              <Wallet className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+              <span className="font-medium text-foreground">Connect Wallet</span>
             </div>
           </div>
         )}
