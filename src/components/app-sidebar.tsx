@@ -116,7 +116,7 @@ export function AppSidebar() {
                         <div className="flex items-center justify-between w-full">
                           <span className="font-medium text-foreground">{item.title}</span>
                           {item.title === "Favorites" && (
-                            <Badge variant="secondary" className="text-xs bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/30">
+                            <Badge variant="secondary" className="text-xs bg-gradient-to-r from-blue-400/20 to-blue-600/20 border-blue-400/30 text-blue-100">
                               3
                             </Badge>
                           )}
