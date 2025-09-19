@@ -41,16 +41,16 @@ export function AppSidebar() {
   }
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-gradient-to-r from-primary/20 to-secondary/20 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-white/5 hover:text-white transition-all duration-300 text-white/80"
+    isActive ? "bg-gradient-to-r from-primary/30 to-secondary/30 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-white/10 hover:text-white transition-all duration-300 text-white/80"
 
   return (
     <Sidebar
       collapsible="icon"
-      className="border-r border-white/10 backdrop-blur-md"
+      className="border-r border-white/20"
     >
-      <SidebarContent className="bg-black/80 backdrop-blur-md border-r border-white/10 shadow-2xl">
+      <SidebarContent className="bg-gray-950 border-r border-white/20 shadow-2xl">
         {/* Logo */}
-        <div className="p-4 border-b border-white/10 bg-black/60">
+        <div className="p-4 border-b border-white/20 bg-gray-900">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary shadow-lg shadow-primary/30">
               <Zap className="h-4 w-4 text-primary-foreground" />
@@ -68,7 +68,7 @@ export function AppSidebar() {
 
         {/* Wallet Section */}
         {!isCollapsed && (
-          <div className="p-4 border-b border-white/10">
+          <div className="p-4 border-b border-white/20">
             <CyberButton variant="cyber" size="sm" className="w-full justify-start">
               <Wallet className="h-4 w-4" />
               Connect Wallet
@@ -135,7 +135,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings at bottom */}
-        <div className="mt-auto border-t border-white/10 bg-black/60">
+        <div className="mt-auto border-t border-white/20 bg-gray-900">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
