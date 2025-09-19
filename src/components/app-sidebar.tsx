@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import {
   Sidebar,
@@ -14,7 +14,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
-import { WalletButton } from "@/components/wallet/WalletButton"
+import { CyberButton } from "@/components/ui/cyber-button"
 
 const mainItems = [
   { title: "Marketplace", url: "/", icon: Home },
@@ -41,23 +41,26 @@ export function AppSidebar() {
   }
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-primary/10 text-primary font-medium border-r-2 border-primary" : "hover:bg-muted/50"
+    isActive ? "bg-gradient-to-r from-primary/20 to-secondary/20 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-primary/5 hover:text-primary transition-all duration-300"
 
   return (
     <Sidebar
       collapsible="icon"
+      className="border-r border-border/20 backdrop-blur-md"
     >
-      <SidebarContent className="bg-card/30 border-r border-border/50">
+      <SidebarContent className="bg-gradient-to-b from-background/95 to-background/80 backdrop-blur-md border-r border-primary/10 shadow-2xl">
         {/* Logo */}
-        <div className="p-4 border-b border-border/50">
+        <div className="p-4 border-b border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-purple-600 rounded-lg flex items-center justify-center">
-              <TrendingUp className="h-4 w-4 text-white" />
+            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary shadow-lg shadow-primary/30">
+              <Zap className="h-4 w-4 text-primary-foreground" />
             </div>
             {!isCollapsed && (
               <div>
-                <h1 className="font-bold text-sm">HyperCognition</h1>
-                <p className="text-xs text-muted-foreground">AI Agent DEX</p>
+                <h1 className="font-bold text-sm bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                  HyperCognition
+                </h1>
+                <p className="text-xs text-muted-foreground/80">AI Agent DEX</p>
               </div>
             )}
           </div>
@@ -65,14 +68,17 @@ export function AppSidebar() {
 
         {/* Wallet Section */}
         {!isCollapsed && (
-          <div className="p-4 border-b border-border/50">
-            <WalletButton />
+          <div className="p-4 border-b border-primary/10">
+            <CyberButton variant="cyber" size="sm" className="w-full justify-start">
+              <Wallet className="h-4 w-4" />
+              Connect Wallet
+            </CyberButton>
           </div>
         )}
 
         {/* Main Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground">
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-primary/80 tracking-wider uppercase">
             {isCollapsed ? "•••" : "Main"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -83,10 +89,10 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end={item.url === "/"}
-                      className={({ isActive }) => getNavCls({ isActive })}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}
                     >
-                      <item.icon className="h-4 w-4" />
-                      {!isCollapsed && <span className="ml-3">{item.title}</span>}
+                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -97,7 +103,7 @@ export function AppSidebar() {
 
         {/* Trading Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground">
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-secondary/80 tracking-wider uppercase">
             {isCollapsed ? "•••" : "Trading"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -107,14 +113,16 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => getNavCls({ isActive })}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}
                     >
-                      <item.icon className="h-4 w-4" />
+                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && (
-                        <div className="flex items-center justify-between w-full ml-3">
-                          <span>{item.title}</span>
+                        <div className="flex items-center justify-between w-full">
+                          <span className="font-medium">{item.title}</span>
                           {item.title === "Favorites" && (
-                            <Badge variant="secondary" className="text-xs">3</Badge>
+                            <Badge variant="secondary" className="text-xs bg-gradient-to-r from-primary/20 to-secondary/20 border-primary/30">
+                              3
+                            </Badge>
                           )}
                         </div>
                       )}
@@ -127,7 +135,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings at bottom */}
-        <div className="mt-auto border-t border-border/50">
+        <div className="mt-auto border-t border-primary/20 bg-gradient-to-r from-primary/5 to-secondary/5">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
@@ -135,10 +143,10 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to="/settings"
-                      className={({ isActive }) => getNavCls({ isActive })}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}
                     >
-                      <Settings className="h-4 w-4" />
-                      {!isCollapsed && <span className="ml-3">Settings</span>}
+                      <Settings className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
+                      {!isCollapsed && <span className="font-medium">Settings</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>

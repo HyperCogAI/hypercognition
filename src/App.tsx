@@ -38,8 +38,8 @@ const App = () => (
                 <AppSidebar />
                 <main className="flex-1 relative">
                   {/* Global sidebar trigger */}
-                  <div className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/20 p-2">
-                    <SidebarTrigger />
+                  <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
+                    <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
                   </div>
                   <Routes>
                     <Route path="/" element={<Index />} />
