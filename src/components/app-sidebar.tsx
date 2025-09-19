@@ -81,11 +81,11 @@ export function AppSidebar() {
             <SidebarMenu>
               {mainItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)} className="data-[active=true]:bg-[hsl(var(--sidebar-active))] data-[active=true]:hover:bg-[hsl(var(--sidebar-active))] data-[active=true]:active:bg-[hsl(var(--sidebar-active))]">
                     <NavLink 
                       to={item.url} 
                       end={item.url === "/"}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group` }
                     >
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
@@ -106,10 +106,10 @@ export function AppSidebar() {
             <SidebarMenu>
               {tradingItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)} className="data-[active=true]:bg-[hsl(var(--sidebar-active))] data-[active=true]:hover:bg-[hsl(var(--sidebar-active))] data-[active=true]:active:bg-[hsl(var(--sidebar-active))]">
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group` }
                     >
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && (
@@ -136,10 +136,10 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/settings')} className="data-[active=true]:bg-[hsl(var(--sidebar-active))] data-[active=true]:hover:bg-[hsl(var(--sidebar-active))] data-[active=true]:active:bg-[hsl(var(--sidebar-active))]">
                     <NavLink 
                       to="/settings"
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group` }
                     >
                       <Settings className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">Settings</span>}
