@@ -1,6 +1,7 @@
 import { useState } from "react"
 import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
+import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
   Sidebar,
   SidebarContent,
@@ -53,14 +54,13 @@ export function AppSidebar() {
         {/* Logo */}
         <div className="p-4 border-b border-border/30 bg-background">
           <div className="flex items-center gap-3">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary shadow-lg shadow-primary/30">
-              <Zap className="h-4 w-4 text-primary-foreground" />
-            </div>
+            <img 
+              src={hyperCognitionLogo} 
+              alt="HyperCognition Logo" 
+              className="h-8 w-auto object-contain"
+            />
             {!isCollapsed && (
               <div>
-                <h1 className="font-bold text-sm bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                  HyperCognition
-                </h1>
                 <p className="text-xs text-muted-foreground">AI Agent DEX</p>
               </div>
             )}
