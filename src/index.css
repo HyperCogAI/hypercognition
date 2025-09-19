@@ -6,28 +6,28 @@
 
 @layer base {
   :root {
-    /* Deep Black Base */
-    --background: 0 0% 3%;
-    --foreground: 210 20% 92%;
+    /* Deep Black Base - Virtuals.io inspired */
+    --background: 222 30% 7%;
+    --foreground: 210 40% 95%;
 
-    /* Card System - Subtle Dark Variants */
-    --card: 0 0% 5%;
-    --card-foreground: 210 15% 88%;
-    --card-glow: 220 15% 8%;
+    /* Card System - Dark with subtle borders */
+    --card: 222 25% 9%;
+    --card-foreground: 210 30% 90%;
+    --card-glow: 220 40% 12%;
 
     /* Interactive Elements */
     --popover: 0 0% 4%;
     --popover-foreground: 210 15% 90%;
 
-    /* Primary - Subtle Blue Blend */
-    --primary: 220 100% 60%;
-    --primary-foreground: 0 0% 98%;
-    --primary-glow: 220 100% 75%;
+    /* Primary - Cyan/Teal like Virtuals */
+    --primary: 186 100% 62%;
+    --primary-foreground: 222 30% 7%;
+    --primary-glow: 186 100% 75%;
 
-    /* Secondary - Deeper Blue */
-    --secondary: 230 50% 25%;
-    --secondary-foreground: 210 20% 95%;
-    --secondary-glow: 230 60% 40%;
+    /* Secondary - Purple accent */
+    --secondary: 270 60% 55%;
+    --secondary-foreground: 210 40% 95%;
+    --secondary-glow: 270 70% 70%;
 
     /* Muted Elements - Very Dark */
     --muted: 0 0% 8%;
