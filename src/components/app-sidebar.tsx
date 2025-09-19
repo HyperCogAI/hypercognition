@@ -41,16 +41,16 @@ export function AppSidebar() {
   }
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "bg-gradient-to-r from-primary/25 to-secondary/25 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-background/60 hover:text-foreground transition-all duration-300 text-muted-foreground"
+    isActive ? "bg-gradient-to-r from-primary/25 to-secondary/25 text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "hover:bg-background hover:text-foreground transition-all duration-300 text-muted-foreground"
 
   return (
     <Sidebar
       collapsible="icon"
       className="border-r border-border/30"
     >
-      <SidebarContent className="bg-background/40 border-r border-border/30 shadow-2xl">
+      <SidebarContent className="bg-card border-r border-border/30 shadow-2xl">
         {/* Logo */}
-        <div className="p-4 border-b border-border/30 bg-background/60">
+        <div className="p-4 border-b border-border/30 bg-background">
           <div className="flex items-center gap-3">
             <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary shadow-lg shadow-primary/30">
               <Zap className="h-4 w-4 text-primary-foreground" />
@@ -135,7 +135,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Settings at bottom */}
-        <div className="mt-auto border-t border-border/30 bg-background/60">
+        <div className="mt-auto border-t border-border/30 bg-background">
           <SidebarGroup>
             <SidebarGroupContent>
               <SidebarMenu>
