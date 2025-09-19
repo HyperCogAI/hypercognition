@@ -14,7 +14,236 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      agents: {
+        Row: {
+          avatar_url: string | null
+          chain: string
+          change_24h: number
+          created_at: string
+          description: string | null
+          id: string
+          market_cap: number
+          name: string
+          price: number
+          symbol: string
+          updated_at: string
+          volume_24h: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          chain?: string
+          change_24h?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          market_cap?: number
+          name: string
+          price?: number
+          symbol: string
+          updated_at?: string
+          volume_24h?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          chain?: string
+          change_24h?: number
+          created_at?: string
+          description?: string | null
+          id?: string
+          market_cap?: number
+          name?: string
+          price?: number
+          symbol?: string
+          updated_at?: string
+          volume_24h?: number
+        }
+        Relationships: []
+      }
+      price_history: {
+        Row: {
+          agent_id: string
+          id: string
+          market_cap: number
+          price: number
+          timestamp: string
+          volume: number
+        }
+        Insert: {
+          agent_id: string
+          id?: string
+          market_cap?: number
+          price: number
+          timestamp?: string
+          volume?: number
+        }
+        Update: {
+          agent_id?: string
+          id?: string
+          market_cap?: number
+          price?: number
+          timestamp?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "price_history_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          avatar_url?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      transactions: {
+        Row: {
+          agent_id: string
+          amount: number
+          created_at: string
+          gas_fee: number | null
+          id: string
+          price_per_token: number
+          status: string
+          total_value: number
+          transaction_hash: string | null
+          type: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          amount: number
+          created_at?: string
+          gas_fee?: number | null
+          id?: string
+          price_per_token: number
+          status?: string
+          total_value: number
+          transaction_hash?: string | null
+          type: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          created_at?: string
+          gas_fee?: number | null
+          id?: string
+          price_per_token?: number
+          status?: string
+          total_value?: number
+          transaction_hash?: string | null
+          type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transactions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_favorites: {
+        Row: {
+          agent_id: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_favorites_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_holdings: {
+        Row: {
+          agent_id: string
+          average_cost: number
+          id: string
+          last_updated: string
+          realized_pnl: number
+          total_amount: number
+          total_invested: number
+          unrealized_pnl: number
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          average_cost?: number
+          id?: string
+          last_updated?: string
+          realized_pnl?: number
+          total_amount?: number
+          total_invested?: number
+          unrealized_pnl?: number
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          average_cost?: number
+          id?: string
+          last_updated?: string
+          realized_pnl?: number
+          total_amount?: number
+          total_invested?: number
+          unrealized_pnl?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_holdings_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never

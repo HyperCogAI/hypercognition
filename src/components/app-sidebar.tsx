@@ -26,6 +26,7 @@ const mainItems = [
 const tradingItems = [
   { title: "Trending", url: "/#trending", icon: TrendingUp },
   { title: "Favorites", url: "/favorites", icon: Star },
+  { title: "Compare", url: "/compare", icon: BarChart3 },
   { title: "Communities", url: "/communities", icon: Users },
 ]
 
