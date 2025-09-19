@@ -65,14 +65,10 @@ export function AppSidebar() {
         {/* Wallet Section */}
         {!isCollapsed && (
           <div className="p-4 border-b border-border/30">
-            <SidebarMenu>
-              <SidebarMenuItem>
-                <SidebarMenuButton className={`${getNavCls({ isActive: false })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}>
-                  <Wallet className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-                  <span className="font-medium text-foreground">Connect Wallet</span>
-                </SidebarMenuButton>
-              </SidebarMenuItem>
-            </SidebarMenu>
+            <div className="px-3 py-2 rounded-lg transition-all duration-300 hover:bg-background hover:text-foreground text-muted-foreground flex items-center gap-3 group cursor-pointer border border-primary/30 hover:border-primary/50 w-fit">
+              <Wallet className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+              <span className="font-medium text-foreground">Connect Wallet</span>
+            </div>
           </div>
         )}
 
