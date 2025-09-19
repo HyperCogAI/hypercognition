@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { useWallet } from "@/hooks/useWallet"
+import { useNotifications } from "@/hooks/useNotifications"
 
 interface TradingPanelProps {
   agent: {
@@ -22,25 +23,50 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
   const [sellAmount, setSellAmount] = useState("")
   const [slippage, setSlippage] = useState("0.5")
   const { isConnected, connectWallet, disconnectWallet, address } = useWallet()
+  const { showTradeSuccess, showTradeError } = useNotifications()
 
-  const handleBuy = () => {
+  const handleBuy = async () => {
     if (!isConnected) {
       connectWallet()
       return
     }
     
-    // Implement buy logic here
-    console.log(`Buying ${buyAmount} ${agent.symbol}`)
+    try {
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Simulate random success/failure for demo
+      if (Math.random() > 0.1) {
+        showTradeSuccess('buy', buyAmount, agent.symbol)
+        setBuyAmount("")
+      } else {
+        throw new Error("Transaction failed")
+      }
+    } catch (error) {
+      showTradeError('buy', "Network error. Please try again.")
+    }
   }
 
-  const handleSell = () => {
+  const handleSell = async () => {
     if (!isConnected) {
       connectWallet()
       return
     }
     
-    // Implement sell logic here
-    console.log(`Selling ${sellAmount} ${agent.symbol}`)
+    try {
+      // Simulate transaction delay
+      await new Promise(resolve => setTimeout(resolve, 1500))
+      
+      // Simulate random success/failure for demo
+      if (Math.random() > 0.1) {
+        showTradeSuccess('sell', sellAmount, agent.symbol)
+        setSellAmount("")
+      } else {
+        throw new Error("Transaction failed")
+      }
+    } catch (error) {
+      showTradeError('sell', "Network error. Please try again.")
+    }
   }
 
   const formatAddress = (addr: string) => {
@@ -119,12 +145,12 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                 </div>
               </div>
 
-              <div className="flex gap-2 mb-4">
+              <div className="grid grid-cols-3 gap-2 mb-4">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setBuyAmount("0.1")}
-                  className="flex-1"
+                  className="text-xs"
                 >
                   0.1 ETH
                 </Button>
@@ -132,7 +158,7 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setBuyAmount("0.5")}
-                  className="flex-1"
+                  className="text-xs"
                 >
                   0.5 ETH
                 </Button>
@@ -140,7 +166,7 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setBuyAmount("1")}
-                  className="flex-1"
+                  className="text-xs"
                 >
                   1 ETH
                 </Button>
@@ -191,12 +217,12 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                 </div>
               </div>
 
-              <div className="flex gap-2 mb-4">
+              <div className="grid grid-cols-3 gap-2 mb-4">
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setSellAmount("25")}
-                  className="flex-1"
+                  className="text-xs"
                 >
                   25%
                 </Button>
@@ -204,7 +230,7 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setSellAmount("50")}
-                  className="flex-1"
+                  className="text-xs"
                 >
                   50%
                 </Button>
@@ -212,7 +238,7 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                   variant="outline"
                   size="sm"
                   onClick={() => setSellAmount("100")}
-                  className="flex-1"
+                  className="text-xs"
                 >
                   Max
                 </Button>

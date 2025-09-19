@@ -2,6 +2,7 @@ import { useNavigate } from "react-router-dom"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { cn } from "@/lib/utils"
+import { usePriceSimulation } from "@/hooks/usePriceSimulation"
 
 interface Agent {
   id: string
@@ -21,6 +22,7 @@ interface AgentCardProps {
 
 export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
   const navigate = useNavigate()
+  const priceData = usePriceSimulation(parseFloat(agent.fdv?.replace(/[$m,]/g, '') || '7.41'))
   
   const handleClick = () => {
     navigate(`/agent/${agent.id}`)
@@ -51,12 +53,12 @@ export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
       </div>
       
       <div className="text-right">
-        <div className="font-semibold text-sm">{agent.fdv}</div>
+        <div className="font-semibold text-sm">${priceData.current.toFixed(2)}m</div>
         <div className={cn(
           "text-xs font-medium",
-          agent.isPositive ? "text-green-400" : "text-red-400"
+          priceData.changePercent >= 0 ? "text-green-400" : "text-red-400"
         )}>
-          {agent.change}
+          {priceData.changePercent >= 0 ? '+' : ''}{priceData.changePercent.toFixed(2)}%
         </div>
       </div>
     </div>

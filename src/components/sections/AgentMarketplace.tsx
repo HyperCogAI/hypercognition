@@ -135,16 +135,16 @@ export const AgentMarketplace = () => {
   return (
     <div className="min-h-screen bg-background text-foreground p-6">
       {/* Header */}
-      <div className="flex items-center justify-between mb-8">
-        <h1 className="text-3xl font-bold">AI Agent Marketplace</h1>
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
+        <h1 className="text-2xl sm:text-3xl font-bold">AI Agent Marketplace</h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
           <SearchInput 
             placeholder="Search agents..." 
-            className="w-80"
+            className="w-full sm:w-80"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50">
+          <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50 whitespace-nowrap">
             <BarChart3 className="h-4 w-4 mr-2" />
             Analytics
           </Button>
@@ -152,7 +152,7 @@ export const AgentMarketplace = () => {
       </div>
 
       {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
         {/* Left Column - Trending & Fundamentals */}
         <div className="lg:col-span-4 space-y-6">
           {/* Trending AI Agents */}

@@ -9,6 +9,7 @@ import { config } from './config/wagmi'
 import Index from "./pages/Index";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
+import Portfolio from "./pages/Portfolio";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -32,6 +33,7 @@ const App = () => (
             <Route path="/" element={<Index />} />
             <Route path="/agent/:id" element={<AgentDetail />} />
             <Route path="/create-agent" element={<CreateAgent />} />
+            <Route path="/portfolio" element={<Portfolio />} />
             {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
             <Route path="*" element={<NotFound />} />
           </Routes>
