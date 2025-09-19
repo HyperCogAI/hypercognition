@@ -57,7 +57,7 @@ export function AppSidebar() {
             <img 
               src={hyperCognitionLogo} 
               alt="HyperCognition Logo" 
-              className="h-8 w-auto object-contain"
+              className="h-10 w-auto object-contain"
             />
           </div>
         </div>
