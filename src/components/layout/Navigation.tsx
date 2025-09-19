@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
+import { WalletButton } from "@/components/wallet/WalletButton"
 import { Menu, X, Bot, Zap } from "lucide-react"
 
 export function Navigation() {
@@ -42,9 +43,7 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <CyberButton variant="ghost">
-              Connect Wallet
-            </CyberButton>
+            <WalletButton />
             <CyberButton variant="cyber" className="group">
               <Bot className="h-4 w-4" />
               Launch App
@@ -75,9 +74,9 @@ export function Navigation() {
                 </a>
               ))}
               <div className="pt-4 space-y-2">
-                <CyberButton variant="ghost" className="w-full justify-start">
-                  Connect Wallet
-                </CyberButton>
+                <div className="w-full">
+                  <WalletButton />
+                </div>
                 <CyberButton variant="cyber" className="w-full justify-start group">
                   <Bot className="h-4 w-4" />
                   Launch App
