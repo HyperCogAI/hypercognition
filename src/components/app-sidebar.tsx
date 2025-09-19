@@ -53,7 +53,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-card border-r border-border/30 shadow-2xl">
         {/* Logo */}
         <div className="p-4 border-b border-border/30 bg-background">
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-start pl-2">
             <img 
               src={hyperCognitionLogo} 
               alt="HyperCognition Logo" 
@@ -65,7 +65,7 @@ export function AppSidebar() {
         {/* Wallet Section */}
         {!isCollapsed && (
           <div className="p-4 border-b border-border/30">
-            <CyberButton variant="neon" size="sm" className="w-11/12 justify-center mx-auto">
+            <CyberButton variant="neon" size="sm" className="w-fit justify-center mx-2">
               <Wallet className="h-4 w-4 text-white" />
               <span className="text-white">Connect Wallet</span>
             </CyberButton>
