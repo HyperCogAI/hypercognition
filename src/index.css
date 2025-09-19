@@ -6,14 +6,14 @@
 
 @layer base {
   :root {
-    /* Deep Black Base - Virtuals.io inspired */
-    --background: 222 30% 7%;
+    /* Deep Black Base - Lighter by 30% */
+    --background: 222 30% 12%;
     --foreground: 210 40% 95%;
 
-    /* Card System - Dark with subtle borders */
-    --card: 222 25% 9%;
+    /* Card System - Lighter by 30% */
+    --card: 222 25% 15%;
     --card-foreground: 210 30% 90%;
-    --card-glow: 220 40% 12%;
+    --card-glow: 220 40% 18%;
 
     /* Interactive Elements */
     --popover: 0 0% 4%;
