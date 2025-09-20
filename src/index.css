@@ -52,7 +52,7 @@
     --radius: 0.75rem;
     
     /* Custom Scroll Color */
-    --scroll-color: 220 23% 3%;
+    --scroll-color: 220 25% 2.5%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -131,19 +131,30 @@
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
+    height: 8px;
   }
 
   ::-webkit-scrollbar-track {
-    background: hsl(var(--scroll-color));
+    background: #050608;
   }
 
   ::-webkit-scrollbar-thumb {
-    background: hsl(var(--scroll-color));
+    background: #050608;
     border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: hsl(var(--scroll-color));
+    background: #050608;
+  }
+
+  ::-webkit-scrollbar-corner {
+    background: #050608;
+  }
+
+  /* Firefox scrollbar */
+  html {
+    scrollbar-width: thin;
+    scrollbar-color: #050608 #050608;
   }
 }
 
