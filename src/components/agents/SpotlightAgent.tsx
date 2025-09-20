@@ -2,6 +2,7 @@ import { useState, useEffect } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
+import { CyberButton } from "@/components/ui/cyber-button"
 import { ExternalLink, TrendingUp, Sparkles } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAgentLogo } from "@/hooks/useAgentLogo"
@@ -308,14 +309,14 @@ export const SpotlightAgent = () => {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <Button className="w-full bg-primary hover:bg-primary/90">
-          <ExternalLink className="h-4 w-4 mr-2" />
-          View Agent
-        </Button>
-        <Button variant="outline" className="w-full">
-          <TrendingUp className="h-4 w-4 mr-2" />
-          View Analytics
-        </Button>
+        <CyberButton variant="neon" className="w-full">
+          <ExternalLink className="h-4 w-4 mr-2 text-white" />
+          <span className="text-white">View Agent</span>
+        </CyberButton>
+        <CyberButton variant="neon" className="w-full">
+          <TrendingUp className="h-4 w-4 mr-2 text-white" />
+          <span className="text-white">View Analytics</span>
+        </CyberButton>
       </div>
     </div>
   )
