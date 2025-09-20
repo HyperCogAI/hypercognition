@@ -2,6 +2,7 @@ import { useState } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { WalletButton } from "@/components/wallet/WalletButton"
 import { Menu, X, Bot, Zap } from "lucide-react"
+import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -19,13 +20,12 @@ export function Navigation() {
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary">
-              <Bot className="h-5 w-5 text-primary-foreground" />
-            </div>
-            <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              HyperCognition
-            </span>
+          <div className="flex items-center gap-3">
+            <img 
+              src={hyperCognitionLogo} 
+              alt="HyperCognition" 
+              className="h-8 w-auto"
+            />
           </div>
 
           {/* Desktop Navigation */}
