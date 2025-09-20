@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '../utils'
 import { screen, fireEvent } from '@testing-library/dom'
-import '@testing-library/jest-dom'
 import { AgentCard } from '@/components/agents/AgentCard'
 import { createMockAgent } from '../utils'
 

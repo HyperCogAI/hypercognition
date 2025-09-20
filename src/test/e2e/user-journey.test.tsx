@@ -1,7 +1,6 @@
 import { describe, it, expect, vi } from 'vitest'
 import { render } from '../utils'
-import { screen, fireEvent, waitFor } from '@testing-library/react'
-import '@testing-library/jest-dom'
+import { screen, fireEvent, waitFor } from '@testing-library/dom'
 import App from '@/App'
 
 // Mock necessary modules for E2E testing
