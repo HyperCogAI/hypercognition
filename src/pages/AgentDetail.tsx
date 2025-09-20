@@ -407,6 +407,13 @@ export const AgentDetail = () => {
                   agentName={agent.name}
                 />
               </TabsContent>
+
+              <TabsContent value="social" className="space-y-6">
+                <SocialPanel 
+                  agentId={agent.id}
+                  agentName={agent.name}
+                />
+              </TabsContent>
             </Tabs>
           </div>
 
