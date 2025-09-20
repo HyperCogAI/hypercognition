@@ -6,6 +6,7 @@ import { supabase } from '@/integrations/supabase/client'
 import { useAgentLogo } from '@/hooks/useAgentLogo'
 import { Loader2, Sparkles, RefreshCw } from 'lucide-react'
 import { toast } from 'sonner'
+import { generateLogosForPlaceholderAgents } from '@/utils/generateAgentLogos'
 
 interface Agent {
   id: string
@@ -105,10 +106,16 @@ const AgentLogoShowcase = () => {
             AI-generated logos for trading agents using Hugging Face FLUX
           </p>
         </div>
-        <Button onClick={fetchAgents} variant="outline">
-          <RefreshCw className="h-4 w-4 mr-2" />
-          Refresh
-        </Button>
+        <div className="flex gap-2">
+          <Button onClick={fetchAgents} variant="outline">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          <Button onClick={generateLogosForPlaceholderAgents} variant="default">
+            <Sparkles className="h-4 w-4 mr-2" />
+            Generate All Logos
+          </Button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
