@@ -313,8 +313,11 @@ export const AgentMarketplace = () => {
           <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center justify-between'} relative z-10`}>
             <div>
               <h2 className="text-xl sm:text-2xl font-bold mb-2">HyperCognition Genesis Launch</h2>
+              <p className="text-muted-foreground mb-2 text-sm sm:text-base">
+                Co-own next-gen AI trading agents with equal early access through Hyper Points.
+              </p>
               <p className="text-muted-foreground mb-4 text-sm sm:text-base">
-                Co-own next-gen AI trading agents with equal early access through Hyper Points. Enjoy a fair 24h bidding system and get a full refund if milestones aren't met.
+                Enjoy a fair 24h bidding system and get a full refund if milestones aren't met.
               </p>
             </div>
             <div className={`${isMobile ? 'text-left' : 'text-right flex items-center'}`}>
