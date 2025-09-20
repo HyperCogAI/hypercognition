@@ -304,7 +304,7 @@ export const AgentMarketplace = () => {
 
       {/* Bottom Section - Genesis Launches */}
       <div className="mt-8">
-        <div className="bg-gradient-to-r from-primary/20 to-purple-600/20 border border-primary/30 rounded-xl p-4 sm:p-8">
+        <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 rounded-xl p-4 sm:p-8">
           <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center justify-between'}`}>
             <div>
               <h2 className="text-xl sm:text-2xl font-bold mb-2">Genesis Launches</h2>

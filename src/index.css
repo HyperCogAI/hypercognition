@@ -24,10 +24,10 @@
     --primary-foreground: 222 30% 7%;
     --primary-glow: 186 100% 75%;
 
-    /* Secondary - Purple accent */
-    --secondary: 270 60% 55%;
+    /* Secondary - Blue accent */
+    --secondary: 210 100% 65%;
     --secondary-foreground: 210 40% 95%;
-    --secondary-glow: 270 70% 70%;
+    --secondary-glow: 210 100% 80%;
 
     /* Muted Elements - Very Dark */
     --muted: 0 0% 8%;
@@ -93,7 +93,7 @@
     --popover-foreground: 210 40% 98%;
     --primary: 195 100% 50%;
     --primary-foreground: 222 15% 6%;
-    --secondary: 270 80% 45%;
+    --secondary: 210 100% 65%;
     --secondary-foreground: 210 40% 98%;
     --muted: 222 20% 15%;
     --muted-foreground: 215 15% 65%;

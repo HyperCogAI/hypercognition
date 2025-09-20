@@ -200,8 +200,8 @@ const AdminDashboard = () => {
               </div>
               
               <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
-                <div className="w-8 h-8 rounded-full bg-purple-500/20 flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-purple-500" />
+                <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-secondary" />
                 </div>
                 <div className="flex-1">
                   <p className="text-sm">$50K trading volume milestone reached</p>

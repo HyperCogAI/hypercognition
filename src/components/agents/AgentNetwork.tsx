@@ -131,7 +131,7 @@ export const AgentNetwork = () => {
 
   if (loading) {
     return (
-      <div className="relative h-80 bg-gradient-to-br from-primary/5 to-purple-600/5 rounded-lg overflow-hidden animate-pulse">
+      <div className="relative h-80 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg overflow-hidden animate-pulse">
         <div className="flex items-center justify-center h-full">
           <div className="text-muted-foreground">Loading network...</div>
         </div>
@@ -140,7 +140,7 @@ export const AgentNetwork = () => {
   }
   
   return (
-    <div className="relative h-80 bg-gradient-to-br from-primary/5 to-purple-600/5 rounded-lg overflow-hidden">
+    <div className="relative h-80 bg-gradient-to-br from-primary/5 to-secondary/5 rounded-lg overflow-hidden">
       {/* Connection Lines */}
       <svg className="absolute inset-0 w-full h-full">
         {connections.map((connection, index) => {
