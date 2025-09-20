@@ -64,7 +64,7 @@ const AppLayout = () => {
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/logo-generator" element={<LogoGenerator />} />
-            <Route path="/agent-logos" element={<AgentLogoShowcase />} />
+            <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="*" element={<NotFound />} />
@@ -92,7 +92,7 @@ const AppLayout = () => {
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/logo-generator" element={<LogoGenerator />} />
-            <Route path="/agent-logos" element={<AgentLogoShowcase />} />
+            <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="*" element={<NotFound />} />
