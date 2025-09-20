@@ -1,4 +1,5 @@
 import { Github, Twitter, MessageCircle, ExternalLink, FileText, X } from "lucide-react"
+import hyperCognitionLogo from "../../assets/hyper-cognition-logo.png"
 
 export const Footer = () => {
   return (
@@ -7,10 +8,11 @@ export const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Company */}
           <div className="space-y-4">
-            <h3 className="text-lg font-semibold text-white">HyperCognition</h3>
-            <p className="text-muted-foreground text-sm leading-relaxed">
-              The future of autonomous AI trading agents for DeFi and cryptocurrency markets.
-            </p>
+            <img 
+              src={hyperCognitionLogo} 
+              alt="HyperCognition"
+              className="h-6 w-auto"
+            />
             <div className="flex gap-3">
               <a 
                 href="https://x.com/HyperCogAI" 
