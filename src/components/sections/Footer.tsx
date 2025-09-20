@@ -11,9 +11,9 @@ export const Footer = () => {
             <img 
               src={hyperCognitionLogo} 
               alt="HyperCognition"
-              className="h-6 w-auto"
+              className="h-8 w-auto"
             />
-            <div className="flex gap-3">
+            <div className="flex gap-3 mt-6">
               <a 
                 href="https://x.com/HyperCogAI" 
                 className="w-8 h-8 bg-card/40 rounded-lg flex items-center justify-center hover:bg-accent/20 transition-colors"
