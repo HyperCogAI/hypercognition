@@ -305,7 +305,7 @@ export const AgentMarketplace = () => {
 
       {/* Bottom Section - Genesis Launches */}
       <div className="mt-8">
-        <div className="relative bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 rounded-xl p-4 sm:p-8 overflow-hidden">
+        <div className="relative bg-gradient-to-r from-primary/20 to-secondary/20 rounded-xl p-4 sm:p-8 overflow-hidden">
           <div 
             className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat" 
             style={{ backgroundImage: `url(${gradientBlurBg})` }}
