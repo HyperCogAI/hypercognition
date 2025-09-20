@@ -24,7 +24,7 @@ const stats = [
   },
   {
     icon: Users,
-    value: "50K+",
+    value: "1K+",
     label: "Active Traders",
     description: "Growing community",
     color: "text-primary-glow"
