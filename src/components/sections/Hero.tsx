@@ -1,15 +1,20 @@
 import { CyberButton } from "@/components/ui/cyber-button"
-import { ArrowRight, Bot, TrendingUp, Zap } from "lucide-react"
-import heroImage from "@/assets/hero-bg.jpg"
+import { ArrowRight } from "lucide-react"
+import heroVideo from "@/assets/hero-video.mp4"
 
 export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Image */}
-      <div 
-        className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-30"
-        style={{ backgroundImage: `url(${heroImage})` }}
-      />
+      {/* Background Video */}
+      <video 
+        className="absolute inset-0 w-full h-full object-cover opacity-60"
+        autoPlay
+        loop
+        muted
+        playsInline
+      >
+        <source src={heroVideo} type="video/mp4" />
+      </video>
       
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 cyber-grid opacity-20" />
@@ -17,26 +22,6 @@ export function Hero() {
       {/* Content */}
       <div className="relative z-10 container mx-auto px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 rounded-full border border-primary/15 bg-primary/5 px-4 py-2 text-sm font-medium text-primary backdrop-blur-sm">
-            <Bot className="h-4 w-4" />
-            🧠 HyperCognition AI
-          </div>
-          
-          {/* Main Heading */}
-          <h1 className="text-5xl md:text-7xl font-bold text-white">
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
-              AI-Native DeFi
-            </span>
-            <br />
-            <span className="text-white/90">Ecosystem</span>
-          </h1>
-          
-          {/* Subtitle */}
-          <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Deploy autonomous trading agents that continuously evolve through reinforcement learning.
-            Build, customize, and monetize AI-powered trading strategies in the first truly intelligent DeFi platform.
-          </p>
           
           {/* Stats Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8">
