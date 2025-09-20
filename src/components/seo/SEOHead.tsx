@@ -1,4 +1,4 @@
-import { Helmet } from "react-helmet-async"
+import { useEffect } from "react"
 
 interface SEOHeadProps {
   title?: string
@@ -6,8 +6,7 @@ interface SEOHeadProps {
   keywords?: string
   image?: string
   url?: string
-  type?: "website" | "article" | "product"
-  structuredData?: object
+  structuredData?: object[]
 }
 
 export const SEOHead = ({
@@ -16,48 +15,80 @@ export const SEOHead = ({
   keywords = "AI trading agents, autonomous trading, cryptocurrency, DeFi, blockchain, trading bots, AI marketplace",
   image = "/hero-bg.jpg",
   url = "https://hypercognition.lovable.app",
-  type = "website",
   structuredData
 }: SEOHeadProps) => {
-  const fullTitle = title.includes("HyperCognition") ? title : `${title} | HyperCognition`
-  const fullUrl = url.startsWith("http") ? url : `https://hypercognition.lovable.app${url}`
-  
-  return (
-    <Helmet>
-      {/* Basic Meta Tags */}
-      <title>{fullTitle}</title>
-      <meta name="description" content={description} />
-      <meta name="keywords" content={keywords} />
-      <meta name="author" content="HyperCognition" />
-      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-      <meta name="robots" content="index, follow" />
-      <link rel="canonical" href={fullUrl} />
+  useEffect(() => {
+    // Update document title
+    document.title = title
+
+    // Helper function to update or create meta tags
+    const updateMetaTag = (name: string, content: string, property?: boolean) => {
+      const attribute = property ? 'property' : 'name'
+      let tag = document.querySelector(`meta[${attribute}="${name}"]`) as HTMLMetaElement
       
-      {/* Open Graph */}
-      <meta property="og:title" content={fullTitle} />
-      <meta property="og:description" content={description} />
-      <meta property="og:image" content={image} />
-      <meta property="og:url" content={fullUrl} />
-      <meta property="og:type" content={type} />
-      <meta property="og:site_name" content="HyperCognition" />
+      if (!tag) {
+        tag = document.createElement('meta')
+        tag.setAttribute(attribute, name)
+        document.head.appendChild(tag)
+      }
       
-      {/* Twitter Card */}
-      <meta name="twitter:card" content="summary_large_image" />
-      <meta name="twitter:title" content={fullTitle} />
-      <meta name="twitter:description" content={description} />
-      <meta name="twitter:image" content={image} />
-      
-      {/* Additional Meta */}
-      <meta name="theme-color" content="#6366f1" />
-      <meta name="apple-mobile-web-app-capable" content="yes" />
-      <meta name="apple-mobile-web-app-status-bar-style" content="default" />
-      
-      {/* Structured Data */}
-      {structuredData && (
-        <script type="application/ld+json">
-          {JSON.stringify(structuredData)}
-        </script>
-      )}
-    </Helmet>
-  )
+      tag.content = content
+    }
+
+    // Update basic meta tags
+    updateMetaTag('description', description)
+    updateMetaTag('keywords', keywords)
+    updateMetaTag('author', 'HyperCognition')
+    updateMetaTag('robots', 'index, follow')
+
+    // Update Open Graph tags
+    updateMetaTag('og:title', title, true)
+    updateMetaTag('og:description', description, true)
+    updateMetaTag('og:image', image, true)
+    updateMetaTag('og:url', url, true)
+    updateMetaTag('og:type', 'website', true)
+    updateMetaTag('og:site_name', 'HyperCognition', true)
+
+    // Update Twitter Card tags
+    updateMetaTag('twitter:card', 'summary_large_image')
+    updateMetaTag('twitter:title', title)
+    updateMetaTag('twitter:description', description)
+    updateMetaTag('twitter:image', image)
+
+    // Update theme color
+    updateMetaTag('theme-color', '#6366f1')
+
+    // Update canonical link
+    let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement
+    if (!canonicalLink) {
+      canonicalLink = document.createElement('link')
+      canonicalLink.rel = 'canonical'
+      document.head.appendChild(canonicalLink)
+    }
+    canonicalLink.href = url
+
+    // Add structured data
+    if (structuredData) {
+      // Remove existing structured data
+      const existingScripts = document.querySelectorAll('script[type="application/ld+json"]')
+      existingScripts.forEach(script => script.remove())
+
+      // Add new structured data
+      structuredData.forEach((data, index) => {
+        const script = document.createElement('script')
+        script.type = 'application/ld+json'
+        script.id = `structured-data-${index}`
+        script.textContent = JSON.stringify(data)
+        document.head.appendChild(script)
+      })
+    }
+
+    // Cleanup function to remove added elements when component unmounts
+    return () => {
+      // We don't remove meta tags on cleanup to avoid flickering
+      // They will be updated by the next page's SEOHead component
+    }
+  }, [title, description, keywords, image, url, structuredData])
+
+  return null // This component doesn't render anything
 }
