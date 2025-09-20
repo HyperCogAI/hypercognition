@@ -1,3 +1,6 @@
+import { z } from "zod"
+import DOMPurify from "dompurify"
+
 // Input validation utilities
 export class ValidationError extends Error {
   constructor(message: string, public field?: string) {
@@ -203,3 +206,84 @@ export const schemas = {
 }
 
 export const tradeOrderSchema = schemas.tradingOrder
+
+// Zod schemas for enhanced validation
+export const emailSchema = z.string().email("Please enter a valid email address")
+
+export const passwordSchema = z
+  .string()
+  .min(8, "Password must be at least 8 characters")
+  .regex(/[A-Z]/, "Password must contain at least one uppercase letter")
+  .regex(/[a-z]/, "Password must contain at least one lowercase letter")
+  .regex(/[0-9]/, "Password must contain at least one number")
+  .regex(/[^A-Za-z0-9]/, "Password must contain at least one special character")
+
+export const agentNameSchema = z
+  .string()
+  .min(2, "Agent name must be at least 2 characters")
+  .max(50, "Agent name must be less than 50 characters")
+  .regex(/^[a-zA-Z0-9\s-_]+$/, "Agent name can only contain letters, numbers, spaces, hyphens, and underscores")
+
+export const agentSymbolSchema = z
+  .string()
+  .min(2, "Symbol must be at least 2 characters")
+  .max(10, "Symbol must be less than 10 characters")
+  .regex(/^[A-Z0-9]+$/, "Symbol can only contain uppercase letters and numbers")
+
+export const descriptionSchema = z
+  .string()
+  .max(500, "Description must be less than 500 characters")
+  .optional()
+
+export const priceSchema = z
+  .number()
+  .positive("Price must be positive")
+  .max(1000000, "Price cannot exceed 1,000,000")
+
+export const searchQuerySchema = z
+  .string()
+  .max(100, "Search query must be less than 100 characters")
+  .regex(/^[a-zA-Z0-9\s\-_.]+$/, "Search query contains invalid characters")
+
+// Agent creation form schema
+export const createAgentSchema = z.object({
+  name: agentNameSchema,
+  symbol: agentSymbolSchema,
+  description: descriptionSchema,
+  initialPrice: priceSchema,
+  chain: z.enum(["ethereum", "polygon", "arbitrum", "optimism"], {
+    errorMap: () => ({ message: "Please select a valid chain" })
+  }),
+  tradingStrategy: z.enum(["conservative", "moderate", "aggressive"], {
+    errorMap: () => ({ message: "Please select a trading strategy" })
+  })
+})
+
+// Enhanced sanitization functions
+export const sanitizeHtml = (input: string): string => {
+  if (typeof window !== 'undefined' && DOMPurify.isSupported) {
+    return DOMPurify.sanitize(input, {
+      ALLOWED_TAGS: [],
+      ALLOWED_ATTR: []
+    })
+  }
+  // Fallback for server-side or when DOMPurify is not available
+  return input.replace(/<[^>]*>/g, '')
+}
+
+export const sanitizeSearchQuery = (query: string): string => {
+  return query
+    .replace(/[^\w\s\-_.]/g, '')
+    .trim()
+    .slice(0, 100)
+}
+
+export const sanitizeAgentName = (name: string): string => {
+  return name
+    .replace(/[^\w\s\-_]/g, '')
+    .trim()
+    .slice(0, 50)
+}
+
+// Export type inference helpers
+export type CreateAgentFormData = z.infer<typeof createAgentSchema>

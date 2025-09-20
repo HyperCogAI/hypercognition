@@ -11,6 +11,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
+import { ErrorBoundary } from "@/components/error/ErrorBoundary"
+import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
 import AdminDashboard from "./pages/AdminDashboard";
 import LogoGenerator from "./pages/LogoGenerator";
 import AgentLogoShowcase from "./pages/AgentLogoShowcase";
@@ -56,21 +58,25 @@ const AppLayout = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <main className="flex-1 pb-16">
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/agent/:id" element={<AgentDetail />} />
-            <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
-            <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
-            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-            <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/logo-generator" element={<LogoGenerator />} />
-            <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
-            <Route path="/compare" element={<AgentComparison />} />
-            <Route path="/communities" element={<Communities />} />
-            <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/agent/:id" element={<AgentDetail />} />
+                <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
+                <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/logo-generator" element={<LogoGenerator />} />
+                <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
+                <Route path="/compare" element={<AgentComparison />} />
+                <Route path="/communities" element={<Communities />} />
+                <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </main>
         <MobileNavigation />
       </div>
@@ -85,21 +91,25 @@ const AppLayout = () => {
           <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
             <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
           </div>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/agent/:id" element={<AgentDetail />} />
-            <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
-            <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
-            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-            <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-            <Route path="/logo-generator" element={<LogoGenerator />} />
-            <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
-            <Route path="/compare" element={<AgentComparison />} />
-            <Route path="/communities" element={<Communities />} />
-            <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ErrorBoundary>
+            <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
+              <Routes>
+                <Route path="/" element={<Index />} />
+                <Route path="/agent/:id" element={<AgentDetail />} />
+                <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
+                <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/logo-generator" element={<LogoGenerator />} />
+                <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
+                <Route path="/compare" element={<AgentComparison />} />
+                <Route path="/communities" element={<Communities />} />
+                <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
+                <Route path="*" element={<NotFound />} />
+              </Routes>
+            </Suspense>
+          </ErrorBoundary>
         </main>
       </div>
     </SidebarProvider>
