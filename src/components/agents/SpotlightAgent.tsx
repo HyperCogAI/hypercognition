@@ -1,23 +1,177 @@
+import { useState, useEffect } from "react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { ExternalLink, Users, TrendingUp } from "lucide-react"
+import { ExternalLink, TrendingUp, Sparkles } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
+import { useAgentLogo } from "@/hooks/useAgentLogo"
+import { toast } from "sonner"
+
+interface Agent {
+  id: string
+  name: string
+  symbol: string
+  avatar_url: string | null
+  description: string | null
+  price: number
+  market_cap: number
+  volume_24h: number
+  change_24h: number
+  chain: string
+  logo_generated: boolean
+}
+
+interface UserProfile {
+  id: string
+  user_id: string
+  display_name: string | null
+  avatar_url: string | null
+}
 
 export const SpotlightAgent = () => {
+  const [spotlightAgent, setSpotlightAgent] = useState<Agent | null>(null)
+  const [recentUsers, setRecentUsers] = useState<UserProfile[]>([])
+  const [loading, setLoading] = useState(true)
+  const { generateLogo, isGenerating } = useAgentLogo()
+
+  useEffect(() => {
+    fetchSpotlightAgent()
+    fetchRecentUsers()
+  }, [])
+
+  const fetchSpotlightAgent = async () => {
+    try {
+      // Get the agent with highest market cap or most recent activity
+      const { data: agents, error } = await supabase
+        .from('agents')
+        .select('*')
+        .order('market_cap', { ascending: false })
+        .limit(1)
+
+      if (error) throw error
+
+      if (agents && agents.length > 0) {
+        setSpotlightAgent(agents[0])
+      }
+    } catch (error) {
+      console.error('Error fetching spotlight agent:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const fetchRecentUsers = async () => {
+    try {
+      // Get recent user profiles (simulating users who interacted with agents)
+      const { data: profiles, error } = await supabase
+        .from('user_profiles')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(6)
+
+      if (error) throw error
+      setRecentUsers(profiles || [])
+    } catch (error) {
+      console.error('Error fetching recent users:', error)
+    }
+  }
+
+  const handleGenerateLogo = async () => {
+    if (!spotlightAgent) return
+
+    try {
+      const logo = await generateLogo(
+        spotlightAgent.name,
+        spotlightAgent.symbol,
+        "spotlight featured",
+        spotlightAgent.id
+      )
+
+      if (logo) {
+        // Update local state
+        setSpotlightAgent(prev => prev ? {
+          ...prev,
+          avatar_url: logo.imageUrl,
+          logo_generated: true
+        } : null)
+        
+        toast.success(`Logo generated for ${spotlightAgent.name}!`)
+      }
+    } catch (error) {
+      console.error('Error generating logo:', error)
+      toast.error('Failed to generate logo')
+    }
+  }
+
+  const formatPrice = (price: number) => {
+    if (price < 0.01) {
+      return `$${price.toFixed(6)}`
+    }
+    return `$${price.toFixed(2)}`
+  }
+
+  const formatMarketCap = (marketCap: number) => {
+    if (marketCap >= 1000000) {
+      return `$${(marketCap / 1000000).toFixed(1)}M`
+    } else if (marketCap >= 1000) {
+      return `$${(marketCap / 1000).toFixed(1)}K`
+    }
+    return `$${marketCap.toFixed(0)}`
+  }
+
+  if (loading) {
+    return (
+      <div className="space-y-6 animate-pulse">
+        <div className="flex items-center gap-4">
+          <div className="h-16 w-16 bg-primary/20 rounded-full" />
+          <div className="space-y-2">
+            <div className="h-6 w-32 bg-primary/20 rounded" />
+            <div className="h-4 w-48 bg-primary/10 rounded" />
+          </div>
+        </div>
+        <div className="grid grid-cols-2 gap-4">
+          <div className="h-20 bg-primary/10 rounded-lg" />
+          <div className="h-20 bg-primary/10 rounded-lg" />
+        </div>
+      </div>
+    )
+  }
+
+  if (!spotlightAgent) {
+    return (
+      <div className="text-center py-8">
+        <p className="text-muted-foreground">No spotlight agent available</p>
+      </div>
+    )
+  }
+
   return (
     <div className="space-y-6">
       {/* Agent Header */}
       <div className="flex items-center gap-4">
-        <Avatar className="h-16 w-16">
-          <AvatarImage src="/placeholder.svg" alt="Luna" />
-          <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
-            LU
-          </AvatarFallback>
-        </Avatar>
+        <div className="relative">
+          <Avatar className="h-16 w-16">
+            <AvatarImage src={spotlightAgent.avatar_url || "/placeholder.svg"} alt={spotlightAgent.name} />
+            <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
+              {spotlightAgent.symbol.slice(0, 2)}
+            </AvatarFallback>
+          </Avatar>
+          {!spotlightAgent.logo_generated && (
+            <Button
+              size="sm"
+              variant="outline"
+              className="absolute -bottom-2 -right-2 h-6 w-6 p-0"
+              onClick={handleGenerateLogo}
+              disabled={isGenerating}
+            >
+              <Sparkles className="h-3 w-3" />
+            </Button>
+          )}
+        </div>
         <div>
-          <h3 className="text-xl font-bold">Luna</h3>
+          <h3 className="text-xl font-bold">{spotlightAgent.name}</h3>
           <Badge variant="secondary" className="mt-1">
-            Autonomous Onchain Commerce
+            {spotlightAgent.symbol} • {spotlightAgent.chain}
           </Badge>
         </div>
       </div>
@@ -25,29 +179,46 @@ export const SpotlightAgent = () => {
       {/* Stats */}
       <div className="grid grid-cols-2 gap-4">
         <div className="bg-card/50 rounded-lg p-4">
-          <div className="text-2xl font-bold text-primary">15161</div>
-          <div className="text-sm text-muted-foreground">Transactions</div>
+          <div className="text-2xl font-bold text-primary">{formatPrice(spotlightAgent.price)}</div>
+          <div className="text-sm text-muted-foreground">Price</div>
+          <div className={`text-xs ${spotlightAgent.change_24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+            {spotlightAgent.change_24h >= 0 ? '+' : ''}{spotlightAgent.change_24h.toFixed(2)}%
+          </div>
         </div>
         <div className="bg-card/50 rounded-lg p-4">
-          <div className="text-2xl font-bold text-green-400">$15m</div>
-          <div className="text-sm text-muted-foreground">FDV</div>
-          <div className="text-xs text-green-400">+7.78%</div>
+          <div className="text-2xl font-bold text-green-400">{formatMarketCap(spotlightAgent.market_cap)}</div>
+          <div className="text-sm text-muted-foreground">Market Cap</div>
+          <div className="text-xs text-muted-foreground">
+            Vol: {formatMarketCap(spotlightAgent.volume_24h)}
+          </div>
         </div>
       </div>
 
-      {/* Description */}
+      {/* Interacted with Section */}
       <div className="space-y-3">
-        <h4 className="font-semibold">Interacted with</h4>
+        <h4 className="font-semibold">Recent Community</h4>
         <div className="flex -space-x-2">
-          {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Avatar key={i} className="h-8 w-8 border-2 border-background">
-              <AvatarImage src={`/placeholder.svg`} alt={`User ${i}`} />
-              <AvatarFallback className="bg-primary/20 text-xs">U{i}</AvatarFallback>
-            </Avatar>
-          ))}
+          {recentUsers.length > 0 ? (
+            recentUsers.map((user) => (
+              <Avatar key={user.id} className="h-8 w-8 border-2 border-background">
+                <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || 'User'} />
+                <AvatarFallback className="bg-primary/20 text-xs">
+                  {user.display_name ? user.display_name.slice(0, 2).toUpperCase() : 'U'}
+                </AvatarFallback>
+              </Avatar>
+            ))
+          ) : (
+            // Fallback to placeholder avatars if no users
+            Array.from({ length: 6 }, (_, i) => (
+              <Avatar key={i} className="h-8 w-8 border-2 border-background">
+                <AvatarImage src="/placeholder.svg" alt={`User ${i + 1}`} />
+                <AvatarFallback className="bg-primary/20 text-xs">U{i + 1}</AvatarFallback>
+              </Avatar>
+            ))
+          )}
         </div>
         <div className="text-sm text-muted-foreground">
-          <strong>Description:</strong> Luna an AI brand ambassador and campaign orchestrator for crypto token projects. Luna mobilizes her...
+          <strong>Description:</strong> {spotlightAgent.description || `${spotlightAgent.name} is an advanced AI trading agent operating on ${spotlightAgent.chain} blockchain.`}
         </div>
       </div>
 
