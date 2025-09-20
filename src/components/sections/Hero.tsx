@@ -23,7 +23,7 @@ export function Hero() {
       
       {/* Content */}
       <div className="relative z-20 container mx-auto px-6 text-center">
-        <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
+        <div className="max-w-4xl mx-auto space-y-8 animate-fade-up mt-32">
           
           {/* Stats Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8">
