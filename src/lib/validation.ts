@@ -153,6 +153,24 @@ export class ValidationSchema {
   }
 }
 
+// Helper functions for tests
+export const validateEmail = (email: string): boolean => {
+  return PATTERNS.EMAIL.test(email)
+}
+
+export const validateWalletAddress = (address: string): boolean => {
+  return PATTERNS.ETHEREUM_ADDRESS.test(address)
+}
+
+export const validateTradeAmount = (balance: number, amount: number): boolean => {
+  return amount > 0 && amount <= balance
+}
+
+export const sanitizeInput = (input: string | null | undefined): string => {
+  if (!input) return ''
+  return input.replace(/<[^>]*>/g, '') // Simple HTML removal
+}
+
 // Pre-built schemas for common use cases
 export const schemas = {
   agentRating: new ValidationSchema()
@@ -183,3 +201,5 @@ export const schemas = {
     .field('amount', (v) => validators.amount(validators.required(v)))
     .field('price', (v) => v ? validators.price(v) : undefined)
 }
+
+export const tradeOrderSchema = schemas.tradingOrder

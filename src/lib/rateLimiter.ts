@@ -5,10 +5,21 @@ interface RateLimitConfig {
   keyGenerator?: (req: any) => string
 }
 
-class RateLimiter {
+export class RateLimiter {
   private windows = new Map<string, { count: number; resetTime: number }>()
+  private config: RateLimitConfig
   
-  constructor(private config: RateLimitConfig) {}
+  constructor(configOrMax: RateLimitConfig | number, windowMs?: number) {
+    if (typeof configOrMax === 'number') {
+      this.config = { maxRequests: configOrMax, windowMs: windowMs! }
+    } else {
+      this.config = configOrMax
+    }
+  }
+  
+  checkLimit(key: string): boolean {
+    return this.isAllowed(key)
+  }
   
   isAllowed(key: string): boolean {
     const now = Date.now()
