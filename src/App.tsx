@@ -13,8 +13,8 @@ import { AuthProvider } from "@/contexts/AuthContext"
 import Index from "./pages/Index";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
-import Portfolio from "./pages/Portfolio";
-import Analytics from "./pages/Analytics";
+import { Portfolio } from "./pages/Portfolio";
+import { Analytics } from "./pages/Analytics";
 import Favorites from "./pages/Favorites";
 import AgentComparison from "./pages/AgentComparison";
 import Communities from "./pages/Communities";
