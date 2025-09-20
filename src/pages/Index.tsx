@@ -1,6 +1,5 @@
 import { Navigation } from "@/components/layout/Navigation"
 import { Hero } from "@/components/sections/Hero"
-import { InteractiveStats } from "@/components/sections/InteractiveStats"
 import { Stats } from "@/components/sections/Stats"
 import { HyperFeatures } from "@/components/sections/HyperFeatures"
 import { AgentMarketplace } from "@/components/sections/AgentMarketplace"
@@ -13,7 +12,6 @@ const Index = () => {
       <Navigation />
       <main>
         <Hero />
-        <InteractiveStats />
         <Stats />
         <HyperFeatures />
         <AgentMarketplace />
