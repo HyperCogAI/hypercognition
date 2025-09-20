@@ -10,6 +10,7 @@ import { TradingPanel } from "@/components/trading/TradingPanel"
 import { AdvancedTradingPanel } from "@/components/trading/AdvancedTradingPanel"
 import { OrderBook } from "@/components/trading/OrderBook"
 import { PriceChart } from "@/components/charts/PriceChart"
+import { AgentSocialPanel } from "@/components/social/AgentSocialPanel"
 import { supabase } from "@/integrations/supabase/client"
 import { useFavorites } from "@/contexts/FavoritesContext"
 import { useAuth } from "@/contexts/AuthContext"
@@ -398,6 +399,13 @@ export const AgentDetail = () => {
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="community" className="space-y-6">
+                <AgentSocialPanel
+                  agentId={agent.id}
+                  agentName={agent.name}
+                />
               </TabsContent>
             </Tabs>
           </div>
