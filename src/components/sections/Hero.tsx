@@ -7,7 +7,7 @@ export function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
       <video 
-        className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-4/5 max-w-4xl h-auto object-cover opacity-90 rounded-lg z-0"
+        className="absolute top-0 left-0 md:left-16 w-full md:w-[calc(100%-4rem)] h-full object-cover opacity-90 z-0"
         autoPlay
         loop
         muted
