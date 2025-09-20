@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
+import gradientBlurBg from "@/assets/gradient_blur_top_blue.png"
 import { supabase } from "@/integrations/supabase/client"
 import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
 import { useIsMobile, useIsTablet } from "@/hooks/useMediaQuery"
@@ -304,8 +305,12 @@ export const AgentMarketplace = () => {
 
       {/* Bottom Section - Genesis Launches */}
       <div className="mt-8">
-        <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 rounded-xl p-4 sm:p-8">
-          <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center justify-between'}`}>
+        <div className="relative bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 rounded-xl p-4 sm:p-8 overflow-hidden">
+          <div 
+            className="absolute inset-0 opacity-80 bg-cover bg-center bg-no-repeat" 
+            style={{ backgroundImage: `url(${gradientBlurBg})` }}
+          />
+          <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center justify-between'} relative z-10`}>
             <div>
               <h2 className="text-xl sm:text-2xl font-bold mb-2">Genesis Launches</h2>
               <p className="text-muted-foreground mb-4 text-sm sm:text-base">

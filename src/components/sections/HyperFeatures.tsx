@@ -52,7 +52,7 @@ export const HyperFeatures = () => {
         {/* Section Header */}
         <div className="text-center mb-16 space-y-6">
           <div className="inline-flex items-center px-4 py-2 rounded-full bg-primary/5 border border-primary/15 text-primary text-sm font-medium">
-            🚀 Platform Features
+            Platform Features
           </div>
           <h2 className="text-3xl md:text-5xl font-bold text-white">
             <span className="bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
