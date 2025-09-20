@@ -44,9 +44,9 @@ const App = () => (
               <div className="min-h-screen flex w-full">
                 <AppSidebar />
                 <main className="flex-1 relative">
-                  {/* Enhanced Global sidebar trigger */}
-                  <div className="sticky top-0 z-50 glass-nav border-b border-primary/10 p-2 shadow-2xl">
-                    <SidebarTrigger className="hover:bg-primary/10 hover:scale-110 transition-all duration-300 hover-lift" />
+                  {/* Global sidebar trigger */}
+                  <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
+                    <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
                   </div>
                   <Routes>
                     <Route path="/" element={<Index />} />
