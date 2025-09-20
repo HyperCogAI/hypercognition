@@ -7,7 +7,7 @@ export function Hero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
       <video 
-        className="absolute top-0 left-0 w-full h-full object-cover opacity-60 -z-10"
+        className="absolute inset-0 w-full h-full object-cover opacity-60 z-0"
         autoPlay
         loop
         muted
@@ -17,10 +17,10 @@ export function Hero() {
       </video>
       
       {/* Animated Grid Overlay */}
-      <div className="absolute inset-0 cyber-grid opacity-20" />
+      <div className="absolute inset-0 cyber-grid opacity-20 z-10" />
       
       {/* Content */}
-      <div className="relative z-10 container mx-auto px-6 text-center">
+      <div className="relative z-20 container mx-auto px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-up">
           
           {/* Stats Row */}
