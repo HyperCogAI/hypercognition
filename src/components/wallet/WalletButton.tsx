@@ -13,18 +13,18 @@ export const WalletButton = () => {
 
   if (isConnecting) {
     return (
-      <CyberButton variant="neon" size="sm" disabled className="group">
-        <Wallet className="h-4 w-4 text-primary-foreground group-hover:text-muted-foreground" />
-        <span className="text-primary-foreground group-hover:text-muted-foreground">Connecting...</span>
+      <CyberButton variant="neon" size="sm" disabled>
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connecting...</span>
       </CyberButton>
     )
   }
 
   if (!isConnected) {
     return (
-      <CyberButton variant="neon" size="sm" onClick={connectWallet} className="group">
-        <Wallet className="h-4 w-4 text-primary-foreground group-hover:text-muted-foreground" />
-        <span className="text-primary-foreground group-hover:text-muted-foreground">Connect Wallet</span>
+      <CyberButton variant="neon" size="sm" onClick={connectWallet}>
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connect Wallet</span>
       </CyberButton>
     )
   }
