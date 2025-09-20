@@ -30,7 +30,8 @@ export const generateLogosForPlaceholderAgents = async () => {
           body: {
             agentName: agent.name,
             agentSymbol: agent.symbol,
-            style: agent.logo_style || 'modern minimalist'
+            style: agent.logo_style || 'modern minimalist',
+            agentId: agent.id
           }
         })
 
@@ -40,20 +41,7 @@ export const generateLogosForPlaceholderAgents = async () => {
         }
 
         if (data?.success) {
-          // Update the agent's avatar_url with the generated logo
-          const { error: updateError } = await supabase
-            .from('agents')
-            .update({ 
-              avatar_url: data.imageUrl,
-              logo_generated: true 
-            })
-            .eq('id', agent.id)
-
-          if (updateError) {
-            console.error(`Error updating agent ${agent.name}:`, updateError)
-          } else {
-            console.log(`✅ Logo generated for ${agent.name}`)
-          }
+          console.log(`✅ Logo generated for ${agent.name}${data.updated ? ' and saved' : ''}`)
         }
         
         // Small delay to avoid rate limiting

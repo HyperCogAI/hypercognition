@@ -1,5 +1,6 @@
 import { serve } from "https://deno.land/std@0.190.0/http/server.ts";
 import { HfInference } from 'https://esm.sh/@huggingface/inference@2.3.2';
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -10,6 +11,7 @@ interface GenerateLogoRequest {
   agentName: string;
   agentSymbol: string;
   style?: string;
+  agentId?: string;
 }
 
 const handler = async (req: Request): Promise<Response> => {
@@ -18,7 +20,7 @@ const handler = async (req: Request): Promise<Response> => {
   }
 
   try {
-    const { agentName, agentSymbol, style = "modern minimalist" }: GenerateLogoRequest = await req.json();
+    const { agentName, agentSymbol, style = "modern minimalist", agentId }: GenerateLogoRequest = await req.json();
 
     const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
 
@@ -44,12 +46,39 @@ const handler = async (req: Request): Promise<Response> => {
 
     console.log('Logo generated successfully for agent:', agentName);
 
+    // Optionally update the DB if an agentId is provided
+    let updated = false;
+    try {
+      if (agentId) {
+        const SUPABASE_URL = Deno.env.get('SUPABASE_URL');
+        const SERVICE_ROLE_KEY = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY');
+        if (!SUPABASE_URL || !SERVICE_ROLE_KEY) {
+          console.warn('Missing SUPABASE_URL or SUPABASE_SERVICE_ROLE_KEY');
+        } else {
+          const admin = createClient(SUPABASE_URL, SERVICE_ROLE_KEY);
+          const { error: updateError } = await admin
+            .from('agents')
+            .update({ avatar_url: imageData, logo_generated: true })
+            .eq('id', agentId);
+          if (updateError) {
+            console.error('Failed to update agent avatar_url:', updateError.message || updateError);
+          } else {
+            updated = true;
+            console.log('Agent updated with new logo:', agentId);
+          }
+        }
+      }
+    } catch (e) {
+      console.error('Error while updating agent in DB:', e);
+    }
+
     return new Response(
       JSON.stringify({ 
         success: true,
         imageUrl: imageData,
         agentName,
-        agentSymbol
+        agentSymbol,
+        updated
       }),
       { 
         headers: { 

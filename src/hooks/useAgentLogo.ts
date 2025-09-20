@@ -13,7 +13,8 @@ export const useAgentLogo = () => {
   const generateLogo = async (
     agentName: string, 
     agentSymbol: string, 
-    style: string = "modern minimalist"
+    style: string = "modern minimalist",
+    agentId?: string
   ): Promise<GeneratedLogo | null> => {
     setIsGenerating(true)
     
@@ -22,7 +23,8 @@ export const useAgentLogo = () => {
         body: {
           agentName,
           agentSymbol,
-          style
+          style,
+          agentId
         }
       })
 

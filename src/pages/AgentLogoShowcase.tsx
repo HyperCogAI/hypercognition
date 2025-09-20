@@ -57,28 +57,12 @@ const AgentLogoShowcase = () => {
       const result = await generateLogo(
         agent.name, 
         agent.symbol, 
-        agent.logo_style || 'modern minimalist'
+        agent.logo_style || 'modern minimalist',
+        agent.id
       )
       
       if (result) {
-        // Update the agent's avatar_url with the generated logo
-        const { error } = await supabase
-          .from('agents')
-          .update({ 
-            avatar_url: result.imageUrl,
-            logo_generated: true 
-          })
-          .eq('id', agent.id)
-
-        if (error) throw error
-
-        // Update local state
-        setAgents(prev => prev.map(a => 
-          a.id === agent.id 
-            ? { ...a, avatar_url: result.imageUrl, logo_generated: true }
-            : a
-        ))
-
+        await fetchAgents()
         toast.success(`Logo generated for ${agent.name}!`)
       }
     } catch (error) {
@@ -103,7 +87,7 @@ const AgentLogoShowcase = () => {
         <div>
           <h1 className="text-3xl font-bold">Agent Logo Showcase</h1>
           <p className="text-muted-foreground">
-            AI-generated logos for trading agents using Hugging Face FLUX
+            AI-generated logos for trading agents via Edge Function
           </p>
         </div>
         <div className="flex gap-2">
@@ -111,7 +95,7 @@ const AgentLogoShowcase = () => {
             <RefreshCw className="h-4 w-4 mr-2" />
             Refresh
           </Button>
-          <Button onClick={generateLogosForPlaceholderAgents} variant="default">
+          <Button onClick={async () => { await generateLogosForPlaceholderAgents(); await fetchAgents(); }} variant="default">
             <Sparkles className="h-4 w-4 mr-2" />
             Generate All Logos
           </Button>
@@ -140,6 +124,7 @@ const AgentLogoShowcase = () => {
                       src={agent.avatar_url} 
                       alt={`${agent.name} logo`}
                       className="w-full h-full object-cover rounded-lg"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="text-2xl font-bold text-muted-foreground">
