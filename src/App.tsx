@@ -25,6 +25,7 @@ import Favorites from "./pages/Favorites";
 import AgentComparison from "./pages/AgentComparison";
 import Communities from "./pages/Communities";
 import NotFound from "./pages/NotFound";
+import ACP from "./pages/ACP";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations
@@ -67,6 +68,7 @@ const AppLayout = () => {
             <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
+            <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>
@@ -95,6 +97,7 @@ const AppLayout = () => {
             <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
+            <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </main>

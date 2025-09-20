@@ -10,6 +10,7 @@ export function Navigation() {
   const navItems = [
     { name: "Trade", href: "#trade" },
     { name: "AI Bots", href: "#bots" },
+    { name: "ACP", href: "/acp" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Analytics", href: "#analytics" },
     { name: "Docs", href: "#docs" },
