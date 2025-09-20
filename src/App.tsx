@@ -9,6 +9,7 @@ import { config } from './config/wagmi'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
+import { AuthProvider } from "@/contexts/AuthContext"
 import Index from "./pages/Index";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
@@ -18,6 +19,7 @@ import Favorites from "./pages/Favorites";
 import AgentComparison from "./pages/AgentComparison";
 import Communities from "./pages/Communities";
 import NotFound from "./pages/NotFound";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
 const queryClient = new QueryClient();
 
@@ -32,8 +34,9 @@ createWeb3Modal({
 const App = () => (
   <WagmiProvider config={config}>
     <QueryClientProvider client={queryClient}>
-      <FavoritesProvider>
-        <TooltipProvider>
+      <AuthProvider>
+        <FavoritesProvider>
+          <TooltipProvider>
           <Toaster />
           <Sonner />
           <BrowserRouter>
@@ -48,10 +51,10 @@ const App = () => (
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/agent/:id" element={<AgentDetail />} />
-                    <Route path="/create-agent" element={<CreateAgent />} />
-                    <Route path="/portfolio" element={<Portfolio />} />
-                    <Route path="/analytics" element={<Analytics />} />
-                    <Route path="/favorites" element={<Favorites />} />
+                    <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
+                    <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+                    <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                    <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                     <Route path="/compare" element={<AgentComparison />} />
                     <Route path="/communities" element={<Communities />} />
                     {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
@@ -61,8 +64,9 @@ const App = () => (
               </div>
             </SidebarProvider>
           </BrowserRouter>
-        </TooltipProvider>
-      </FavoritesProvider>
+          </TooltipProvider>
+        </FavoritesProvider>
+      </AuthProvider>
     </QueryClientProvider>
   </WagmiProvider>
 );

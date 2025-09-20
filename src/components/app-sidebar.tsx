@@ -15,7 +15,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
-import { CyberButton } from "@/components/ui/cyber-button"
+import { UserMenu } from "@/components/UserMenu"
 
 const mainItems = [
   { title: "Marketplace", url: "/", icon: Home },
@@ -62,15 +62,10 @@ export function AppSidebar() {
           </div>
         </div>
 
-        {/* Wallet Section */}
-        {!isCollapsed && (
-          <div className="p-4 border-b border-border/30">
-            <div className="px-2.5 py-1.5 rounded-lg transition-all duration-300 hover:bg-background hover:text-foreground text-muted-foreground flex items-center gap-2.5 group cursor-pointer border border-primary/30 hover:border-primary/50 w-fit text-sm ml-1">
-              <Wallet className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
-              <span className="font-medium text-foreground">Connect Wallet</span>
-            </div>
-          </div>
-        )}
+        {/* User Menu Section */}
+        <div className="p-4 border-b border-border/30">
+          <UserMenu />
+        </div>
 
         {/* Main Navigation */}
         <SidebarGroup>
