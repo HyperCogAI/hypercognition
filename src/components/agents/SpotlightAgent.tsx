@@ -103,6 +103,59 @@ export const SpotlightAgent = () => {
     }
   }
 
+  const handleGenerateProfilePic = async (user: UserProfile) => {
+    try {
+      const displayName = user.display_name || `User${user.user_id.slice(-4)}`
+      const initials = displayName.slice(0, 2).toUpperCase()
+      
+      const logo = await generateLogo(
+        displayName,
+        initials,
+        "modern profile avatar",
+        user.user_id
+      )
+
+      if (logo) {
+        // Update user profile in database
+        const { error } = await supabase
+          .from('user_profiles')
+          .update({ avatar_url: logo.imageUrl })
+          .eq('user_id', user.user_id)
+
+        if (!error) {
+          // Update local state
+          setRecentUsers(prev => prev.map(u => 
+            u.user_id === user.user_id 
+              ? { ...u, avatar_url: logo.imageUrl }
+              : u
+          ))
+          
+          toast.success(`Profile picture generated for ${displayName}!`)
+        }
+      }
+    } catch (error) {
+      console.error('Error generating profile picture:', error)
+      toast.error('Failed to generate profile picture')
+    }
+  }
+
+  const handleGenerateAllProfilePics = async () => {
+    const usersWithoutPics = recentUsers.filter(user => !user.avatar_url)
+    
+    if (usersWithoutPics.length === 0) {
+      toast.info('All users already have profile pictures!')
+      return
+    }
+
+    toast.info(`Generating ${usersWithoutPics.length} profile pictures...`)
+    
+    for (const user of usersWithoutPics) {
+      await handleGenerateProfilePic(user)
+      // Small delay to avoid rate limiting
+      await new Promise(resolve => setTimeout(resolve, 1000))
+    }
+  }
+
   const formatPrice = (price: number) => {
     if (price < 0.01) {
       return `$${price.toFixed(6)}`
@@ -196,16 +249,47 @@ export const SpotlightAgent = () => {
 
       {/* Interacted with Section */}
       <div className="space-y-3">
-        <h4 className="font-semibold">Recent Community</h4>
+        <div className="flex items-center justify-between">
+          <h4 className="font-semibold">Recent Community</h4>
+          {recentUsers.some(user => !user.avatar_url) && (
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleGenerateAllProfilePics}
+              disabled={isGenerating}
+              className="text-xs"
+            >
+              <Sparkles className="h-3 w-3 mr-1" />
+              Generate All
+            </Button>
+          )}
+        </div>
         <div className="flex -space-x-2">
           {recentUsers.length > 0 ? (
             recentUsers.map((user) => (
-              <Avatar key={user.id} className="h-8 w-8 border-2 border-background">
-                <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || 'User'} />
-                <AvatarFallback className="bg-primary/20 text-xs">
-                  {user.display_name ? user.display_name.slice(0, 2).toUpperCase() : 'U'}
-                </AvatarFallback>
-              </Avatar>
+              <div key={user.id} className="relative group">
+                <Avatar className="h-8 w-8 border-2 border-background cursor-pointer transition-transform hover:scale-110">
+                  <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || 'User'} />
+                  <AvatarFallback className="bg-primary/20 text-xs">
+                    {user.display_name ? user.display_name.slice(0, 2).toUpperCase() : 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                {!user.avatar_url && (
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    className="absolute -bottom-1 -right-1 h-4 w-4 p-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                    onClick={() => handleGenerateProfilePic(user)}
+                    disabled={isGenerating}
+                  >
+                    <Sparkles className="h-2 w-2" />
+                  </Button>
+                )}
+                {/* Tooltip with user name */}
+                <div className="absolute -top-8 left-1/2 transform -translate-x-1/2 bg-background/90 px-2 py-1 rounded text-xs whitespace-nowrap opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
+                  {user.display_name || 'Anonymous User'}
+                </div>
+              </div>
             ))
           ) : (
             // Fallback to placeholder avatars if no users
