@@ -50,6 +50,9 @@
 
     /* Design Tokens */
     --radius: 0.75rem;
+    
+    /* Custom Scroll Color */
+    --scroll-color: 210 9% 2%;
 
     --sidebar-background: 0 0% 98%;
 
@@ -131,15 +134,16 @@
   }
 
   ::-webkit-scrollbar-track {
-    @apply bg-muted;
+    background: hsl(var(--scroll-color));
   }
 
   ::-webkit-scrollbar-thumb {
-    @apply bg-primary rounded-full;
+    background: hsl(var(--scroll-color));
+    border-radius: 9999px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    @apply bg-primary-glow;
+    background: hsl(var(--scroll-color));
   }
 }
 
