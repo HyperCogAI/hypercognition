@@ -22,7 +22,15 @@ const handler = async (req: Request): Promise<Response> => {
   try {
     const { agentName, agentSymbol, style = "modern minimalist", agentId }: GenerateLogoRequest = await req.json();
 
-    const hf = new HfInference(Deno.env.get('HUGGING_FACE_ACCESS_TOKEN'));
+    console.log('Generating logo for:', agentName, agentSymbol, style);
+
+    const hfToken = Deno.env.get('HUGGING_FACE_ACCESS_TOKEN');
+    if (!hfToken) {
+      console.error('Missing HUGGING_FACE_ACCESS_TOKEN');
+      throw new Error('Missing HUGGING_FACE_ACCESS_TOKEN environment variable');
+    }
+
+    const hf = new HfInference(hfToken);
 
     // Create a specific prompt for AI trading agent logos
     const prompt = `${style} logo design for AI trading agent "${agentName}" with symbol "${agentSymbol}", 
@@ -89,6 +97,7 @@ const handler = async (req: Request): Promise<Response> => {
     );
   } catch (error: any) {
     console.error('Error generating logo:', error);
+    console.error('Error details:', error.message, error.stack);
     return new Response(
       JSON.stringify({ 
         error: 'Failed to generate logo', 
