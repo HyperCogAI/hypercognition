@@ -65,7 +65,7 @@ export function Features() {
         {/* AI Bot Showcase */}
         <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
           <div className="space-y-6 animate-fade-up">
-            <div className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2 text-sm font-medium text-secondary glow-secondary">
+            <div className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2 text-sm font-medium text-secondary">
               <Brain className="h-4 w-4" />
               Neural Network Architecture
             </div>
@@ -111,9 +111,9 @@ export function Features() {
               <img 
                 src={aiBotIcon} 
                 alt="AI Trading Bot"
-                className="w-80 h-80 object-contain float pulse-glow"
+                className="w-80 h-80 object-contain float"
               />
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full blur-3xl -z-10" />
+              
             </div>
           </div>
         </div>
@@ -123,7 +123,7 @@ export function Features() {
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="group p-6 rounded-xl border border-border bg-card hover:border-primary/20 hover:glow-primary transition-all duration-300"
+              className="group p-6 rounded-xl border border-border bg-card hover:border-primary/20 transition-all duration-300"
             >
               <div className="flex items-start gap-4">
                 <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">

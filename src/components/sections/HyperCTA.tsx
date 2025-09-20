@@ -9,9 +9,6 @@ export const HyperCTA = () => {
       <div className="absolute inset-0 cyber-grid opacity-10" />
       
       {/* Animated Orbs */}
-      <div className="absolute top-20 left-10 w-32 h-32 bg-primary/10 rounded-full blur-3xl animate-pulse" />
-      <div className="absolute bottom-20 right-10 w-40 h-40 bg-accent/10 rounded-full blur-3xl animate-pulse delay-1000" />
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-24 h-24 bg-secondary/10 rounded-full blur-2xl animate-pulse delay-500" />
 
       <div className="max-w-4xl mx-auto text-center relative z-10 space-y-12">
         {/* Main CTA Content */}

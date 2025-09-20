@@ -137,8 +137,6 @@ export const HyperFeatures = () => {
             </div>
             
             {/* Floating Elements */}
-            <div className="absolute -top-4 -right-4 w-16 h-16 bg-accent/20 rounded-full blur-xl animate-pulse" />
-            <div className="absolute -bottom-6 -left-6 w-20 h-20 bg-primary/15 rounded-full blur-2xl animate-pulse" />
           </div>
         </div>
 
