@@ -28,11 +28,11 @@ export function Hero() {
           {/* Stats Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8">
             <div className="text-center p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm">
-              <div className="text-3xl md:text-4xl font-bold text-primary">1M+</div>
+              <div className="text-3xl md:text-4xl font-bold text-primary">1K+</div>
               <div className="text-sm text-muted-foreground">AI Agents Deployed</div>
             </div>
             <div className="text-center p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm">
-              <div className="text-3xl md:text-4xl font-bold text-accent">$850M</div>
+              <div className="text-3xl md:text-4xl font-bold text-accent">-</div>
               <div className="text-sm text-muted-foreground">TVL Managed</div>
             </div>
             <div className="text-center p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm">

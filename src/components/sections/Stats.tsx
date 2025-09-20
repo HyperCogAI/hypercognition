@@ -3,14 +3,14 @@ import { TrendingUp, Users, DollarSign, Brain } from "lucide-react"
 const stats = [
   {
     icon: DollarSign,
-    value: "$850M+",
+    value: "-",
     label: "Total Value Locked",
     description: "Actively managed by AI agents",
     color: "text-primary"
   },
   {
     icon: Brain,
-    value: "1M+",
+    value: "1K+",
     label: "AI Agents Deployed",
     description: "Autonomous trading strategies",
     color: "text-accent"

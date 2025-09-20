@@ -91,11 +91,11 @@ export const HyperCTA = () => {
         {/* Trust Indicators */}
         <div className="flex flex-col sm:flex-row gap-8 justify-center items-center text-center pt-8 border-t border-border/30">
           <div className="space-y-1">
-            <div className="text-2xl font-bold text-primary">$850M+</div>
+            <div className="text-2xl font-bold text-primary">-</div>
             <div className="text-sm text-muted-foreground">Total Value Locked</div>
           </div>
           <div className="space-y-1">
-            <div className="text-2xl font-bold text-accent">1M+</div>
+            <div className="text-2xl font-bold text-accent">1K+</div>
             <div className="text-sm text-muted-foreground">AI Agents Deployed</div>
           </div>
           <div className="space-y-1">
