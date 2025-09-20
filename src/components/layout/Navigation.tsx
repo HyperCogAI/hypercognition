@@ -13,7 +13,7 @@ export function Navigation() {
     { name: "ACP", href: "/acp" },
     { name: "Portfolio", href: "/portfolio" },
     { name: "Analytics", href: "#analytics" },
-    { name: "Docs", href: "#docs" },
+    { name: "Docs", href: "https://whitepaper.hypercognition.io/hypercognition/" },
   ]
 
   return (

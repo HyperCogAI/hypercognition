@@ -59,13 +59,13 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-semibold text-white">Resources</h4>
             <div className="space-y-2">
-              <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+              <a href="https://whitepaper.hypercognition.io/hypercognition/" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 Documentation
               </a>
               <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 API Reference
               </a>
-              <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+              <a href="https://whitepaper.hypercognition.io/hypercognition/" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 Tutorials
               </a>
               <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
