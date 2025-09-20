@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
 import { UserMenu } from "@/components/UserMenu"
+import { NotificationCenter } from "@/components/ui/notification-center"
 
 const mainItems = [
   { title: "Marketplace", url: "/", icon: Home },
@@ -64,7 +65,10 @@ export function AppSidebar() {
 
         {/* User Menu Section */}
         <div className="p-4 border-b border-border/30">
-          <UserMenu />
+          <div className="flex items-center justify-between">
+            <UserMenu />
+            <NotificationCenter />
+          </div>
         </div>
 
         {/* Main Navigation */}

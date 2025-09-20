@@ -14,12 +14,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/contexts/AuthContext"
 import { usePortfolio } from "@/hooks/usePortfolio"
+import { useRealtimePortfolio } from "@/hooks/useRealtimePortfolio"
 import { WalletButton } from "@/components/wallet/WalletButton"
 
 export const Portfolio = () => {
   const navigate = useNavigate()
   const { isConnected } = useAuth()
-  const { holdings, transactions, portfolioStats, isLoading } = usePortfolio()
+  const { portfolioStats, isLoading } = usePortfolio()
+  const { holdings, transactions } = useRealtimePortfolio()
 
   if (!isConnected) {
     return (

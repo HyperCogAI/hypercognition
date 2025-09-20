@@ -9,6 +9,7 @@ import { SearchInput } from "@/components/ui/search-input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
 import { supabase } from "@/integrations/supabase/client"
+import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
 
 interface Agent {
   id: string
@@ -50,6 +51,7 @@ export const AgentMarketplace = () => {
   const [agents, setAgents] = useState<Agent[]>([])
   const [trendingAgents, setTrendingAgents] = useState<TrendingAgent[]>([])
   const [fundamentalAgents, setFundamentalAgents] = useState<FundamentalAgent[]>([])
+  const realtimePrices = useRealtimeAllPrices()
   
   // Fetch agents from Supabase
   useEffect(() => {
@@ -67,32 +69,7 @@ export const AgentMarketplace = () => {
 
         if (data) {
           setAgents(data)
-          
-          // Transform data for trending agents
-          const trending: TrendingAgent[] = data.map(agent => ({
-            id: agent.id,
-            name: agent.name,
-            symbol: agent.symbol,
-            avatar: agent.avatar_url || "/placeholder.svg",
-            fdv: `$${(agent.market_cap / 1000000).toFixed(2)}m`,
-            change: `${agent.change_24h >= 0 ? '+' : ''}${agent.change_24h.toFixed(2)}%`,
-            chain: agent.chain,
-            isPositive: agent.change_24h >= 0
-          }))
-          
-          // Transform data for fundamental agents (using volume as revenue and market cap as buyback)
-          const fundamentals: FundamentalAgent[] = data.slice(0, 4).map(agent => ({
-            id: agent.id,
-            name: agent.name,
-            symbol: agent.symbol,
-            avatar: agent.avatar_url || "/placeholder.svg",
-            buyback: `$${(agent.market_cap / 1000).toFixed(0)}k`,
-            revenue: `$${(agent.volume_24h / 1000).toFixed(0)}k`,
-            chain: agent.chain
-          }))
-          
-          setTrendingAgents(trending)
-          setFundamentalAgents(fundamentals)
+          updateAgentDisplays(data)
         }
       } catch (error) {
         console.error('Error fetching agents:', error)
@@ -103,6 +80,52 @@ export const AgentMarketplace = () => {
 
     fetchAgents()
   }, [])
+
+  // Update agent displays when realtime prices change
+  const updateAgentDisplays = (agentData: Agent[]) => {
+    const agentsWithRealtimePrices = agentData.map(agent => {
+      const realtimePrice = realtimePrices[agent.id]
+      return {
+        ...agent,
+        price: realtimePrice?.price || agent.price,
+        market_cap: realtimePrice?.market_cap || agent.market_cap,
+        volume_24h: realtimePrice?.volume || agent.volume_24h
+      }
+    })
+
+    // Transform data for trending agents
+    const trending: TrendingAgent[] = agentsWithRealtimePrices.map(agent => ({
+      id: agent.id,
+      name: agent.name,
+      symbol: agent.symbol,
+      avatar: agent.avatar_url || "/placeholder.svg",
+      fdv: `$${(agent.market_cap / 1000000).toFixed(2)}m`,
+      change: `${agent.change_24h >= 0 ? '+' : ''}${agent.change_24h.toFixed(2)}%`,
+      chain: agent.chain,
+      isPositive: agent.change_24h >= 0
+    }))
+    
+    // Transform data for fundamental agents (using volume as revenue and market cap as buyback)
+    const fundamentals: FundamentalAgent[] = agentsWithRealtimePrices.slice(0, 4).map(agent => ({
+      id: agent.id,
+      name: agent.name,
+      symbol: agent.symbol,
+      avatar: agent.avatar_url || "/placeholder.svg",
+      buyback: `$${(agent.market_cap / 1000).toFixed(0)}k`,
+      revenue: `$${(agent.volume_24h / 1000).toFixed(0)}k`,
+      chain: agent.chain
+    }))
+    
+    setTrendingAgents(trending)
+    setFundamentalAgents(fundamentals)
+  }
+
+  // Update displays when realtime prices change
+  useEffect(() => {
+    if (agents.length > 0) {
+      updateAgentDisplays(agents)
+    }
+  }, [realtimePrices, agents])
   
   // Filter agents based on search term
   const filteredTrendingAgents = trendingAgents.filter(agent =>
