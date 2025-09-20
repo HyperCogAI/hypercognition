@@ -2,13 +2,13 @@ import { defaultWagmiConfig } from '@web3modal/wagmi/react/config'
 import { mainnet, arbitrum, polygon, optimism, base, bsc } from 'wagmi/chains'
 
 // 1. Get projectId from https://cloud.walletconnect.com
-const projectId = 'your-project-id' // You'll need to get this from WalletConnect
+const projectId = import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id'
 
 // 2. Create wagmiConfig
 const metadata = {
-  name: 'HyperCognition AI DEX',
-  description: 'Next-Gen AI Trading Platform',
-  url: 'https://hypercognition.ai', // origin must match your domain & subdomain
+  name: 'HyperCognition',
+  description: 'AI Agent Trading Marketplace',
+  url: 'https://hypercognition.io', // Your production domain
   icons: ['https://avatars.githubusercontent.com/u/37784886']
 }
 

@@ -28,6 +28,10 @@ import AgentComparison from "./pages/AgentComparison";
 import Communities from "./pages/Communities";
 import NotFound from "./pages/NotFound";
 import ACP from "./pages/ACP";
+import PrivacyPolicy from "./pages/PrivacyPolicy";
+import TermsOfService from "./pages/TermsOfService";
+import CookiePolicy from "./pages/CookiePolicy";
+import Contact from "./pages/Contact";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations
@@ -45,7 +49,7 @@ const queryClient = new QueryClient({
 // 3. Create modal
 createWeb3Modal({
   wagmiConfig: config,
-  projectId: 'your-project-id', // You'll need to get this from WalletConnect
+  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id',
   enableAnalytics: true, // Optional - defaults to your Cloud configuration
   enableOnramp: true // Optional - false as default
 })
@@ -73,6 +77,10 @@ const AppLayout = () => {
                 <Route path="/compare" element={<AgentComparison />} />
                 <Route path="/communities" element={<Communities />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>
@@ -106,6 +114,10 @@ const AppLayout = () => {
                 <Route path="/compare" element={<AgentComparison />} />
                 <Route path="/communities" element={<Communities />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
+                <Route path="/privacy" element={<PrivacyPolicy />} />
+                <Route path="/terms" element={<TermsOfService />} />
+                <Route path="/cookies" element={<CookiePolicy />} />
+                <Route path="/contact" element={<Contact />} />
                 <Route path="*" element={<NotFound />} />
               </Routes>
             </Suspense>

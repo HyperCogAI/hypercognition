@@ -89,18 +89,17 @@ export const Footer = () => {
           <div className="space-y-4">
             <h4 className="font-semibold text-white">Legal</h4>
             <div className="space-y-2">
-              <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+              <a href="/privacy" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 Privacy Policy
               </a>
-              <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+              <a href="/terms" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 Terms of Service
               </a>
-              <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+              <a href="/cookies" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 Cookie Policy
               </a>
-              <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm flex items-center gap-1">
-                Status Page
-                <ExternalLink className="w-3 h-3" />
+              <a href="/contact" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+                Contact Us
               </a>
             </div>
           </div>
