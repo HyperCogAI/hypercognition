@@ -1,54 +1,142 @@
+import { useState, useEffect } from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { ArrowLeft, ExternalLink, TrendingUp, Users, DollarSign, BarChart3, Heart, Share2 } from "lucide-react"
+import { ArrowLeft, ExternalLink, TrendingUp, Users, DollarSign, BarChart3, Heart, Share2, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TradingPanel } from "@/components/trading/TradingPanel"
+import { PriceChart } from "@/components/charts/PriceChart"
+import { supabase } from "@/integrations/supabase/client"
+import { useFavorites } from "@/contexts/FavoritesContext"
+import { useAuth } from "@/contexts/AuthContext"
+import { cn } from "@/lib/utils"
 
-// Mock agent data - would come from API in real app
-const getAgentById = (id: string) => {
-  const agents = [
-    {
-      id: "1",
-      name: "NeuralFlow",
-      symbol: "NFLOW",
-      avatar: "/placeholder.svg",
-      fdv: "$7.41m",
-      price: "$0.0074",
-      change: "+15.55%",
-      change24h: "+12.3%",
-      volume24h: "$2.1m",
-      marketCap: "$7.41m",
-      totalSupply: "1B",
-      chain: "Base",
-      isPositive: true,
-      description: "NeuralFlow is an advanced AI trading agent that uses deep neural networks to analyze market patterns and execute high-frequency trades across multiple DEXs.",
-      category: "Trading",
-      launched: "2024-01-15",
-      holders: 1243,
-      transactions: 15432,
-      revenue: "$245.6k",
-      buyback: "$89.2k",
-      balance: "1,234.56", // User's balance of this token
-      features: ["Automated Trading", "Risk Management", "Multi-Chain", "Real-time Analytics"],
-      socialLinks: {
-        twitter: "https://twitter.com/neuralflow",
-        discord: "https://discord.gg/neuralflow",
-        website: "https://neuralflow.ai"
-      }
-    }
-    // Add more agents as needed
-  ]
-  
-  return agents.find(agent => agent.id === id) || agents[0]
+interface Agent {
+  id: string
+  name: string
+  symbol: string
+  description?: string
+  price: number
+  market_cap: number
+  volume_24h: number
+  change_24h: number
+  chain: string
+  avatar_url?: string
+  created_at: string
+  updated_at: string
+}
+
+interface UserHolding {
+  total_amount: number
+  average_cost: number
+  total_invested: number
+  unrealized_pnl: number
+  realized_pnl: number
 }
 
 export const AgentDetail = () => {
   const { id } = useParams()
   const navigate = useNavigate()
-  const agent = getAgentById(id || "1")
+  const { user } = useAuth()
+  const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites()
+  const [agent, setAgent] = useState<Agent | null>(null)
+  const [userHolding, setUserHolding] = useState<UserHolding | null>(null)
+  const [isLoading, setIsLoading] = useState(true)
+  const [priceHistory, setPriceHistory] = useState<any[]>([])
+
+  useEffect(() => {
+    const fetchAgentData = async () => {
+      if (!id) return
+
+      try {
+        // Fetch agent data
+        const { data: agentData, error: agentError } = await supabase
+          .from('agents')
+          .select('*')
+          .eq('id', id)
+          .single()
+
+        if (agentError) throw agentError
+        setAgent(agentData)
+
+        // Fetch user holding if logged in
+        if (user) {
+          const { data: holdingData } = await supabase
+            .from('user_holdings')
+            .select('*')
+            .eq('user_id', user.id)
+            .eq('agent_id', id)
+            .maybeSingle()
+
+          setUserHolding(holdingData)
+        }
+
+        // Fetch price history
+        const { data: historyData } = await supabase
+          .from('price_history')
+          .select('*')
+          .eq('agent_id', id)
+          .order('timestamp', { ascending: true })
+          .limit(24)
+
+        setPriceHistory(historyData || [])
+      } catch (error) {
+        console.error('Error fetching agent data:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchAgentData()
+  }, [id, user])
+
+  const handleFavoriteClick = () => {
+    if (!agent) return
+    
+    if (isFavorite(agent.id)) {
+      removeFromFavorites(agent.id)
+    } else {
+      addToFavorites(agent.id)
+    }
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    )
+  }
+
+  if (!agent) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center space-y-4">
+          <h2 className="text-2xl font-bold">Agent Not Found</h2>
+          <p className="text-muted-foreground">The requested AI agent could not be found.</p>
+          <Button onClick={() => navigate('/')}>Back to Marketplace</Button>
+        </div>
+      </div>
+    )
+  }
+
+  const formatCurrency = (value: number) => {
+    if (value >= 1000000) {
+      return `$${(value / 1000000).toFixed(2)}m`
+    } else if (value >= 1000) {
+      return `$${(value / 1000).toFixed(0)}k`
+    }
+    return `$${value.toFixed(2)}`
+  }
+
+  const formatPrice = (value: number) => {
+    if (value < 0.01) {
+      return `$${value.toFixed(6)}`
+    }
+    return `$${value.toFixed(4)}`
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -67,7 +155,7 @@ export const AgentDetail = () => {
               </Button>
               <div className="flex items-center gap-3">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={agent.avatar} alt={agent.name} />
+                  <AvatarImage src={agent.avatar_url || "/placeholder.svg"} alt={agent.name} />
                   <AvatarFallback className="bg-primary/20 text-primary font-semibold">
                     {agent.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
@@ -76,21 +164,35 @@ export const AgentDetail = () => {
                   <h1 className="text-2xl font-bold">{agent.name}</h1>
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">{agent.symbol}</Badge>
-                    <Badge variant="outline">{agent.category}</Badge>
+                    <Badge variant="outline">AI Agent</Badge>
                   </div>
                 </div>
               </div>
             </div>
             <div className="flex items-center gap-2">
-              <Button variant="outline" size="sm">
-                <Heart className="h-4 w-4 mr-2" />
-                Favorite
+              <Button 
+                variant="outline" 
+                size="sm" 
+                onClick={handleFavoriteClick}
+                className={cn(
+                  "transition-colors",
+                  isFavorite(agent.id) && "bg-yellow-400/10 border-yellow-400/50"
+                )}
+              >
+                <Star className={cn(
+                  "h-4 w-4 mr-2 transition-colors",
+                  isFavorite(agent.id) ? "fill-yellow-400 text-yellow-400" : ""
+                )} />
+                {isFavorite(agent.id) ? "Favorited" : "Favorite"}
               </Button>
               <Button variant="outline" size="sm">
                 <Share2 className="h-4 w-4 mr-2" />
                 Share
               </Button>
-              <Button className="bg-primary hover:bg-primary/90">
+              <Button 
+                className="bg-primary hover:bg-primary/90"
+                onClick={() => document.getElementById('trading-tab')?.click()}
+              >
                 Trade Now
               </Button>
             </div>
@@ -106,9 +208,9 @@ export const AgentDetail = () => {
               <CardTitle className="text-sm text-muted-foreground">Price</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{agent.price}</div>
-              <div className={`text-sm font-medium ${agent.isPositive ? 'text-green-400' : 'text-red-400'}`}>
-                {agent.change} (24h)
+              <div className="text-2xl font-bold">{formatPrice(agent.price)}</div>
+              <div className={`text-sm font-medium ${agent.change_24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                {agent.change_24h >= 0 ? '+' : ''}{agent.change_24h.toFixed(2)}% (24h)
               </div>
             </CardContent>
           </Card>
@@ -118,8 +220,8 @@ export const AgentDetail = () => {
               <CardTitle className="text-sm text-muted-foreground">Market Cap</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{agent.marketCap}</div>
-              <div className="text-sm text-muted-foreground">FDV: {agent.fdv}</div>
+              <div className="text-2xl font-bold">{formatCurrency(agent.market_cap)}</div>
+              <div className="text-sm text-muted-foreground">FDV: {formatCurrency(agent.market_cap)}</div>
             </CardContent>
           </Card>
 
@@ -128,18 +230,20 @@ export const AgentDetail = () => {
               <CardTitle className="text-sm text-muted-foreground">Volume (24h)</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{agent.volume24h}</div>
+              <div className="text-2xl font-bold">{formatCurrency(agent.volume_24h)}</div>
               <div className="text-sm text-green-400">+8.2%</div>
             </CardContent>
           </Card>
 
           <Card className="bg-card/30 border-border/50">
             <CardHeader className="pb-2">
-              <CardTitle className="text-sm text-muted-foreground">Holders</CardTitle>
+              <CardTitle className="text-sm text-muted-foreground">Your Balance</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{agent.holders.toLocaleString()}</div>
-              <div className="text-sm text-green-400">+5.1%</div>
+              <div className="text-2xl font-bold">
+                {userHolding ? userHolding.total_amount.toFixed(2) : "0.00"}
+              </div>
+              <div className="text-sm text-muted-foreground">{agent.symbol}</div>
             </CardContent>
           </Card>
         </div>
@@ -151,7 +255,7 @@ export const AgentDetail = () => {
             <Tabs defaultValue="overview" className="w-full">
               <TabsList className="grid w-full grid-cols-4 bg-card/50">
                 <TabsTrigger value="overview">Overview</TabsTrigger>
-                <TabsTrigger value="trading">Trading</TabsTrigger>
+                <TabsTrigger value="trading" id="trading-tab">Trading</TabsTrigger>
                 <TabsTrigger value="analytics">Analytics</TabsTrigger>
                 <TabsTrigger value="community">Community</TabsTrigger>
               </TabsList>
@@ -166,23 +270,51 @@ export const AgentDetail = () => {
                     <div className="grid grid-cols-2 gap-4">
                       <div>
                         <div className="text-sm text-muted-foreground">Launch Date</div>
-                        <div className="font-medium">{agent.launched}</div>
+                        <div className="font-medium">{new Date(agent.created_at).toLocaleDateString()}</div>
                       </div>
                       <div>
                         <div className="text-sm text-muted-foreground">Total Supply</div>
-                        <div className="font-medium">{agent.totalSupply}</div>
+                        <div className="font-medium">1,000,000,000</div>
                       </div>
                       <div>
                         <div className="text-sm text-muted-foreground">Blockchain</div>
                         <div className="font-medium">{agent.chain}</div>
                       </div>
                       <div>
-                        <div className="text-sm text-muted-foreground">Transactions</div>
-                        <div className="font-medium">{agent.transactions.toLocaleString()}</div>
+                        <div className="text-sm text-muted-foreground">Market Cap</div>
+                        <div className="font-medium">{formatCurrency(agent.market_cap)}</div>
                       </div>
                     </div>
                   </CardContent>
                 </Card>
+
+                {userHolding && (
+                  <Card className="bg-card/30 border-border/50">
+                    <CardHeader>
+                      <CardTitle>Your Position</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div>
+                          <div className="text-sm text-muted-foreground">Holdings</div>
+                          <div className="font-medium">{userHolding.total_amount.toFixed(2)} {agent.symbol}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-muted-foreground">Average Cost</div>
+                          <div className="font-medium">{formatPrice(userHolding.average_cost)}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-muted-foreground">Total Invested</div>
+                          <div className="font-medium">{formatCurrency(userHolding.total_invested)}</div>
+                        </div>
+                        <div>
+                          <div className="text-sm text-muted-foreground">Current Value</div>
+                          <div className="font-medium">{formatCurrency(userHolding.total_amount * agent.price)}</div>
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 <Card className="bg-card/30 border-border/50">
                   <CardHeader>
@@ -190,7 +322,7 @@ export const AgentDetail = () => {
                   </CardHeader>
                   <CardContent>
                     <div className="flex flex-wrap gap-2">
-                      {agent.features.map((feature, index) => (
+                      {["AI Trading", "Smart Contracts", "DeFi Integration", "Real-time Analytics"].map((feature, index) => (
                         <Badge key={index} variant="secondary">{feature}</Badge>
                       ))}
                     </div>
@@ -199,25 +331,24 @@ export const AgentDetail = () => {
               </TabsContent>
 
               <TabsContent value="trading" className="space-y-6">
-                <TradingPanel agent={{
-                  name: agent.name,
-                  symbol: agent.symbol,
-                  price: agent.price,
-                  balance: agent.balance
-                }} />
+                <TradingPanel 
+                  agentId={agent.id}
+                  agent={{
+                    name: agent.name,
+                    symbol: agent.symbol,
+                    price: formatPrice(agent.price),
+                    balance: userHolding ? userHolding.total_amount.toString() : "0.00"
+                  }} 
+                />
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-6">
-                <Card className="bg-card/30 border-border/50">
-                  <CardHeader>
-                    <CardTitle>Performance Analytics</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-center text-muted-foreground py-12">
-                      Analytics dashboard coming soon...
-                    </div>
-                  </CardContent>
-                </Card>
+                <PriceChart 
+                  agentId={agent.id}
+                  symbol={agent.symbol}
+                  currentPrice={agent.price}
+                  change24h={agent.change_24h}
+                />
               </TabsContent>
 
               <TabsContent value="community" className="space-y-6">
@@ -257,16 +388,18 @@ export const AgentDetail = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Revenue</span>
-                  <span className="font-medium">{agent.revenue}</span>
+                  <span className="text-muted-foreground">Volume (24h)</span>
+                  <span className="font-medium">{formatCurrency(agent.volume_24h)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">Buyback</span>
-                  <span className="font-medium">{agent.buyback}</span>
+                  <span className="text-muted-foreground">Market Cap</span>
+                  <span className="font-medium">{formatCurrency(agent.market_cap)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">ROI</span>
-                  <span className="font-medium text-green-400">+24.5%</span>
+                  <span className="text-muted-foreground">24h Change</span>
+                  <span className={`font-medium ${agent.change_24h >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                    {agent.change_24h >= 0 ? '+' : ''}{agent.change_24h.toFixed(2)}%
+                  </span>
                 </div>
               </CardContent>
             </Card>
@@ -280,16 +413,16 @@ export const AgentDetail = () => {
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">All-time High</span>
-                  <span className="font-medium">$0.0089</span>
+                  <span className="text-muted-foreground">Current Price</span>
+                  <span className="font-medium">{formatPrice(agent.price)}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">All-time Low</span>
-                  <span className="font-medium">$0.0021</span>
+                  <span className="text-muted-foreground">Symbol</span>
+                  <span className="font-medium">{agent.symbol}</span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-muted-foreground">7d Change</span>
-                  <span className="font-medium text-green-400">+18.2%</span>
+                  <span className="text-muted-foreground">Chain</span>
+                  <span className="font-medium">{agent.chain}</span>
                 </div>
               </CardContent>
             </Card>
@@ -299,14 +432,25 @@ export const AgentDetail = () => {
                 <CardTitle>Quick Actions</CardTitle>
               </CardHeader>
               <CardContent className="space-y-3">
-                <Button className="w-full bg-green-600 hover:bg-green-600/90">
+                <Button 
+                  className="w-full bg-green-600 hover:bg-green-600/90"
+                  onClick={() => document.getElementById('trading-tab')?.click()}
+                >
                   Buy {agent.symbol}
                 </Button>
-                <Button variant="outline" className="w-full">
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={() => document.getElementById('trading-tab')?.click()}
+                >
                   Sell {agent.symbol}
                 </Button>
-                <Button variant="outline" className="w-full">
-                  Set Price Alert
+                <Button 
+                  variant="outline" 
+                  className="w-full"
+                  onClick={handleFavoriteClick}
+                >
+                  {isFavorite(agent.id) ? "Remove from Favorites" : "Add to Favorites"}
                 </Button>
               </CardContent>
             </Card>

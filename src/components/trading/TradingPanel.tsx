@@ -6,10 +6,11 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { useWallet } from "@/hooks/useWallet"
-import { useNotifications } from "@/hooks/useNotifications"
+import { useAuth } from "@/contexts/AuthContext"
+import { useTradingOperations } from "@/hooks/useTradingOperations"
 
 interface TradingPanelProps {
+  agentId: string
   agent: {
     name: string
     symbol: string
@@ -18,54 +19,49 @@ interface TradingPanelProps {
   }
 }
 
-export const TradingPanel = ({ agent }: TradingPanelProps) => {
+export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
   const [buyAmount, setBuyAmount] = useState("")
   const [sellAmount, setSellAmount] = useState("")
   const [slippage, setSlippage] = useState("0.5")
-  const { isConnected, connectWallet, disconnectWallet, address } = useWallet()
-  const { showTradeSuccess, showTradeError } = useNotifications()
+  const [isTrading, setIsTrading] = useState(false)
+  const { isConnected, address } = useAuth()
+  const { executeBuy, executeSell } = useTradingOperations()
 
   const handleBuy = async () => {
-    if (!isConnected) {
-      connectWallet()
-      return
-    }
+    if (!buyAmount || parseFloat(buyAmount) <= 0) return
     
+    setIsTrading(true)
     try {
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const amount = parseFloat(buyAmount) / parseFloat(agent.price.replace('$', ''))
+      const price = parseFloat(agent.price.replace('$', ''))
       
-      // Simulate random success/failure for demo
-      if (Math.random() > 0.1) {
-        showTradeSuccess('buy', buyAmount, agent.symbol)
+      const success = await executeBuy(agentId, amount, price)
+      if (success) {
         setBuyAmount("")
-      } else {
-        throw new Error("Transaction failed")
+        // Refresh the page to show updated balance
+        window.location.reload()
       }
-    } catch (error) {
-      showTradeError('buy', "Network error. Please try again.")
+    } finally {
+      setIsTrading(false)
     }
   }
 
   const handleSell = async () => {
-    if (!isConnected) {
-      connectWallet()
-      return
-    }
+    if (!sellAmount || parseFloat(sellAmount) <= 0) return
     
+    setIsTrading(true)
     try {
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 1500))
+      const amount = parseFloat(sellAmount)
+      const price = parseFloat(agent.price.replace('$', ''))
       
-      // Simulate random success/failure for demo
-      if (Math.random() > 0.1) {
-        showTradeSuccess('sell', sellAmount, agent.symbol)
+      const success = await executeSell(agentId, amount, price)
+      if (success) {
         setSellAmount("")
-      } else {
-        throw new Error("Transaction failed")
+        // Refresh the page to show updated balance
+        window.location.reload()
       }
-    } catch (error) {
-      showTradeError('sell', "Network error. Please try again.")
+    } finally {
+      setIsTrading(false)
     }
   }
 
@@ -92,10 +88,9 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
             <div className="text-muted-foreground">
               Connect your wallet to start trading
             </div>
-            <Button onClick={connectWallet} className="w-full">
-              <Wallet className="h-4 w-4 mr-2" />
-              Connect Wallet
-            </Button>
+            <div className="text-sm text-muted-foreground">
+              Trading requires wallet authentication
+            </div>
           </div>
         ) : (
           <Tabs defaultValue="buy" className="w-full">
@@ -175,10 +170,10 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
               <Button 
                 onClick={handleBuy} 
                 className="w-full bg-green-600 hover:bg-green-600/90"
-                disabled={!buyAmount || parseFloat(buyAmount) <= 0}
+                disabled={!buyAmount || parseFloat(buyAmount) <= 0 || isTrading}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                Buy {agent.symbol}
+                {isTrading ? "Processing..." : `Buy ${agent.symbol}`}
               </Button>
             </TabsContent>
 
@@ -248,10 +243,10 @@ export const TradingPanel = ({ agent }: TradingPanelProps) => {
                 onClick={handleSell} 
                 variant="destructive"
                 className="w-full"
-                disabled={!sellAmount || parseFloat(sellAmount) <= 0}
+                disabled={!sellAmount || parseFloat(sellAmount) <= 0 || isTrading}
               >
                 <TrendingDown className="h-4 w-4 mr-2" />
-                Sell {agent.symbol}
+                {isTrading ? "Processing..." : `Sell ${agent.symbol}`}
               </Button>
             </TabsContent>
           </Tabs>
