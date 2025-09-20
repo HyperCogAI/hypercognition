@@ -45,10 +45,11 @@ export function Navigation() {
 
           {/* Desktop CTA */}
           <div className="hidden md:flex items-center gap-4">
-            <WalletButton />
-            <CyberButton variant="cyber" className="group">
-              <Bot className="h-4 w-4" />
-              Launch App
+            <CyberButton variant="cyber" className="group" asChild>
+              <a href="/acp">
+                <Bot className="h-4 w-4 text-white" />
+                <span className="text-white">Assistant</span>
+              </a>
             </CyberButton>
           </div>
 
