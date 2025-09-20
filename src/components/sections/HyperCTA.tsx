@@ -80,7 +80,7 @@ export const HyperCTA = () => {
           </CyberButton>
           
           <CyberButton 
-            variant="neon" 
+            variant="analytics" 
             size="xl" 
             className="min-w-[200px]"
           >

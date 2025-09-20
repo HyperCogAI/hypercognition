@@ -48,7 +48,7 @@ export function Hero() {
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-white" />
             </CyberButton>
             
-            <CyberButton variant="neon" size="xl" className="group">
+            <CyberButton variant="analytics" size="xl" className="group">
               <span className="text-white">Deploy AI Agent</span>
             </CyberButton>
           </div>

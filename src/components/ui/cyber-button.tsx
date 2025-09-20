@@ -16,6 +16,7 @@ const cyberButtonVariants = cva(
         link: "text-primary underline-offset-4 hover:underline",
         cyber: "bg-gradient-to-r from-primary/80 to-accent/80 text-primary-foreground shadow-lg hover:shadow-xl hover:from-primary hover:to-accent transition-all duration-300",
         neon: "bg-secondary text-white hover:bg-secondary/90 transition-all duration-300 shadow-lg glow-secondary",
+        analytics: "rounded-full border border-secondary/50 bg-background/20 text-white hover:bg-secondary/10 hover:border-secondary/60 transition-all duration-300 shadow-sm",
         ai: "bg-gradient-to-r from-secondary/70 to-primary/70 text-primary-foreground shadow-lg hover:from-secondary hover:to-primary transition-all duration-300"
       },
       size: {

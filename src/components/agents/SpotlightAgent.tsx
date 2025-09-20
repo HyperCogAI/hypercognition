@@ -313,7 +313,7 @@ export const SpotlightAgent = () => {
           <ExternalLink className="h-4 w-4 mr-2 text-white" />
           <span className="text-white">View Agent</span>
         </CyberButton>
-        <CyberButton variant="neon" className="w-full">
+        <CyberButton variant="analytics" className="w-full">
           <TrendingUp className="h-4 w-4 mr-2 text-white" />
           <span className="text-white">View Analytics</span>
         </CyberButton>

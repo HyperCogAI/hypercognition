@@ -102,7 +102,7 @@ export const HyperFeatures = () => {
               <CyberButton variant="neon" size="lg">
                 <span className="text-white">Deploy Agent</span>
               </CyberButton>
-              <CyberButton variant="neon" size="lg">
+              <CyberButton variant="analytics" size="lg">
                 <span className="text-white">View Marketplace</span>
               </CyberButton>
             </div>
