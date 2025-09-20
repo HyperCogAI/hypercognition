@@ -10,7 +10,7 @@ export const LazyCommunities = lazy(() => import('@/pages/Communities'))
 export const LazyFavorites = lazy(() => import('@/pages/Favorites'))
 
 // Lazy load heavy trading components
-export const LazyAdvancedTradingPanel = lazy(() => import('@/components/trading/AdvancedTradingPanel').then(module => ({ default: module.AdvancedTradingPanel })))
+export const LazyAdvancedTradingDashboard = lazy(() => import('@/components/trading/AdvancedTradingDashboard').then(module => ({ default: module.AdvancedTradingDashboard })))
 export const LazyOrderBook = lazy(() => import('@/components/trading/OrderBook').then(module => ({ default: module.OrderBook })))
 export const LazyPriceChart = lazy(() => import('@/components/charts/PriceChart').then(module => ({ default: module.PriceChart })))
 export const LazySocialPanel = lazy(() => import('@/components/social/SocialPanel').then(module => ({ default: module.SocialPanel })))

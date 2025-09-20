@@ -7,7 +7,7 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TradingPanel } from "@/components/trading/TradingPanel"
-import { AdvancedTradingPanel } from "@/components/trading/AdvancedTradingPanel"
+import { AdvancedTradingDashboard } from "@/components/trading/AdvancedTradingDashboard"
 import { OrderBook } from "@/components/trading/OrderBook"
 import { PriceChart } from "@/components/charts/PriceChart"
 import { SocialPanel } from "@/components/social/SocialPanel"
@@ -352,11 +352,15 @@ export const AgentDetail = () => {
                     />
                   </TabsContent>
                   <TabsContent value="advanced" className="mt-6">
-                    <AdvancedTradingPanel
+                    <AdvancedTradingDashboard
                       agentId={agent.id}
-                      agentName={agent.name}
-                      currentPrice={agent.price}
-                      userBalance={userHolding?.total_amount || 0}
+                      agentSymbol={agent.symbol}
+                      agent={{
+                        name: agent.name,
+                        symbol: agent.symbol,
+                        price: formatPrice(agent.price),
+                        balance: userHolding ? userHolding.total_amount.toString() : "0.00"
+                      }}
                     />
                   </TabsContent>
                   <TabsContent value="orderbook" className="mt-6">
