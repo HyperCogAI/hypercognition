@@ -7,6 +7,8 @@ import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TradingPanel } from "@/components/trading/TradingPanel"
+import { AdvancedTradingPanel } from "@/components/trading/AdvancedTradingPanel"
+import { OrderBook } from "@/components/trading/OrderBook"
 import { PriceChart } from "@/components/charts/PriceChart"
 import { supabase } from "@/integrations/supabase/client"
 import { useFavorites } from "@/contexts/FavoritesContext"
@@ -331,15 +333,38 @@ export const AgentDetail = () => {
               </TabsContent>
 
               <TabsContent value="trading" className="space-y-6">
-                <TradingPanel 
-                  agentId={agent.id}
-                  agent={{
-                    name: agent.name,
-                    symbol: agent.symbol,
-                    price: formatPrice(agent.price),
-                    balance: userHolding ? userHolding.total_amount.toString() : "0.00"
-                  }} 
-                />
+                <Tabs defaultValue="simple" className="w-full">
+                  <TabsList className="grid w-full grid-cols-3">
+                    <TabsTrigger value="simple">Simple</TabsTrigger>
+                    <TabsTrigger value="advanced">Advanced</TabsTrigger>
+                    <TabsTrigger value="orderbook">Order Book</TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="simple" className="mt-6">
+                    <TradingPanel 
+                      agentId={agent.id}
+                      agent={{
+                        name: agent.name,
+                        symbol: agent.symbol,
+                        price: formatPrice(agent.price),
+                        balance: userHolding ? userHolding.total_amount.toString() : "0.00"
+                      }} 
+                    />
+                  </TabsContent>
+                  <TabsContent value="advanced" className="mt-6">
+                    <AdvancedTradingPanel
+                      agentId={agent.id}
+                      agentName={agent.name}
+                      currentPrice={agent.price}
+                      userBalance={userHolding?.total_amount || 0}
+                    />
+                  </TabsContent>
+                  <TabsContent value="orderbook" className="mt-6">
+                    <OrderBook
+                      agentId={agent.id}
+                      currentPrice={agent.price}
+                    />
+                  </TabsContent>
+                </Tabs>
               </TabsContent>
 
               <TabsContent value="analytics" className="space-y-6">

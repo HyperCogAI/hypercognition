@@ -10,6 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
 import { supabase } from "@/integrations/supabase/client"
 import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
+import { useIsMobile, useIsTablet } from "@/hooks/useMediaQuery"
 
 interface Agent {
   id: string
@@ -52,6 +53,8 @@ export const AgentMarketplace = () => {
   const [trendingAgents, setTrendingAgents] = useState<TrendingAgent[]>([])
   const [fundamentalAgents, setFundamentalAgents] = useState<FundamentalAgent[]>([])
   const realtimePrices = useRealtimeAllPrices()
+  const isMobile = useIsMobile()
+  const isTablet = useIsTablet()
   
   // Fetch agents from Supabase
   useEffect(() => {
@@ -139,11 +142,11 @@ export const AgentMarketplace = () => {
   )
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-4 sm:p-6">
+    <div className="min-h-screen bg-background text-foreground p-2 sm:p-4 lg:p-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 mb-6 sm:mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold">AI Agent Marketplace</h1>
-        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4 w-full sm:w-auto">
+      <div className="flex flex-col gap-4 mb-6 sm:mb-8">
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">AI Agent Marketplace</h1>
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <SearchInput 
             placeholder="Search agents..." 
             className="w-full sm:w-80"
@@ -157,10 +160,61 @@ export const AgentMarketplace = () => {
         </div>
       </div>
 
-      {/* Main Grid Layout */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 lg:gap-6">
-        {/* Left Column - Trending & Fundamentals */}
-        <div className="lg:col-span-4 space-y-6">
+      {/* Mobile/Tablet Optimized Layout */}
+      {isMobile ? (
+        <div className="space-y-6">
+          {/* Mobile Spotlight Agent */}
+          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <div className="h-4 w-4 bg-primary rounded-full" />
+              <h2 className="text-lg font-semibold">Spotlight Agent</h2>
+            </div>
+            <SpotlightAgent />
+          </div>
+
+          {/* Mobile Trending */}
+          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <TrendingUp className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold">Trending</h2>
+            </div>
+            <div className="space-y-3">
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <AgentCardSkeleton key={i} />
+                ))
+              ) : filteredTrendingAgents.slice(0, 5).length > 0 ? (
+                filteredTrendingAgents.slice(0, 5).map((agent, index) => (
+                  <div
+                    key={agent.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 100}ms` }}
+                  >
+                    <AgentCard agent={agent} variant="trending" />
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8">
+                  No agents found
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Mobile Network */}
+          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <Network className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold">Agent Network</h2>
+            </div>
+            <AgentNetwork />
+          </div>
+        </div>
+      ) : (
+        /* Desktop/Tablet Grid Layout */
+        <div className={`grid gap-4 lg:gap-6 ${isTablet ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-12'}`}>
+          {/* Left Column - Trending & Fundamentals */}
+          <div className={`space-y-6 ${isTablet ? '' : 'lg:col-span-4'}`}>
           {/* Trending AI Agents */}
           <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-4">
@@ -225,7 +279,7 @@ export const AgentMarketplace = () => {
         </div>
 
         {/* Middle Column - Spotlight Agent */}
-        <div className="lg:col-span-4">
+        <div className={isTablet ? '' : 'lg:col-span-4'}>
           <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-5 w-5 bg-primary rounded-full" />
@@ -236,7 +290,7 @@ export const AgentMarketplace = () => {
         </div>
 
         {/* Right Column - Agent Network */}
-        <div className="lg:col-span-4">
+        <div className={isTablet ? '' : 'lg:col-span-4'}>
           <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
             <div className="flex items-center gap-2 mb-4">
               <Network className="h-5 w-5 text-primary" />
@@ -246,21 +300,22 @@ export const AgentMarketplace = () => {
           </div>
         </div>
       </div>
+      )}
 
       {/* Bottom Section - Genesis Launches */}
       <div className="mt-8">
-        <div className="bg-gradient-to-r from-primary/20 to-purple-600/20 border border-primary/30 rounded-xl p-8">
-          <div className="flex items-center justify-between">
+        <div className="bg-gradient-to-r from-primary/20 to-purple-600/20 border border-primary/30 rounded-xl p-4 sm:p-8">
+          <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center justify-between'}`}>
             <div>
-              <h2 className="text-2xl font-bold mb-2">Genesis Launches</h2>
-              <p className="text-muted-foreground mb-4">
+              <h2 className="text-xl sm:text-2xl font-bold mb-2">Genesis Launches</h2>
+              <p className="text-muted-foreground mb-4 text-sm sm:text-base">
                 Co-own AI agents with equal early access via Virgen Points, fair 24h bidding, and full refunds if goals aren't met.
               </p>
             </div>
-            <div className="text-right">
-              <div className="text-xl font-bold mb-2">Fair launch for all Virgens</div>
+            <div className={`${isMobile ? 'text-left' : 'text-right'}`}>
+              <div className="text-lg sm:text-xl font-bold mb-2">Fair launch for all Virgens</div>
               <Button 
-                className="bg-primary hover:bg-primary/90"
+                className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
                 onClick={() => window.location.href = '/create-agent'}
               >
                 Create Agent
@@ -273,11 +328,11 @@ export const AgentMarketplace = () => {
       {/* Launch Status Tabs */}
       <div className="mt-6">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className="grid w-full grid-cols-4 bg-card/50">
+          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} bg-card/50`}>
             <TabsTrigger value="all">All</TabsTrigger>
-            <TabsTrigger value="pledging">🔸 Pledging</TabsTrigger>
-            <TabsTrigger value="upcoming">📅 Upcoming</TabsTrigger>
-            <TabsTrigger value="succeeded">✅ Succeeded</TabsTrigger>
+            {!isMobile && <TabsTrigger value="pledging">🔸 Pledging</TabsTrigger>}
+            <TabsTrigger value="upcoming">{isMobile ? '📅' : '📅 Upcoming'}</TabsTrigger>
+            {!isMobile && <TabsTrigger value="succeeded">✅ Succeeded</TabsTrigger>}
           </TabsList>
           <TabsContent value="all" className="mt-6">
             <div className="text-center text-muted-foreground py-12">

@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      agent_analytics: {
+        Row: {
+          agent_id: string
+          calculated_at: string
+          id: string
+          metric_type: string
+          metric_value: number
+          period: string
+        }
+        Insert: {
+          agent_id: string
+          calculated_at?: string
+          id?: string
+          metric_type: string
+          metric_value: number
+          period: string
+        }
+        Update: {
+          agent_id?: string
+          calculated_at?: string
+          id?: string
+          metric_type?: string
+          metric_value?: number
+          period?: string
+        }
+        Relationships: []
+      }
       agents: {
         Row: {
           avatar_url: string | null
@@ -88,6 +115,57 @@ export type Database = {
           read?: boolean
           title?: string
           type?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      orders: {
+        Row: {
+          agent_id: string
+          amount: number
+          created_at: string
+          expires_at: string | null
+          fill_or_kill: boolean | null
+          filled_amount: number
+          id: string
+          price: number | null
+          side: string
+          status: string
+          trigger_price: number | null
+          type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          amount: number
+          created_at?: string
+          expires_at?: string | null
+          fill_or_kill?: boolean | null
+          filled_amount?: number
+          id?: string
+          price?: number | null
+          side: string
+          status?: string
+          trigger_price?: number | null
+          type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          created_at?: string
+          expires_at?: string | null
+          fill_or_kill?: boolean | null
+          filled_amount?: number
+          id?: string
+          price?: number | null
+          side?: string
+          status?: string
+          trigger_price?: number | null
+          type?: string
+          updated_at?: string
           user_id?: string
         }
         Relationships: []
