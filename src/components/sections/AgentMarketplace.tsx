@@ -317,8 +317,7 @@ export const AgentMarketplace = () => {
                 Co-own next-gen AI trading agents with equal early access through Hyper Points. Enjoy a fair 24h bidding system and get a full refund if milestones aren't met.
               </p>
             </div>
-            <div className={`${isMobile ? 'text-left' : 'text-right'}`}>
-              <div className="text-lg sm:text-xl font-bold mb-2">Fair launch for all Virgens</div>
+            <div className={`${isMobile ? 'text-left' : 'text-right flex items-center'}`}>
               <Button 
                 className="bg-primary hover:bg-primary/90 w-full sm:w-auto"
                 onClick={() => window.location.href = '/create-agent'}
