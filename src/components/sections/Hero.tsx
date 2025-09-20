@@ -6,15 +6,17 @@ export function Hero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
-      <video 
-        className="absolute top-0 left-0 md:left-16 w-full md:w-[calc(100%-4rem)] h-full object-cover opacity-90 z-0"
-        autoPlay
-        loop
-        muted
-        playsInline
-      >
-        <source src={heroVideo} type="video/mp4" />
-      </video>
+      <div className="absolute inset-0 z-0 flex items-center justify-center">
+        <video 
+          className="w-full h-full max-w-full max-h-full object-contain opacity-90"
+          autoPlay
+          loop
+          muted
+          playsInline
+        >
+          <source src={heroVideo} type="video/mp4" />
+        </video>
+      </div>
       
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 cyber-grid opacity-20 z-10" />
