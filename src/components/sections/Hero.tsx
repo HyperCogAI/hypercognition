@@ -44,12 +44,12 @@ export function Hero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <CyberButton variant="neon" size="xl" className="group">
-              <span className="text-white">Launch Platform</span>
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-white" />
+              <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">Launch Platform</span>
+              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-primary-foreground group-hover:text-muted-foreground transition-colors" />
             </CyberButton>
             
             <CyberButton variant="analytics" size="xl" className="group">
-              <span className="text-white">Deploy AI Agent</span>
+              <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">Deploy AI Agent</span>
             </CyberButton>
           </div>
         </div>

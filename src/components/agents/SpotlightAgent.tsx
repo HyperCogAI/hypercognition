@@ -309,13 +309,13 @@ export const SpotlightAgent = () => {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <CyberButton variant="neon" className="w-full">
-          <ExternalLink className="h-4 w-4 mr-2 text-white" />
-          <span className="text-white">View Agent</span>
+        <CyberButton variant="neon" className="w-full group">
+          <ExternalLink className="h-4 w-4 mr-2 text-primary-foreground group-hover:text-muted-foreground transition-colors" />
+          <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">View Agent</span>
         </CyberButton>
-        <CyberButton variant="analytics" className="w-full">
-          <TrendingUp className="h-4 w-4 mr-2 text-white" />
-          <span className="text-white">View Analytics</span>
+        <CyberButton variant="analytics" className="w-full group">
+          <TrendingUp className="h-4 w-4 mr-2 text-primary-foreground group-hover:text-muted-foreground transition-colors" />
+          <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">View Analytics</span>
         </CyberButton>
       </div>
     </div>

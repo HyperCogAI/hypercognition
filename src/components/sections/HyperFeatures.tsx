@@ -99,11 +99,11 @@ export const HyperFeatures = () => {
             </div>
 
             <div className="flex gap-4">
-              <CyberButton variant="neon" size="lg">
-                <span className="text-white">Deploy Agent</span>
+              <CyberButton variant="neon" size="lg" className="group">
+                <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">Deploy Agent</span>
               </CyberButton>
-              <CyberButton variant="analytics" size="lg">
-                <span className="text-white">View Marketplace</span>
+              <CyberButton variant="analytics" size="lg" className="group">
+                <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">View Marketplace</span>
               </CyberButton>
             </div>
           </div>

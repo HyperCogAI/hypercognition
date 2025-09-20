@@ -47,8 +47,8 @@ export function Navigation() {
           <div className="hidden md:flex items-center gap-4">
             <CyberButton variant="neon" className="group" asChild>
               <a href="/acp">
-                <Bot className="h-4 w-4 text-white" />
-                <span className="text-white">Assistant</span>
+                <Bot className="h-4 w-4 text-primary-foreground group-hover:text-muted-foreground transition-colors" />
+                <span className="text-primary-foreground group-hover:text-muted-foreground transition-colors">Assistant</span>
               </a>
             </CyberButton>
           </div>
