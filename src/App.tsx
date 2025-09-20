@@ -31,23 +31,19 @@ createWeb3Modal({
   enableOnramp: true // Optional - false as default
 })
 
-const App = () => (
-  <WagmiProvider config={config}>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <FavoritesProvider>
-          <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <SidebarProvider>
-              <div className="min-h-screen flex w-full">
-                <AppSidebar />
-                <main className="flex-1 relative">
-                  {/* Global sidebar trigger */}
-                  <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
-                    <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
-                  </div>
+const App = () => {
+  console.log("App component is rendering");
+  
+  return (
+    <WagmiProvider config={config}>
+      <QueryClientProvider client={queryClient}>
+        <AuthProvider>
+          <FavoritesProvider>
+            <TooltipProvider>
+              <Toaster />
+              <Sonner />
+              <BrowserRouter>
+                <div className="min-h-screen w-full bg-background text-foreground">
                   <Routes>
                     <Route path="/" element={<Index />} />
                     <Route path="/agent/:id" element={<AgentDetail />} />
@@ -57,18 +53,16 @@ const App = () => (
                     <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                     <Route path="/compare" element={<AgentComparison />} />
                     <Route path="/communities" element={<Communities />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
                     <Route path="*" element={<NotFound />} />
                   </Routes>
-                </main>
-              </div>
-            </SidebarProvider>
-          </BrowserRouter>
-          </TooltipProvider>
-        </FavoritesProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </WagmiProvider>
-);
+                </div>
+              </BrowserRouter>
+            </TooltipProvider>
+          </FavoritesProvider>
+        </AuthProvider>
+      </QueryClientProvider>
+    </WagmiProvider>
+  );
+};
 
 export default App;
