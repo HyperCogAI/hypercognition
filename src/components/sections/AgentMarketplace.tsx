@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react"
-import { Search, TrendingUp, BarChart3, Network } from "lucide-react"
+import { TrendingUp, BarChart3, Network } from "lucide-react"
 import { AgentCard } from "@/components/agents/AgentCard"
 import { AgentFundamentals } from "@/components/agents/AgentFundamentals"
 import { AgentNetwork } from "@/components/agents/AgentNetwork"
@@ -8,118 +8,100 @@ import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
+import { supabase } from "@/integrations/supabase/client"
 
-// Mock data for AI agents - Unique names for HyperCognition
-const trendingAgents = [
-  {
-    id: "1",
-    name: "NeuralFlow",
-    symbol: "NFLOW",
-    avatar: "/placeholder.svg",
-    fdv: "$7.41m",
-    change: "+15.55%",
-    chain: "Base",
-    isPositive: true
-  },
-  {
-    id: "2", 
-    name: "CogniCore",
-    symbol: "COGNI",
-    avatar: "/placeholder.svg",
-    fdv: "$20.37m",
-    change: "-13.12%",
-    chain: "Base",
-    isPositive: false
-  },
-  {
-    id: "3",
-    name: "SynthMind",
-    symbol: "SYNTH", 
-    avatar: "/placeholder.svg",
-    fdv: "$15.19m",
-    change: "-12.24%",
-    chain: "Base",
-    isPositive: false
-  },
-  {
-    id: "4",
-    name: "QuantBot",
-    symbol: "QBOT",
-    avatar: "/placeholder.svg", 
-    fdv: "$7.36m",
-    change: "-21.22%",
-    chain: "Base",
-    isPositive: false
-  },
-  {
-    id: "5",
-    name: "HyperLink", 
-    symbol: "HLINK",
-    avatar: "/placeholder.svg",
-    fdv: "$206.93m",
-    change: "-3.66%",
-    chain: "Base", 
-    isPositive: false
-  },
-  {
-    id: "6",
-    name: "MetaBrain",
-    symbol: "MBRAIN",
-    avatar: "/placeholder.svg",
-    fdv: "$3.43m", 
-    change: "-12.95%",
-    chain: "Base",
-    isPositive: false
-  }
-]
+interface Agent {
+  id: string
+  name: string
+  symbol: string
+  description?: string
+  price: number
+  market_cap: number
+  volume_24h: number
+  change_24h: number
+  chain: string
+  avatar_url?: string
+}
 
-const fundamentalAgents = [
-  {
-    id: "7",
-    name: "CryptoSage Capital",
-    symbol: "SAGE", 
-    avatar: "/placeholder.svg",
-    buyback: "$133.91k",
-    revenue: "$382.02k",
-    chain: "Base"
-  },
-  {
-    id: "8",
-    name: "AlphaNode",
-    symbol: "ALPHA",
-    avatar: "/placeholder.svg", 
-    buyback: "$165.45k",
-    revenue: "$35.01k",
-    chain: "Base"
-  },
-  {
-    id: "9",
-    name: "DeepThink", 
-    symbol: "THINK",
-    avatar: "/placeholder.svg",
-    buyback: "$57.37k",
-    revenue: "$113.48k",
-    chain: "Base"
-  },
-  {
-    id: "10",
-    name: "OmniLink Protocol",
-    symbol: "OMNI",
-    avatar: "/placeholder.svg",
-    buyback: "$11.89k", 
-    revenue: "$108.72k",
-    chain: "Base"
-  }
-]
+interface TrendingAgent {
+  id: string
+  name: string
+  symbol: string
+  avatar: string
+  fdv: string
+  change: string
+  chain: string
+  isPositive: boolean
+}
+
+interface FundamentalAgent {
+  id: string
+  name: string
+  symbol: string
+  avatar: string
+  buyback: string
+  revenue: string
+  chain: string
+}
 
 export const AgentMarketplace = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [isLoading, setIsLoading] = useState(true)
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [trendingAgents, setTrendingAgents] = useState<TrendingAgent[]>([])
+  const [fundamentalAgents, setFundamentalAgents] = useState<FundamentalAgent[]>([])
   
-  // Simulate loading
+  // Fetch agents from Supabase
   useEffect(() => {
-    const timer = setTimeout(() => setIsLoading(false), 1500)
-    return () => clearTimeout(timer)
+    const fetchAgents = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('agents')
+          .select('*')
+          .order('market_cap', { ascending: false })
+
+        if (error) {
+          console.error('Error fetching agents:', error)
+          return
+        }
+
+        if (data) {
+          setAgents(data)
+          
+          // Transform data for trending agents
+          const trending: TrendingAgent[] = data.map(agent => ({
+            id: agent.id,
+            name: agent.name,
+            symbol: agent.symbol,
+            avatar: agent.avatar_url || "/placeholder.svg",
+            fdv: `$${(agent.market_cap / 1000000).toFixed(2)}m`,
+            change: `${agent.change_24h >= 0 ? '+' : ''}${agent.change_24h.toFixed(2)}%`,
+            chain: agent.chain,
+            isPositive: agent.change_24h >= 0
+          }))
+          
+          // Transform data for fundamental agents (using volume as revenue and market cap as buyback)
+          const fundamentals: FundamentalAgent[] = data.slice(0, 4).map(agent => ({
+            id: agent.id,
+            name: agent.name,
+            symbol: agent.symbol,
+            avatar: agent.avatar_url || "/placeholder.svg",
+            buyback: `$${(agent.market_cap / 1000).toFixed(0)}k`,
+            revenue: `$${(agent.volume_24h / 1000).toFixed(0)}k`,
+            chain: agent.chain
+          }))
+          
+          setTrendingAgents(trending)
+          setFundamentalAgents(fundamentals)
+        }
+      } catch (error) {
+        console.error('Error fetching agents:', error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    fetchAgents()
   }, [])
   
   // Filter agents based on search term
@@ -132,6 +114,7 @@ export const AgentMarketplace = () => {
     agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     agent.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   )
+
   return (
     <div className="min-h-screen bg-background text-foreground p-4 sm:p-6">
       {/* Header */}
@@ -275,7 +258,11 @@ export const AgentMarketplace = () => {
           </TabsList>
           <TabsContent value="all" className="mt-6">
             <div className="text-center text-muted-foreground py-12">
-              No launches available
+              {isLoading ? (
+                <div className="animate-pulse">Loading launches...</div>
+              ) : (
+                "No launches available"
+              )}
             </div>
           </TabsContent>
         </Tabs>
