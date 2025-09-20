@@ -153,6 +153,8 @@ export type Database = {
           created_at: string
           description: string | null
           id: string
+          logo_generated: boolean | null
+          logo_style: string | null
           market_cap: number
           name: string
           price: number
@@ -167,6 +169,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          logo_generated?: boolean | null
+          logo_style?: string | null
           market_cap?: number
           name: string
           price?: number
@@ -181,6 +185,8 @@ export type Database = {
           created_at?: string
           description?: string | null
           id?: string
+          logo_generated?: boolean | null
+          logo_style?: string | null
           market_cap?: number
           name?: string
           price?: number

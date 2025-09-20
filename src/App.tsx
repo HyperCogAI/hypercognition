@@ -12,6 +12,8 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
 import AdminDashboard from "./pages/AdminDashboard";
+import LogoGenerator from "./pages/LogoGenerator";
+import AgentLogoShowcase from "./pages/AgentLogoShowcase";
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
 import Index from "./pages/Index";
@@ -61,6 +63,8 @@ const AppLayout = () => {
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/logo-generator" element={<LogoGenerator />} />
+            <Route path="/agent-logos" element={<AgentLogoShowcase />} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="*" element={<NotFound />} />
@@ -87,6 +91,8 @@ const AppLayout = () => {
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
             <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+            <Route path="/logo-generator" element={<LogoGenerator />} />
+            <Route path="/agent-logos" element={<AgentLogoShowcase />} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="*" element={<NotFound />} />
