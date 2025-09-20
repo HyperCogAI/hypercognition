@@ -21,10 +21,10 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-r from-primary to-secondary rounded-lg flex items-center justify-center glow-primary">
-              <Zap className="h-5 w-5 text-primary-foreground" />
+              <Bot className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-              CryptoAI DEX
+              HyperCognition
             </span>
           </div>
 
