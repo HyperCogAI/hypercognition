@@ -11,6 +11,8 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
+import { MobileNavigation } from "@/components/mobile/MobileNavigation"
+import { useMobile } from "@/hooks/useMobile"
 import Index from "./pages/Index";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
@@ -42,6 +44,56 @@ createWeb3Modal({
   enableOnramp: true // Optional - false as default
 })
 
+// App Layout Component
+const AppLayout = () => {
+  const { isMobile } = useMobile()
+
+  if (isMobile) {
+    return (
+      <div className="min-h-screen flex flex-col">
+        <main className="flex-1 pb-16">
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/agent/:id" element={<AgentDetail />} />
+            <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
+            <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+            <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+            <Route path="/compare" element={<AgentComparison />} />
+            <Route path="/communities" element={<Communities />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+        <MobileNavigation />
+      </div>
+    )
+  }
+
+  return (
+    <SidebarProvider>
+      <div className="min-h-screen flex w-full">
+        <AppSidebar />
+        <main className="flex-1 relative">
+          <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
+            <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
+          </div>
+          <Routes>
+            <Route path="/" element={<Index />} />
+            <Route path="/agent/:id" element={<AgentDetail />} />
+            <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
+            <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+            <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+            <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+            <Route path="/compare" element={<AgentComparison />} />
+            <Route path="/communities" element={<Communities />} />
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </main>
+      </div>
+    </SidebarProvider>
+  )
+}
+
 const App = () => (
   <WagmiProvider config={config}>
     <QueryClientProvider client={queryClient}>
@@ -51,29 +103,7 @@ const App = () => (
           <Toaster />
           <Sonner />
           <BrowserRouter>
-            <SidebarProvider>
-              <div className="min-h-screen flex w-full">
-                <AppSidebar />
-                <main className="flex-1 relative">
-                  {/* Global sidebar trigger */}
-                  <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
-                    <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
-                  </div>
-                  <Routes>
-                    <Route path="/" element={<Index />} />
-                    <Route path="/agent/:id" element={<AgentDetail />} />
-                    <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
-                    <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
-                    <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                    <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-                    <Route path="/compare" element={<AgentComparison />} />
-                    <Route path="/communities" element={<Communities />} />
-                    {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-                    <Route path="*" element={<NotFound />} />
-                  </Routes>
-                </main>
-              </div>
-            </SidebarProvider>
+            <AppLayout />
           </BrowserRouter>
           </TooltipProvider>
         </FavoritesProvider>
