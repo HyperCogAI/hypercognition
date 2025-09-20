@@ -1,4 +1,4 @@
-import { Github, Twitter, MessageCircle, ExternalLink, FileText } from "lucide-react"
+import { Github, Twitter, MessageCircle, ExternalLink, FileText, X } from "lucide-react"
 
 export const Footer = () => {
   return (
@@ -13,16 +13,16 @@ export const Footer = () => {
             </p>
             <div className="flex gap-3">
               <a 
-                href="#" 
+                href="https://x.com/HyperCogAI" 
                 className="w-8 h-8 bg-card/40 rounded-lg flex items-center justify-center hover:bg-accent/20 transition-colors"
-                aria-label="Twitter"
+                aria-label="X (Twitter)"
               >
-                <Twitter className="w-4 h-4 text-muted-foreground hover:text-accent" />
+                <X className="w-4 h-4 text-muted-foreground hover:text-accent" />
               </a>
               <a 
-                href="#" 
+                href="https://t.me/Donut_Swap" 
                 className="w-8 h-8 bg-card/40 rounded-lg flex items-center justify-center hover:bg-accent/20 transition-colors"
-                aria-label="Discord"
+                aria-label="Telegram"
               >
                 <MessageCircle className="w-4 h-4 text-muted-foreground hover:text-accent" />
               </a>
@@ -105,10 +105,10 @@ export const Footer = () => {
         {/* Bottom Section */}
         <div className="border-t border-border/30 mt-8 pt-8 flex flex-col md:flex-row justify-between items-center gap-4">
           <p className="text-muted-foreground text-sm">
-            © 2024 HyperCognition. All rights reserved.
+            © 2025 HyperCognition. All rights reserved.
           </p>
           <div className="flex items-center gap-6 text-sm">
-            <span className="text-muted-foreground">Built with ❤️ for the DeFi community</span>
+            <span className="text-muted-foreground">Built with <span className="text-blue-400">💙</span> for the DeFi community</span>
           </div>
         </div>
       </div>
