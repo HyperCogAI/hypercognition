@@ -1,0 +1,91 @@
+name: Security & Performance Monitoring
+
+on:
+  schedule:
+    - cron: '0 */6 * * *'  # Every 6 hours
+  push:
+    branches: [ main, production ]
+
+jobs:
+  security-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Run OWASP ZAP Baseline Scan
+      uses: zaproxy/action-baseline@v0.7.0
+      with:
+        target: ${{ secrets.PRODUCTION_URL }}
+    
+    - name: Run dependency vulnerability check
+      run: |
+        npm audit --json > audit-results.json
+        npm audit --audit-level high
+    
+    - name: Upload security scan results
+      uses: actions/upload-artifact@v3
+      with:
+        name: security-results
+        path: |
+          audit-results.json
+          zap-baseline-report.html
+
+  performance-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Lighthouse CI
+      uses: treosh/lighthouse-ci-action@v9
+      with:
+        urls: |
+          ${{ secrets.PRODUCTION_URL }}
+          ${{ secrets.PRODUCTION_URL }}/agent/test
+          ${{ secrets.PRODUCTION_URL }}/portfolio
+        uploadArtifacts: true
+        temporaryPublicStorage: true
+    
+    - name: Core Web Vitals check
+      run: |
+        curl -X POST "https://www.googleapis.com/pagespeedonline/v5/runPagespeed?url=${{ secrets.PRODUCTION_URL }}&category=performance" \
+          -H "Content-Type: application/json" > performance-results.json
+    
+    - name: Upload performance results
+      uses: actions/upload-artifact@v3
+      with:
+        name: performance-results
+        path: performance-results.json
+
+  uptime-monitoring:
+    runs-on: ubuntu-latest
+    steps:
+    - name: Check main application
+      run: |
+        response=$(curl -s -o /dev/null -w "%{http_code}" ${{ secrets.PRODUCTION_URL }})
+        if [ $response -ne 200 ]; then
+          echo "Main application is down (HTTP $response)"
+          exit 1
+        fi
+    
+    - name: Check API endpoints
+      run: |
+        # Check critical API endpoints
+        endpoints=(
+          "/api/agents"
+          "/api/portfolio" 
+          "/api/trading"
+        )
+        
+        for endpoint in "${endpoints[@]}"; do
+          response=$(curl -s -o /dev/null -w "%{http_code}" "${{ secrets.PRODUCTION_URL }}$endpoint")
+          if [ $response -ne 200 ] && [ $response -ne 401 ]; then
+            echo "Endpoint $endpoint is down (HTTP $response)"
+            exit 1
+          fi
+        done
+    
+    - name: Notify on failure
+      if: failure()
+      uses: 8398a7/action-slack@v3
+      with:
+        status: failure
+        text: 'HyperCognition platform monitoring detected issues!'
+        webhook_url: ${{ secrets.SLACK_WEBHOOK }}

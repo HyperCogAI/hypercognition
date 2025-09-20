@@ -14,6 +14,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_users: {
+        Row: {
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          permissions: Json
+          role: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          permissions?: Json
+          role?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          permissions?: Json
+          role?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       agent_analytics: {
         Row: {
           agent_id: string
@@ -186,6 +219,39 @@ export type Database = {
           },
         ]
       }
+      content_moderation: {
+        Row: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at: string
+          id: string
+          moderator_id: string
+          notes: string | null
+          reason: string | null
+        }
+        Insert: {
+          action: string
+          content_id: string
+          content_type: string
+          created_at?: string
+          id?: string
+          moderator_id: string
+          notes?: string | null
+          reason?: string | null
+        }
+        Update: {
+          action?: string
+          content_id?: string
+          content_type?: string
+          created_at?: string
+          id?: string
+          moderator_id?: string
+          notes?: string | null
+          reason?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           created_at: string
@@ -267,6 +333,33 @@ export type Database = {
           type?: string
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      platform_metrics: {
+        Row: {
+          calculated_at: string
+          id: string
+          metadata: Json | null
+          metric_type: string
+          metric_value: number
+          period: string
+        }
+        Insert: {
+          calculated_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type: string
+          metric_value: number
+          period?: string
+        }
+        Update: {
+          calculated_at?: string
+          id?: string
+          metadata?: Json | null
+          metric_type?: string
+          metric_value?: number
+          period?: string
         }
         Relationships: []
       }

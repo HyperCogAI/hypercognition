@@ -11,6 +11,7 @@ import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
+import AdminDashboard from "./pages/AdminDashboard";
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
 import Index from "./pages/Index";
@@ -59,6 +60,7 @@ const AppLayout = () => {
             <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="*" element={<NotFound />} />
@@ -84,6 +86,7 @@ const AppLayout = () => {
             <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
             <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
             <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+            <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
             <Route path="/compare" element={<AgentComparison />} />
             <Route path="/communities" element={<Communities />} />
             <Route path="*" element={<NotFound />} />
