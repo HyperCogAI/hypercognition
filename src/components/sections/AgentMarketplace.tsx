@@ -311,7 +311,7 @@ export const AgentMarketplace = () => {
             style={{ backgroundImage: `url(${gradientBlurBg})` }}
           />
           <div className={`flex ${isMobile ? 'flex-col space-y-4' : 'items-center justify-between'} relative z-10`}>
-            <div>
+            <div className="flex flex-col justify-center">
               <h2 className="text-xl sm:text-2xl font-bold mb-2">HyperCognition Genesis Launch</h2>
               <p className="text-muted-foreground mb-2 text-sm sm:text-base mt-4">
                 Co-own next-gen AI trading agents with equal early access through Hyper Points.
