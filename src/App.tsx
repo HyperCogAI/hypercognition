@@ -50,6 +50,10 @@ import { RealTimeMarketPage } from "./pages/RealTimeMarket";
 import AIAssistant from "./pages/AIAssistant";
 import MultiExchange from "./pages/MultiExchange";
 import CustomerSupport from "./pages/CustomerSupport";
+const DeFi = lazy(() => import('./pages/DeFi'));
+const NFTMarketplace = lazy(() => import('./pages/NFTMarketplace'));
+const Staking = lazy(() => import('./pages/Staking'));
+const Referrals = lazy(() => import('./pages/Referrals'));
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations

@@ -318,6 +318,51 @@ export type Database = {
           },
         ]
       }
+      competition_participants: {
+        Row: {
+          competition_id: string
+          current_balance: number
+          id: string
+          joined_at: string
+          last_updated: string
+          pnl_percentage: number
+          rank: number | null
+          starting_balance: number
+          total_pnl: number
+          total_trades: number
+          user_id: string
+          win_rate: number
+        }
+        Insert: {
+          competition_id: string
+          current_balance?: number
+          id?: string
+          joined_at?: string
+          last_updated?: string
+          pnl_percentage?: number
+          rank?: number | null
+          starting_balance?: number
+          total_pnl?: number
+          total_trades?: number
+          user_id: string
+          win_rate?: number
+        }
+        Update: {
+          competition_id?: string
+          current_balance?: number
+          id?: string
+          joined_at?: string
+          last_updated?: string
+          pnl_percentage?: number
+          rank?: number | null
+          starting_balance?: number
+          total_pnl?: number
+          total_trades?: number
+          user_id?: string
+          win_rate?: number
+        }
+        Relationships: []
+      }
       content_moderation: {
         Row: {
           action: string
@@ -348,6 +393,99 @@ export type Database = {
           moderator_id?: string
           notes?: string | null
           reason?: string | null
+        }
+        Relationships: []
+      }
+      copy_trading_settings: {
+        Row: {
+          agents_to_copy: string[] | null
+          agents_to_exclude: string[] | null
+          copy_percentage: number
+          copy_types: string[] | null
+          created_at: string
+          follower_id: string
+          id: string
+          is_active: boolean
+          max_amount_per_trade: number | null
+          stop_loss_percentage: number | null
+          take_profit_percentage: number | null
+          trader_id: string
+          updated_at: string
+        }
+        Insert: {
+          agents_to_copy?: string[] | null
+          agents_to_exclude?: string[] | null
+          copy_percentage?: number
+          copy_types?: string[] | null
+          created_at?: string
+          follower_id: string
+          id?: string
+          is_active?: boolean
+          max_amount_per_trade?: number | null
+          stop_loss_percentage?: number | null
+          take_profit_percentage?: number | null
+          trader_id: string
+          updated_at?: string
+        }
+        Update: {
+          agents_to_copy?: string[] | null
+          agents_to_exclude?: string[] | null
+          copy_percentage?: number
+          copy_types?: string[] | null
+          created_at?: string
+          follower_id?: string
+          id?: string
+          is_active?: boolean
+          max_amount_per_trade?: number | null
+          stop_loss_percentage?: number | null
+          take_profit_percentage?: number | null
+          trader_id?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      defi_pools: {
+        Row: {
+          apy: number
+          base_token: string
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          pool_address: string | null
+          quote_token: string
+          rewards_token: string
+          tvl: number
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          apy?: number
+          base_token: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          pool_address?: string | null
+          quote_token: string
+          rewards_token: string
+          tvl?: number
+          type: string
+          updated_at?: string
+        }
+        Update: {
+          apy?: number
+          base_token?: string
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          pool_address?: string | null
+          quote_token?: string
+          rewards_token?: string
+          tvl?: number
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -581,6 +719,183 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nft_collections: {
+        Row: {
+          contract_address: string
+          created_at: string
+          creator_id: string
+          description: string | null
+          floor_price: number
+          id: string
+          name: string
+          symbol: string
+          total_supply: number
+          verified: boolean
+          volume_24h: number
+        }
+        Insert: {
+          contract_address: string
+          created_at?: string
+          creator_id: string
+          description?: string | null
+          floor_price?: number
+          id?: string
+          name: string
+          symbol: string
+          total_supply?: number
+          verified?: boolean
+          volume_24h?: number
+        }
+        Update: {
+          contract_address?: string
+          created_at?: string
+          creator_id?: string
+          description?: string | null
+          floor_price?: number
+          id?: string
+          name?: string
+          symbol?: string
+          total_supply?: number
+          verified?: boolean
+          volume_24h?: number
+        }
+        Relationships: []
+      }
+      nft_items: {
+        Row: {
+          collection_id: string
+          created_at: string
+          description: string | null
+          id: string
+          image_url: string | null
+          is_listed: boolean
+          metadata: Json | null
+          name: string
+          owner_id: string
+          price: number | null
+          token_id: string
+          updated_at: string
+        }
+        Insert: {
+          collection_id: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_listed?: boolean
+          metadata?: Json | null
+          name: string
+          owner_id: string
+          price?: number | null
+          token_id: string
+          updated_at?: string
+        }
+        Update: {
+          collection_id?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_listed?: boolean
+          metadata?: Json | null
+          name?: string
+          owner_id?: string
+          price?: number | null
+          token_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_items_collection_id_fkey"
+            columns: ["collection_id"]
+            isOneToOne: false
+            referencedRelation: "nft_collections"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nft_listings: {
+        Row: {
+          created_at: string
+          currency: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          nft_id: string
+          price: number
+          seller_id: string
+        }
+        Insert: {
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          nft_id: string
+          price: number
+          seller_id: string
+        }
+        Update: {
+          created_at?: string
+          currency?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          nft_id?: string
+          price?: number
+          seller_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_listings_nft_id_fkey"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nft_items"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      nft_sales: {
+        Row: {
+          buyer_id: string
+          created_at: string
+          currency: string
+          id: string
+          nft_id: string
+          price: number
+          seller_id: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          buyer_id: string
+          created_at?: string
+          currency?: string
+          id?: string
+          nft_id: string
+          price: number
+          seller_id: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          buyer_id?: string
+          created_at?: string
+          currency?: string
+          id?: string
+          nft_id?: string
+          price?: number
+          seller_id?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "nft_sales_nft_id_fkey"
+            columns: ["nft_id"]
+            isOneToOne: false
+            referencedRelation: "nft_items"
             referencedColumns: ["id"]
           },
         ]
@@ -895,6 +1210,63 @@ export type Database = {
         }
         Relationships: []
       }
+      post_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          likes_count: number
+          parent_id: string | null
+          post_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+          parent_id?: string | null
+          post_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+          parent_id?: string | null
+          post_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      post_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          post_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type: string
+          post_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          post_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       price_alerts: {
         Row: {
           agent_id: string
@@ -1032,6 +1404,75 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_codes: {
+        Row: {
+          code: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          max_uses: number | null
+          reward_percentage: number
+          user_id: string
+          uses_count: number
+        }
+        Insert: {
+          code: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          reward_percentage?: number
+          user_id: string
+          uses_count?: number
+        }
+        Update: {
+          code?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          max_uses?: number | null
+          reward_percentage?: number
+          user_id?: string
+          uses_count?: number
+        }
+        Relationships: []
+      }
+      referrals: {
+        Row: {
+          claimed_at: string | null
+          created_at: string
+          id: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          reward_amount: number
+          reward_claimed: boolean
+        }
+        Insert: {
+          claimed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code: string
+          referred_id: string
+          referrer_id: string
+          reward_amount?: number
+          reward_claimed?: boolean
+        }
+        Update: {
+          claimed_at?: string | null
+          created_at?: string
+          id?: string
+          referral_code?: string
+          referred_id?: string
+          referrer_id?: string
+          reward_amount?: number
+          reward_claimed?: boolean
+        }
+        Relationships: []
+      }
       security_audit_log: {
         Row: {
           action: string
@@ -1062,6 +1503,327 @@ export type Database = {
           resource?: string
           user_agent?: string | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      signal_comments: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          likes_count: number
+          parent_id: string | null
+          signal_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+          parent_id?: string | null
+          signal_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          likes_count?: number
+          parent_id?: string | null
+          signal_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      signal_interactions: {
+        Row: {
+          created_at: string
+          id: string
+          interaction_type: string
+          signal_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          interaction_type: string
+          signal_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          interaction_type?: string
+          signal_id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      social_posts: {
+        Row: {
+          comments_count: number
+          content: string
+          created_at: string
+          id: string
+          is_pinned: boolean
+          likes_count: number
+          media_urls: string[] | null
+          post_type: string
+          related_agent_id: string | null
+          related_order_id: string | null
+          shares_count: number
+          updated_at: string
+          user_id: string
+          views_count: number
+        }
+        Insert: {
+          comments_count?: number
+          content: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          likes_count?: number
+          media_urls?: string[] | null
+          post_type: string
+          related_agent_id?: string | null
+          related_order_id?: string | null
+          shares_count?: number
+          updated_at?: string
+          user_id: string
+          views_count?: number
+        }
+        Update: {
+          comments_count?: number
+          content?: string
+          created_at?: string
+          id?: string
+          is_pinned?: boolean
+          likes_count?: number
+          media_urls?: string[] | null
+          post_type?: string
+          related_agent_id?: string | null
+          related_order_id?: string | null
+          shares_count?: number
+          updated_at?: string
+          user_id?: string
+          views_count?: number
+        }
+        Relationships: []
+      }
+      staking_programs: {
+        Row: {
+          apy: number
+          created_at: string
+          id: string
+          is_active: boolean
+          lock_period_days: number
+          max_stake_amount: number | null
+          min_stake_amount: number
+          name: string
+          rewards_pool: number
+          token_symbol: string
+          total_staked: number
+          updated_at: string
+        }
+        Insert: {
+          apy: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lock_period_days?: number
+          max_stake_amount?: number | null
+          min_stake_amount?: number
+          name: string
+          rewards_pool?: number
+          token_symbol: string
+          total_staked?: number
+          updated_at?: string
+        }
+        Update: {
+          apy?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          lock_period_days?: number
+          max_stake_amount?: number | null
+          min_stake_amount?: number
+          name?: string
+          rewards_pool?: number
+          token_symbol?: string
+          total_staked?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      trading_competitions: {
+        Row: {
+          competition_type: string
+          created_at: string
+          current_participants: number
+          description: string | null
+          end_date: string
+          entry_fee: number | null
+          id: string
+          is_active: boolean
+          max_participants: number | null
+          prize_pool: number | null
+          rules: Json | null
+          start_date: string
+          title: string
+        }
+        Insert: {
+          competition_type: string
+          created_at?: string
+          current_participants?: number
+          description?: string | null
+          end_date: string
+          entry_fee?: number | null
+          id?: string
+          is_active?: boolean
+          max_participants?: number | null
+          prize_pool?: number | null
+          rules?: Json | null
+          start_date: string
+          title: string
+        }
+        Update: {
+          competition_type?: string
+          created_at?: string
+          current_participants?: number
+          description?: string | null
+          end_date?: string
+          entry_fee?: number | null
+          id?: string
+          is_active?: boolean
+          max_participants?: number | null
+          prize_pool?: number | null
+          rules?: Json | null
+          start_date?: string
+          title?: string
+        }
+        Relationships: []
+      }
+      trading_profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          created_at: string
+          display_name: string
+          id: string
+          is_public: boolean
+          is_verified: boolean
+          max_drawdown: number
+          pnl_percentage: number
+          risk_score: number | null
+          sharpe_ratio: number | null
+          total_followers: number
+          total_following: number
+          total_pnl: number
+          total_trades: number
+          updated_at: string
+          user_id: string
+          win_rate: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name: string
+          id?: string
+          is_public?: boolean
+          is_verified?: boolean
+          max_drawdown?: number
+          pnl_percentage?: number
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          total_followers?: number
+          total_following?: number
+          total_pnl?: number
+          total_trades?: number
+          updated_at?: string
+          user_id: string
+          win_rate?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_public?: boolean
+          is_verified?: boolean
+          max_drawdown?: number
+          pnl_percentage?: number
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          total_followers?: number
+          total_following?: number
+          total_pnl?: number
+          total_trades?: number
+          updated_at?: string
+          user_id?: string
+          win_rate?: number
+        }
+        Relationships: []
+      }
+      trading_signals: {
+        Row: {
+          agent_id: string
+          comments_count: number
+          confidence_level: number | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_premium: boolean
+          likes_count: number
+          price: number
+          reasoning: string | null
+          signal_type: string
+          stop_loss_price: number | null
+          target_price: number | null
+          time_horizon: string | null
+          user_id: string
+          views_count: number
+        }
+        Insert: {
+          agent_id: string
+          comments_count?: number
+          confidence_level?: number | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_premium?: boolean
+          likes_count?: number
+          price: number
+          reasoning?: string | null
+          signal_type: string
+          stop_loss_price?: number | null
+          target_price?: number | null
+          time_horizon?: string | null
+          user_id: string
+          views_count?: number
+        }
+        Update: {
+          agent_id?: string
+          comments_count?: number
+          confidence_level?: number | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_premium?: boolean
+          likes_count?: number
+          price?: number
+          reasoning?: string | null
+          signal_type?: string
+          stop_loss_price?: number | null
+          target_price?: number | null
+          time_horizon?: string | null
+          user_id?: string
+          views_count?: number
         }
         Relationships: []
       }
@@ -1111,6 +1873,47 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      user_defi_positions: {
+        Row: {
+          amount_deposited: number
+          created_at: string
+          id: string
+          last_claim_at: string | null
+          pool_id: string
+          rewards_earned: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_deposited?: number
+          created_at?: string
+          id?: string
+          last_claim_at?: string | null
+          pool_id: string
+          rewards_earned?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_deposited?: number
+          created_at?: string
+          id?: string
+          last_claim_at?: string | null
+          pool_id?: string
+          rewards_earned?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_defi_positions_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "defi_pools"
             referencedColumns: ["id"]
           },
         ]
@@ -1277,6 +2080,56 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      user_stakes: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          is_active: boolean
+          last_reward_claim: string | null
+          program_id: string
+          rewards_earned: number
+          staked_at: string
+          unlock_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_reward_claim?: string | null
+          program_id: string
+          rewards_earned?: number
+          staked_at?: string
+          unlock_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_reward_claim?: string | null
+          program_id?: string
+          rewards_earned?: number
+          staked_at?: string
+          unlock_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_stakes_program_id_fkey"
+            columns: ["program_id"]
+            isOneToOne: false
+            referencedRelation: "staking_programs"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {
