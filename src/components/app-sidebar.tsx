@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -42,6 +42,7 @@ const tradingItems = [
 // DeFi and crypto features
 const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
+  { title: "Solana", url: "/solana", icon: Sparkles },
   { title: "NFT Marketplace", url: "/nft-marketplace", icon: Users },
   { title: "Staking", url: "/staking", icon: Shield },
   { title: "Referrals", url: "/referrals", icon: Star },

@@ -52,6 +52,9 @@ import AIAssistant from "./pages/AIAssistant";
 import MultiExchange from "./pages/MultiExchange";
 import CustomerSupport from "./pages/CustomerSupport";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import SolanaDashboard from "./pages/SolanaDashboard";
+import SolanaStaking from "./pages/SolanaStaking";
+import SolanaTradingSignalsPage from "./pages/SolanaTradingSignals";
 
 // Lazy loaded components
 const DeFi = lazy(() => import('./pages/DeFi'));
@@ -143,14 +146,17 @@ const AppLayout = () => {
                 <Route path="/marketplace" element={<Marketplace />} />
           <Route path="/customer-support" element={<CustomerSupport />} />
           <Route path="/defi" element={<DeFi />} />
+          <Route path="/solana" element={<SolanaDashboard />} />
           <Route path="/nft-marketplace" element={<NFTMarketplace />} />
           <Route path="/staking" element={<Staking />} />
+          <Route path="/solana-staking" element={<SolanaStaking />} />
           <Route path="/referrals" element={<Referrals />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                <Route path="/trading-signals" element={<TradingSignals />} />
+                 <Route path="/trading-signals" element={<TradingSignals />} />
+                 <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
