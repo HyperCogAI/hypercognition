@@ -148,14 +148,14 @@ export function AppSidebar() {
               {resourceItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
-                      {item.external ? (
-                        <a 
-                          href={item.url}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className={`${getNavCls({ isActive: false })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group`}
-                        >
-                          <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                    {item.external ? (
+                      <a 
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground"
+                      >
+                        <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium text-foreground">{item.title}</span>
