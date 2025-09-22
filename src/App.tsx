@@ -18,7 +18,8 @@ import LogoGenerator from "./pages/LogoGenerator";
 import AgentLogoShowcase from "./pages/AgentLogoShowcase";
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
-import Index from "./pages/Index";
+import Index from "./pages/Home";
+import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
 import { Portfolio } from "./pages/Portfolio";
@@ -66,6 +67,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
@@ -103,6 +105,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
