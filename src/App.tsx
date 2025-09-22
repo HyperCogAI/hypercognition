@@ -39,6 +39,7 @@ import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import Contact from "./pages/Contact";
 import { EnhancedTrading } from "./pages/EnhancedTrading";
+import OrderManagement from "./pages/OrderManagement";
 import SocialTradingPage from "./pages/SocialTrading";
 import { RealTimeMarketPage } from "./pages/RealTimeMarket";
 import AIAssistant from "./pages/AIAssistant";
@@ -135,6 +136,7 @@ const AppLayout = () => {
                 <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
                 <Route path="/compare" element={<AgentComparison />} />
                 <Route path="/communities" element={<Communities />} />
+                <Route path="/order-management" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
                 <Route path="/social-trading" element={<SocialTradingPage />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
