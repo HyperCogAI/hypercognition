@@ -1,4 +1,3 @@
-import { Navigation } from "@/components/layout/Navigation"
 import { Hero } from "@/components/sections/Hero"
 import { Stats } from "@/components/sections/Stats"
 import { HyperFeatures } from "@/components/sections/HyperFeatures"
@@ -22,7 +21,6 @@ const Index = () => {
         keywords="AI trading agents, autonomous trading, cryptocurrency, DeFi, blockchain, trading bots, AI marketplace, HyperCognition"
         structuredData={structuredData}
       />
-      <Navigation />
       <main>
         <Hero />
         <Stats />

@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -15,6 +15,7 @@ import {
   useSidebar,
 } from "@/components/ui/sidebar"
 import { Badge } from "@/components/ui/badge"
+import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
 
@@ -23,13 +24,20 @@ const mainItems = [
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "ACP", url: "/acp", icon: Bot },
 ]
 
 const tradingItems = [
+  { title: "Trade", url: "/#trade", icon: TrendingUp },
+  { title: "AI Bots", url: "/#bots", icon: Bot },
   { title: "Trending", url: "/#trending", icon: TrendingUp },
   { title: "Favorites", url: "/favorites", icon: Star },
   { title: "Compare", url: "/compare", icon: BarChart3 },
   { title: "Communities", url: "/communities", icon: Users },
+]
+
+const resourceItems = [
+  { title: "Docs", url: "https://whitepaper.hypercognition.io/hypercognition/", icon: FileText, external: true },
 ]
 
 export function AppSidebar() {
@@ -128,6 +136,59 @@ export function AppSidebar() {
             </SidebarMenu>
           </SidebarGroupContent>
         </SidebarGroup>
+
+        {/* Resources Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+            {isCollapsed ? "•••" : "Resources"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {resourceItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    {item.external ? (
+                      <a 
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground hover:text-foreground"
+                      >
+                        <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                        {!isCollapsed && (
+                          <div className="flex items-center justify-between w-full">
+                            <span className="font-medium text-foreground">{item.title}</span>
+                            <ExternalLink className="h-3 w-3 opacity-50" />
+                          </div>
+                        )}
+                      </a>
+                    ) : (
+                      <NavLink 
+                        to={item.url}
+                        className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      >
+                        <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                        {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
+                      </NavLink>
+                    )}
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Assistant CTA */}
+        {!isCollapsed && (
+          <div className="px-4 py-3">
+            <CyberButton variant="neon" className="w-full group" asChild>
+              <NavLink to="/acp">
+                <Bot className="h-4 w-4 text-white" />
+                <span className="text-white">Assistant</span>
+              </NavLink>
+            </CyberButton>
+          </div>
+        )}
 
         {/* Settings at bottom */}
         <div className="mt-auto border-t border-border/30 bg-background">
