@@ -16,17 +16,17 @@ import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
 import AdminDashboard from "./pages/AdminDashboard";
 import LogoGenerator from "./pages/LogoGenerator";
 import AgentLogoShowcase from "./pages/AgentLogoShowcase";
+import TradingSignals from "./pages/TradingSignals";
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import AdvancedAnalytics from "./pages/AdvancedAnalytics";
 import Notifications from "./pages/Notifications";
 import Index from "./pages/Home";
-import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
 import Portfolio from "./pages/Portfolio";
-import { Analytics } from "./pages/Analytics";
+import Analytics from "./pages/Analytics";
 import { AdvancedTradingPage } from "./pages/AdvancedTrading";
 import Favorites from "./pages/Favorites";
 import AgentComparison from "./pages/AgentComparison";
@@ -126,7 +126,7 @@ const AppLayout = () => {
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                <Route path="/advanced-analytics" element={<ProtectedRoute><AdvancedAnalytics /></ProtectedRoute>} />
+                <Route path="/trading-signals" element={<TradingSignals />} />
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />

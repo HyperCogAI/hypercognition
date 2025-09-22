@@ -3,7 +3,7 @@ import { lazy } from 'react'
 // Lazy load heavy components for better initial load performance
 export const LazyAgentDetail = lazy(() => import('@/pages/AgentDetail').then(m => ({ default: m.AgentDetail })))
 export const LazyPortfolio = lazy(() => import('@/pages/Portfolio'))
-export const LazyAnalytics = lazy(() => import('@/pages/Analytics').then(m => ({ default: m.Analytics })))
+export const LazyAnalytics = lazy(() => import('@/pages/Analytics'))
 export const LazyCreateAgent = lazy(() => import('@/pages/CreateAgent').then(m => ({ default: m.CreateAgent })))
 export const LazyAgentComparison = lazy(() => import('@/pages/AgentComparison'))
 export const LazyCommunities = lazy(() => import('@/pages/Communities'))
