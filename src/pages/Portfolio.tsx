@@ -1,266 +1,240 @@
 import React from 'react'
-import { useNavigate } from 'react-router-dom'
-import { ArrowLeft, TrendingUp, TrendingDown, MoreVertical, Eye, Zap } from 'lucide-react'
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Badge } from "@/components/ui/badge"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/contexts/AuthContext"
-import { usePortfolio } from "@/hooks/usePortfolio"
-import { useRealtimePortfolio } from "@/hooks/useRealtimePortfolio"
-import { WalletButton } from "@/components/wallet/WalletButton"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Badge } from '@/components/ui/badge'
+import { Button } from '@/components/ui/button'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/contexts/AuthContext'
+import { SEOHead } from '@/components/seo/SEOHead'
+import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
+import { PortfolioOptimizer } from '@/components/portfolio/PortfolioOptimizer'
+import { Wallet, TrendingUp, BarChart3, Target, Plus } from 'lucide-react'
+import { Link } from 'react-router-dom'
 
-export const Portfolio = () => {
-  const navigate = useNavigate()
-  const { isConnected } = useAuth()
-  const { portfolioStats, isLoading } = usePortfolio()
-  const { holdings, transactions } = useRealtimePortfolio()
+export default function Portfolio() {
+  const { user } = useAuth()
 
-  if (!isConnected) {
-    return (
-      <div className="flex items-center justify-center min-h-[60vh] p-4">
-        <Card className="w-full max-w-md">
-          <CardHeader className="text-center">
-            <CardTitle>Connect Your Wallet</CardTitle>
-            <CardDescription>
-              Connect your wallet to view your portfolio and start trading AI agents.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="flex justify-center">
-            <WalletButton />
-          </CardContent>
-        </Card>
-      </div>
-    )
+  const { data: portfolioSummary, isLoading } = useQuery({
+    queryKey: ['portfolio-summary', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null
+
+      const { data: holdings, error } = await supabase
+        .from('user_holdings')
+        .select(`
+          *,
+          agents (
+            id,
+            name,
+            symbol,
+            price,
+            change_24h
+          )
+        `)
+        .eq('user_id', user.id)
+        .gt('total_amount', 0)
+
+      if (error) throw error
+
+      const totalValue = holdings?.reduce((sum, h) => sum + (h.total_amount * (h.agents?.price || 0)), 0) || 0
+      const totalInvested = holdings?.reduce((sum, h) => sum + h.total_invested, 0) || 0
+      const totalPnL = totalValue - totalInvested
+
+      return {
+        holdings: holdings || [],
+        totalValue,
+        totalInvested,
+        totalPnL,
+        totalPnLPercentage: totalInvested > 0 ? (totalPnL / totalInvested) * 100 : 0
+      }
+    },
+    enabled: !!user?.id,
+    refetchInterval: 30000
+  })
+
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(value)
   }
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center min-h-[60vh]">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      <div className="container mx-auto px-4 py-8">
+        <div className="animate-pulse space-y-6">
+          <div className="h-8 bg-muted rounded w-1/4"></div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {[...Array(3)].map((_, i) => (
+              <div key={i} className="h-32 bg-muted rounded"></div>
+            ))}
+          </div>
+        </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-xl font-semibold">Portfolio</h1>
+    <>
+      <SEOHead
+        title="Portfolio - AI Agent Trading Dashboard"
+        description="Track your AI agent investments, analyze performance, and optimize your portfolio allocation with advanced analytics and insights."
+        keywords="portfolio tracking, investment analytics, AI agents, trading performance, portfolio optimization"
+      />
+      
+      <div className="container mx-auto px-4 py-8">
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h1 className="text-3xl font-bold mb-2">Portfolio Dashboard</h1>
+            <p className="text-muted-foreground">
+              Track performance, analyze holdings, and optimize your AI agent investments
+            </p>
           </div>
-          <div className="ml-auto">
-            <WalletButton />
-          </div>
-        </div>
-      </div>
-
-      <div className="container py-6">
-        {/* Overview Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Total Portfolio Value</CardDescription>
-              <CardTitle className="text-2xl">
-                ${portfolioStats.totalValue.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-1 text-sm">
-                {portfolioStats.change24h >= 0 ? (
-                  <TrendingUp className="h-4 w-4 text-emerald-500" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-500" />
-                )}
-                <span className={portfolioStats.change24h >= 0 ? "text-emerald-500" : "text-red-500"}>
-                  {portfolioStats.change24h >= 0 ? "+" : ""}{portfolioStats.change24h.toFixed(1)}%
-                </span>
-                <span className="text-muted-foreground">24h</span>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Holdings</CardDescription>
-              <CardTitle className="text-2xl">{portfolioStats.holdingsCount}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-sm text-muted-foreground">
-                Active positions
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Best Performer</CardDescription>
-              <CardTitle className="text-lg">{portfolioStats.bestPerformer?.symbol || "-"}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-1 text-sm">
-                {portfolioStats.bestPerformer && (
-                  <>
-                    <TrendingUp className="h-4 w-4 text-emerald-500" />
-                    <span className="text-emerald-500">+{portfolioStats.bestPerformer.change24h.toFixed(1)}%</span>
-                  </>
-                )}
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader className="pb-2">
-              <CardDescription>Total P&L</CardDescription>
-              <CardTitle className="text-lg">
-                ${portfolioStats.totalPnL.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="flex items-center gap-1 text-sm">
-                {portfolioStats.totalPnL >= 0 ? (
-                  <TrendingUp className="h-4 w-4 text-emerald-500" />
-                ) : (
-                  <TrendingDown className="h-4 w-4 text-red-500" />
-                )}
-                <span className={portfolioStats.totalPnL >= 0 ? "text-emerald-500" : "text-red-500"}>
-                  {portfolioStats.totalPnL >= 0 ? "+" : ""}
-                  {portfolioStats.totalInvested > 0 ? ((portfolioStats.totalPnL / portfolioStats.totalInvested) * 100).toFixed(1) : 0}%
-                </span>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-
-        {/* Portfolio Details */}
-        <Tabs defaultValue="holdings" className="space-y-4">
-          <TabsList>
-            <TabsTrigger value="holdings">Holdings</TabsTrigger>
-            <TabsTrigger value="transactions">Transactions</TabsTrigger>
-          </TabsList>
           
-          <TabsContent value="holdings" className="space-y-4">
-            {holdings.length === 0 ? (
+          <Button asChild>
+            <Link to="/marketplace">
+              <Plus className="h-4 w-4 mr-2" />
+              Add Investment
+            </Link>
+          </Button>
+        </div>
+
+        {portfolioSummary && portfolioSummary.holdings.length > 0 ? (
+          <>
+            {/* Portfolio Summary Cards */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card>
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <div className="text-muted-foreground mb-4">No holdings found</div>
-                  <Button onClick={() => navigate('/')}>
-                    Explore Agents
-                  </Button>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total Portfolio Value</p>
+                      <p className="text-2xl font-bold">{formatCurrency(portfolioSummary.totalValue)}</p>
+                    </div>
+                    <Wallet className="h-8 w-8 text-primary" />
+                  </div>
                 </CardContent>
               </Card>
-            ) : (
-              holdings.map((holding) => (
-                <Card key={holding.id}>
-                  <CardContent className="flex items-center justify-between p-6">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={holding.agent?.avatar_url} alt={holding.agent?.name} />
-                        <AvatarFallback>{holding.agent?.symbol}</AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <div className="font-semibold">{holding.agent?.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {holding.total_amount.toLocaleString()} {holding.agent?.symbol}
-                        </div>
-                      </div>
-                    </div>
 
-                    <div className="text-right">
-                      <div className="font-semibold">
-                        ${(holding.total_amount * (holding.agent?.price || 0)).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}
-                      </div>
-                      <div className="flex items-center gap-1 text-sm">
-                        {holding.unrealized_pnl >= 0 ? (
-                          <TrendingUp className="h-3 w-3 text-emerald-500" />
-                        ) : (
-                          <TrendingDown className="h-3 w-3 text-red-500" />
-                        )}
-                        <span className={holding.unrealized_pnl >= 0 ? "text-emerald-500" : "text-red-500"}>
-                          {holding.unrealized_pnl >= 0 ? "+" : ""}${holding.unrealized_pnl.toFixed(2)}
-                        </span>
-                      </div>
-                    </div>
-
-                    <DropdownMenu>
-                      <DropdownMenuTrigger asChild>
-                        <Button variant="ghost" className="h-8 w-8 p-0">
-                          <MoreVertical className="h-4 w-4" />
-                        </Button>
-                      </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
-                        <DropdownMenuItem onClick={() => navigate(`/agent/${holding.agent_id}`)}>
-                          <Eye className="mr-2 h-4 w-4" />
-                          View Details
-                        </DropdownMenuItem>
-                        <DropdownMenuItem onClick={() => navigate(`/agent/${holding.agent_id}`)}>
-                          <Zap className="mr-2 h-4 w-4" />
-                          Trade
-                        </DropdownMenuItem>
-                      </DropdownMenuContent>
-                    </DropdownMenu>
-                  </CardContent>
-                </Card>
-              ))
-            )}
-          </TabsContent>
-
-          <TabsContent value="transactions" className="space-y-4">
-            {transactions.length === 0 ? (
               <Card>
-                <CardContent className="flex flex-col items-center justify-center py-16">
-                  <div className="text-muted-foreground mb-4">No transactions found</div>
-                  <Button onClick={() => navigate('/')}>
-                    Start Trading
-                  </Button>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total Invested</p>
+                      <p className="text-2xl font-bold">{formatCurrency(portfolioSummary.totalInvested)}</p>
+                    </div>
+                    <TrendingUp className="h-8 w-8 text-primary" />
+                  </div>
                 </CardContent>
               </Card>
-            ) : (
-              transactions.map((transaction) => (
-                <Card key={transaction.id}>
-                  <CardContent className="flex items-center justify-between p-6">
-                    <div className="flex items-center gap-4">
-                      <Badge variant={transaction.type === "buy" ? "default" : "secondary"}>
-                        {transaction.type.toUpperCase()}
-                      </Badge>
-                      <div>
-                        <div className="font-semibold">{transaction.agent?.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {transaction.amount.toLocaleString()} {transaction.agent?.symbol} @ ${transaction.price_per_token.toFixed(4)}
-                        </div>
+
+              <Card>
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground">Total P&L</p>
+                      <div className="flex items-center gap-2">
+                        <p className={`text-2xl font-bold ${portfolioSummary.totalPnL >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                          {formatCurrency(portfolioSummary.totalPnL)}
+                        </p>
+                        <Badge variant={portfolioSummary.totalPnL >= 0 ? 'default' : 'destructive'}>
+                          {portfolioSummary.totalPnL >= 0 ? '+' : ''}{portfolioSummary.totalPnLPercentage.toFixed(2)}%
+                        </Badge>
                       </div>
                     </div>
+                    <BarChart3 className="h-8 w-8 text-primary" />
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
 
-                    <div className="text-right">
-                      <div className="font-semibold">
-                        ${transaction.total_value.toFixed(2)}
-                      </div>
-                      <div className="text-sm text-muted-foreground">
-                        {new Date(transaction.created_at).toLocaleDateString()}
-                      </div>
+            {/* Portfolio Tabs */}
+            <Tabs defaultValue="analytics" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3">
+                <TabsTrigger value="analytics" className="flex items-center gap-2">
+                  <BarChart3 className="h-4 w-4" />
+                  Analytics
+                </TabsTrigger>
+                <TabsTrigger value="optimizer" className="flex items-center gap-2">
+                  <Target className="h-4 w-4" />
+                  Optimizer
+                </TabsTrigger>
+                <TabsTrigger value="holdings" className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  Holdings
+                </TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="analytics">
+                <PortfolioAnalytics />
+              </TabsContent>
+
+              <TabsContent value="optimizer">
+                <PortfolioOptimizer />
+              </TabsContent>
+
+              <TabsContent value="holdings">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>Your Holdings</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="space-y-4">
+                      {portfolioSummary.holdings.map((holding, index) => {
+                        const currentValue = holding.total_amount * (holding.agents?.price || 0)
+                        const pnl = currentValue - holding.total_invested
+                        const pnlPercentage = holding.total_invested > 0 ? (pnl / holding.total_invested) * 100 : 0
+
+                        return (
+                          <div key={index} className="flex items-center justify-between p-4 border rounded-lg">
+                            <div className="flex items-center gap-4">
+                              <div>
+                                <p className="font-medium">{holding.agents?.name}</p>
+                                <p className="text-sm text-muted-foreground">
+                                  {holding.total_amount.toFixed(4)} {holding.agents?.symbol}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="text-right">
+                              <p className="font-medium">{formatCurrency(currentValue)}</p>
+                              <div className="flex items-center gap-2">
+                                <span className={`text-sm ${pnl >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                                  {formatCurrency(pnl)}
+                                </span>
+                                <Badge variant={pnl >= 0 ? 'default' : 'destructive'} className="text-xs">
+                                  {pnl >= 0 ? '+' : ''}{pnlPercentage.toFixed(2)}%
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                        )
+                      })}
                     </div>
                   </CardContent>
                 </Card>
-              ))
-            )}
-          </TabsContent>
-        </Tabs>
+              </TabsContent>
+            </Tabs>
+          </>
+        ) : (
+          <Card>
+            <CardContent className="p-8 text-center">
+              <Wallet className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
+              <h3 className="text-lg font-medium mb-2">No Portfolio Data</h3>
+              <p className="text-muted-foreground mb-4">
+                Start investing in AI agents to track your portfolio performance
+              </p>
+              <Button asChild>
+                <Link to="/marketplace">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Explore AI Agents
+                </Link>
+              </Button>
+            </CardContent>
+          </Card>
+        )}
       </div>
-    </div>
+    </>
   )
 }

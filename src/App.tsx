@@ -25,7 +25,7 @@ import Index from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
-import { Portfolio } from "./pages/Portfolio";
+import Portfolio from "./pages/Portfolio";
 import { Analytics } from "./pages/Analytics";
 import Favorites from "./pages/Favorites";
 import AgentComparison from "./pages/AgentComparison";
