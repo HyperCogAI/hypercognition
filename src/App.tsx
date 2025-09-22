@@ -40,7 +40,7 @@ import Contact from "./pages/Contact";
 import { EnhancedTrading } from "./pages/EnhancedTrading";
 import SocialTrading from "./pages/SocialTrading";
 import { RealTimeMarketPage } from "./pages/RealTimeMarket";
-import { AIAssistantPage } from "./pages/AIAssistant";
+import AIAssistant from "./pages/AIAssistant";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations
@@ -120,7 +120,7 @@ const AppLayout = () => {
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
           <Route path="/real-time-market" element={<RealTimeMarketPage />} />
-          <Route path="/ai-assistant" element={<AIAssistantPage />} />
+          <Route path="/ai-assistant" element={<AIAssistant />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />

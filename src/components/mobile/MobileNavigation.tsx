@@ -1,7 +1,7 @@
 import React from 'react'
 import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
-import { Menu, Home, TrendingUp, Star, User, BarChart3 } from 'lucide-react'
+import { Menu, Home, TrendingUp, Star, User, BarChart3, Brain, Store } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useMobile } from '@/hooks/useMobile'
 import { useHaptics } from '@/hooks/useHaptics'
@@ -9,7 +9,9 @@ import { cn } from '@/lib/utils'
 
 const navigationItems = [
   { icon: Home, label: 'Home', path: '/', id: 'home' },
-  { icon: TrendingUp, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
+  { icon: Store, label: 'Market', path: '/marketplace', id: 'marketplace' },
+  { icon: Brain, label: 'AI Bot', path: '/ai-assistant', id: 'ai-assistant' },
+  { icon: TrendingUp, label: 'Trading', path: '/enhanced-trading', id: 'trading' },
   { icon: Star, label: 'Favorites', path: '/favorites', id: 'favorites' },
   { icon: BarChart3, label: 'Analytics', path: '/analytics', id: 'analytics' },
   { icon: User, label: 'Profile', path: '/profile', id: 'profile' },
