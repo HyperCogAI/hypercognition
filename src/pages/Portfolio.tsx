@@ -10,6 +10,7 @@ import { SEOHead } from '@/components/seo/SEOHead'
 import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
 import { PortfolioOptimizer } from '@/components/portfolio/PortfolioOptimizer'
 import { PortfolioPerformanceDashboard } from '@/components/portfolio/PortfolioPerformanceDashboard'
+import { SolanaPortfolioCard } from '@/components/portfolio/SolanaPortfolioCard'
 import { Wallet, TrendingUp, BarChart3, Target, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -151,9 +152,14 @@ export default function Portfolio() {
               </Card>
             </div>
 
+            {/* Solana Portfolio Section */}
+            <div className="mb-8">
+              <SolanaPortfolioCard />
+            </div>
+
             {/* Portfolio Tabs */}
             <Tabs defaultValue="performance" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-4">
+              <TabsList className="grid w-full grid-cols-5">
                 <TabsTrigger value="performance" className="flex items-center gap-2">
                   <TrendingUp className="h-4 w-4" />
                   Performance
@@ -168,7 +174,11 @@ export default function Portfolio() {
                 </TabsTrigger>
                 <TabsTrigger value="holdings" className="flex items-center gap-2">
                   <Wallet className="h-4 w-4" />
-                  Holdings
+                  EVM Holdings
+                </TabsTrigger>
+                <TabsTrigger value="solana" className="flex items-center gap-2">
+                  <Wallet className="h-4 w-4" />
+                  Solana
                 </TabsTrigger>
               </TabsList>
 
@@ -187,7 +197,7 @@ export default function Portfolio() {
               <TabsContent value="holdings">
                 <Card>
                   <CardHeader>
-                    <CardTitle>Your Holdings</CardTitle>
+                    <CardTitle>EVM Holdings</CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -223,6 +233,10 @@ export default function Portfolio() {
                     </div>
                   </CardContent>
                 </Card>
+              </TabsContent>
+
+              <TabsContent value="solana">
+                <SolanaPortfolioCard />
               </TabsContent>
             </Tabs>
           </>
