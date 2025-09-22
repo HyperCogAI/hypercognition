@@ -1614,6 +1614,139 @@ export type Database = {
         }
         Relationships: []
       }
+      solana_portfolios: {
+        Row: {
+          amount: number
+          created_at: string
+          id: string
+          mint_address: string
+          purchase_date: string | null
+          purchase_price: number | null
+          token_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          id?: string
+          mint_address: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          token_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          id?: string
+          mint_address?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          token_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_portfolios_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "solana_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_price_history: {
+        Row: {
+          id: string
+          market_cap: number
+          mint_address: string
+          price: number
+          timestamp: string
+          token_id: string
+          volume: number
+        }
+        Insert: {
+          id?: string
+          market_cap?: number
+          mint_address: string
+          price: number
+          timestamp?: string
+          token_id: string
+          volume?: number
+        }
+        Update: {
+          id?: string
+          market_cap?: number
+          mint_address?: string
+          price?: number
+          timestamp?: string
+          token_id?: string
+          volume?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_price_history_token_id_fkey"
+            columns: ["token_id"]
+            isOneToOne: false
+            referencedRelation: "solana_tokens"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_tokens: {
+        Row: {
+          change_24h: number
+          created_at: string
+          decimals: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          market_cap: number
+          mint_address: string
+          name: string
+          price: number
+          symbol: string
+          updated_at: string
+          volume_24h: number
+        }
+        Insert: {
+          change_24h?: number
+          created_at?: string
+          decimals?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          market_cap?: number
+          mint_address: string
+          name: string
+          price?: number
+          symbol: string
+          updated_at?: string
+          volume_24h?: number
+        }
+        Update: {
+          change_24h?: number
+          created_at?: string
+          decimals?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          market_cap?: number
+          mint_address?: string
+          name?: string
+          price?: number
+          symbol?: string
+          updated_at?: string
+          volume_24h?: number
+        }
+        Relationships: []
+      }
       staking_programs: {
         Row: {
           apy: number
