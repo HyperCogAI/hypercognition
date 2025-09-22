@@ -18,6 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
+import { WalletSection } from "@/components/wallet/WalletSection"
 
 // Core navigation items
 const coreItems = [
@@ -308,7 +309,8 @@ export function AppSidebar() {
 
         {/* Assistant CTA */}
         {!isCollapsed && (
-          <div className="px-4 py-3">
+          <div className="px-4 py-3 space-y-3">
+            <WalletSection />
             <CyberButton variant="neon" className="w-full group" asChild>
               <NavLink to="/ai-assistant">
                 <Bot className="h-4 w-4 text-white" />
