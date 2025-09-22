@@ -27,6 +27,7 @@ import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
 import Portfolio from "./pages/Portfolio";
 import { Analytics } from "./pages/Analytics";
+import { AdvancedTradingPage } from "./pages/AdvancedTrading";
 import Favorites from "./pages/Favorites";
 import AgentComparison from "./pages/AgentComparison";
 import Communities from "./pages/Communities";
@@ -116,6 +117,7 @@ const AppLayout = () => {
               <Routes>
                 <Route path="/" element={<Index />} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+                <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
           <Route path="/real-time-market" element={<RealTimeMarketPage />} />
           <Route path="/ai-assistant" element={<AIAssistantPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
