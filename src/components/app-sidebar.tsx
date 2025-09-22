@@ -25,6 +25,7 @@ const mainItems = [
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
+  { title: "Advanced Analytics", url: "/advanced-analytics", icon: TrendingUp },
   { title: "ACP", url: "/acp", icon: Bot },
 ]
 
