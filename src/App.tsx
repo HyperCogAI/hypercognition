@@ -49,6 +49,7 @@ import SocialTradingPage from "./pages/SocialTrading";
 import { RealTimeMarketPage } from "./pages/RealTimeMarket";
 import AIAssistant from "./pages/AIAssistant";
 import MultiExchange from "./pages/MultiExchange";
+import CustomerSupport from "./pages/CustomerSupport";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations
@@ -86,6 +87,7 @@ const AppLayout = () => {
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/customer-support" element={<CustomerSupport />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
@@ -132,6 +134,7 @@ const AppLayout = () => {
           <Route path="/real-time-market" element={<RealTimeMarketPage />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/customer-support" element={<CustomerSupport />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />

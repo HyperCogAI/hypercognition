@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -36,6 +36,7 @@ const mainItems = [
   { title: "Compliance", url: "/compliance", icon: Scale },
   { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
+  { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
   { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
 ]
 
