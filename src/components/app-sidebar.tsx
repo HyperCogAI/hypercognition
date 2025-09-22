@@ -24,6 +24,7 @@ const mainItems = [
   { title: "Marketplace", url: "/marketplace", icon: Store },
   { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
   { title: "Real-Time Market", url: "/real-time-market", icon: Activity },
+  { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },

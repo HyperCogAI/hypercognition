@@ -1,264 +1,426 @@
-import React, { useState, useRef, useEffect } from 'react';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Badge } from '@/components/ui/badge';
-import { Bot, Send, User, TrendingUp, AlertCircle, Loader2, BarChart3, Shield } from 'lucide-react';
-import { useAuth } from '@/contexts/AuthContext';
-import { useAITradingAssistant } from '@/hooks/useAITradingAssistant';
-import { useToast } from '@/components/ui/use-toast';
+import React, { useState, useRef, useEffect } from 'react'
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Button } from '@/components/ui/button'
+import { Input } from '@/components/ui/input'
+import { ScrollArea } from '@/components/ui/scroll-area'
+import { Badge } from '@/components/ui/badge'
+import { Separator } from '@/components/ui/separator'
+import { Progress } from '@/components/ui/progress'
+import { useAITradingAssistant } from '@/hooks/useAITradingAssistant'
+import { Bot, User, Send, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap } from 'lucide-react'
+import { formatDistanceToNow } from 'date-fns'
 
-interface Message {
-  id: string;
-  role: 'user' | 'assistant';
-  content: string;
-  timestamp: Date;
+interface AITradingAssistantProps {
+  selectedAgent?: string
+  portfolio?: any
+  marketData?: any
 }
 
-interface SuggestedQuery {
-  text: string;
-  icon: React.ReactNode;
-  category: string;
-}
-
-const AITradingAssistant: React.FC = () => {
-  const [messages, setMessages] = useState<Message[]>([]);
-  const [inputValue, setInputValue] = useState('');
-  const [isOpen, setIsOpen] = useState(false);
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  const { user } = useAuth();
-  const { sendMessage: sendAIMessage, isLoading } = useAITradingAssistant();
-
-  const suggestedQueries: SuggestedQuery[] = [
-    {
-      text: "What's the best AI agent to invest in right now?",
-      icon: <TrendingUp className="h-4 w-4" />,
-      category: "Market Analysis"
-    },
-    {
-      text: "Analyze my portfolio performance",
-      icon: <BarChart3 className="h-4 w-4" />,
-      category: "Portfolio"
-    },
-    {
-      text: "What are the risks in AI agent trading?",
-      icon: <Shield className="h-4 w-4" />,
-      category: "Risk Management"
-    },
-    {
-      text: "Explain current market sentiment for AI agents",
-      icon: <TrendingUp className="h-4 w-4" />,
-      category: "Education"
-    },
-    {
-      text: "How should I diversify my AI portfolio?",
-      icon: <BarChart3 className="h-4 w-4" />,
-      category: "Strategy"
-    },
-    {
-      text: "Which AI agents have the strongest fundamentals?",
-      icon: <AlertCircle className="h-4 w-4" />,
-      category: "Research"
-    }
-  ];
+export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AITradingAssistantProps) {
+  const [message, setMessage] = useState('')
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  
+  const {
+    loading,
+    chatHistory,
+    sendMessage,
+    clearHistory,
+    getMarketAnalysis,
+    getPortfolioAdvice,
+    getTradingSignals,
+    getRiskAssessment,
+    getMarketNews
+  } = useAITradingAssistant()
 
   const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
-
-  useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
-
-  const sendMessage = async (query: string) => {
-    if (!query.trim() || isLoading) return;
-
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: 'user',
-      content: query,
-      timestamp: new Date()
-    };
-
-    setMessages(prev => [...prev, userMessage]);
-    setInputValue('');
-
-    try {
-      const aiResponse = await sendAIMessage(query, 'Trading Assistant Chat');
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: 'assistant',
-        content: aiResponse.response,
-        timestamp: new Date()
-      };
-
-      setMessages(prev => [...prev, assistantMessage]);
-    } catch (error) {
-      console.error('Error sending message:', error);
-      // Error handling is done in the hook
-    }
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    sendMessage(inputValue);
-  };
-
-  const handleSuggestedQuery = (query: string) => {
-    sendMessage(query);
-  };
-
-  if (!isOpen) {
-    return (
-      <div className="fixed bottom-6 right-6 z-50">
-        <Button
-          onClick={() => setIsOpen(true)}
-          size="lg"
-          className="rounded-full shadow-lg bg-primary hover:bg-primary/90 text-white"
-        >
-          <Bot className="h-5 w-5 mr-2" />
-          AI Assistant
-        </Button>
-      </div>
-    );
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
   }
 
+  useEffect(() => {
+    scrollToBottom()
+  }, [chatHistory])
+
+  const handleSendMessage = async () => {
+    if (!message.trim() || loading) return
+    
+    try {
+      const context = {
+        selectedAgent,
+        portfolio,
+        marketData
+      }
+      await sendMessage(message.trim(), context)
+      setMessage('')
+    } catch (error) {
+      console.error('Failed to send message:', error)
+    }
+  }
+
+  const handleKeyPress = (e: React.KeyboardEvent) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      handleSendMessage()
+    }
+  }
+
+  const handleQuickAction = async (action: string) => {
+    try {
+      switch (action) {
+        case 'market-analysis':
+          const agentIds = selectedAgent ? [selectedAgent] : (portfolio?.holdings?.map((h: any) => h.agent_id) || [])
+          await getMarketAnalysis(agentIds)
+          break
+        case 'portfolio-advice':
+          await getPortfolioAdvice(portfolio)
+          break
+        case 'trading-signals':
+          if (selectedAgent) {
+            await getTradingSignals(selectedAgent)
+          } else {
+            await sendMessage('Generate trading signals for the current market conditions')
+          }
+          break
+        case 'risk-assessment':
+          await getRiskAssessment(portfolio?.holdings || [])
+          break
+        case 'market-news':
+          await getMarketNews()
+          break
+        default:
+          await sendMessage(action)
+      }
+    } catch (error) {
+      console.error('Quick action failed:', error)
+    }
+  }
+
+  const renderRecommendation = (rec: any, idx: number) => (
+    <div key={idx} className="p-3 bg-card rounded-lg border">
+      <div className="flex items-center justify-between mb-2">
+        <div className="flex items-center gap-2">
+          <Badge 
+            variant={rec.action === 'buy' ? 'default' : rec.action === 'sell' ? 'destructive' : 'secondary'}
+            className="font-medium"
+          >
+            {rec.action.toUpperCase()}
+          </Badge>
+          <span className="font-medium">{rec.agent_symbol}</span>
+          <Badge variant="outline" className="text-xs">
+            {rec.risk_level} risk
+          </Badge>
+        </div>
+        <div className="text-right">
+          <div className="text-sm font-medium">{rec.confidence}% confidence</div>
+          {rec.suggested_price && (
+            <div className="text-xs text-muted-foreground">
+              Target: ${rec.suggested_price.toFixed(4)}
+            </div>
+          )}
+        </div>
+      </div>
+      <p className="text-sm text-muted-foreground">{rec.reasoning}</p>
+    </div>
+  )
+
+  const renderMarketAnalysis = (analysis: any) => (
+    <div className="p-3 bg-card rounded-lg border space-y-3">
+      <div className="flex items-center justify-between">
+        <h4 className="font-medium flex items-center gap-2">
+          <Brain className="h-4 w-4" />
+          Market Analysis
+        </h4>
+        <Badge 
+          variant={analysis.trend === 'bullish' ? 'default' : analysis.trend === 'bearish' ? 'destructive' : 'secondary'}
+        >
+          {analysis.trend}
+        </Badge>
+      </div>
+      
+      <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className="text-xs text-muted-foreground mb-1">Sentiment</div>
+          <div className="flex items-center gap-2">
+            <Progress value={analysis.sentiment} className="flex-1" />
+            <span className="text-sm font-medium">{analysis.sentiment}%</span>
+          </div>
+        </div>
+        <div>
+          <div className="text-xs text-muted-foreground mb-1">Volatility</div>
+          <div className="flex items-center gap-2">
+            <Progress value={analysis.volatility} className="flex-1" />
+            <span className="text-sm font-medium">{analysis.volatility}%</span>
+          </div>
+        </div>
+      </div>
+      
+      {analysis.key_factors && analysis.key_factors.length > 0 && (
+        <div>
+          <div className="text-xs text-muted-foreground mb-2">Key Factors</div>
+          <ul className="space-y-1">
+            {analysis.key_factors.map((factor: string, idx: number) => (
+              <li key={idx} className="text-sm flex items-start gap-2">
+                <span className="text-primary mt-1">•</span>
+                {factor}
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {(analysis.support_levels || analysis.resistance_levels) && (
+        <div className="grid grid-cols-2 gap-4 text-xs">
+          {analysis.support_levels && (
+            <div>
+              <div className="text-muted-foreground mb-1">Support Levels</div>
+              {analysis.support_levels.map((level: number, idx: number) => (
+                <div key={idx} className="text-green-600">${level.toFixed(4)}</div>
+              ))}
+            </div>
+          )}
+          {analysis.resistance_levels && (
+            <div>
+              <div className="text-muted-foreground mb-1">Resistance Levels</div>
+              {analysis.resistance_levels.map((level: number, idx: number) => (
+                <div key={idx} className="text-red-600">${level.toFixed(4)}</div>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+    </div>
+  )
+
   return (
-    <div className="fixed bottom-6 right-6 z-50 w-96 h-[500px]">
-      <Card className="h-full flex flex-col shadow-2xl border-primary/20">
-        <CardHeader className="pb-3 border-b bg-gradient-to-r from-primary/10 to-primary/5">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg flex items-center gap-2">
-              <Bot className="h-5 w-5 text-primary" />
-              AI Trading Assistant
-            </CardTitle>
+    <Card className="h-[700px] flex flex-col">
+      <CardHeader className="pb-3">
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Bot className="h-5 w-5 text-primary" />
+            AI Trading Assistant
+            <Badge variant="outline" className="ml-2">
+              {loading ? 'Analyzing...' : 'Ready'}
+            </Badge>
+          </CardTitle>
+          <Button 
+            variant="outline" 
+            size="sm" 
+            onClick={clearHistory}
+            disabled={loading || chatHistory.length === 0}
+          >
+            Clear Chat
+          </Button>
+        </div>
+      </CardHeader>
+      
+      <CardContent className="flex-1 flex flex-col p-0">
+        {/* Quick Actions */}
+        <div className="px-6 pb-4">
+          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
-              onClick={() => setIsOpen(false)}
-              className="h-8 w-8 p-0"
+              onClick={() => handleQuickAction('market-analysis')}
+              disabled={loading}
+              className="flex items-center gap-1"
             >
-              ×
+              <TrendingUp className="h-3 w-3" />
+              <span className="hidden sm:inline">Market</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleQuickAction('portfolio-advice')}
+              disabled={loading}
+              className="flex items-center gap-1"
+            >
+              <Target className="h-3 w-3" />
+              <span className="hidden sm:inline">Portfolio</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleQuickAction('trading-signals')}
+              disabled={loading}
+              className="flex items-center gap-1"
+            >
+              <Zap className="h-3 w-3" />
+              <span className="hidden sm:inline">Signals</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleQuickAction('risk-assessment')}
+              disabled={loading}
+              className="flex items-center gap-1"
+            >
+              <Shield className="h-3 w-3" />
+              <span className="hidden sm:inline">Risk</span>
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => handleQuickAction('market-news')}
+              disabled={loading}
+              className="flex items-center gap-1"
+            >
+              <AlertTriangle className="h-3 w-3" />
+              <span className="hidden sm:inline">News</span>
             </Button>
           </div>
-          <p className="text-sm text-muted-foreground">
-            Get personalized trading insights and market analysis
-          </p>
-        </CardHeader>
+        </div>
 
-        <CardContent className="flex-1 flex flex-col p-0">
-          <ScrollArea className="flex-1 p-4">
-            {messages.length === 0 ? (
-              <div className="space-y-4">
-                <div className="text-center text-muted-foreground mb-4">
-                  <Bot className="h-8 w-8 mx-auto mb-2 text-primary" />
-                  <p className="text-sm">
-                    Hi! I'm your AI Trading Assistant. Ask me anything about AI agent trading!
-                  </p>
-                </div>
-                
-                <div className="space-y-2">
-                  <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">
-                    Suggested Questions
-                  </p>
-                  {suggestedQueries.map((query, index) => (
-                    <Button
-                      key={index}
-                      variant="outline"
-                      size="sm"
-                      className="w-full justify-start text-left h-auto p-3 hover:bg-primary/5"
-                      onClick={() => handleSuggestedQuery(query.text)}
-                    >
-                      <div className="flex items-start gap-2">
-                        {query.icon}
-                        <div className="flex-1">
-                          <p className="text-xs text-muted-foreground">{query.category}</p>
-                          <p className="text-sm">{query.text}</p>
-                        </div>
-                      </div>
-                    </Button>
-                  ))}
-                </div>
+        <Separator />
+
+        {/* Chat Messages */}
+        <ScrollArea className="flex-1 px-6 py-4">
+          <div className="space-y-4">
+            {chatHistory.length === 0 && (
+              <div className="text-center text-muted-foreground py-8">
+                <Bot className="h-12 w-12 mx-auto mb-4 opacity-50" />
+                <p className="text-lg font-medium mb-2">AI Trading Assistant Ready</p>
+                <p className="text-sm max-w-md mx-auto">
+                  I analyze real-time market data to provide trading recommendations, 
+                  risk assessments, and portfolio optimization insights. Try the quick 
+                  actions above or ask me anything about trading.
+                </p>
               </div>
-            ) : (
-              <div className="space-y-4">
-                {messages.map((message) => (
+            )}
+            
+            {chatHistory.map((msg, index) => (
+              <div
+                key={index}
+                className={`flex gap-3 ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
+              >
+                {msg.type === 'assistant' && (
+                  <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                    <Bot className="h-4 w-4 text-primary" />
+                  </div>
+                )}
+                
+                <div className={`max-w-[85%] ${msg.type === 'user' ? 'order-1' : ''}`}>
                   <div
-                    key={message.id}
-                    className={`flex gap-3 ${
-                      message.role === 'user' ? 'justify-end' : 'justify-start'
+                    className={`rounded-lg p-3 ${
+                      msg.type === 'user'
+                        ? 'bg-primary text-primary-foreground'
+                        : 'bg-muted'
                     }`}
                   >
-                    {message.role === 'assistant' && (
-                      <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                        <Bot className="h-4 w-4 text-primary" />
-                      </div>
-                    )}
-                    
-                    <div
-                      className={`max-w-[80%] rounded-lg p-3 ${
-                        message.role === 'user'
-                          ? 'bg-primary text-primary-foreground'
-                          : 'bg-muted'
-                      }`}
-                    >
-                      <p className="text-sm whitespace-pre-wrap">{message.content}</p>
-                      <p className="text-xs opacity-70 mt-1">
-                        {message.timestamp.toLocaleTimeString()}
-                      </p>
-                    </div>
-
-                    {message.role === 'user' && (
-                      <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
-                        <User className="h-4 w-4 text-primary-foreground" />
-                      </div>
-                    )}
+                    <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
                   </div>
-                ))}
+                  
+                  {/* Render additional data for assistant messages */}
+                  {msg.type === 'assistant' && msg.data && (
+                    <div className="mt-3 space-y-3">
+                      {/* Trading Recommendations */}
+                      {msg.data.recommendations && msg.data.recommendations.length > 0 && (
+                        <div className="space-y-2">
+                          <p className="text-xs font-medium text-muted-foreground flex items-center gap-1">
+                            <Target className="h-3 w-3" />
+                            Trading Recommendations
+                          </p>
+                          {msg.data.recommendations.map(renderRecommendation)}
+                        </div>
+                      )}
+                      
+                      {/* Market Analysis */}
+                      {msg.data.market_analysis && renderMarketAnalysis(msg.data.market_analysis)}
+                      
+                      {/* Portfolio Insights */}
+                      {msg.data.portfolio_insights && (
+                        <div className="p-3 bg-card rounded-lg border">
+                          <h4 className="font-medium mb-2 flex items-center gap-2">
+                            <Target className="h-4 w-4" />
+                            Portfolio Insights
+                          </h4>
+                          <div className="grid grid-cols-3 gap-4 mb-3">
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground">Total Value</div>
+                              <div className="font-medium">${msg.data.portfolio_insights.total_value?.toFixed(2)}</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground">Risk Score</div>
+                              <div className="font-medium">{msg.data.portfolio_insights.risk_score}/10</div>
+                            </div>
+                            <div className="text-center">
+                              <div className="text-xs text-muted-foreground">Diversification</div>
+                              <div className="font-medium">{msg.data.portfolio_insights.diversification_score}/10</div>
+                            </div>
+                          </div>
+                          {msg.data.portfolio_insights.suggestions && (
+                            <ul className="space-y-1">
+                              {msg.data.portfolio_insights.suggestions.map((suggestion: string, idx: number) => (
+                                <li key={idx} className="text-sm flex items-start gap-2">
+                                  <span className="text-primary mt-1">•</span>
+                                  {suggestion}
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  )}
+                  
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {formatDistanceToNow(msg.timestamp, { addSuffix: true })}
+                  </p>
+                </div>
                 
-                {isLoading && (
-                  <div className="flex gap-3 justify-start">
-                    <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
-                      <Bot className="h-4 w-4 text-primary" />
-                    </div>
-                    <div className="bg-muted rounded-lg p-3">
-                      <div className="flex items-center gap-2">
-                        <Loader2 className="h-4 w-4 animate-spin" />
-                        <span className="text-sm">Thinking...</span>
-                      </div>
-                    </div>
+                {msg.type === 'user' && (
+                  <div className="w-8 h-8 rounded-full bg-primary flex items-center justify-center flex-shrink-0">
+                    <User className="h-4 w-4 text-primary-foreground" />
                   </div>
                 )}
               </div>
+            ))}
+            
+            {loading && (
+              <div className="flex gap-3 justify-start">
+                <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
+                  <Bot className="h-4 w-4 text-primary" />
+                </div>
+                <div className="bg-muted rounded-lg p-3">
+                  <div className="flex items-center gap-2">
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <span className="text-sm text-muted-foreground">Analyzing market data and generating insights...</span>
+                  </div>
+                </div>
+              </div>
             )}
+            
             <div ref={messagesEndRef} />
-          </ScrollArea>
-
-          <div className="border-t p-4">
-            <form onSubmit={handleSubmit} className="flex gap-2">
-              <Input
-                value={inputValue}
-                onChange={(e) => setInputValue(e.target.value)}
-                placeholder="Ask about trading, market analysis..."
-                disabled={isLoading}
-                className="flex-1"
-              />
-              <Button
-                type="submit"
-                size="sm"
-                disabled={isLoading || !inputValue.trim()}
-                className="px-3"
-              >
-                <Send className="h-4 w-4" />
-              </Button>
-            </form>
           </div>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
+        </ScrollArea>
 
-export default AITradingAssistant;
+        <Separator />
+
+        {/* Message Input */}
+        <div className="p-4">
+          <div className="flex gap-2">
+            <Input
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              onKeyPress={handleKeyPress}
+              placeholder="Ask about trading strategies, market analysis, risk management, or portfolio optimization..."
+              disabled={loading}
+              className="flex-1"
+            />
+            <Button 
+              onClick={handleSendMessage} 
+              disabled={loading || !message.trim()}
+              size="icon"
+            >
+              {loading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Send className="h-4 w-4" />
+              )}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  )
+}
+
+export default AITradingAssistant
