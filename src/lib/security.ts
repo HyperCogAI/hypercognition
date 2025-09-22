@@ -146,10 +146,141 @@ class AuditLogger {
 
 export const auditLogger = new AuditLogger()
 
-// Security middleware for API calls
+// Enhanced Security Middleware with Rate Limiting and Validation
+interface SecurityMiddlewareOptions {
+  endpoint: string;
+  requireAuth?: boolean;
+  maxRequestSize?: number;
+  validateContent?: boolean;
+}
+
+export const createSecurityMiddleware = (options: SecurityMiddlewareOptions) => {
+  return {
+    beforeRequest: async (request: any) => {
+      // Check authentication if required
+      if (options.requireAuth) {
+        const token = request.headers?.authorization;
+        if (!token) {
+          throw new Error('Authentication required');
+        }
+      }
+
+      // Check request size
+      if (options.maxRequestSize && request.body) {
+        const size = JSON.stringify(request.body).length;
+        if (size > options.maxRequestSize) {
+          throw new Error(`Request too large: ${size} bytes`);
+        }
+      }
+
+      // Validate content if required
+      if (options.validateContent && request.body) {
+        const contentString = typeof request.body === 'string' 
+          ? request.body 
+          : JSON.stringify(request.body);
+        
+        // Check for suspicious patterns
+        const suspiciousPatterns = [
+          /<script|javascript:|data:|vbscript:/i,
+          /union\s+select|insert\s+into|drop\s+table/i,
+          /eval\s*\(|setTimeout\s*\(|setInterval\s*\(/i
+        ];
+
+        for (const pattern of suspiciousPatterns) {
+          if (pattern.test(contentString)) {
+            auditLogger.log({
+              userId: 'unknown',
+              action: 'suspicious_content_blocked',
+              resource: options.endpoint,
+              details: { pattern: pattern.source, contentLength: contentString.length }
+            });
+            throw new Error('Content validation failed');
+          }
+        }
+      }
+
+      // Add security headers
+      request.headers = {
+        ...request.headers,
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block'
+      };
+
+      auditLogger.log({
+        userId: 'system',
+        action: 'request_processed',
+        resource: options.endpoint,
+        details: { 
+          method: request.method,
+          hasAuth: !!request.headers?.authorization,
+          contentLength: request.body ? JSON.stringify(request.body).length : 0
+        }
+      });
+
+      return request;
+    },
+
+    afterResponse: (response: any) => {
+      auditLogger.log({
+        userId: 'system',
+        action: 'response_sent',
+        resource: options.endpoint,
+        details: { 
+          status: response.status,
+          hasData: !!response.data
+        }
+      });
+      return response;
+    },
+
+    onError: (error: any) => {
+      auditLogger.log({
+        userId: 'system',
+        action: 'request_error',
+        resource: options.endpoint,
+        details: { 
+          error: error.message,
+          stack: error.stack?.substring(0, 500)
+        }
+      });
+      throw error;
+    }
+  };
+};
+
+// Pre-configured middleware for different endpoint types
+export const tradingMiddleware = createSecurityMiddleware({
+  endpoint: 'trading',
+  requireAuth: true,
+  maxRequestSize: 10000,
+  validateContent: true
+});
+
+export const socialMiddleware = createSecurityMiddleware({
+  endpoint: 'social',
+  requireAuth: true,
+  maxRequestSize: 50000,
+  validateContent: true
+});
+
+export const adminMiddleware = createSecurityMiddleware({
+  endpoint: 'admin',
+  requireAuth: true,
+  maxRequestSize: 100000,
+  validateContent: true
+});
+
+export const publicMiddleware = createSecurityMiddleware({
+  endpoint: 'public',
+  requireAuth: false,
+  maxRequestSize: 5000,
+  validateContent: true
+});
+
+// Legacy security middleware for backward compatibility
 export const securityMiddleware = {
   beforeRequest: (config: any) => {
-    // Add security headers
     config.headers = {
       ...config.headers,
       'X-Requested-With': 'XMLHttpRequest',
@@ -161,7 +292,6 @@ export const securityMiddleware = {
   },
   
   afterResponse: (response: any) => {
-    // Log successful requests
     auditLogger.log({
       action: 'api_request',
       resource: response.config?.url || 'unknown',
@@ -171,7 +301,6 @@ export const securityMiddleware = {
   },
   
   onError: (error: any) => {
-    // Log failed requests
     auditLogger.log({
       action: 'api_error',
       resource: error.config?.url || 'unknown',

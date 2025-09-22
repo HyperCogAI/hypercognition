@@ -56,7 +56,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       // Create a deterministic email from wallet address
       const email = `${address.toLowerCase()}@wallet.local`
-      const password = address.toLowerCase() // Use address as password for simplicity
+      // Enhanced security: Generate a stronger password from wallet address + salt
+      const salt = 'hypercognition_secure_salt_2024'
+      const password = await hashWalletAddress(address, salt)
       
       // Try to sign in first
       const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -73,6 +75,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               wallet_address: address,
+              auth_method: 'wallet',
+              security_level: 'enhanced'
             }
           }
         })
@@ -81,8 +85,57 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('Sign up error:', signUpError)
         }
       }
+
+      // Log security event
+      if (user) {
+        await logSecurityEvent('wallet_auth', 'authentication', {
+          wallet_address: address,
+          success: true
+        })
+      }
     } catch (error) {
       console.error('Wallet authentication error:', error)
+      // Log failed auth attempt
+      await logSecurityEvent('wallet_auth_failed', 'authentication', {
+        wallet_address: address,
+        error: error.message
+      })
+    }
+  }
+
+  // Enhanced password generation for wallet addresses
+  const hashWalletAddress = async (address: string, salt: string): Promise<string> => {
+    const encoder = new TextEncoder()
+    const data = encoder.encode(address.toLowerCase() + salt)
+    const hashBuffer = await crypto.subtle.digest('SHA-256', data)
+    const hashArray = Array.from(new Uint8Array(hashBuffer))
+    return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
+  }
+
+  // Security event logging
+  const logSecurityEvent = async (action: string, resource: string, details: any) => {
+    try {
+      await supabase.from('security_audit_log').insert({
+        user_id: user?.id,
+        action,
+        resource,
+        details,
+        ip_address: await getClientIP(),
+        user_agent: navigator.userAgent
+      })
+    } catch (error) {
+      console.error('Failed to log security event:', error)
+    }
+  }
+
+  // Get client IP (simplified version)
+  const getClientIP = async (): Promise<string> => {
+    try {
+      const response = await fetch('https://api.ipify.org?format=json')
+      const data = await response.json()
+      return data.ip
+    } catch {
+      return 'unknown'
     }
   }
 

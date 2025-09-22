@@ -1,1 +1,4 @@
 project_id = "xdinlkmqmjlrmunsjswf"
+
+[functions.security-middleware]
+verify_jwt = false

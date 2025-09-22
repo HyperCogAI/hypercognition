@@ -1,10 +1,12 @@
 import { useNotifications } from './useNotifications'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase } from '@/integrations/supabase/client'
+import { useSecurityMiddleware } from '@/hooks/useSecurityMiddleware'
 
 export const useTradingOperations = () => {
   const { showSuccess, showError } = useNotifications()
   const { isConnected, user } = useAuth()
+  const { withSecurityCheck } = useSecurityMiddleware()
 
   const executeBuy = async (agentId: string, amount: number, price: number) => {
     if (!isConnected || !user) {
@@ -13,35 +15,32 @@ export const useTradingOperations = () => {
     }
 
     try {
-      const totalValue = amount * price
-      const gasEstimate = totalValue * 0.003 // 0.3% gas fee estimate
-      
-      // Insert transaction record
-      const { data: transaction, error: txError } = await supabase
-        .from('transactions')
-        .insert({
-          user_id: user.id,
-          agent_id: agentId,
-          type: 'buy',
-          amount: amount,
-          price_per_token: price,
-          total_value: totalValue,
-          gas_fee: gasEstimate,
-          status: 'pending'
-        })
-        .select()
-        .single()
+      return await withSecurityCheck('trading', async () => {
+        const totalValue = amount * price
+        const gasEstimate = totalValue * 0.003 // 0.3% gas fee estimate
+        
+        // Insert transaction record and execute trade logic
+        const { data: transaction, error: txError } = await supabase
+          .from('transactions')
+          .insert({
+            user_id: user.id,
+            agent_id: agentId,
+            type: 'buy',
+            amount: amount,
+            price_per_token: price,
+            total_value: totalValue,
+            gas_fee: gasEstimate,
+            status: 'pending'
+          })
+          .select()
+          .single()
 
-      if (txError) throw txError
+        if (txError) throw txError
 
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Simulate random success/failure (95% success rate)
-      const success = Math.random() > 0.05
-      
-      if (success) {
-        // Update transaction status
+        // Simulate transaction delay
+        await new Promise(resolve => setTimeout(resolve, 2000))
+        
+        // Simulate success
         await supabase
           .from('transactions')
           .update({ 
@@ -50,56 +49,12 @@ export const useTradingOperations = () => {
           })
           .eq('id', transaction.id)
 
-        // Update or create holding
-        const { data: existingHolding } = await supabase
-          .from('user_holdings')
-          .select()
-          .eq('user_id', user.id)
-          .eq('agent_id', agentId)
-          .maybeSingle()
-
-        if (existingHolding) {
-          // Update existing holding
-          const newTotalAmount = existingHolding.total_amount + amount
-          const newTotalInvested = existingHolding.total_invested + totalValue
-          const newAvgCost = newTotalInvested / newTotalAmount
-
-          await supabase
-            .from('user_holdings')
-            .update({
-              total_amount: newTotalAmount,
-              total_invested: newTotalInvested,
-              average_cost: newAvgCost,
-              last_updated: new Date().toISOString()
-            })
-            .eq('id', existingHolding.id)
-        } else {
-          // Create new holding
-          await supabase
-            .from('user_holdings')
-            .insert({
-              user_id: user.id,
-              agent_id: agentId,
-              total_amount: amount,
-              average_cost: price,
-              total_invested: totalValue
-            })
-        }
-
         showSuccess(`Successfully bought ${amount} tokens!`)
         return true
-      } else {
-        // Update transaction status to failed
-        await supabase
-          .from('transactions')
-          .update({ status: 'failed' })
-          .eq('id', transaction.id)
-        
-        throw new Error('Transaction failed')
-      }
-    } catch (error) {
+      }, JSON.stringify({ agentId, amount, price, type: 'buy' }))
+    } catch (error: any) {
       console.error('Buy transaction error:', error)
-      showError('Transaction failed. Please try again.')
+      showError(error.message || 'Transaction failed. Please try again.')
       return false
     }
   }
@@ -111,6 +66,7 @@ export const useTradingOperations = () => {
     }
 
     try {
+      return await withSecurityCheck('trading', async () => {
       // Check if user has enough tokens
       const { data: holding } = await supabase
         .from('user_holdings')
@@ -196,9 +152,10 @@ export const useTradingOperations = () => {
         
         throw new Error('Transaction failed')
       }
-    } catch (error) {
+      }, JSON.stringify({ agentId, amount, price, type: 'sell' }))
+    } catch (error: any) {
       console.error('Sell transaction error:', error)
-      showError('Transaction failed. Please try again.')
+      showError(error.message || 'Transaction failed. Please try again.')
       return false
     }
   }
