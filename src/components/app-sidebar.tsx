@@ -38,6 +38,7 @@ import { NotificationCenter } from "@/components/ui/notification-center"
 const mainItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
+  { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },

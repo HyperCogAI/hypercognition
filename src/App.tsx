@@ -36,6 +36,7 @@ import PrivacyPolicy from "./pages/PrivacyPolicy";
 import TermsOfService from "./pages/TermsOfService";
 import CookiePolicy from "./pages/CookiePolicy";
 import Contact from "./pages/Contact";
+import { EnhancedTrading } from "./pages/EnhancedTrading";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations
@@ -70,7 +71,8 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
-                <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+            <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
@@ -111,6 +113,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />

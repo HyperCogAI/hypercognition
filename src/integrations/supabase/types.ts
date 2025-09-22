@@ -513,6 +513,42 @@ export type Database = {
         }
         Relationships: []
       }
+      order_executions: {
+        Row: {
+          created_at: string
+          details: Json | null
+          executed_amount: number
+          executed_price: number | null
+          execution_time: string
+          execution_type: string
+          fee_amount: number | null
+          id: string
+          order_id: string
+        }
+        Insert: {
+          created_at?: string
+          details?: Json | null
+          executed_amount?: number
+          executed_price?: number | null
+          execution_time?: string
+          execution_type: string
+          fee_amount?: number | null
+          id?: string
+          order_id: string
+        }
+        Update: {
+          created_at?: string
+          details?: Json | null
+          executed_amount?: number
+          executed_price?: number | null
+          execution_time?: string
+          execution_type?: string
+          fee_amount?: number | null
+          id?: string
+          order_id?: string
+        }
+        Relationships: []
+      }
       orders: {
         Row: {
           agent_id: string
@@ -522,9 +558,17 @@ export type Database = {
           fill_or_kill: boolean | null
           filled_amount: number
           id: string
+          order_source: string | null
+          parent_order_id: string | null
           price: number | null
+          reduce_only: boolean | null
           side: string
           status: string
+          stop_loss_price: number | null
+          take_profit_price: number | null
+          time_in_force: string | null
+          trailing_stop_percent: number | null
+          trailing_stop_price: number | null
           trigger_price: number | null
           type: string
           updated_at: string
@@ -538,9 +582,17 @@ export type Database = {
           fill_or_kill?: boolean | null
           filled_amount?: number
           id?: string
+          order_source?: string | null
+          parent_order_id?: string | null
           price?: number | null
+          reduce_only?: boolean | null
           side: string
           status?: string
+          stop_loss_price?: number | null
+          take_profit_price?: number | null
+          time_in_force?: string | null
+          trailing_stop_percent?: number | null
+          trailing_stop_price?: number | null
           trigger_price?: number | null
           type: string
           updated_at?: string
@@ -554,15 +606,31 @@ export type Database = {
           fill_or_kill?: boolean | null
           filled_amount?: number
           id?: string
+          order_source?: string | null
+          parent_order_id?: string | null
           price?: number | null
+          reduce_only?: boolean | null
           side?: string
           status?: string
+          stop_loss_price?: number | null
+          take_profit_price?: number | null
+          time_in_force?: string | null
+          trailing_stop_percent?: number | null
+          trailing_stop_price?: number | null
           trigger_price?: number | null
           type?: string
           updated_at?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "fk_orders_parent_order"
+            columns: ["parent_order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       platform_metrics: {
         Row: {
