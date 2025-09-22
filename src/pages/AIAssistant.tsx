@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, TrendingUp, Target, Shield, Zap, BarChart3 } from 'lucide-react';
+import { Brain, TrendingUp, Target, Shield, Zap, BarChart3, Mic } from 'lucide-react';
+import { VoiceAssistantModal } from '@/components/ai/VoiceAssistantModal';
 
 const AIAssistant = () => {
   const [selectedAgent, setSelectedAgent] = useState<string | undefined>();
@@ -118,10 +119,18 @@ const AIAssistant = () => {
                     Our AI assistant is trained on vast amounts of market data and uses advanced 
                     machine learning to provide you with the best possible trading insights.
                   </p>
-                  <Button onClick={() => setSelectedAgent(undefined)} size="lg" className="gap-2">
-                    <Zap className="h-4 w-4" />
-                    Try AI Assistant Now
-                  </Button>
+                  <div className="flex gap-3 justify-center">
+                    <Button onClick={() => setSelectedAgent(undefined)} size="lg" className="gap-2">
+                      <Zap className="h-4 w-4" />
+                      Try AI Assistant Now
+                    </Button>
+                    <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
+                      <Button variant="outline" size="lg" className="gap-2">
+                        <Mic className="h-4 w-4" />
+                        Voice Mode
+                      </Button>
+                    </VoiceAssistantModal>
+                  </div>
                 </CardContent>
               </Card>
             </TabsContent>

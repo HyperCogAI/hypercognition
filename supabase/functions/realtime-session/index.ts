@@ -1,84 +1,213 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
+}
+
+interface SessionConfig {
+  modalities: string[]
+  instructions: string
+  voice: string
+  input_audio_format: string
+  output_audio_format: string
+  turn_detection?: {
+    type: string
+    threshold?: number
+    prefix_padding_ms?: number
+    silence_duration_ms?: number
+  }
+  tools?: Array<{
+    type: string
+    name: string
+    description: string
+    parameters: object
+  }>
+  tool_choice?: string
+  temperature?: number
+  max_response_output_tokens?: number | string
+}
 
 serve(async (req) => {
-  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
-    const OPENAI_API_KEY = Deno.env.get('OPENAI_API_KEY');
-    if (!OPENAI_API_KEY) {
-      throw new Error('OPENAI_API_KEY is not set');
+    const openaiApiKey = Deno.env.get('OPENAI_API_KEY')
+    
+    if (!openaiApiKey) {
+      console.error('OpenAI API key not found')
+      return new Response(
+        JSON.stringify({ error: 'OpenAI API key not configured' }),
+        { 
+          status: 500, 
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
     }
 
-    console.log('Creating OpenAI Realtime session...');
+    console.log('Creating realtime session...')
 
-    // Request an ephemeral token from OpenAI
-    const response = await fetch("https://api.openai.com/v1/realtime/sessions", {
-      method: "POST",
-      headers: {
-        "Authorization": `Bearer ${OPENAI_API_KEY}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "gpt-4o-realtime-preview-2024-12-17",
-        voice: "alloy",
-        instructions: `You are an AI Trading Assistant for HyperCognition, a cutting-edge AI agent trading platform. 
+    // Enhanced session configuration for trading assistant
+    const sessionConfig: SessionConfig = {
+      modalities: ["text", "audio"],
+      instructions: `You are an expert AI Trading Assistant for HyperCognition, an AI agent trading platform. 
+
+Your role is to:
+- Provide intelligent trading advice and market analysis
+- Help users understand AI agent investments and market trends
+- Offer portfolio optimization suggestions
+- Explain trading strategies and risk management
+- Answer questions about the platform and its features
+- Maintain a professional yet friendly tone
 
 Key capabilities:
-- Provide real-time market analysis and trading insights
-- Help users understand AI agent performance and metrics
-- Offer trading advice based on market conditions
-- Explain complex trading concepts in simple terms
-- Guide users through platform features
+- Real-time market data analysis
+- AI agent performance evaluation  
+- Risk assessment and portfolio diversification advice
+- Trading signal interpretation
+- Educational content about DeFi and AI agent trading
 
-Trading context:
-- Users trade AI agents like cryptocurrencies
-- Each agent has price, volume, market cap, and performance metrics
-- Platform supports advanced orders, portfolio management, and real-time data
-- Users can create, buy, sell, and analyze AI trading agents
+Guidelines:
+- Be concise but thorough in your responses
+- Use clear, accessible language for complex trading concepts
+- Always consider risk management in recommendations
+- Provide specific, actionable insights when possible
+- Ask clarifying questions when needed for better advice
+- Stay focused on trading and platform-related topics
 
-Communication style:
-- Professional yet friendly
-- Concise and actionable
-- Use trading terminology appropriately
-- Always prioritize user education and risk awareness
-- Mention when you're fetching real-time data or performing analysis
-
-Available tools:
-- get_agent_data: Fetch current data for specific AI agents
-- get_market_overview: Get overall market conditions
-- analyze_portfolio: Analyze user's portfolio performance
-- get_trading_advice: Provide personalized trading recommendations
-
-Always be helpful, accurate, and focused on empowering users to make informed trading decisions.`
-      }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.text();
-      console.error('OpenAI API Error:', errorData);
-      throw new Error(`OpenAI API error: ${response.status} ${errorData}`);
+Respond in a natural, conversational tone suitable for voice interaction.`,
+      voice: "alloy",
+      input_audio_format: "pcm16",
+      output_audio_format: "pcm16",
+      turn_detection: {
+        type: "server_vad",
+        threshold: 0.5,
+        prefix_padding_ms: 300,
+        silence_duration_ms: 500
+      },
+      tools: [
+        {
+          type: "function",
+          name: "get_market_data",
+          description: "Get current market data for AI agents including price, volume, and trends",
+          parameters: {
+            type: "object",
+            properties: {
+              agent_symbols: {
+                type: "array",
+                items: { type: "string" },
+                description: "Array of agent symbols to get data for"
+              },
+              timeframe: {
+                type: "string",
+                enum: ["1h", "4h", "1d", "1w"],
+                description: "Timeframe for market data",
+                default: "1d"
+              }
+            }
+          }
+        },
+        {
+          type: "function", 
+          name: "analyze_portfolio",
+          description: "Analyze a user's portfolio for optimization opportunities and risk assessment",
+          parameters: {
+            type: "object",
+            properties: {
+              holdings: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    agent_id: { type: "string" },
+                    amount: { type: "number" },
+                    value: { type: "number" }
+                  }
+                },
+                description: "Current portfolio holdings"
+              }
+            },
+            required: ["holdings"]
+          }
+        },
+        {
+          type: "function",
+          name: "get_trading_signals",
+          description: "Generate trading signals and recommendations for specific AI agents",
+          parameters: {
+            type: "object", 
+            properties: {
+              agent_id: {
+                type: "string",
+                description: "ID of the AI agent to analyze"
+              },
+              risk_tolerance: {
+                type: "string",
+                enum: ["low", "medium", "high"],
+                description: "User's risk tolerance level",
+                default: "medium"
+              }
+            },
+            required: ["agent_id"]
+          }
+        }
+      ],
+      tool_choice: "auto",
+      temperature: 0.7,
+      max_response_output_tokens: "inf"
     }
 
-    const data = await response.json();
-    console.log("Session created successfully:", data.id);
+    console.log('Session config:', sessionConfig)
 
-    return new Response(JSON.stringify(data), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    // Create ephemeral session with OpenAI
+    const response = await fetch('https://api.openai.com/v1/realtime/sessions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${openaiApiKey}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(sessionConfig)
+    })
+
+    if (!response.ok) {
+      const errorText = await response.text()
+      console.error('OpenAI API error:', response.status, errorText)
+      return new Response(
+        JSON.stringify({ 
+          error: 'Failed to create session', 
+          details: errorText,
+          status: response.status 
+        }),
+        { 
+          status: response.status,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        }
+      )
+    }
+
+    const sessionData = await response.json()
+    console.log('Session created successfully:', sessionData.id)
+
+    return new Response(
+      JSON.stringify(sessionData),
+      {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
+
   } catch (error) {
-    console.error("Error creating session:", error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
+    console.error('Error creating realtime session:', error)
+    return new Response(
+      JSON.stringify({ 
+        error: 'Internal server error',
+        message: error instanceof Error ? error.message : 'Unknown error'
+      }),
+      {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+      }
+    )
   }
-});
+})

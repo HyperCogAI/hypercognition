@@ -7,7 +7,8 @@ import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import { useAITradingAssistant } from '@/hooks/useAITradingAssistant'
-import { Bot, User, Send, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap } from 'lucide-react'
+import { VoiceAssistantModal } from './VoiceAssistantModal'
+import { Bot, User, Send, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap, Mic } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface AITradingAssistantProps {
@@ -417,6 +418,19 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               )}
             </Button>
           </div>
+        </div>
+        {/* Voice Interface Toggle */}
+        <div className="p-4 border-t border-border/50">
+          <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={portfolio} marketData={marketData}>
+            <Button
+              variant="outline"
+              size="sm"
+              className="w-full flex items-center gap-2"
+            >
+              <Mic className="h-4 w-4" />
+              Switch to Voice Mode
+            </Button>
+          </VoiceAssistantModal>
         </div>
       </CardContent>
     </Card>
