@@ -555,33 +555,43 @@ export const useAdvancedNotifications = () => {
   // Update notification preferences
   const updatePreferences = async (typeId: string, channels: string[], enabled: boolean) => {
     try {
-      const existingPref = preferences.find(p => p.notification_type_id === typeId);
-      
-      if (existingPref) {
+      // Map notification types to database columns
+      const columnMapping: Record<string, string> = {
+        'price_alert': 'price_alerts_enabled',
+        'portfolio_updates': 'portfolio_updates_enabled',
+        'push_notifications': 'push_notifications_enabled',
+        'email_notifications': 'email_notifications_enabled',
+        'social_updates': 'social_updates_enabled',
+        'market_news': 'market_news_enabled'
+      };
+
+      const columnName = columnMapping[typeId];
+      if (columnName) {
         const { error } = await supabase
           .from('notification_preferences')
-          .update({ enabled })
-          .eq('id', existingPref.id);
+          .upsert({
+            user_id: user?.id,
+            [columnName]: enabled
+          });
 
         if (error) throw error;
+      }
 
+      // Update local state for mock preferences
+      const existingPref = preferences.find(p => p.notification_type_id === typeId);
+      if (existingPref) {
         setPreferences(prev => prev.map(pref => 
           pref.id === existingPref.id 
             ? { ...pref, channels, enabled }
             : pref
         ));
       } else {
-        const newPref: Omit<NotificationPreference, 'id'> = {
+        const mockPref: NotificationPreference = {
+          id: `pref_${Date.now()}`,
           user_id: user?.id || '',
           notification_type_id: typeId,
           channels,
           enabled
-        };
-
-        // For now, just update local state since we're using mock data
-        const mockPref: NotificationPreference = {
-          id: `pref_${Date.now()}`,
-          ...newPref
         };
         setPreferences(prev => [...prev, mockPref]);
       }
