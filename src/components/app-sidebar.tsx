@@ -153,7 +153,7 @@ export function AppSidebar() {
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground hover:text-foreground"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground"
                       >
                         <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                         {!isCollapsed && (
