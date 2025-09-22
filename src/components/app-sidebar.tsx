@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {

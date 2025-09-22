@@ -147,7 +147,7 @@ export function EnhancedTrading() {
                     agentId={selectedAgent.id}
                     agentSymbol={selectedAgent.symbol}
                     currentPrice={selectedAgent.price}
-                    onOrderCreated={() => {
+                    onOrderCreate={() => {
                       // Refresh orders or show success
                     }}
                   />

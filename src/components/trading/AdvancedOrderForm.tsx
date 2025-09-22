@@ -1,360 +1,324 @@
 import React, { useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { zodResolver } from '@hookform/resolvers/zod'
-import { z } from 'zod'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { Badge } from '@/components/ui/badge'
 import { Separator } from '@/components/ui/separator'
+import { Badge } from '@/components/ui/badge'
 import { useAdvancedOrders } from '@/hooks/useAdvancedOrders'
-import type { Database } from '@/integrations/supabase/types'
-
-type OrderInsert = Database['public']['Tables']['orders']['Insert']
-
-const orderSchema = z.object({
-  agent_id: z.string().min(1, 'Agent is required'),
-  type: z.enum(['market', 'limit', 'stop_market', 'stop_limit', 'trailing_stop']),
-  side: z.enum(['buy', 'sell']),
-  amount: z.number().positive('Amount must be positive'),
-  price: z.number().optional(),
-  trigger_price: z.number().optional(),
-  stop_loss_price: z.number().optional(),
-  take_profit_price: z.number().optional(),
-  trailing_stop_percent: z.number().optional(),
-  time_in_force: z.enum(['GTC', 'IOC', 'FOK', 'GTD']).default('GTC'),
-  reduce_only: z.boolean().default(false)
-})
-
-type OrderFormData = z.infer<typeof orderSchema>
+import { useAuth } from '@/contexts/AuthContext'
+import { 
+  Target, 
+  TrendingUp, 
+  TrendingDown, 
+  Shield, 
+  Clock, 
+  Settings,
+  Zap
+} from 'lucide-react'
 
 interface AdvancedOrderFormProps {
-  agentId?: string
-  agentSymbol?: string
-  currentPrice?: number
-  onOrderCreated?: () => void
+  agentId: string
+  agentSymbol: string
+  currentPrice: number
+  onOrderCreate?: () => void
 }
 
-export function AdvancedOrderForm({ 
-  agentId, 
-  agentSymbol, 
-  currentPrice = 0,
-  onOrderCreated 
-}: AdvancedOrderFormProps) {
-  const [orderType, setOrderType] = useState<'basic' | 'advanced'>('basic')
-  const { createOrder } = useAdvancedOrders()
+export function AdvancedOrderForm({ agentId, agentSymbol, currentPrice, onOrderCreate }: AdvancedOrderFormProps) {
+  const { user } = useAuth()
+  const { createOrder, executeMarketOrder, isCreating } = useAdvancedOrders()
+  
+  const [orderType, setOrderType] = useState<string>('market')
+  const [side, setSide] = useState<'buy' | 'sell'>('buy')
+  const [amount, setAmount] = useState('')
+  const [price, setPrice] = useState('')
+  const [triggerPrice, setTriggerPrice] = useState('')
+  const [stopLossPrice, setStopLossPrice] = useState('')
+  const [takeProfitPrice, setTakeProfitPrice] = useState('')
+  const [trailingStopPercent, setTrailingStopPercent] = useState('')
+  const [timeInForce, setTimeInForce] = useState<string>('GTC')
+  const [fillOrKill, setFillOrKill] = useState(false)
+  const [reduceOnly, setReduceOnly] = useState(false)
 
-  const {
-    register,
-    handleSubmit,
-    watch,
-    setValue,
-    formState: { errors, isSubmitting }
-  } = useForm<OrderFormData>({
-    resolver: zodResolver(orderSchema),
-    defaultValues: {
-      agent_id: agentId || '',
-      type: 'market',
-      side: 'buy',
-      time_in_force: 'GTC',
-      reduce_only: false
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!user?.id || !amount) return
+
+    const orderData = {
+      user_id: user.id,
+      agent_id: agentId,
+      type: orderType as any,
+      side,
+      amount: parseFloat(amount),
+      price: price ? parseFloat(price) : undefined,
+      trigger_price: triggerPrice ? parseFloat(triggerPrice) : undefined,
+      stop_loss_price: stopLossPrice ? parseFloat(stopLossPrice) : undefined,
+      take_profit_price: takeProfitPrice ? parseFloat(takeProfitPrice) : undefined,
+      trailing_stop_percent: trailingStopPercent ? parseFloat(trailingStopPercent) : undefined,
+      time_in_force: timeInForce as any,
+      fill_or_kill: fillOrKill,
+      reduce_only: reduceOnly,
+      order_source: 'manual'
     }
-  })
 
-  const watchedType = watch('type')
-  const watchedSide = watch('side')
-  const watchedAmount = watch('amount')
-  const watchedPrice = watch('price')
-
-  const onSubmit = async (data: OrderFormData) => {
     try {
-      const orderData: OrderInsert = {
-        user_id: '', // This will be set by RLS/auth
-        agent_id: data.agent_id,
-        type: data.type,
-        side: data.side,
-        amount: data.amount,
-        price: data.price || null,
-        trigger_price: data.trigger_price || null,
-        stop_loss_price: data.stop_loss_price || null,
-        take_profit_price: data.take_profit_price || null,
-        trailing_stop_percent: data.trailing_stop_percent || null,
-        time_in_force: data.time_in_force,
-        reduce_only: data.reduce_only
+      if (orderType === 'market') {
+        await executeMarketOrder(orderData)
+      } else {
+        await createOrder(orderData)
       }
-
-      await createOrder(orderData)
-      onOrderCreated?.()
+      
+      // Reset form
+      setAmount('')
+      setPrice('')
+      setTriggerPrice('')
+      setStopLossPrice('')
+      setTakeProfitPrice('')
+      setTrailingStopPercent('')
+      setFillOrKill(false)
+      setReduceOnly(false)
+      
+      onOrderCreate?.()
     } catch (error) {
-      console.error('Failed to create order:', error)
+      console.error('Order submission failed:', error)
     }
   }
 
-  const calculateTotal = () => {
-    if (!watchedAmount) return 0
-    if (watchedType === 'market') return watchedAmount * currentPrice
-    return watchedAmount * (watchedPrice || currentPrice)
+  const calculateOrderValue = () => {
+    const qty = parseFloat(amount) || 0
+    const orderPrice = orderType === 'market' ? currentPrice : (parseFloat(price) || currentPrice)
+    return qty * orderPrice
+  }
+
+  const getEstimatedFee = () => {
+    return calculateOrderValue() * 0.001 // 0.1% fee
   }
 
   return (
-    <Card className="w-full max-w-md">
+    <Card>
       <CardHeader>
-        <CardTitle className="flex items-center justify-between">
-          Advanced Trading
-          {agentSymbol && (
-            <Badge variant="outline">{agentSymbol}</Badge>
-          )}
+        <CardTitle className="flex items-center gap-2">
+          <Target className="h-5 w-5" />
+          Advanced Order - {agentSymbol}
+          <Badge variant="outline">${currentPrice.toFixed(4)}</Badge>
         </CardTitle>
       </CardHeader>
-      <CardContent className="space-y-4">
-        <Tabs value={orderType} onValueChange={(value) => setOrderType(value as 'basic' | 'advanced')}>
-          <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="basic">Basic</TabsTrigger>
-            <TabsTrigger value="advanced">Advanced</TabsTrigger>
-          </TabsList>
-
-          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 mt-4">
-            <TabsContent value="basic" className="space-y-4">
-              {/* Order Type */}
-              <div className="space-y-2">
-                <Label>Order Type</Label>
-                <Select
-                  value={watchedType}
-                  onValueChange={(value) => setValue('type', value as any)}
+      <CardContent>
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Order Type and Side */}
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Order Type</Label>
+              <Select value={orderType} onValueChange={setOrderType}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="market">Market</SelectItem>
+                  <SelectItem value="limit">Limit</SelectItem>
+                  <SelectItem value="stop_market">Stop Market</SelectItem>
+                  <SelectItem value="stop_limit">Stop Limit</SelectItem>
+                  <SelectItem value="trailing_stop">Trailing Stop</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            
+            <div>
+              <Label>Side</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <Button
+                  type="button"
+                  variant={side === 'buy' ? 'default' : 'outline'}
+                  onClick={() => setSide('buy')}
+                  className="w-full"
                 >
-                  <SelectTrigger>
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="market">Market</SelectItem>
-                    <SelectItem value="limit">Limit</SelectItem>
-                    <SelectItem value="stop_market">Stop Market</SelectItem>
-                    <SelectItem value="stop_limit">Stop Limit</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Buy/Sell */}
-              <div className="space-y-2">
-                <Label>Side</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    type="button"
-                    variant={watchedSide === 'buy' ? 'default' : 'outline'}
-                    onClick={() => setValue('side', 'buy')}
-                    className="text-green-600"
-                  >
-                    Buy
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={watchedSide === 'sell' ? 'default' : 'outline'}
-                    onClick={() => setValue('side', 'sell')}
-                    className="text-red-600"
-                  >
-                    Sell
-                  </Button>
-                </div>
-              </div>
-
-              {/* Amount */}
-              <div className="space-y-2">
-                <Label>Amount</Label>
-                <Input
-                  type="number"
-                  step="any"
-                  placeholder="0.00"
-                  {...register('amount', { valueAsNumber: true })}
-                />
-                {errors.amount && (
-                  <p className="text-sm text-destructive">{errors.amount.message}</p>
-                )}
-              </div>
-
-              {/* Price (for limit orders) */}
-              {(watchedType === 'limit' || watchedType === 'stop_limit') && (
-                <div className="space-y-2">
-                  <Label>Price</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="0.00"
-                    {...register('price', { valueAsNumber: true })}
-                  />
-                </div>
-              )}
-
-              {/* Trigger Price (for stop orders) */}
-              {(watchedType === 'stop_market' || watchedType === 'stop_limit') && (
-                <div className="space-y-2">
-                  <Label>Trigger Price</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="0.00"
-                    {...register('trigger_price', { valueAsNumber: true })}
-                  />
-                </div>
-              )}
-            </TabsContent>
-
-            <TabsContent value="advanced" className="space-y-4">
-              {/* All basic fields */}
-              <div className="space-y-4">
-                <div className="space-y-2">
-                  <Label>Order Type</Label>
-                  <Select
-                    value={watchedType}
-                    onValueChange={(value) => setValue('type', value as any)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="market">Market</SelectItem>
-                      <SelectItem value="limit">Limit</SelectItem>
-                      <SelectItem value="stop_market">Stop Market</SelectItem>
-                      <SelectItem value="stop_limit">Stop Limit</SelectItem>
-                      <SelectItem value="trailing_stop">Trailing Stop</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="grid grid-cols-2 gap-2">
-                  <Button
-                    type="button"
-                    variant={watchedSide === 'buy' ? 'default' : 'outline'}
-                    onClick={() => setValue('side', 'buy')}
-                    className="text-green-600"
-                  >
-                    Buy
-                  </Button>
-                  <Button
-                    type="button"
-                    variant={watchedSide === 'sell' ? 'default' : 'outline'}
-                    onClick={() => setValue('side', 'sell')}
-                    className="text-red-600"
-                  >
-                    Sell
-                  </Button>
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Amount</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="0.00"
-                    {...register('amount', { valueAsNumber: true })}
-                  />
-                </div>
-
-                {(watchedType === 'limit' || watchedType === 'stop_limit') && (
-                  <div className="space-y-2">
-                    <Label>Price</Label>
-                    <Input
-                      type="number"
-                      step="any"
-                      placeholder="0.00"
-                      {...register('price', { valueAsNumber: true })}
-                    />
-                  </div>
-                )}
-
-                {watchedType === 'trailing_stop' && (
-                  <div className="space-y-2">
-                    <Label>Trailing Stop %</Label>
-                    <Input
-                      type="number"
-                      step="any"
-                      placeholder="5.0"
-                      {...register('trailing_stop_percent', { valueAsNumber: true })}
-                    />
-                  </div>
-                )}
-              </div>
-
-              <Separator />
-
-              {/* Advanced Options */}
-              <div className="space-y-4">
-                <h4 className="font-medium">Risk Management</h4>
-                
-                <div className="space-y-2">
-                  <Label>Stop Loss</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="0.00"
-                    {...register('stop_loss_price', { valueAsNumber: true })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Take Profit</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="0.00"
-                    {...register('take_profit_price', { valueAsNumber: true })}
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <Label>Time in Force</Label>
-                  <Select
-                    value={watch('time_in_force')}
-                    onValueChange={(value) => setValue('time_in_force', value as any)}
-                  >
-                    <SelectTrigger>
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="GTC">Good Till Cancelled</SelectItem>
-                      <SelectItem value="IOC">Immediate or Cancel</SelectItem>
-                      <SelectItem value="FOK">Fill or Kill</SelectItem>
-                      <SelectItem value="GTD">Good Till Date</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="flex items-center space-x-2">
-                  <Switch
-                    id="reduce-only"
-                    checked={watch('reduce_only')}
-                    onCheckedChange={(checked) => setValue('reduce_only', checked)}
-                  />
-                  <Label htmlFor="reduce-only">Reduce Only</Label>
-                </div>
-              </div>
-            </TabsContent>
-
-            {/* Order Summary */}
-            <div className="bg-muted rounded-lg p-3 space-y-2">
-              <div className="flex justify-between text-sm">
-                <span>Current Price:</span>
-                <span>${currentPrice.toFixed(4)}</span>
-              </div>
-              <div className="flex justify-between text-sm">
-                <span>Total Value:</span>
-                <span>${calculateTotal().toFixed(2)}</span>
+                  <TrendingUp className="h-4 w-4 mr-2" />
+                  Buy
+                </Button>
+                <Button
+                  type="button"
+                  variant={side === 'sell' ? 'destructive' : 'outline'}
+                  onClick={() => setSide('sell')}
+                  className="w-full"
+                >
+                  <TrendingDown className="h-4 w-4 mr-2" />
+                  Sell
+                </Button>
               </div>
             </div>
+          </div>
 
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="w-full"
-              variant={watchedSide === 'buy' ? 'default' : 'destructive'}
-            >
-              {isSubmitting ? 'Creating Order...' : `${watchedSide === 'buy' ? 'Buy' : 'Sell'} ${agentSymbol || 'Token'}`}
-            </Button>
-          </form>
-        </Tabs>
+          {/* Amount */}
+          <div>
+            <Label>Amount ({agentSymbol})</Label>
+            <Input
+              type="number"
+              step="0.0001"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+              placeholder="0.0000"
+              required
+            />
+          </div>
+
+          {/* Price Fields */}
+          {(orderType === 'limit' || orderType === 'stop_limit') && (
+            <div>
+              <Label>Limit Price ($)</Label>
+              <Input
+                type="number"
+                step="0.0001"
+                value={price}
+                onChange={(e) => setPrice(e.target.value)}
+                placeholder={currentPrice.toFixed(4)}
+              />
+            </div>
+          )}
+
+          {(orderType === 'stop_market' || orderType === 'stop_limit') && (
+            <div>
+              <Label>Trigger Price ($)</Label>
+              <Input
+                type="number"
+                step="0.0001"
+                value={triggerPrice}
+                onChange={(e) => setTriggerPrice(e.target.value)}
+                placeholder={currentPrice.toFixed(4)}
+              />
+            </div>
+          )}
+
+          {orderType === 'trailing_stop' && (
+            <div>
+              <Label>Trailing Stop (%)</Label>
+              <Input
+                type="number"
+                step="0.1"
+                value={trailingStopPercent}
+                onChange={(e) => setTrailingStopPercent(e.target.value)}
+                placeholder="5.0"
+              />
+            </div>
+          )}
+
+          <Separator />
+
+          {/* Risk Management */}
+          <div className="space-y-4">
+            <h4 className="font-medium flex items-center gap-2">
+              <Shield className="h-4 w-4" />
+              Risk Management
+            </h4>
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label>Stop Loss ($)</Label>
+                <Input
+                  type="number"
+                  step="0.0001"
+                  value={stopLossPrice}
+                  onChange={(e) => setStopLossPrice(e.target.value)}
+                  placeholder="Optional"
+                />
+              </div>
+              
+              <div>
+                <Label>Take Profit ($)</Label>
+                <Input
+                  type="number"
+                  step="0.0001"
+                  value={takeProfitPrice}
+                  onChange={(e) => setTakeProfitPrice(e.target.value)}
+                  placeholder="Optional"
+                />
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Advanced Options */}
+          <div className="space-y-4">
+            <h4 className="font-medium flex items-center gap-2">
+              <Settings className="h-4 w-4" />
+              Advanced Options
+            </h4>
+            
+            <div>
+              <Label>Time in Force</Label>
+              <Select value={timeInForce} onValueChange={setTimeInForce}>
+                <SelectTrigger>
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="GTC">Good Till Cancelled</SelectItem>
+                  <SelectItem value="IOC">Immediate or Cancel</SelectItem>
+                  <SelectItem value="FOK">Fill or Kill</SelectItem>
+                  <SelectItem value="DAY">Day Order</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div className="flex items-center justify-between">
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="fill-or-kill"
+                  checked={fillOrKill}
+                  onCheckedChange={setFillOrKill}
+                />
+                <Label htmlFor="fill-or-kill">Fill or Kill</Label>
+              </div>
+              
+              <div className="flex items-center space-x-2">
+                <Switch
+                  id="reduce-only"
+                  checked={reduceOnly}
+                  onCheckedChange={setReduceOnly}
+                />
+                <Label htmlFor="reduce-only">Reduce Only</Label>
+              </div>
+            </div>
+          </div>
+
+          <Separator />
+
+          {/* Order Summary */}
+          <div className="space-y-2 p-4 bg-muted rounded-lg">
+            <h4 className="font-medium">Order Summary</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm">
+              <span>Order Value:</span>
+              <span className="font-medium">${calculateOrderValue().toFixed(2)}</span>
+              <span>Estimated Fee:</span>
+              <span className="font-medium">${getEstimatedFee().toFixed(2)}</span>
+              <span>Total Cost:</span>
+              <span className="font-medium">
+                ${(calculateOrderValue() + getEstimatedFee()).toFixed(2)}
+              </span>
+            </div>
+          </div>
+
+          {/* Submit Button */}
+          <Button
+            type="submit"
+            disabled={isCreating || !amount}
+            className="w-full"
+            size="lg"
+          >
+            {isCreating ? (
+              <>
+                <Clock className="h-4 w-4 mr-2 animate-spin" />
+                Processing...
+              </>
+            ) : (
+              <>
+                <Zap className="h-4 w-4 mr-2" />
+                {orderType === 'market' ? 'Execute Market Order' : 'Place Order'}
+              </>
+            )}
+          </Button>
+        </form>
       </CardContent>
     </Card>
   )
