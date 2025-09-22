@@ -48,6 +48,7 @@ import AdvancedNotifications from "./pages/AdvancedNotifications";
 import SocialTradingPage from "./pages/SocialTrading";
 import { RealTimeMarketPage } from "./pages/RealTimeMarket";
 import AIAssistant from "./pages/AIAssistant";
+import MultiExchange from "./pages/MultiExchange";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 
 // Create query client with performance optimizations
@@ -82,8 +83,9 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
-            <Route path="/enhanced-trading" element={<EnhancedTrading />} />
-            <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
+                <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+                <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
@@ -124,6 +126,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
           <Route path="/real-time-market" element={<RealTimeMarketPage />} />
