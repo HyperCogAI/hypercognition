@@ -262,6 +262,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_assistant_logs: {
+        Row: {
+          context: string | null
+          created_at: string | null
+          id: string
+          query: string
+          response: string
+          user_id: string | null
+        }
+        Insert: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          query: string
+          response: string
+          user_id?: string | null
+        }
+        Update: {
+          context?: string | null
+          created_at?: string | null
+          id?: string
+          query?: string
+          response?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       comment_likes: {
         Row: {
           comment_id: string
@@ -465,6 +492,39 @@ export type Database = {
           metric_type?: string
           metric_value?: number
           period?: string
+        }
+        Relationships: []
+      }
+      portfolios: {
+        Row: {
+          agent_id: string
+          amount: number
+          created_at: string | null
+          id: string
+          purchase_date: string | null
+          purchase_price: number | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          amount?: number
+          created_at?: string | null
+          id?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          created_at?: string | null
+          id?: string
+          purchase_date?: string | null
+          purchase_price?: number | null
+          updated_at?: string | null
+          user_id?: string | null
         }
         Relationships: []
       }
