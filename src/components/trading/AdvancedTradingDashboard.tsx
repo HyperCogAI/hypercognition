@@ -37,7 +37,7 @@ export const AdvancedTradingDashboard = ({
   // Generate price history for chart (simulated)
   const priceHistory = Array.from({ length: 50 }, (_, i) => ({
     time: new Date(Date.now() - (49 - i) * 60000).toLocaleTimeString(),
-    price: currentData ? currentData.price * (0.98 + Math.random() * 0.04) : 0
+    price: currentData ? currentData.last_price * (0.98 + Math.random() * 0.04) : 0
   }))
 
   return (
@@ -50,7 +50,7 @@ export const AdvancedTradingDashboard = ({
               <div>
                 <p className="text-sm text-muted-foreground">Price</p>
                 <p className="text-2xl font-bold">
-                  ${currentData?.price.toFixed(4) || '0.0000'}
+                  ${currentData?.last_price.toFixed(4) || '0.0000'}
                 </p>
               </div>
               <TrendingUp className="h-8 w-8 text-green-500" />
@@ -64,12 +64,12 @@ export const AdvancedTradingDashboard = ({
               <div>
                 <p className="text-sm text-muted-foreground">24h Change</p>
                 <p className={`text-2xl font-bold ${
-                  (currentData?.change24h || 0) >= 0 ? 'text-green-500' : 'text-red-500'
+                  (currentData?.change_percent_24h || 0) >= 0 ? 'text-green-500' : 'text-red-500'
                 }`}>
-                  {currentData?.change24h.toFixed(2) || '0.00'}%
+                  {currentData?.change_percent_24h.toFixed(2) || '0.00'}%
                 </p>
               </div>
-              {(currentData?.change24h || 0) >= 0 ? (
+              {(currentData?.change_percent_24h || 0) >= 0 ? (
                 <TrendingUp className="h-8 w-8 text-green-500" />
               ) : (
                 <TrendingDown className="h-8 w-8 text-red-500" />
@@ -84,7 +84,7 @@ export const AdvancedTradingDashboard = ({
               <div>
                 <p className="text-sm text-muted-foreground">Volume 24h</p>
                 <p className="text-2xl font-bold">
-                  ${currentData?.volume24h.toLocaleString() || '0'}
+                  ${currentData?.volume_24h.toLocaleString() || '0'}
                 </p>
               </div>
               <Activity className="h-8 w-8 text-blue-500" />
@@ -181,7 +181,7 @@ export const AdvancedTradingDashboard = ({
                     </span>
                   </div>
                   <div className="text-sm font-mono">
-                    ${(currentData?.price || 0).toFixed(4)}
+                    ${(currentData?.last_price || 0).toFixed(4)}
                   </div>
                 </div>
               ))}
@@ -197,19 +197,19 @@ export const AdvancedTradingDashboard = ({
             <div className="space-y-3">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">High 24h:</span>
-                <span className="font-mono">${currentData?.high24h.toFixed(4) || '0.0000'}</span>
+                <span className="font-mono">${currentData?.high_24h.toFixed(4) || '0.0000'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Low 24h:</span>
-                <span className="font-mono">${currentData?.low24h.toFixed(4) || '0.0000'}</span>
+                <span className="font-mono">${currentData?.low_24h.toFixed(4) || '0.0000'}</span>
               </div>
               <div className="flex justify-between">
-                <span className="text-muted-foreground">Market Cap:</span>
-                <span className="font-mono">${currentData?.marketCap?.toLocaleString() || 'N/A'}</span>
+                <span className="text-muted-foreground">VWAP 24h:</span>
+                <span className="font-mono">${currentData?.vwap_24h?.toFixed(4) || 'N/A'}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Last Update:</span>
-                <span className="text-sm">{new Date(currentData?.timestamp || Date.now()).toLocaleTimeString()}</span>
+                <span className="text-sm">{new Date(currentData?.updated_at || Date.now()).toLocaleTimeString()}</span>
               </div>
             </div>
           </CardContent>

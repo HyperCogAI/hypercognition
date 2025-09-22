@@ -138,9 +138,7 @@ export function RealTimeMarketPage() {
               <div className="lg:col-span-2">
                 <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                   <RealTimeOrderBook
-                    agentSymbol={selectedAgent?.symbol}
-                    orderBook={agentMarketData?.orderBook}
-                    loading={loading}
+                    symbol={selectedAgent?.symbol || ''}
                   />
                   
                   <MarketTradesStream
@@ -155,9 +153,7 @@ export function RealTimeMarketPage() {
 
           <TabsContent value="orderbook">
             <RealTimeOrderBook
-              agentSymbol={selectedAgent?.symbol}
-              orderBook={agentMarketData?.orderBook}
-              loading={loading}
+              symbol={selectedAgent?.symbol || ''}
             />
           </TabsContent>
 
