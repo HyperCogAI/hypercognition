@@ -41,6 +41,7 @@ import Contact from "./pages/Contact";
 import { EnhancedTrading } from "./pages/EnhancedTrading";
 import OrderManagement from "./pages/OrderManagement";
 import RiskManagement from "./pages/RiskManagement";
+import TechnicalAnalysis from "./pages/TechnicalAnalysis";
 import SocialTradingPage from "./pages/SocialTrading";
 import { RealTimeMarketPage } from "./pages/RealTimeMarket";
 import AIAssistant from "./pages/AIAssistant";
@@ -139,6 +140,7 @@ const AppLayout = () => {
                 <Route path="/communities" element={<Communities />} />
                 <Route path="/order-management" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
                 <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
+                <Route path="/technical-analysis" element={<ProtectedRoute><TechnicalAnalysis /></ProtectedRoute>} />
                 <Route path="/social-trading" element={<SocialTradingPage />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
