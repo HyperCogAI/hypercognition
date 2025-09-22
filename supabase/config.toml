@@ -11,3 +11,6 @@ verify_jwt = false
 
 [functions.security-monitoring]
 verify_jwt = true
+
+[functions.ai-trading-assistant]
+verify_jwt = false

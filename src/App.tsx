@@ -18,6 +18,7 @@ import LogoGenerator from "./pages/LogoGenerator";
 import AgentLogoShowcase from "./pages/AgentLogoShowcase";
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
+import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Index from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
@@ -87,6 +88,7 @@ const AppLayout = () => {
               </Routes>
             </Suspense>
           </ErrorBoundary>
+          <AITradingAssistant />
         </main>
         <MobileNavigation />
       </div>
@@ -125,6 +127,7 @@ const AppLayout = () => {
               </Routes>
             </Suspense>
           </ErrorBoundary>
+          <AITradingAssistant />
         </main>
       </div>
     </SidebarProvider>
