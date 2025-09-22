@@ -1,4 +1,4 @@
-import { Suspense } from "react"
+import { Suspense, lazy } from "react"
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -138,7 +138,11 @@ const AppLayout = () => {
           <Route path="/real-time-market" element={<RealTimeMarketPage />} />
           <Route path="/ai-assistant" element={<AIAssistant />} />
                 <Route path="/marketplace" element={<Marketplace />} />
-                <Route path="/customer-support" element={<CustomerSupport />} />
+          <Route path="/customer-support" element={<CustomerSupport />} />
+          <Route path="/defi" element={<DeFi />} />
+          <Route path="/nft-marketplace" element={<NFTMarketplace />} />
+          <Route path="/staking" element={<Staking />} />
+          <Route path="/referrals" element={<Referrals />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />

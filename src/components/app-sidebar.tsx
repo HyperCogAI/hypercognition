@@ -37,6 +37,10 @@ const mainItems = [
   { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
+  { title: "DeFi", url: "/defi", icon: TrendingUp },
+  { title: "NFT Marketplace", url: "/nft-marketplace", icon: Users },
+  { title: "Staking", url: "/staking", icon: Shield },
+  { title: "Referrals", url: "/referrals", icon: Star },
   { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
 ]
 
