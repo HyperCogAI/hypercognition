@@ -26,7 +26,7 @@ interface AgentCardProps {
 
 export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
   const navigate = useNavigate()
-  const priceData = usePriceSimulation(parseFloat(agent.fdv?.replace(/[$m,]/g, '') || '7.41'))
+  const priceData = usePriceSimulation(agent.id, parseFloat(agent.fdv?.replace(/[$m,]/g, '') || '7.41'))
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites()
   const [isHovered, setIsHovered] = useState(false)
   

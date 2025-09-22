@@ -6,6 +6,7 @@ import { HyperCTA } from "@/components/sections/HyperCTA"
 import { Footer } from "@/components/sections/Footer"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { generateWebsiteStructuredData, generateOrganizationStructuredData } from "@/components/seo/StructuredData"
+import { RealMarketDataDemo } from "@/components/trading/RealMarketDataDemo"
 
 const Index = () => {
   const structuredData = [
@@ -26,6 +27,7 @@ const Index = () => {
         <Stats />
         <HyperFeatures />
         <AgentMarketplace />
+        <RealMarketDataDemo />
         <HyperCTA />
       </main>
       <Footer />
