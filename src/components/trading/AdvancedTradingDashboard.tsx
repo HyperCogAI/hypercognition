@@ -5,7 +5,7 @@ import { ExchangeSelector } from './ExchangeSelector'
 import { RealTimeOrderBook } from './RealTimeOrderBook'
 import { TradingPanel } from './TradingPanel'
 import { Badge } from '@/components/ui/badge'
-import { useRealTimeMarketData, useWebSocketMarketData } from '@/hooks/useRealTimeMarketData'
+import { useRealTimeMarketData } from '@/hooks/useRealTimeMarketData'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
 import { TrendingUp, TrendingDown, Activity, Zap } from 'lucide-react'
 
@@ -28,11 +28,12 @@ export const AdvancedTradingDashboard = ({
   const [activeTab, setActiveTab] = useState('trading')
   
   // Real-time market data
-  const { data: marketData, loading: marketLoading } = useRealTimeMarketData([agentSymbol])
-  const { marketData: wsData, connected } = useWebSocketMarketData([agentSymbol])
+  const { marketData, loading, getAgentData } = useRealTimeMarketData([agentId])
   
-  const currentData = wsData[agentSymbol] || marketData.find(d => d.symbol === agentSymbol)
+  const agentData = getAgentData(agentId)
   
+  const currentData = agentData.ticker
+  const connected = marketData.isConnected
   // Generate price history for chart (simulated)
   const priceHistory = Array.from({ length: 50 }, (_, i) => ({
     time: new Date(Date.now() - (49 - i) * 60000).toLocaleTimeString(),

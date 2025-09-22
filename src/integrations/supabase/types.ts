@@ -384,6 +384,71 @@ export type Database = {
         }
         Relationships: []
       }
+      market_data_feeds: {
+        Row: {
+          agent_id: string
+          ask_price: number | null
+          bid_price: number | null
+          change_24h: number | null
+          change_percent_24h: number | null
+          high_24h: number | null
+          id: string
+          last_trade_size: number | null
+          low_24h: number | null
+          metadata: Json | null
+          open_24h: number | null
+          price: number
+          source: string | null
+          spread: number | null
+          timestamp: string
+          volume_24h: number | null
+        }
+        Insert: {
+          agent_id: string
+          ask_price?: number | null
+          bid_price?: number | null
+          change_24h?: number | null
+          change_percent_24h?: number | null
+          high_24h?: number | null
+          id?: string
+          last_trade_size?: number | null
+          low_24h?: number | null
+          metadata?: Json | null
+          open_24h?: number | null
+          price: number
+          source?: string | null
+          spread?: number | null
+          timestamp?: string
+          volume_24h?: number | null
+        }
+        Update: {
+          agent_id?: string
+          ask_price?: number | null
+          bid_price?: number | null
+          change_24h?: number | null
+          change_percent_24h?: number | null
+          high_24h?: number | null
+          id?: string
+          last_trade_size?: number | null
+          low_24h?: number | null
+          metadata?: Json | null
+          open_24h?: number | null
+          price?: number
+          source?: string | null
+          spread?: number | null
+          timestamp?: string
+          volume_24h?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_data_feeds_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       market_events: {
         Row: {
           affected_agents: string[] | null
@@ -422,6 +487,103 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      market_tickers: {
+        Row: {
+          agent_id: string
+          best_ask: number | null
+          best_bid: number | null
+          change_24h: number | null
+          change_percent_24h: number | null
+          high_24h: number | null
+          id: string
+          last_price: number
+          low_24h: number | null
+          trades_count_24h: number | null
+          updated_at: string
+          volume_24h: number | null
+          vwap_24h: number | null
+        }
+        Insert: {
+          agent_id: string
+          best_ask?: number | null
+          best_bid?: number | null
+          change_24h?: number | null
+          change_percent_24h?: number | null
+          high_24h?: number | null
+          id?: string
+          last_price: number
+          low_24h?: number | null
+          trades_count_24h?: number | null
+          updated_at?: string
+          volume_24h?: number | null
+          vwap_24h?: number | null
+        }
+        Update: {
+          agent_id?: string
+          best_ask?: number | null
+          best_bid?: number | null
+          change_24h?: number | null
+          change_percent_24h?: number | null
+          high_24h?: number | null
+          id?: string
+          last_price?: number
+          low_24h?: number | null
+          trades_count_24h?: number | null
+          updated_at?: string
+          volume_24h?: number | null
+          vwap_24h?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_tickers_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: true
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      market_trades: {
+        Row: {
+          agent_id: string
+          id: string
+          is_maker: boolean | null
+          price: number
+          side: string
+          size: number
+          timestamp: string
+          trade_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          id?: string
+          is_maker?: boolean | null
+          price: number
+          side: string
+          size: number
+          timestamp?: string
+          trade_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          id?: string
+          is_maker?: boolean | null
+          price?: number
+          side?: string
+          size?: number
+          timestamp?: string
+          trade_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "market_trades_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       notification_preferences: {
         Row: {
@@ -512,6 +674,47 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      order_book: {
+        Row: {
+          agent_id: string
+          id: string
+          level_index: number
+          price: number
+          side: string
+          size: number
+          timestamp: string
+          total: number
+        }
+        Insert: {
+          agent_id: string
+          id?: string
+          level_index?: number
+          price: number
+          side: string
+          size: number
+          timestamp?: string
+          total: number
+        }
+        Update: {
+          agent_id?: string
+          id?: string
+          level_index?: number
+          price?: number
+          side?: string
+          size?: number
+          timestamp?: string
+          total?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "order_book_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       order_executions: {
         Row: {
@@ -1098,6 +1301,10 @@ export type Database = {
         Returns: boolean
       }
       cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      cleanup_old_market_data: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }

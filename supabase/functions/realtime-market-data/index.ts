@@ -1,238 +1,182 @@
-import "https://deno.land/x/xhr@0.1.0/mod.ts";
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-// Initialize Supabase client
-const supabaseUrl = Deno.env.get('SUPABASE_URL') || '';
-const supabaseServiceKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') || '';
-const supabase = createClient(supabaseUrl, supabaseServiceKey);
-
-interface MarketDataRequest {
-  symbols?: string[];
-  metrics?: string[];
-  timeframe?: string;
 }
-
-interface TechnicalIndicator {
-  name: string;
-  value: number;
-  signal: 'BUY' | 'SELL' | 'HOLD';
-  confidence: number;
-}
-
-interface MarketSentiment {
-  symbol: string;
-  sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
-  score: number;
-  indicators: TechnicalIndicator[];
-  volume_trend: string;
-  price_momentum: string;
-  social_sentiment?: number;
-}
-
-// Simulate real-time market data (in production, connect to real APIs)
-const generateMarketData = async (symbols: string[]) => {
-  const marketData: any[] = [];
-  
-  for (const symbol of symbols) {
-    // Get current agent data
-    const { data: agent } = await supabase
-      .from('agents')
-      .select('*')
-      .eq('symbol', symbol)
-      .single();
-    
-    if (!agent) continue;
-
-    const currentPrice = parseFloat(agent.price) || 1.0;
-    const basePrice = currentPrice;
-    
-    // Generate realistic price movement (±5%)
-    const priceChange = (Math.random() - 0.5) * 0.1 * basePrice;
-    const newPrice = Math.max(0.001, basePrice + priceChange);
-    const changePercent = ((newPrice - basePrice) / basePrice) * 100;
-    
-    // Generate technical indicators
-    const rsi = 30 + Math.random() * 40; // RSI between 30-70
-    const macd = (Math.random() - 0.5) * 0.02;
-    const bb_position = Math.random(); // Position in Bollinger Bands
-    
-    // Determine signals
-    const rsiSignal = rsi > 70 ? 'SELL' : rsi < 30 ? 'BUY' : 'HOLD';
-    const macdSignal = macd > 0 ? 'BUY' : 'SELL';
-    const bbSignal = bb_position > 0.8 ? 'SELL' : bb_position < 0.2 ? 'BUY' : 'HOLD';
-    
-    const indicators: TechnicalIndicator[] = [
-      {
-        name: 'RSI',
-        value: rsi,
-        signal: rsiSignal,
-        confidence: Math.abs(rsi - 50) / 20
-      },
-      {
-        name: 'MACD',
-        value: macd,
-        signal: macdSignal,
-        confidence: Math.abs(macd) * 50
-      },
-      {
-        name: 'Bollinger Bands',
-        value: bb_position,
-        signal: bbSignal,
-        confidence: Math.abs(bb_position - 0.5) * 2
-      }
-    ];
-    
-    // Calculate overall sentiment
-    const buySignals = indicators.filter(i => i.signal === 'BUY').length;
-    const sellSignals = indicators.filter(i => i.signal === 'SELL').length;
-    
-    let sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL' = 'NEUTRAL';
-    let sentimentScore = 0;
-    
-    if (buySignals > sellSignals) {
-      sentiment = 'BULLISH';
-      sentimentScore = (buySignals / indicators.length) * 100;
-    } else if (sellSignals > buySignals) {
-      sentiment = 'BEARISH';
-      sentimentScore = (sellSignals / indicators.length) * 100;
-    } else {
-      sentimentScore = 50;
-    }
-    
-    const volumeTrend = Math.random() > 0.5 ? 'INCREASING' : 'DECREASING';
-    const priceMomentum = changePercent > 0 ? 'POSITIVE' : 'NEGATIVE';
-    
-    const marketSentiment: MarketSentiment = {
-      symbol,
-      sentiment,
-      score: sentimentScore,
-      indicators,
-      volume_trend: volumeTrend,
-      price_momentum: priceMomentum,
-      social_sentiment: 40 + Math.random() * 20 // 40-60 range
-    };
-    
-    marketData.push({
-      symbol,
-      name: agent.name,
-      price: newPrice,
-      change_24h: changePercent,
-      volume_24h: agent.volume_24h * (0.8 + Math.random() * 0.4), // ±20% variation
-      market_cap: newPrice * 1000000, // Simplified market cap calculation
-      sentiment: marketSentiment,
-      last_updated: new Date().toISOString(),
-      technical_analysis: {
-        rsi: rsi,
-        macd: macd,
-        bollinger_position: bb_position,
-        sma_20: newPrice * (0.95 + Math.random() * 0.1),
-        sma_50: newPrice * (0.90 + Math.random() * 0.2),
-        volume_sma: agent.volume_24h || 100000
-      }
-    });
-  }
-  
-  return marketData;
-};
 
 serve(async (req) => {
+  // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
   }
 
   try {
-    const { symbols, metrics, timeframe }: MarketDataRequest = await req.json();
-    
-    // Default to top 10 agents if no symbols provided
-    let targetSymbols = symbols;
-    if (!targetSymbols || targetSymbols.length === 0) {
-      const { data: topAgents } = await supabase
-        .from('agents')
-        .select('symbol')
-        .order('market_cap', { ascending: false })
-        .limit(10);
+    const supabaseUrl = Deno.env.get('SUPABASE_URL')!
+    const supabaseKey = Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
+    const supabase = createClient(supabaseUrl, supabaseKey)
+
+    // Get all agents
+    const { data: agents, error: agentsError } = await supabase
+      .from('agents')
+      .select('id, symbol, price')
+      .limit(10)
+
+    if (agentsError) {
+      console.error('Error fetching agents:', agentsError)
+      return new Response(JSON.stringify({ error: 'Failed to fetch agents' }), {
+        status: 500,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    console.log(`Generating market data for ${agents.length} agents`)
+
+    for (const agent of agents) {
+      const basePrice = parseFloat(agent.price) || 1.0
       
-      targetSymbols = topAgents?.map(a => a.symbol) || [];
-    }
-    
-    const marketData = await generateMarketData(targetSymbols);
-    
-    // Update price history for trending analysis
-    for (const data of marketData) {
-      try {
-        // Update current agent price
-        await supabase
-          .from('agents')
-          .update({
-            price: data.price,
-            change_24h: data.change_24h,
-            volume_24h: data.volume_24h,
-            market_cap: data.market_cap,
-            updated_at: new Date().toISOString()
-          })
-          .eq('symbol', data.symbol);
-          
-        // Add to price history
-        await supabase
-          .from('price_history')
-          .insert({
-            agent_id: data.symbol, // Using symbol as ID for simplicity
-            price: data.price,
-            volume: data.volume_24h,
-            market_cap: data.market_cap,
-            timestamp: new Date().toISOString()
-          });
-      } catch (error) {
-        console.warn(`Could not update data for ${data.symbol}:`, error);
+      // Generate realistic price movements
+      const priceChange = (Math.random() - 0.5) * 0.1 // +/- 5% max change
+      const newPrice = basePrice * (1 + priceChange)
+      const change24h = priceChange * 100
+      
+      // Generate volume and other metrics
+      const volume24h = Math.random() * 1000000 + 50000
+      const high24h = newPrice * (1 + Math.random() * 0.05)
+      const low24h = newPrice * (1 - Math.random() * 0.05)
+      const tradesCount = Math.floor(Math.random() * 500) + 100
+      
+      // Generate bid/ask spread
+      const spreadPercentage = 0.001 + Math.random() * 0.002 // 0.1-0.3% spread
+      const bestBid = newPrice * (1 - spreadPercentage / 2)
+      const bestAsk = newPrice * (1 + spreadPercentage / 2)
+      const vwap = newPrice * (0.98 + Math.random() * 0.04)
+
+      // Insert market data feed
+      const { error: feedError } = await supabase
+        .from('market_data_feeds')
+        .insert({
+          agent_id: agent.id,
+          price: newPrice,
+          volume_24h: volume24h,
+          high_24h: high24h,
+          low_24h: low24h,
+          open_24h: basePrice,
+          change_24h: newPrice - basePrice,
+          change_percent_24h: change24h,
+          bid_price: bestBid,
+          ask_price: bestAsk,
+          spread: bestAsk - bestBid,
+          source: 'simulator'
+        })
+
+      if (feedError) {
+        console.error(`Error inserting market data for ${agent.symbol}:`, feedError)
       }
+
+      // Generate order book data
+      const orderBookEntries = []
+      
+      // Generate bids (buy orders)
+      for (let i = 0; i < 10; i++) {
+        const price = bestBid * (1 - (i * 0.001))
+        const size = Math.random() * 1000 + 100
+        orderBookEntries.push({
+          agent_id: agent.id,
+          side: 'buy',
+          price: price,
+          size: size,
+          total: size,
+          level_index: i + 1
+        })
+      }
+      
+      // Generate asks (sell orders)
+      for (let i = 0; i < 10; i++) {
+        const price = bestAsk * (1 + (i * 0.001))
+        const size = Math.random() * 1000 + 100
+        orderBookEntries.push({
+          agent_id: agent.id,
+          side: 'sell',
+          price: price,
+          size: size,
+          total: size,
+          level_index: i + 1
+        })
+      }
+
+      // Clear old order book data and insert new
+      await supabase
+        .from('order_book')
+        .delete()
+        .eq('agent_id', agent.id)
+
+      const { error: orderBookError } = await supabase
+        .from('order_book')
+        .insert(orderBookEntries)
+
+      if (orderBookError) {
+        console.error(`Error inserting order book for ${agent.symbol}:`, orderBookError)
+      }
+
+      // Generate recent trades
+      const trades = []
+      for (let i = 0; i < 5; i++) {
+        const tradePrice = newPrice * (0.995 + Math.random() * 0.01)
+        const tradeSize = Math.random() * 500 + 50
+        const side = Math.random() > 0.5 ? 'buy' : 'sell'
+        const timestamp = new Date(Date.now() - (i * 60000)) // Last 5 minutes
+        
+        trades.push({
+          agent_id: agent.id,
+          trade_id: `${agent.id}_${Date.now()}_${i}`,
+          price: tradePrice,
+          size: tradeSize,
+          side: side,
+          timestamp: timestamp.toISOString(),
+          is_maker: Math.random() > 0.5
+        })
+      }
+
+      const { error: tradesError } = await supabase
+        .from('market_trades')
+        .insert(trades)
+
+      if (tradesError) {
+        console.error(`Error inserting trades for ${agent.symbol}:`, tradesError)
+      }
+
+      // Update agent price
+      await supabase
+        .from('agents')
+        .update({ 
+          price: newPrice,
+          change_24h: change24h,
+          volume_24h: volume24h
+        })
+        .eq('id', agent.id)
     }
-    
-    // Calculate market overview metrics
-    const totalMarketCap = marketData.reduce((sum, d) => sum + d.market_cap, 0);
-    const avgChange = marketData.reduce((sum, d) => sum + d.change_24h, 0) / marketData.length;
-    const bullishCount = marketData.filter(d => d.sentiment.sentiment === 'BULLISH').length;
-    const bearishCount = marketData.filter(d => d.sentiment.sentiment === 'BEARISH').length;
-    
-    const marketOverview = {
-      total_market_cap: totalMarketCap,
-      average_change_24h: avgChange,
-      bullish_sentiment_ratio: bullishCount / marketData.length,
-      bearish_sentiment_ratio: bearishCount / marketData.length,
-      active_trading_pairs: marketData.length,
-      market_trend: avgChange > 0 ? 'BULLISH' : 'BEARISH',
-      volatility_index: Math.abs(avgChange) * 10, // Simplified volatility measure
-      last_updated: new Date().toISOString()
-    };
-    
+
     return new Response(
-      JSON.stringify({
-        success: true,
-        data: marketData,
-        overview: marketOverview,
+      JSON.stringify({ 
+        success: true, 
+        message: `Generated market data for ${agents.length} agents`,
         timestamp: new Date().toISOString()
       }),
       {
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    );
+    )
 
   } catch (error) {
-    console.error('Real-time market data error:', error);
+    console.error('Error in market data simulation:', error)
     return new Response(
-      JSON.stringify({ 
-        success: false,
-        error: error.message 
-      }),
+      JSON.stringify({ error: 'Internal server error' }),
       {
         status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       }
-    );
+    )
   }
-});
+})

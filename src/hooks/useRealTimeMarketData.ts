@@ -1,272 +1,240 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
-import { exchangeManager } from '@/lib/exchanges/exchangeManager'
-import { MarketData, OrderBook } from '@/lib/exchanges/baseExchange'
+import { useState, useEffect, useCallback } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { useToast } from '@/hooks/use-toast'
+import type { Database } from '@/integrations/supabase/types'
 
-interface MarketDataState {
-  data: MarketData[]
-  loading: boolean
-  error: string | null
-  lastUpdate: number
+type MarketDataFeed = Database['public']['Tables']['market_data_feeds']['Row']
+type OrderBookEntry = Database['public']['Tables']['order_book']['Row']
+type MarketTicker = Database['public']['Tables']['market_tickers']['Row']
+type MarketTrade = Database['public']['Tables']['market_trades']['Row']
+
+export interface OrderBookData {
+  bids: OrderBookEntry[]
+  asks: OrderBookEntry[]
+  spread: number
+  midPrice: number
 }
 
-interface OrderBookState {
-  data: OrderBook | null
-  loading: boolean
-  error: string | null
-  lastUpdate: number
+export interface MarketDataState {
+  tickers: Map<string, MarketTicker>
+  orderBooks: Map<string, OrderBookData>
+  recentTrades: Map<string, MarketTrade[]>
+  isConnected: boolean
+  lastUpdate: Date | null
 }
 
-// Real-time market data hook
-export const useRealTimeMarketData = (symbols: string[], refreshInterval: number = 5000) => {
-  const [state, setState] = useState<MarketDataState>({
-    data: [],
-    loading: true,
-    error: null,
-    lastUpdate: 0
+export function useRealTimeMarketData(agentIds?: string[]) {
+  const [marketData, setMarketData] = useState<MarketDataState>({
+    tickers: new Map(),
+    orderBooks: new Map(),
+    recentTrades: new Map(),
+    isConnected: false,
+    lastUpdate: null
   })
+  const [loading, setLoading] = useState(true)
+  const { toast } = useToast()
 
-  const intervalRef = useRef<NodeJS.Timeout>()
-  const mountedRef = useRef(true)
-
-  const fetchMarketData = useCallback(async () => {
-    if (!symbols.length) return
-
+  // Fetch initial market data
+  const fetchInitialData = useCallback(async () => {
     try {
-      setState(prev => ({ ...prev, loading: true, error: null }))
+      const agentFilter = agentIds ? agentIds : undefined
+
+      // Fetch market tickers
+      let tickersQuery = supabase.from('market_tickers').select('*')
+      if (agentFilter) {
+        tickersQuery = tickersQuery.in('agent_id', agentFilter)
+      }
+      const { data: tickersData, error: tickersError } = await tickersQuery
+
+      if (tickersError) throw tickersError
+
+      // Fetch order book data
+      let orderBookQuery = supabase
+        .from('order_book')
+        .select('*')
+        .order('price', { ascending: false })
+        .limit(20)
       
-      const marketData = await exchangeManager.getMarketData(symbols)
+      if (agentFilter) {
+        orderBookQuery = orderBookQuery.in('agent_id', agentFilter)
+      }
+      const { data: orderBookData, error: orderBookError } = await orderBookQuery
+
+      if (orderBookError) throw orderBookError
+
+      // Fetch recent trades
+      let tradesQuery = supabase
+        .from('market_trades')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(50)
       
-      if (mountedRef.current) {
-        setState({
-          data: marketData,
-          loading: false,
-          error: null,
-          lastUpdate: Date.now()
-        })
+      if (agentFilter) {
+        tradesQuery = tradesQuery.in('agent_id', agentFilter)
       }
-    } catch (error) {
-      console.error('Failed to fetch market data:', error)
-      if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          loading: false,
-          error: error instanceof Error ? error.message : 'Failed to fetch market data'
-        }))
-      }
-    }
-  }, [symbols])
+      const { data: tradesData, error: tradesError } = await tradesQuery
 
-  useEffect(() => {
-    mountedRef.current = true
-    
-    // Initial fetch
-    fetchMarketData()
+      if (tradesError) throw tradesError
 
-    // Set up polling
-    intervalRef.current = setInterval(fetchMarketData, refreshInterval)
+      // Process data
+      const tickersMap = new Map<string, MarketTicker>()
+      tickersData?.forEach(ticker => {
+        tickersMap.set(ticker.agent_id, ticker)
+      })
 
-    return () => {
-      mountedRef.current = false
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [fetchMarketData, refreshInterval])
+      const orderBooksMap = new Map<string, OrderBookData>()
+      const tradesMap = new Map<string, MarketTrade[]>()
 
-  const refetch = useCallback(() => {
-    fetchMarketData()
-  }, [fetchMarketData])
+      // Group order book data by agent
+      const orderBooksByAgent = new Map<string, OrderBookEntry[]>()
+      orderBookData?.forEach(entry => {
+        if (!orderBooksByAgent.has(entry.agent_id)) {
+          orderBooksByAgent.set(entry.agent_id, [])
+        }
+        orderBooksByAgent.get(entry.agent_id)!.push(entry)
+      })
 
-  return {
-    ...state,
-    refetch
-  }
-}
-
-// Real-time order book hook
-export const useRealTimeOrderBook = (symbol: string, limit: number = 20, refreshInterval: number = 1000) => {
-  const [state, setState] = useState<OrderBookState>({
-    data: null,
-    loading: true,
-    error: null,
-    lastUpdate: 0
-  })
-
-  const intervalRef = useRef<NodeJS.Timeout>()
-  const mountedRef = useRef(true)
-
-  const fetchOrderBook = useCallback(async () => {
-    if (!symbol) return
-
-    try {
-      setState(prev => ({ ...prev, loading: true, error: null }))
-      
-      const orderBook = await exchangeManager.getOrderBook(symbol, limit)
-      
-      if (mountedRef.current) {
-        setState({
-          data: orderBook,
-          loading: false,
-          error: null,
-          lastUpdate: Date.now()
-        })
-      }
-    } catch (error) {
-      console.error('Failed to fetch order book:', error)
-      if (mountedRef.current) {
-        setState(prev => ({
-          ...prev,
-          loading: false,
-          error: error instanceof Error ? error.message : 'Failed to fetch order book'
-        }))
-      }
-    }
-  }, [symbol, limit])
-
-  useEffect(() => {
-    mountedRef.current = true
-    
-    // Initial fetch
-    fetchOrderBook()
-
-    // Set up polling
-    intervalRef.current = setInterval(fetchOrderBook, refreshInterval)
-
-    return () => {
-      mountedRef.current = false
-      if (intervalRef.current) {
-        clearInterval(intervalRef.current)
-      }
-    }
-  }, [fetchOrderBook, refreshInterval])
-
-  const refetch = useCallback(() => {
-    fetchOrderBook()
-  }, [fetchOrderBook])
-
-  return {
-    ...state,
-    refetch
-  }
-}
-
-// WebSocket-based real-time data hook
-export const useWebSocketMarketData = (symbols: string[]) => {
-  const [marketData, setMarketData] = useState<Record<string, MarketData>>({})
-  const [connected, setConnected] = useState(false)
-  const [error, setError] = useState<string | null>(null)
-
-  const wsRef = useRef<WebSocket | null>(null)
-
-  useEffect(() => {
-    if (!symbols.length) return
-
-    try {
-      // For demo purposes, simulate WebSocket data
-      const simulateData = () => {
-        const updates: Record<string, MarketData> = {}
+      // Process order books
+      orderBooksByAgent.forEach((entries, agentId) => {
+        const bids = entries.filter(e => e.side === 'buy').sort((a, b) => Number(b.price) - Number(a.price))
+        const asks = entries.filter(e => e.side === 'sell').sort((a, b) => Number(a.price) - Number(b.price))
         
-        symbols.forEach(symbol => {
-          const basePrice = 50000 // Base price for simulation
-          const volatility = 0.02 // 2% volatility
-          const change = (Math.random() - 0.5) * 2 * volatility
+        const bestBid = bids[0]?.price || 0
+        const bestAsk = asks[0]?.price || 0
+        const midPrice = (Number(bestBid) + Number(bestAsk)) / 2
+        const spread = Number(bestAsk) - Number(bestBid)
+
+        orderBooksMap.set(agentId, {
+          bids,
+          asks,
+          spread,
+          midPrice
+        })
+      })
+
+      // Group trades by agent
+      const tradesByAgent = new Map<string, MarketTrade[]>()
+      tradesData?.forEach(trade => {
+        if (!tradesByAgent.has(trade.agent_id)) {
+          tradesByAgent.set(trade.agent_id, [])
+        }
+        tradesByAgent.get(trade.agent_id)!.push(trade)
+      })
+
+      setMarketData({
+        tickers: tickersMap,
+        orderBooks: orderBooksMap,
+        recentTrades: tradesByAgent,
+        isConnected: true,
+        lastUpdate: new Date()
+      })
+
+    } catch (error) {
+      console.error('Error fetching initial market data:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load market data",
+        variant: "destructive"
+      })
+    } finally {
+      setLoading(false)
+    }
+  }, [agentIds, toast])
+
+  // Real-time subscription setup
+  useEffect(() => {
+    fetchInitialData()
+
+    // Subscribe to market tickers updates
+    const tickersChannel = supabase
+      .channel('market-tickers-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'market_tickers'
+        },
+        (payload) => {
+          console.log('Market ticker update:', payload)
           
-          updates[symbol] = {
-            symbol,
-            price: basePrice * (1 + change),
-            volume24h: Math.random() * 1000000,
-            change24h: change * 100,
-            high24h: basePrice * (1 + volatility),
-            low24h: basePrice * (1 - volatility),
-            timestamp: Date.now()
+          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
+            const ticker = payload.new as MarketTicker
+            setMarketData(prev => ({
+              ...prev,
+              tickers: new Map(prev.tickers.set(ticker.agent_id, ticker)),
+              lastUpdate: new Date()
+            }))
           }
-        })
-        
-        setMarketData(prev => ({ ...prev, ...updates }))
-      }
+        }
+      )
+      .subscribe()
 
-      // Simulate initial connection
-      setConnected(true)
-      setError(null)
-      
-      // Simulate periodic updates
-      const interval = setInterval(simulateData, 1000)
-      
-      // Initial data
-      simulateData()
+    // Subscribe to order book updates
+    const orderBookChannel = supabase
+      .channel('order-book-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: '*',
+          schema: 'public',
+          table: 'order_book'
+        },
+        () => {
+          // Refetch order book data for real-time updates
+          fetchInitialData()
+        }
+      )
+      .subscribe()
 
-      return () => {
-        clearInterval(interval)
-        setConnected(false)
-      }
-    } catch (error) {
-      console.error('WebSocket error:', error)
-      setError(error instanceof Error ? error.message : 'WebSocket connection failed')
-      setConnected(false)
+    // Subscribe to market trades
+    const tradesChannel = supabase
+      .channel('market-trades-changes')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'market_trades'
+        },
+        (payload) => {
+          console.log('New trade:', payload)
+          
+          const trade = payload.new as MarketTrade
+          setMarketData(prev => {
+            const agentTrades = prev.recentTrades.get(trade.agent_id) || []
+            const updatedTrades = [trade, ...agentTrades].slice(0, 50) // Keep last 50 trades
+            
+            return {
+              ...prev,
+              recentTrades: new Map(prev.recentTrades.set(trade.agent_id, updatedTrades)),
+              lastUpdate: new Date()
+            }
+          })
+        }
+      )
+      .subscribe()
+
+    return () => {
+      supabase.removeChannel(tickersChannel)
+      supabase.removeChannel(orderBookChannel)
+      supabase.removeChannel(tradesChannel)
     }
-  }, [symbols])
+  }, [fetchInitialData])
+
+  // Get data for specific agent
+  const getAgentData = useCallback((agentId: string) => {
+    return {
+      ticker: marketData.tickers.get(agentId),
+      orderBook: marketData.orderBooks.get(agentId),
+      recentTrades: marketData.recentTrades.get(agentId) || []
+    }
+  }, [marketData])
 
   return {
     marketData,
-    connected,
-    error
-  }
-}
-
-// Price change tracking hook
-export const usePriceAlerts = () => {
-  const [alerts, setAlerts] = useState<Array<{
-    id: string
-    symbol: string
-    condition: 'above' | 'below'
-    price: number
-    triggered: boolean
-    createdAt: number
-  }>>([])
-
-  const addAlert = useCallback((symbol: string, condition: 'above' | 'below', price: number) => {
-    const alert = {
-      id: `alert_${Date.now()}`,
-      symbol,
-      condition,
-      price,
-      triggered: false,
-      createdAt: Date.now()
-    }
-    
-    setAlerts(prev => [...prev, alert])
-    return alert.id
-  }, [])
-
-  const removeAlert = useCallback((id: string) => {
-    setAlerts(prev => prev.filter(alert => alert.id !== id))
-  }, [])
-
-  const checkAlerts = useCallback((marketData: MarketData[]) => {
-    setAlerts(prev => prev.map(alert => {
-      if (alert.triggered) return alert
-
-      const symbolData = marketData.find(data => data.symbol === alert.symbol)
-      if (!symbolData) return alert
-
-      const shouldTrigger = 
-        (alert.condition === 'above' && symbolData.price >= alert.price) ||
-        (alert.condition === 'below' && symbolData.price <= alert.price)
-
-      if (shouldTrigger) {
-        // You could add notification logic here
-        console.log(`Price alert triggered: ${alert.symbol} ${alert.condition} ${alert.price}`)
-        return { ...alert, triggered: true }
-      }
-
-      return alert
-    }))
-  }, [])
-
-  return {
-    alerts,
-    addAlert,
-    removeAlert,
-    checkAlerts
+    loading,
+    getAgentData,
+    refresh: fetchInitialData
   }
 }

@@ -1,21 +1,5 @@
 import { useState } from "react"
-import { 
-  Home, 
-  TrendingUp, 
-  Wallet, 
-  Plus, 
-  Settings, 
-  BarChart3, 
-  Users, 
-  Star, 
-  Menu, 
-  Zap, 
-  Bot, 
-  FileText, 
-  ExternalLink, 
-  Store, 
-  Bell 
-} from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -39,6 +23,7 @@ const mainItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
   { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
+  { title: "Real-Time Market", url: "/real-time-market", icon: Activity },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
