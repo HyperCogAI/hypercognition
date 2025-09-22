@@ -4,9 +4,9 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { Bot, Send, User, TrendingUp, AlertCircle, Loader2 } from 'lucide-react';
+import { Bot, Send, User, TrendingUp, AlertCircle, Loader2, BarChart3, Shield } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
-import { supabase } from '@/integrations/supabase/client';
+import { useAITradingAssistant } from '@/hooks/useAITradingAssistant';
 import { useToast } from '@/components/ui/use-toast';
 
 interface Message {
@@ -25,11 +25,10 @@ interface SuggestedQuery {
 const AITradingAssistant: React.FC = () => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { user } = useAuth();
-  const { toast } = useToast();
+  const { sendMessage: sendAIMessage, isLoading } = useAITradingAssistant();
 
   const suggestedQueries: SuggestedQuery[] = [
     {
@@ -39,18 +38,28 @@ const AITradingAssistant: React.FC = () => {
     },
     {
       text: "Analyze my portfolio performance",
-      icon: <Bot className="h-4 w-4" />,
+      icon: <BarChart3 className="h-4 w-4" />,
       category: "Portfolio"
     },
     {
       text: "What are the risks in AI agent trading?",
-      icon: <AlertCircle className="h-4 w-4" />,
+      icon: <Shield className="h-4 w-4" />,
       category: "Risk Management"
     },
     {
-      text: "Explain market sentiment for AI agents",
+      text: "Explain current market sentiment for AI agents",
       icon: <TrendingUp className="h-4 w-4" />,
       category: "Education"
+    },
+    {
+      text: "How should I diversify my AI portfolio?",
+      icon: <BarChart3 className="h-4 w-4" />,
+      category: "Strategy"
+    },
+    {
+      text: "Which AI agents have the strongest fundamentals?",
+      icon: <AlertCircle className="h-4 w-4" />,
+      category: "Research"
     }
   ];
 
@@ -74,36 +83,21 @@ const AITradingAssistant: React.FC = () => {
 
     setMessages(prev => [...prev, userMessage]);
     setInputValue('');
-    setIsLoading(true);
 
     try {
-      const { data, error } = await supabase.functions.invoke('ai-trading-assistant', {
-        body: {
-          query,
-          userId: user?.id,
-          context: 'Trading Assistant Chat'
-        }
-      });
-
-      if (error) throw error;
+      const aiResponse = await sendAIMessage(query, 'Trading Assistant Chat');
 
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: 'assistant',
-        content: data.response,
+        content: aiResponse.response,
         timestamp: new Date()
       };
 
       setMessages(prev => [...prev, assistantMessage]);
     } catch (error) {
       console.error('Error sending message:', error);
-      toast({
-        title: "Error",
-        description: "Failed to get AI response. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsLoading(false);
+      // Error handling is done in the hook
     }
   };
 
