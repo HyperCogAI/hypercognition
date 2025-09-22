@@ -33,21 +33,15 @@ const mainItems = [
   { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
   { title: "Institutional", url: "/institutional", icon: Building2 },
   { title: "Compliance", url: "/compliance", icon: Scale },
-  { title: "Notifications", url: "/advanced-notifications", icon: Bell },
+  { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
-  { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Advanced Analytics", url: "/advanced-analytics", icon: TrendingUp },
-  { title: "ACP", url: "/acp", icon: Bot },
+  { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
 ]
 
 const tradingItems = [
-  { title: "Trade", url: "/#trade", icon: TrendingUp },
-  { title: "AI Bots", url: "/#bots", icon: Bot },
-  { title: "Trending", url: "/#trending", icon: TrendingUp },
   { title: "Favorites", url: "/favorites", icon: Star },
   { title: "Compare", url: "/compare", icon: BarChart3 },
   { title: "Communities", url: "/communities", icon: Users },
-  { title: "Notifications", url: "/notifications", icon: Bell },
 ]
 
 const resourceItems = [
@@ -196,9 +190,9 @@ export function AppSidebar() {
         {!isCollapsed && (
           <div className="px-4 py-3">
             <CyberButton variant="neon" className="w-full group" asChild>
-              <NavLink to="/acp">
+              <NavLink to="/ai-assistant">
                 <Bot className="h-4 w-4 text-white" />
-                <span className="text-white">Assistant</span>
+                <span className="text-white">AI Assistant</span>
               </NavLink>
             </CyberButton>
           </div>
