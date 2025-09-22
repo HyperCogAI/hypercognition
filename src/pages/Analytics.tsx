@@ -8,6 +8,8 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, BarChart, Bar } from 'recharts'
 import { useAnalytics } from "@/hooks/useAnalytics"
+import { MarketNewsComponent } from '@/components/news/MarketNewsComponent'
+import { SEOHead } from '@/components/seo/SEOHead'
 
 export const Analytics = () => {
   const navigate = useNavigate()
@@ -22,24 +24,34 @@ export const Analytics = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      {/* Header */}
-      <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div className="container flex h-14 items-center">
-          <div className="flex items-center gap-4">
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => navigate("/")}
-            >
-              <ArrowLeft className="h-4 w-4" />
-            </Button>
-            <h1 className="text-xl font-semibold">Analytics</h1>
+    <>
+      <SEOHead 
+        title="Portfolio Analytics - Track Your AI Agent Investments | HyperCognition"
+        description="Comprehensive portfolio analytics and performance tracking for your AI agent investments. Advanced charts, risk analysis, and market insights."
+        keywords="portfolio analytics, AI agent performance, investment tracking, trading analytics, market insights"
+      />
+      <div className="min-h-screen bg-background">
+        {/* Header */}
+        <div className="sticky top-0 z-40 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+          <div className="container flex h-14 items-center">
+            <div className="flex items-center gap-4">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => navigate("/")}
+              >
+                <ArrowLeft className="h-4 w-4" />
+              </Button>
+              <h1 className="text-xl font-semibold">Analytics & Market News</h1>
+            </div>
           </div>
         </div>
-      </div>
 
-      <div className="container py-6">
+        <div className="container py-6">
+          {/* Market News Section */}
+          <div className="mb-8">
+            <MarketNewsComponent />
+          </div>
         {/* Market Overview */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
           <Card>
@@ -210,5 +222,6 @@ export const Analytics = () => {
         </Tabs>
       </div>
     </div>
+    </>
   )
 }

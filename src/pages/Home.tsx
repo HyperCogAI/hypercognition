@@ -3,6 +3,7 @@ import { Stats } from "@/components/sections/Stats"
 import { HyperFeatures } from "@/components/sections/HyperFeatures"
 import { HyperCTA } from "@/components/sections/HyperCTA"
 import { Footer } from "@/components/sections/Footer"
+import { MarketNewsComponent } from "@/components/news/MarketNewsComponent"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { generateWebsiteStructuredData, generateOrganizationStructuredData } from "@/components/seo/StructuredData"
 
@@ -22,6 +23,9 @@ const Home = () => {
       />
       <main>
         <Hero />
+        <div className="container mx-auto px-4 py-8">
+          <MarketNewsComponent className="mb-12" />
+        </div>
         <Stats />
         <HyperFeatures />
         <HyperCTA />
