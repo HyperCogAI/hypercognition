@@ -1,5 +1,8 @@
 project_id = "xdinlkmqmjlrmunsjswf"
 
+[functions.realtime-session]
+verify_jwt = false
+
 [functions.security-middleware]
 verify_jwt = false
 
