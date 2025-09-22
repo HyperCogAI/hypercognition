@@ -384,33 +384,129 @@ export type Database = {
         }
         Relationships: []
       }
+      market_events: {
+        Row: {
+          affected_agents: string[] | null
+          created_at: string | null
+          description: string | null
+          event_type: string
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          metadata: Json | null
+          severity: string | null
+          title: string
+        }
+        Insert: {
+          affected_agents?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          event_type: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          severity?: string | null
+          title: string
+        }
+        Update: {
+          affected_agents?: string[] | null
+          created_at?: string | null
+          description?: string | null
+          event_type?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          metadata?: Json | null
+          severity?: string | null
+          title?: string
+        }
+        Relationships: []
+      }
+      notification_preferences: {
+        Row: {
+          created_at: string | null
+          email_notifications_enabled: boolean | null
+          id: string
+          market_news_enabled: boolean | null
+          min_price_change_percent: number | null
+          portfolio_updates_enabled: boolean | null
+          price_alerts_enabled: boolean | null
+          push_notifications_enabled: boolean | null
+          social_updates_enabled: boolean | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          email_notifications_enabled?: boolean | null
+          id?: string
+          market_news_enabled?: boolean | null
+          min_price_change_percent?: number | null
+          portfolio_updates_enabled?: boolean | null
+          price_alerts_enabled?: boolean | null
+          push_notifications_enabled?: boolean | null
+          social_updates_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          email_notifications_enabled?: boolean | null
+          id?: string
+          market_news_enabled?: boolean | null
+          min_price_change_percent?: number | null
+          portfolio_updates_enabled?: boolean | null
+          price_alerts_enabled?: boolean | null
+          push_notifications_enabled?: boolean | null
+          social_updates_enabled?: boolean | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
+          action_url: string | null
+          category: string | null
           created_at: string
           data: Json | null
+          expires_at: string | null
           id: string
           message: string
+          priority: string | null
           read: boolean
+          read_at: string | null
           title: string
           type: string
           user_id: string
         }
         Insert: {
+          action_url?: string | null
+          category?: string | null
           created_at?: string
           data?: Json | null
+          expires_at?: string | null
           id?: string
           message: string
+          priority?: string | null
           read?: boolean
+          read_at?: string | null
           title: string
           type: string
           user_id: string
         }
         Update: {
+          action_url?: string | null
+          category?: string | null
           created_at?: string
           data?: Json | null
+          expires_at?: string | null
           id?: string
           message?: string
+          priority?: string | null
           read?: boolean
+          read_at?: string | null
           title?: string
           type?: string
           user_id?: string
@@ -523,6 +619,54 @@ export type Database = {
           id?: string
           purchase_date?: string | null
           purchase_price?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      price_alerts: {
+        Row: {
+          agent_id: string
+          agent_name: string
+          agent_symbol: string
+          alert_type: string
+          created_at: string | null
+          current_value: number | null
+          id: string
+          is_active: boolean | null
+          is_triggered: boolean | null
+          target_value: number
+          triggered_at: string | null
+          updated_at: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          agent_name: string
+          agent_symbol: string
+          alert_type: string
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_triggered?: boolean | null
+          target_value: number
+          triggered_at?: string | null
+          updated_at?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          agent_name?: string
+          agent_symbol?: string
+          alert_type?: string
+          created_at?: string | null
+          current_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_triggered?: boolean | null
+          target_value?: number
+          triggered_at?: string | null
           updated_at?: string | null
           user_id?: string | null
         }
