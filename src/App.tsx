@@ -23,6 +23,7 @@ import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import AdvancedAnalytics from "./pages/AdvancedAnalytics";
 import Notifications from "./pages/Notifications";
 import Index from "./pages/Home";
+import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
 import Portfolio from "./pages/Portfolio";
