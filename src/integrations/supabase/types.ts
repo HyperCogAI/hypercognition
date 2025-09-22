@@ -14,6 +14,72 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_2fa_secrets: {
+        Row: {
+          backup_codes: string[] | null
+          created_at: string
+          id: string
+          is_active: boolean
+          last_used_at: string | null
+          secret_encrypted: string
+          user_id: string
+        }
+        Insert: {
+          backup_codes?: string[] | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          secret_encrypted: string
+          user_id: string
+        }
+        Update: {
+          backup_codes?: string[] | null
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          last_used_at?: string | null
+          secret_encrypted?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      admin_privilege_log: {
+        Row: {
+          action: string
+          admin_user_id: string
+          created_at: string
+          details: Json | null
+          id: string
+          ip_address: unknown | null
+          resource: string
+          target_user_id: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          action: string
+          admin_user_id: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource: string
+          target_user_id?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          action?: string
+          admin_user_id?: string
+          created_at?: string
+          details?: Json | null
+          id?: string
+          ip_address?: unknown | null
+          resource?: string
+          target_user_id?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       admin_users: {
         Row: {
           created_at: string
@@ -255,6 +321,39 @@ export type Database = {
           moderator_id?: string
           notes?: string | null
           reason?: string | null
+        }
+        Relationships: []
+      }
+      login_attempts: {
+        Row: {
+          attempt_type: string
+          created_at: string
+          failure_reason: string | null
+          id: string
+          identifier: string
+          ip_address: unknown | null
+          success: boolean
+          user_agent: string | null
+        }
+        Insert: {
+          attempt_type: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          identifier: string
+          ip_address?: unknown | null
+          success?: boolean
+          user_agent?: string | null
+        }
+        Update: {
+          attempt_type?: string
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          identifier?: string
+          ip_address?: unknown | null
+          success?: boolean
+          user_agent?: string | null
         }
         Relationships: []
       }
@@ -668,11 +767,55 @@ export type Database = {
         }
         Relationships: []
       }
+      user_sessions: {
+        Row: {
+          created_at: string
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          is_active: boolean
+          last_activity: string
+          session_token: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean
+          last_activity?: string
+          session_token: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean
+          last_activity?: string
+          session_token?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
+      check_brute_force: {
+        Args: {
+          identifier_param: string
+          max_attempts?: number
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
       check_rate_limit: {
         Args: {
           endpoint_param: string
@@ -682,12 +825,31 @@ export type Database = {
         }
         Returns: boolean
       }
+      cleanup_expired_sessions: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_rate_limits: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      log_login_attempt: {
+        Args: {
+          attempt_type_param: string
+          failure_reason_param?: string
+          identifier_param: string
+          ip_param?: unknown
+          success_param: boolean
+          user_agent_param?: string
+        }
+        Returns: undefined
+      }
       validate_input_security: {
         Args: { allow_html?: boolean; input_text: string; max_length?: number }
+        Returns: boolean
+      }
+      validate_password_policy: {
+        Args: { password_param: string }
         Returns: boolean
       }
     }
