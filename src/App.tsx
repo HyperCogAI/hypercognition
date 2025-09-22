@@ -20,6 +20,7 @@ import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import AdvancedAnalytics from "./pages/AdvancedAnalytics";
+import Notifications from "./pages/Notifications";
 import Index from "./pages/Home";
 import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
@@ -75,6 +76,7 @@ const AppLayout = () => {
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/advanced-analytics" element={<ProtectedRoute><AdvancedAnalytics /></ProtectedRoute>} />
+                <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/logo-generator" element={<LogoGenerator />} />
@@ -115,6 +117,7 @@ const AppLayout = () => {
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
                 <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
                 <Route path="/advanced-analytics" element={<ProtectedRoute><AdvancedAnalytics /></ProtectedRoute>} />
+                <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
                 <Route path="/logo-generator" element={<LogoGenerator />} />
