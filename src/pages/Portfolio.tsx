@@ -9,6 +9,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
 import { PortfolioOptimizer } from '@/components/portfolio/PortfolioOptimizer'
+import { PortfolioPerformanceDashboard } from '@/components/portfolio/PortfolioPerformanceDashboard'
 import { Wallet, TrendingUp, BarChart3, Target, Plus } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
@@ -151,8 +152,12 @@ export default function Portfolio() {
             </div>
 
             {/* Portfolio Tabs */}
-            <Tabs defaultValue="analytics" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3">
+            <Tabs defaultValue="performance" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-4">
+                <TabsTrigger value="performance" className="flex items-center gap-2">
+                  <TrendingUp className="h-4 w-4" />
+                  Performance
+                </TabsTrigger>
                 <TabsTrigger value="analytics" className="flex items-center gap-2">
                   <BarChart3 className="h-4 w-4" />
                   Analytics
@@ -166,6 +171,10 @@ export default function Portfolio() {
                   Holdings
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="performance">
+                <PortfolioPerformanceDashboard />
+              </TabsContent>
 
               <TabsContent value="analytics">
                 <PortfolioAnalytics />
