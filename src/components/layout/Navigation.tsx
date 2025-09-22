@@ -1,6 +1,6 @@
 import { useState } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
-import { WalletButton } from "@/components/wallet/WalletButton"
+import { WalletSection } from "@/components/wallet/WalletSection"
 import { Menu, X, Bot, Zap } from "lucide-react"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 
@@ -78,7 +78,7 @@ export function Navigation() {
               ))}
               <div className="pt-4 space-y-2">
                 <div className="w-full">
-                  <WalletButton />
+                  <WalletSection />
                 </div>
                 <CyberButton variant="cyber" className="w-full justify-start group">
                   <Bot className="h-4 w-4" />

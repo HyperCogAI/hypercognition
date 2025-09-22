@@ -7,6 +7,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WagmiProvider } from 'wagmi'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { config } from './config/wagmi'
+import { ConnectionProvider, WalletProvider, WalletModalProvider, wallets, endpoint } from './config/solana'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
@@ -181,21 +182,27 @@ const AppLayout = () => {
 }
 
 const App = () => (
-  <WagmiProvider config={config}>
-    <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <FavoritesProvider>
-          <TooltipProvider>
-          <Toaster />
-          <Sonner />
-          <BrowserRouter>
-            <AppLayout />
-          </BrowserRouter>
-          </TooltipProvider>
-        </FavoritesProvider>
-      </AuthProvider>
-    </QueryClientProvider>
-  </WagmiProvider>
+  <ConnectionProvider endpoint={endpoint}>
+    <WalletProvider wallets={wallets} autoConnect>
+      <WalletModalProvider>
+        <WagmiProvider config={config}>
+          <QueryClientProvider client={queryClient}>
+            <AuthProvider>
+              <FavoritesProvider>
+                <TooltipProvider>
+                <Toaster />
+                <Sonner />
+                <BrowserRouter>
+                  <AppLayout />
+                </BrowserRouter>
+                </TooltipProvider>
+              </FavoritesProvider>
+            </AuthProvider>
+          </QueryClientProvider>
+        </WagmiProvider>
+      </WalletModalProvider>
+    </WalletProvider>
+  </ConnectionProvider>
 );
 
 export default App;

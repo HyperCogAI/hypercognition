@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import './styles/solana.css';
+
 /* HyperCognition AI Design System - Deep Black with Blue Accents */
 
 @layer base {
