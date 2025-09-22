@@ -9,9 +9,11 @@ import { TraderCard } from '@/components/social/TraderCard';
 import { TradingSignalCard } from '@/components/social/TradingSignalCard';
 import { CopyTradingEngine } from '@/components/social/CopyTradingEngine';
 import { CompetitionsManager } from '@/components/competitions/CompetitionsManager';
+import { SocialFeed } from '@/components/social/SocialFeed';
+import { SocialNetwork } from '@/components/social/SocialNetwork';
 
 export default function SocialTrading() {
-  const [activeTab, setActiveTab] = useState("engine");
+  const [activeTab, setActiveTab] = useState("feed");
   const {
     topTraders,
     tradingSignals,
@@ -45,12 +47,22 @@ export default function SocialTrading() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-6">
+            <TabsTrigger value="feed">Social Feed</TabsTrigger>
+            <TabsTrigger value="network">Network</TabsTrigger>
             <TabsTrigger value="engine">Copy Engine</TabsTrigger>
             <TabsTrigger value="traders">Top Traders</TabsTrigger>
             <TabsTrigger value="signals">Trading Signals</TabsTrigger>
             <TabsTrigger value="competitions">Competitions</TabsTrigger>
           </TabsList>
+
+          <TabsContent value="feed" className="space-y-6">
+            <SocialFeed />
+          </TabsContent>
+
+          <TabsContent value="network" className="space-y-6">
+            <SocialNetwork />
+          </TabsContent>
 
           <TabsContent value="engine" className="space-y-6">
             <CopyTradingEngine />
