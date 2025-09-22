@@ -14,3 +14,6 @@ export const LazyAdvancedTradingDashboard = lazy(() => import('@/components/trad
 export const LazyOrderBook = lazy(() => import('@/components/trading/OrderBook').then(module => ({ default: module.OrderBook })))
 export const LazyPriceChart = lazy(() => import('@/components/charts/PriceChart').then(module => ({ default: module.PriceChart })))
 export const LazySocialPanel = lazy(() => import('@/components/social/SocialPanel').then(module => ({ default: module.SocialPanel })))
+
+// Real-time trading components
+export const LazyRealTimeMarket = lazy(() => import('@/pages/RealTimeMarket').then(m => ({ default: m.RealTimeMarketPage })))

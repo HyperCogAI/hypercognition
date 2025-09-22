@@ -1,240 +1,327 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
-import { useToast } from '@/hooks/use-toast'
 import type { Database } from '@/integrations/supabase/types'
 
 type MarketDataFeed = Database['public']['Tables']['market_data_feeds']['Row']
-type OrderBookEntry = Database['public']['Tables']['order_book']['Row']
 type MarketTicker = Database['public']['Tables']['market_tickers']['Row']
+type OrderBookEntry = Database['public']['Tables']['order_book']['Row']
 type MarketTrade = Database['public']['Tables']['market_trades']['Row']
 
-export interface OrderBookData {
-  bids: OrderBookEntry[]
-  asks: OrderBookEntry[]
-  spread: number
-  midPrice: number
+interface UseRealTimeMarketDataProps {
+  agentIds?: string[]
+  enableOrderBook?: boolean
+  enableTrades?: boolean
+  maxOrderBookLevels?: number
 }
 
-export interface MarketDataState {
-  tickers: Map<string, MarketTicker>
-  orderBooks: Map<string, OrderBookData>
-  recentTrades: Map<string, MarketTrade[]>
+interface MarketDataState {
+  tickers: Record<string, MarketTicker>
+  orderBooks: Record<string, { bids: OrderBookEntry[], asks: OrderBookEntry[] }>
+  recentTrades: Record<string, MarketTrade[]>
   isConnected: boolean
   lastUpdate: Date | null
 }
 
-export function useRealTimeMarketData(agentIds?: string[]) {
+export function useRealTimeMarketData({
+  agentIds = [],
+  enableOrderBook = true,
+  enableTrades = true,
+  maxOrderBookLevels = 20
+}: UseRealTimeMarketDataProps = {}) {
   const [marketData, setMarketData] = useState<MarketDataState>({
-    tickers: new Map(),
-    orderBooks: new Map(),
-    recentTrades: new Map(),
+    tickers: {},
+    orderBooks: {},
+    recentTrades: {},
     isConnected: false,
     lastUpdate: null
   })
-  const [loading, setLoading] = useState(true)
-  const { toast } = useToast()
 
-  // Fetch initial market data
-  const fetchInitialData = useCallback(async () => {
-    try {
-      const agentFilter = agentIds ? agentIds : undefined
+  const channelsRef = useRef<any[]>([])
 
-      // Fetch market tickers
-      let tickersQuery = supabase.from('market_tickers').select('*')
-      if (agentFilter) {
-        tickersQuery = tickersQuery.in('agent_id', agentFilter)
-      }
-      const { data: tickersData, error: tickersError } = await tickersQuery
+  // Update ticker data
+  const updateTicker = useCallback((agentId: string, ticker: MarketTicker) => {
+    setMarketData(prev => ({
+      ...prev,
+      tickers: {
+        ...prev.tickers,
+        [agentId]: ticker
+      },
+      lastUpdate: new Date()
+    }))
+  }, [])
 
-      if (tickersError) throw tickersError
-
-      // Fetch order book data
-      let orderBookQuery = supabase
-        .from('order_book')
-        .select('*')
-        .order('price', { ascending: false })
-        .limit(20)
+  // Update order book data
+  const updateOrderBook = useCallback((agentId: string, entry: OrderBookEntry) => {
+    setMarketData(prev => {
+      const currentOrderBook = prev.orderBooks[agentId] || { bids: [], asks: [] }
       
-      if (agentFilter) {
-        orderBookQuery = orderBookQuery.in('agent_id', agentFilter)
-      }
-      const { data: orderBookData, error: orderBookError } = await orderBookQuery
-
-      if (orderBookError) throw orderBookError
-
-      // Fetch recent trades
-      let tradesQuery = supabase
-        .from('market_trades')
-        .select('*')
-        .order('timestamp', { ascending: false })
-        .limit(50)
+      // Update or add the order book entry
+      const side = entry.side as 'bid' | 'ask'
+      const sideKey = side === 'bid' ? 'bids' : 'asks'
       
-      if (agentFilter) {
-        tradesQuery = tradesQuery.in('agent_id', agentFilter)
+      let updatedSide = currentOrderBook[sideKey].filter(e => e.price !== entry.price)
+      
+      // Only add if size > 0 (remove if size is 0)
+      if (entry.size > 0) {
+        updatedSide.push(entry)
       }
-      const { data: tradesData, error: tradesError } = await tradesQuery
+      
+      // Sort and limit levels
+      if (side === 'bid') {
+        updatedSide.sort((a, b) => b.price - a.price) // Highest first for bids
+      } else {
+        updatedSide.sort((a, b) => a.price - b.price) // Lowest first for asks
+      }
+      
+      updatedSide = updatedSide.slice(0, maxOrderBookLevels)
 
-      if (tradesError) throw tradesError
-
-      // Process data
-      const tickersMap = new Map<string, MarketTicker>()
-      tickersData?.forEach(ticker => {
-        tickersMap.set(ticker.agent_id, ticker)
-      })
-
-      const orderBooksMap = new Map<string, OrderBookData>()
-      const tradesMap = new Map<string, MarketTrade[]>()
-
-      // Group order book data by agent
-      const orderBooksByAgent = new Map<string, OrderBookEntry[]>()
-      orderBookData?.forEach(entry => {
-        if (!orderBooksByAgent.has(entry.agent_id)) {
-          orderBooksByAgent.set(entry.agent_id, [])
-        }
-        orderBooksByAgent.get(entry.agent_id)!.push(entry)
-      })
-
-      // Process order books
-      orderBooksByAgent.forEach((entries, agentId) => {
-        const bids = entries.filter(e => e.side === 'buy').sort((a, b) => Number(b.price) - Number(a.price))
-        const asks = entries.filter(e => e.side === 'sell').sort((a, b) => Number(a.price) - Number(b.price))
-        
-        const bestBid = bids[0]?.price || 0
-        const bestAsk = asks[0]?.price || 0
-        const midPrice = (Number(bestBid) + Number(bestAsk)) / 2
-        const spread = Number(bestAsk) - Number(bestBid)
-
-        orderBooksMap.set(agentId, {
-          bids,
-          asks,
-          spread,
-          midPrice
-        })
-      })
-
-      // Group trades by agent
-      const tradesByAgent = new Map<string, MarketTrade[]>()
-      tradesData?.forEach(trade => {
-        if (!tradesByAgent.has(trade.agent_id)) {
-          tradesByAgent.set(trade.agent_id, [])
-        }
-        tradesByAgent.get(trade.agent_id)!.push(trade)
-      })
-
-      setMarketData({
-        tickers: tickersMap,
-        orderBooks: orderBooksMap,
-        recentTrades: tradesByAgent,
-        isConnected: true,
+      return {
+        ...prev,
+        orderBooks: {
+          ...prev.orderBooks,
+          [agentId]: {
+            ...currentOrderBook,
+            [sideKey]: updatedSide
+          }
+        },
         lastUpdate: new Date()
-      })
+      }
+    })
+  }, [maxOrderBookLevels])
 
-    } catch (error) {
-      console.error('Error fetching initial market data:', error)
-      toast({
-        title: "Error",
-        description: "Failed to load market data",
-        variant: "destructive"
-      })
-    } finally {
-      setLoading(false)
-    }
-  }, [agentIds, toast])
+  // Update recent trades
+  const updateTrades = useCallback((agentId: string, trade: MarketTrade) => {
+    setMarketData(prev => {
+      const currentTrades = prev.recentTrades[agentId] || []
+      const updatedTrades = [trade, ...currentTrades].slice(0, 100) // Keep last 100 trades
 
-  // Real-time subscription setup
+      return {
+        ...prev,
+        recentTrades: {
+          ...prev.recentTrades,
+          [agentId]: updatedTrades
+        },
+        lastUpdate: new Date()
+      }
+    })
+  }, [])
+
+  // Initialize real-time subscriptions
   useEffect(() => {
-    fetchInitialData()
+    // Clear existing channels
+    channelsRef.current.forEach(channel => {
+      supabase.removeChannel(channel)
+    })
+    channelsRef.current = []
 
-    // Subscribe to market tickers updates
-    const tickersChannel = supabase
-      .channel('market-tickers-changes')
+    if (agentIds.length === 0) return
+
+    setMarketData(prev => ({ ...prev, isConnected: false }))
+
+    // Subscribe to market tickers
+    const tickerChannel = supabase
+      .channel('market_tickers_realtime')
       .on(
         'postgres_changes',
         {
-          event: '*',
+          event: 'UPDATE',
           schema: 'public',
-          table: 'market_tickers'
+          table: 'market_tickers',
+          filter: agentIds.length > 0 ? `agent_id=in.(${agentIds.join(',')})` : undefined
         },
         (payload) => {
-          console.log('Market ticker update:', payload)
-          
-          if (payload.eventType === 'INSERT' || payload.eventType === 'UPDATE') {
-            const ticker = payload.new as MarketTicker
-            setMarketData(prev => ({
-              ...prev,
-              tickers: new Map(prev.tickers.set(ticker.agent_id, ticker)),
-              lastUpdate: new Date()
-            }))
-          }
+          const ticker = payload.new as MarketTicker
+          updateTicker(ticker.agent_id, ticker)
         }
       )
-      .subscribe()
-
-    // Subscribe to order book updates
-    const orderBookChannel = supabase
-      .channel('order-book-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'order_book'
-        },
-        () => {
-          // Refetch order book data for real-time updates
-          fetchInitialData()
-        }
-      )
-      .subscribe()
-
-    // Subscribe to market trades
-    const tradesChannel = supabase
-      .channel('market-trades-changes')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'market_trades'
+          table: 'market_tickers',
+          filter: agentIds.length > 0 ? `agent_id=in.(${agentIds.join(',')})` : undefined
         },
         (payload) => {
-          console.log('New trade:', payload)
-          
-          const trade = payload.new as MarketTrade
-          setMarketData(prev => {
-            const agentTrades = prev.recentTrades.get(trade.agent_id) || []
-            const updatedTrades = [trade, ...agentTrades].slice(0, 50) // Keep last 50 trades
-            
-            return {
-              ...prev,
-              recentTrades: new Map(prev.recentTrades.set(trade.agent_id, updatedTrades)),
-              lastUpdate: new Date()
-            }
-          })
+          const ticker = payload.new as MarketTicker
+          updateTicker(ticker.agent_id, ticker)
         }
       )
-      .subscribe()
+      .subscribe((status) => {
+        if (status === 'SUBSCRIBED') {
+          setMarketData(prev => ({ ...prev, isConnected: true }))
+        }
+      })
+
+    channelsRef.current.push(tickerChannel)
+
+    // Subscribe to order book updates
+    if (enableOrderBook) {
+      const orderBookChannel = supabase
+        .channel('order_book_realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'order_book',
+            filter: agentIds.length > 0 ? `agent_id=in.(${agentIds.join(',')})` : undefined
+          },
+          (payload) => {
+            const entry = payload.new as OrderBookEntry
+            if (entry) {
+              updateOrderBook(entry.agent_id, entry)
+            }
+          }
+        )
+        .subscribe()
+
+      channelsRef.current.push(orderBookChannel)
+    }
+
+    // Subscribe to market trades
+    if (enableTrades) {
+      const tradesChannel = supabase
+        .channel('market_trades_realtime')
+        .on(
+          'postgres_changes',
+          {
+            event: 'INSERT',
+            schema: 'public',
+            table: 'market_trades',
+            filter: agentIds.length > 0 ? `agent_id=in.(${agentIds.join(',')})` : undefined
+          },
+          (payload) => {
+            const trade = payload.new as MarketTrade
+            updateTrades(trade.agent_id, trade)
+          }
+        )
+        .subscribe()
+
+      channelsRef.current.push(tradesChannel)
+    }
 
     return () => {
-      supabase.removeChannel(tickersChannel)
-      supabase.removeChannel(orderBookChannel)
-      supabase.removeChannel(tradesChannel)
+      channelsRef.current.forEach(channel => {
+        supabase.removeChannel(channel)
+      })
+      channelsRef.current = []
     }
-  }, [fetchInitialData])
+  }, [agentIds, enableOrderBook, enableTrades, updateTicker, updateOrderBook, updateTrades])
 
-  // Get data for specific agent
-  const getAgentData = useCallback((agentId: string) => {
-    return {
-      ticker: marketData.tickers.get(agentId),
-      orderBook: marketData.orderBooks.get(agentId),
-      recentTrades: marketData.recentTrades.get(agentId) || []
+  // Load initial data
+  useEffect(() => {
+    const loadInitialData = async () => {
+      if (agentIds.length === 0) return
+
+      try {
+        // Load initial tickers
+        const { data: tickers } = await supabase
+          .from('market_tickers')
+          .select('*')
+          .in('agent_id', agentIds)
+
+        if (tickers) {
+          const tickersMap = tickers.reduce((acc, ticker) => {
+            acc[ticker.agent_id] = ticker
+            return acc
+          }, {} as Record<string, MarketTicker>)
+
+          setMarketData(prev => ({
+            ...prev,
+            tickers: tickersMap
+          }))
+        }
+
+        // Load initial order book data
+        if (enableOrderBook) {
+          const { data: orderBookData } = await supabase
+            .from('order_book')
+            .select('*')
+            .in('agent_id', agentIds)
+            .order('price', { ascending: false })
+            .limit(maxOrderBookLevels * 2)
+
+          if (orderBookData) {
+            const orderBooksMap = orderBookData.reduce((acc, entry) => {
+              const agentId = entry.agent_id
+              if (!acc[agentId]) {
+                acc[agentId] = { bids: [], asks: [] }
+              }
+              
+              if (entry.side === 'bid') {
+                acc[agentId].bids.push(entry)
+              } else {
+                acc[agentId].asks.push(entry)
+              }
+              
+              return acc
+            }, {} as Record<string, { bids: OrderBookEntry[], asks: OrderBookEntry[] }>)
+
+            // Sort and limit each side
+            Object.keys(orderBooksMap).forEach(agentId => {
+              orderBooksMap[agentId].bids.sort((a, b) => b.price - a.price)
+              orderBooksMap[agentId].asks.sort((a, b) => a.price - b.price)
+              orderBooksMap[agentId].bids = orderBooksMap[agentId].bids.slice(0, maxOrderBookLevels)
+              orderBooksMap[agentId].asks = orderBooksMap[agentId].asks.slice(0, maxOrderBookLevels)
+            })
+
+            setMarketData(prev => ({
+              ...prev,
+              orderBooks: orderBooksMap
+            }))
+          }
+        }
+
+        // Load recent trades
+        if (enableTrades) {
+          const { data: trades } = await supabase
+            .from('market_trades')
+            .select('*')
+            .in('agent_id', agentIds)
+            .order('timestamp', { ascending: false })
+            .limit(100)
+
+          if (trades) {
+            const tradesMap = trades.reduce((acc, trade) => {
+              const agentId = trade.agent_id
+              if (!acc[agentId]) {
+                acc[agentId] = []
+              }
+              acc[agentId].push(trade)
+              return acc
+            }, {} as Record<string, MarketTrade[]>)
+
+            setMarketData(prev => ({
+              ...prev,
+              recentTrades: tradesMap
+            }))
+          }
+        }
+      } catch (error) {
+        console.error('Error loading initial market data:', error)
+      }
     }
-  }, [marketData])
+
+    loadInitialData()
+  }, [agentIds, enableOrderBook, enableTrades, maxOrderBookLevels])
+
+  const getTickerForAgent = useCallback((agentId: string) => {
+    return marketData.tickers[agentId] || null
+  }, [marketData.tickers])
+
+  const getOrderBookForAgent = useCallback((agentId: string) => {
+    return marketData.orderBooks[agentId] || { bids: [], asks: [] }
+  }, [marketData.orderBooks])
+
+  const getTradesForAgent = useCallback((agentId: string) => {
+    return marketData.recentTrades[agentId] || []
+  }, [marketData.recentTrades])
 
   return {
-    marketData,
-    loading,
-    getAgentData,
-    refresh: fetchInitialData
+    ...marketData,
+    getTickerForAgent,
+    getOrderBookForAgent,
+    getTradesForAgent
   }
 }

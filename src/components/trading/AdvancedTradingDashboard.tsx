@@ -28,12 +28,17 @@ export const AdvancedTradingDashboard = ({
   const [activeTab, setActiveTab] = useState('trading')
   
   // Real-time market data
-  const { marketData, loading, getAgentData } = useRealTimeMarketData([agentId])
+  const { 
+    getTickerForAgent, 
+    isConnected 
+  } = useRealTimeMarketData({
+    agentIds: [agentId],
+    enableOrderBook: true,
+    enableTrades: true
+  })
   
-  const agentData = getAgentData(agentId)
-  
-  const currentData = agentData.ticker
-  const connected = marketData.isConnected
+  const currentData = getTickerForAgent(agentId)
+  const connected = isConnected
   // Generate price history for chart (simulated)
   const priceHistory = Array.from({ length: 50 }, (_, i) => ({
     time: new Date(Date.now() - (49 - i) * 60000).toLocaleTimeString(),
