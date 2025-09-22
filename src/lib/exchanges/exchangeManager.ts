@@ -1,5 +1,7 @@
 import { BaseExchange, ExchangeConfig, MarketData, OrderBook, TradeOrder, Balance } from './baseExchange'
 import { BinanceExchange } from './binanceExchange'
+import { CoinbaseExchange } from './coinbaseExchange'
+import { KrakenExchange } from './krakenExchange'
 
 export type ExchangeType = 'binance' | 'coinbase' | 'kraken'
 
@@ -24,9 +26,11 @@ class ExchangeManager {
           exchange = new BinanceExchange(config)
           break
         case 'coinbase':
-          throw new Error('Coinbase integration coming soon')
+          exchange = new CoinbaseExchange(config)
+          break
         case 'kraken':
-          throw new Error('Kraken integration coming soon')
+          exchange = new KrakenExchange(config)
+          break
         default:
           throw new Error(`Unsupported exchange: ${type}`)
       }

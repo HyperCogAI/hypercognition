@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -22,6 +22,7 @@ import { NotificationCenter } from "@/components/ui/notification-center"
 const mainItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
+  { title: "Multi-Exchange", url: "/multi-exchange", icon: ArrowLeftRight },
   { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
   { title: "Advanced Trading", url: "/advanced-trading", icon: Target },
   { title: "Live Trading", url: "/real-time-market", icon: Activity },
