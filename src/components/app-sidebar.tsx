@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -19,35 +19,53 @@ import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
 
-const mainItems = [
+// Core navigation items
+const coreItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
+  { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
+  { title: "Create Agent", url: "/create-agent", icon: Plus },
+]
+
+// Trading and investment items
+const tradingItems = [
   { title: "Multi-Exchange", url: "/multi-exchange", icon: ArrowLeftRight },
   { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
   { title: "Advanced Trading", url: "/advanced-trading", icon: Target },
   { title: "Live Trading", url: "/real-time-market", icon: Activity },
   { title: "Social Trading", url: "/social-trading", icon: Share2 },
-  { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Order Management", url: "/order-management", icon: ListOrdered },
-  { title: "Risk Management", url: "/risk-management", icon: Shield },
-  { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
-  { title: "Institutional", url: "/institutional", icon: Building2 },
-  { title: "Compliance", url: "/compliance", icon: Scale },
-  { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
-  { title: "Create Agent", url: "/create-agent", icon: Plus },
-  { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
-  { title: "DeFi", url: "/defi", icon: TrendingUp },
+]
+
+// DeFi and crypto features
+const defiItems = [
+  { title: "DeFi", url: "/defi", icon: Coins },
   { title: "NFT Marketplace", url: "/nft-marketplace", icon: Users },
   { title: "Staking", url: "/staking", icon: Shield },
   { title: "Referrals", url: "/referrals", icon: Star },
-  { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
 ]
 
-const tradingItems = [
+// Analytics and management
+const analyticsItems = [
+  { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
+  { title: "Risk Management", url: "/risk-management", icon: Shield },
+  { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
+  { title: "Notifications", url: "/advanced-notifications", icon: Bell },
+]
+
+// Community and social features  
+const communityItems = [
   { title: "Favorites", url: "/favorites", icon: Star },
   { title: "Compare", url: "/compare", icon: BarChart3 },
   { title: "Communities", url: "/communities", icon: Users },
+]
+
+// Professional and enterprise features
+const professionalItems = [
+  { title: "Institutional", url: "/institutional", icon: Building2 },
+  { title: "Compliance", url: "/compliance", icon: Scale },
+  { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
 ]
 
 const resourceItems = [
@@ -93,14 +111,14 @@ export function AppSidebar() {
           </div>
         </div>
 
-        {/* Main Navigation */}
+        {/* Core Navigation */}
         <SidebarGroup>
           <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Main"}
+            {isCollapsed ? "•••" : "Core"}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainItems.map((item) => (
+              {coreItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton asChild>
                     <NavLink 
@@ -133,6 +151,78 @@ export function AppSidebar() {
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
                       <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* DeFi & Crypto Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+            {isCollapsed ? "•••" : "DeFi & Crypto"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {defiItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                    >
+                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Analytics Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+            {isCollapsed ? "•••" : "Analytics"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {analyticsItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                    >
+                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Community Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+            {isCollapsed ? "•••" : "Community"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {communityItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                    >
+                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                       {!isCollapsed && (
                         <div className="flex items-center justify-between w-full">
                           <span className="font-medium text-foreground">{item.title}</span>
@@ -143,6 +233,30 @@ export function AppSidebar() {
                           )}
                         </div>
                       )}
+                    </NavLink>
+                  </SidebarMenuButton>
+                </SidebarMenuItem>
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+
+        {/* Professional Section */}
+        <SidebarGroup>
+          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
+            {isCollapsed ? "•••" : "Professional"}
+          </SidebarGroupLabel>
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {professionalItems.map((item) => (
+                <SidebarMenuItem key={item.title}>
+                  <SidebarMenuButton asChild>
+                    <NavLink 
+                      to={item.url}
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                    >
+                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
