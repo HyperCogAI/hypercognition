@@ -8,6 +8,7 @@ import { useSocialTrading } from '@/hooks/useSocialTrading';
 import { TraderCard } from '@/components/social/TraderCard';
 import { TradingSignalCard } from '@/components/social/TradingSignalCard';
 import { CopyTradingEngine } from '@/components/social/CopyTradingEngine';
+import { CompetitionsManager } from '@/components/competitions/CompetitionsManager';
 
 export default function SocialTrading() {
   const [activeTab, setActiveTab] = useState("engine");
@@ -100,53 +101,7 @@ export default function SocialTrading() {
           </TabsContent>
 
           <TabsContent value="competitions" className="space-y-6">
-            <div className="flex items-center gap-2 mb-6">
-              <Trophy className="h-5 w-5" />
-              <h2 className="text-2xl font-bold">Trading Competitions</h2>
-              <Badge variant="secondary">{competitions.length}</Badge>
-            </div>
-            
-            {loadingCompetitions ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[...Array(3)].map((_, i) => (
-                  <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {competitions.map((competition) => (
-                  <Card key={competition.id}>
-                    <CardHeader>
-                      <CardTitle className="flex items-center gap-2">
-                        <Trophy className="h-5 w-5 text-yellow-500" />
-                        {competition.title}
-                      </CardTitle>
-                      <CardDescription>
-                        {competition.description}
-                      </CardDescription>
-                    </CardHeader>
-                    <CardContent>
-                      <div className="space-y-2">
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Prize Pool:</span>
-                          <span className="font-medium">${competition.prize_pool?.toLocaleString()}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Participants:</span>
-                          <span className="font-medium">
-                            {competition.current_participants}/{competition.max_participants || '∞'}
-                          </span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span className="text-sm text-muted-foreground">Type:</span>
-                          <Badge variant="outline">{competition.competition_type}</Badge>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            )}
+            <CompetitionsManager />
           </TabsContent>
         </Tabs>
       </div>
