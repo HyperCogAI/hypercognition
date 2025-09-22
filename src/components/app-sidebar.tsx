@@ -33,6 +33,7 @@ const mainItems = [
   { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
   { title: "Institutional", url: "/institutional", icon: Building2 },
   { title: "Compliance", url: "/compliance", icon: Scale },
+  { title: "Notifications", url: "/advanced-notifications", icon: Bell },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Advanced Analytics", url: "/advanced-analytics", icon: TrendingUp },
