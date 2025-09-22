@@ -10,6 +10,8 @@ interface AuthContextType {
   isConnected: boolean
   isLoading: boolean
   signInWithWallet: () => Promise<void>
+  signInWithEmail: (email: string, password: string) => Promise<void>
+  signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -139,6 +141,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  const signInWithEmail = async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    })
+    
+    if (error) {
+      throw error
+    }
+  }
+
+  const signUpWithEmail = async (email: string, password: string, displayName?: string) => {
+    const { error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`,
+        data: {
+          display_name: displayName,
+          auth_method: 'email'
+        }
+      }
+    })
+
+    if (error) {
+      throw error
+    }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
     disconnectWallet()
@@ -152,6 +183,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isConnected,
       isLoading,
       signInWithWallet,
+      signInWithEmail,
+      signUpWithEmail,
       signOut,
     }}>
       {children}

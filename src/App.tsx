@@ -55,6 +55,7 @@ import { ProtectedRoute } from "./components/ProtectedRoute";
 import SolanaDashboard from "./pages/SolanaDashboard";
 import SolanaStaking from "./pages/SolanaStaking";
 import SolanaTradingSignalsPage from "./pages/SolanaTradingSignals";
+import Auth from "./pages/Auth";
 
 // Lazy loaded components
 const DeFi = lazy(() => import('./pages/DeFi'));
@@ -94,6 +95,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -138,6 +140,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/auth" element={<Auth />} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />

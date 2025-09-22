@@ -1,11 +1,15 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
+import { useAuth } from "@/contexts/AuthContext"
 import { CyberButton } from "@/components/ui/cyber-button"
+import { UserMenu } from "@/components/UserMenu"
 import { WalletSection } from "@/components/wallet/WalletSection"
-import { Menu, X, Bot, Zap } from "lucide-react"
+import { Menu, X, Bot, Zap, LogIn } from "lucide-react"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
+  const { user, isLoading } = useAuth()
 
   const navItems = [
     { name: "Trade", href: "#trade" },
@@ -43,14 +47,27 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Desktop CTA */}
+          {/* Desktop Auth */}
           <div className="hidden md:flex items-center gap-4">
-            <CyberButton variant="neon" className="group" asChild>
-              <a href="/acp">
-                <Bot className="h-4 w-4 text-white" />
-                <span className="text-white">Assistant</span>
-              </a>
-            </CyberButton>
+            {!isLoading && (
+              user ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Link to="/auth">
+                    <CyberButton variant="outline" size="sm">
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </CyberButton>
+                  </Link>
+                  <Link to="/auth?mode=signup">
+                    <CyberButton variant="neon" size="sm">
+                      <span className="text-white">Get Started</span>
+                    </CyberButton>
+                  </Link>
+                </>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -77,13 +94,27 @@ export function Navigation() {
                 </a>
               ))}
               <div className="pt-4 space-y-2">
-                <div className="w-full">
-                  <WalletSection />
-                </div>
-                <CyberButton variant="cyber" className="w-full justify-start group">
-                  <Bot className="h-4 w-4" />
-                  Launch App
-                </CyberButton>
+                {!isLoading && (
+                  user ? (
+                    <div className="w-full">
+                      <WalletSection />
+                    </div>
+                  ) : (
+                    <div className="space-y-2">
+                      <Link to="/auth" onClick={() => setIsOpen(false)}>
+                        <CyberButton variant="outline" className="w-full justify-start">
+                          <LogIn className="h-4 w-4" />
+                          Sign In
+                        </CyberButton>
+                      </Link>
+                      <Link to="/auth?mode=signup" onClick={() => setIsOpen(false)}>
+                        <CyberButton variant="neon" className="w-full justify-start">
+                          <span className="text-white">Get Started</span>
+                        </CyberButton>
+                      </Link>
+                    </div>
+                  )
+                )}
               </div>
             </div>
           </div>
