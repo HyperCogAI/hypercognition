@@ -12,7 +12,7 @@ const EnhancedHero = lazy(() => import('@/components/sections/EnhancedHero').the
 
 const HyperFeatures = lazy(() => import('@/components/sections/HyperFeatures').then(m => ({ default: m.HyperFeatures })))
 const HyperCTA = lazy(() => import('@/components/sections/HyperCTA').then(m => ({ default: m.HyperCTA })))
-const Footer = lazy(() => import('@/components/sections/Footer').then(m => ({ default: m.Footer })))
+
 const EnhancedMarketNews = lazy(() => import('@/components/news/EnhancedMarketNews'))
 const AgentMarketplace = lazy(() => import('@/components/sections/AgentMarketplace').then(m => ({ default: m.AgentMarketplace })))
 
@@ -163,22 +163,6 @@ const CTASkeleton = () => (
   </section>
 )
 
-const FooterSkeleton = () => (
-  <footer className="py-16 border-t border-border animate-fade-in">
-    <div className="container mx-auto px-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className={`space-y-4 animate-scale-in animate-stagger-${i + 1}`}>
-            <Skeleton className="h-6 w-24 skeleton-shimmer" />
-            {[...Array(4)].map((_, j) => (
-              <Skeleton key={j} className="h-4 w-20 skeleton-shimmer" />
-            ))}
-          </div>
-        ))}
-      </div>
-    </div>
-  </footer>
-)
 
 export function OptimizedHomeLayout() {
   const { isMobile, isTablet } = useDeviceDetection()
@@ -237,10 +221,6 @@ export function OptimizedHomeLayout() {
         </Suspense>
       </main>
 
-      {/* Footer */}
-      <Suspense fallback={<FooterSkeleton />}>
-        <Footer />
-      </Suspense>
 
     </div>
   )
