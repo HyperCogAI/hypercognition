@@ -291,8 +291,13 @@ const PremiumTiers = () => {
         </Card>
 
         {/* Enterprise CTA */}
-        <Card className="mt-12 bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-          <CardContent className="p-8 text-center">
+        <Card className="mt-12 relative overflow-hidden border-primary/20">
+          <div 
+            className="absolute inset-0 bg-cover bg-center bg-no-repeat opacity-60"
+            style={{ backgroundImage: `url('/src/assets/gradient_blur_top_blue-2.png')` }}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/80 to-background/60" />
+          <CardContent className="relative p-8 text-center">
             <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
             <h3 className="text-2xl font-bold mb-4">Need Enterprise Solutions?</h3>
             <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
