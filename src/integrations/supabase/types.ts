@@ -289,6 +289,53 @@ export type Database = {
         }
         Relationships: []
       }
+      api_keys: {
+        Row: {
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          key_prefix: string
+          last_used_at: string | null
+          name: string
+          organization_id: string
+          permissions: Json
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          key_prefix: string
+          last_used_at?: string | null
+          name: string
+          organization_id: string
+          permissions?: Json
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          key_prefix?: string
+          last_used_at?: string | null
+          name?: string
+          organization_id?: string
+          permissions?: Json
+        }
+        Relationships: [
+          {
+            foreignKeyName: "api_keys_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_likes: {
         Row: {
           comment_id: string
@@ -410,6 +457,105 @@ export type Database = {
           updated_at?: string | null
         }
         Relationships: []
+      }
+      compliance_frameworks: {
+        Row: {
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          region: string
+          requirements: Json
+          type: string
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          region: string
+          requirements?: Json
+          type: string
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          region?: string
+          requirements?: Json
+          type?: string
+          updated_at?: string
+          version?: string
+        }
+        Relationships: []
+      }
+      compliance_violations: {
+        Row: {
+          description: string
+          detected_at: string
+          framework_id: string
+          id: string
+          metadata: Json | null
+          organization_id: string
+          requirement_id: string
+          resolution: string | null
+          resolved_at: string | null
+          resolved_by: string | null
+          severity: string
+          status: string
+        }
+        Insert: {
+          description: string
+          detected_at?: string
+          framework_id: string
+          id?: string
+          metadata?: Json | null
+          organization_id: string
+          requirement_id: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+        }
+        Update: {
+          description?: string
+          detected_at?: string
+          framework_id?: string
+          id?: string
+          metadata?: Json | null
+          organization_id?: string
+          requirement_id?: string
+          resolution?: string | null
+          resolved_at?: string | null
+          resolved_by?: string | null
+          severity?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "compliance_violations_framework_id_fkey"
+            columns: ["framework_id"]
+            isOneToOne: false
+            referencedRelation: "compliance_frameworks"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "compliance_violations_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       content_moderation: {
         Row: {
@@ -534,6 +680,87 @@ export type Database = {
           tvl?: number
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      exchange_connections: {
+        Row: {
+          api_key_encrypted: string
+          connection_status: string
+          created_at: string
+          exchange_name: string
+          id: string
+          is_active: boolean
+          is_testnet: boolean
+          last_sync_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          api_key_encrypted: string
+          connection_status?: string
+          created_at?: string
+          exchange_name: string
+          id?: string
+          is_active?: boolean
+          is_testnet?: boolean
+          last_sync_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          api_key_encrypted?: string
+          connection_status?: string
+          created_at?: string
+          exchange_name?: string
+          id?: string
+          is_active?: boolean
+          is_testnet?: boolean
+          last_sync_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      exchange_market_data: {
+        Row: {
+          ask_price: number | null
+          bid_price: number | null
+          change_24h: number | null
+          exchange_name: string
+          high_24h: number | null
+          id: string
+          low_24h: number | null
+          price: number
+          symbol: string
+          timestamp: string
+          volume_24h: number | null
+        }
+        Insert: {
+          ask_price?: number | null
+          bid_price?: number | null
+          change_24h?: number | null
+          exchange_name: string
+          high_24h?: number | null
+          id?: string
+          low_24h?: number | null
+          price: number
+          symbol: string
+          timestamp?: string
+          volume_24h?: number | null
+        }
+        Update: {
+          ask_price?: number | null
+          bid_price?: number | null
+          change_24h?: number | null
+          exchange_name?: string
+          high_24h?: number | null
+          id?: string
+          low_24h?: number | null
+          price?: number
+          symbol?: string
+          timestamp?: string
+          volume_24h?: number | null
         }
         Relationships: []
       }
@@ -1197,6 +1424,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      organizations: {
+        Row: {
+          created_at: string
+          created_by: string
+          id: string
+          name: string
+          settings: Json
+          status: string
+          tier: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          id?: string
+          name: string
+          settings?: Json
+          status?: string
+          tier?: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          id?: string
+          name?: string
+          settings?: Json
+          status?: string
+          tier?: string
+          type?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       platform_metrics: {
         Row: {
@@ -1928,6 +2191,53 @@ export type Database = {
             isOneToOne: false
             referencedRelation: "admin_users"
             referencedColumns: ["user_id"]
+          },
+        ]
+      }
+      team_members: {
+        Row: {
+          created_at: string
+          id: string
+          invited_by: string | null
+          joined_at: string | null
+          organization_id: string
+          permissions: Json
+          role: string
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          organization_id: string
+          permissions?: Json
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          invited_by?: string | null
+          joined_at?: string | null
+          organization_id?: string
+          permissions?: Json
+          role?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "team_members_organization_id_fkey"
+            columns: ["organization_id"]
+            isOneToOne: false
+            referencedRelation: "organizations"
+            referencedColumns: ["id"]
           },
         ]
       }

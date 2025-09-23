@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useToast } from '@/hooks/use-toast';
 import { exchangeManager, ExchangeType } from '@/lib/exchanges/exchangeManager';
 import { MarketData, Balance, TradeOrder } from '@/lib/exchanges/baseExchange';
+import { supabase } from '@/integrations/supabase/client';
 
 export interface ExchangeMetrics {
   exchange: ExchangeType;
@@ -343,14 +344,75 @@ export const useMultiExchange = () => {
     }
   };
 
+  // Fetch exchange connections from Supabase
+  const fetchExchangeConnections = useCallback(async () => {
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { data: connections } = await supabase
+        .from('exchange_connections')
+        .select('*')
+        .eq('user_id', user.id)
+        .eq('is_active', true);
+
+      if (connections) {
+        const connected = connections.map(c => c.exchange_name as ExchangeType);
+        setConnectedExchanges(connected);
+        
+        // Fetch real market data from Supabase
+        const { data: marketData } = await supabase
+          .from('exchange_market_data')
+          .select('*')
+          .order('timestamp', { ascending: false })
+          .limit(100);
+
+        if (marketData) {
+          // Group market data by exchange
+          const groupedData: Partial<Record<ExchangeType, MarketData[]>> = {};
+          marketData.forEach(md => {
+            const exchange = md.exchange_name as ExchangeType;
+            if (!groupedData[exchange]) {
+              groupedData[exchange] = [];
+            }
+            groupedData[exchange]!.push({
+              symbol: md.symbol,
+              price: Number(md.price),
+              volume24h: Number(md.volume_24h) || 0,
+              change24h: Number(md.change_24h) || 0,
+              high24h: Number(md.high_24h) || Number(md.price),
+              low24h: Number(md.low_24h) || Number(md.price),
+              timestamp: new Date(md.timestamp).getTime()
+            });
+          });
+          
+          setAggregatedMarketData(groupedData);
+          
+          // Find arbitrage opportunities with real data
+          const opportunities = findArbitrageOpportunities(
+            groupedData as Record<ExchangeType, MarketData[]>,
+            ['BTCUSDT', 'ETHUSDT', 'ADAUSDT', 'SOLUSDT']
+          );
+          setArbitrageOpportunities(opportunities);
+        }
+      }
+    } catch (error) {
+      console.error('Failed to fetch exchange connections:', error);
+    }
+  }, []);
+
   // Initialize and start monitoring
   useEffect(() => {
+    fetchExchangeConnections();
     updateExchangeStatus();
     
-    const interval = setInterval(updateExchangeStatus, 30000); // Update every 30s
+    const interval = setInterval(() => {
+      updateExchangeStatus();
+      fetchExchangeConnections();
+    }, 30000); // Update every 30s
     
     return () => clearInterval(interval);
-  }, [updateExchangeStatus]);
+  }, [updateExchangeStatus, fetchExchangeConnections]);
 
   // Auto-fetch market data when exchanges change
   useEffect(() => {

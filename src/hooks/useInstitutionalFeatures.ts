@@ -96,11 +96,105 @@ export const useInstitutionalFeatures = () => {
     const fetchOrganizationData = async () => {
       try {
         setLoading(true);
-        // For now, generate mock data since institutional tables don't exist yet
-        generateMockData();
+        
+        // Fetch user's team membership to get their organization
+        const { data: teamMember } = await supabase
+          .from('team_members')
+          .select(`
+            *,
+            organization:organizations(*)
+          `)
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+
+        if (!teamMember) {
+          setLoading(false);
+          return;
+        }
+
+        setOrganization({
+          ...teamMember.organization,
+          slug: teamMember.organization.name.toLowerCase().replace(/\s+/g, '-'),
+          type: teamMember.organization.type as Organization['type'],
+          tier: teamMember.organization.tier as Organization['tier'],
+          status: teamMember.organization.status as Organization['status'],
+          settings: teamMember.organization.settings as Organization['settings']
+        });
+        setUserRole(teamMember.role);
+
+        // Fetch all team members for this organization
+        const { data: members } = await supabase
+          .from('team_members')
+          .select('*')
+          .eq('organization_id', teamMember.organization.id)
+          .eq('status', 'active');
+
+        if (members) {
+          setTeamMembers(members.map(member => ({
+            ...member,
+            role: member.role as TeamMember['role'],
+            status: member.status as TeamMember['status'],
+            permissions: member.permissions as string[],
+            profile: {
+              display_name: `User ${member.user_id.slice(0, 8)}`,
+              email: `user-${member.user_id.slice(0, 8)}@${teamMember.organization.name.toLowerCase().replace(/\s+/g, '-')}.com`,
+              avatar_url: undefined
+            },
+            last_active: new Date().toISOString(),
+            invited_at: member.created_at
+          })));
+        }
+
+        // Fetch compliance violations for this organization
+        const { data: violations } = await supabase
+          .from('compliance_violations')
+          .select(`
+            *,
+            framework:compliance_frameworks(*)
+          `)
+          .eq('organization_id', teamMember.organization.id);
+
+        if (violations) {
+          setComplianceRecords(violations.map(v => ({
+            id: v.id,
+            organization_id: v.organization_id,
+            type: 'violation' as const,
+            severity: v.severity as ComplianceRecord['severity'],
+            status: v.status === 'open' ? 'pending' : 'resolved',
+            data: {
+              framework: v.framework?.name,
+              requirement: v.requirement_id,
+              description: v.description
+            },
+            created_at: v.detected_at,
+            reviewed_by: v.resolved_by,
+            reviewed_at: v.resolved_at
+          })));
+        }
+
+        // Fetch API keys for this organization
+        const { data: keys } = await supabase
+          .from('api_keys')
+          .select('*')
+          .eq('organization_id', teamMember.organization.id);
+
+        if (keys) {
+          setApiKeys(keys.map(key => ({
+            id: key.id,
+            organization_id: key.organization_id,
+            name: key.name,
+            key_prefix: key.key_prefix,
+            permissions: key.permissions as string[],
+            last_used: key.last_used_at || new Date().toISOString(),
+            created_at: key.created_at,
+            expires_at: key.expires_at,
+            status: key.is_active ? 'active' : 'revoked'
+          })));
+        }
       } catch (error) {
         console.error('Error fetching institutional data:', error);
-        generateMockData();
+        generateMockData(); // Fallback to mock data
       } finally {
         setLoading(false);
       }

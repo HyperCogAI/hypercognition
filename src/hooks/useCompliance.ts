@@ -91,11 +91,75 @@ export const useCompliance = () => {
     const fetchComplianceData = async () => {
       try {
         setLoading(true);
-        // For now, generate mock data since compliance tables don't exist yet
+        
+        // Fetch compliance frameworks
+        const { data: frameworksData } = await supabase
+          .from('compliance_frameworks')
+          .select('*')
+          .eq('is_active', true);
+
+        if (frameworksData) {
+          const parsedFrameworks = frameworksData.map(f => ({
+            id: f.id,
+            name: f.name,
+            region: f.region,
+            type: f.type as ComplianceFramework['type'],
+            status: 'active' as const,
+            requirements: (f.requirements as any[]).map(req => ({
+              id: req.id,
+              framework_id: f.id,
+              name: req.title,
+              description: req.description,
+              category: req.category as ComplianceRequirement['category'],
+              severity: 'medium' as const,
+              frequency: 'daily' as const,
+              automated: req.mandatory,
+              last_check: new Date().toISOString(),
+              status: 'compliant' as const
+            }))
+          }));
+          
+          setFrameworks(parsedFrameworks);
+          if (parsedFrameworks.length > 0) {
+            setSelectedFramework(parsedFrameworks[0].id);
+          }
+        }
+
+        // Fetch user's organization to get violations
+        const { data: teamMember } = await supabase
+          .from('team_members')
+          .select('organization_id')
+          .eq('user_id', user.id)
+          .eq('status', 'active')
+          .single();
+
+        if (teamMember) {
+          const { data: violationsData } = await supabase
+            .from('compliance_violations')
+            .select('*')
+            .eq('organization_id', teamMember.organization_id);
+
+          if (violationsData) {
+            setViolations(violationsData.map(v => ({
+              id: v.id,
+              requirement_id: v.requirement_id,
+              type: 'policy_violation' as const,
+              severity: v.severity as ComplianceViolation['severity'],
+              status: v.status === 'open' ? 'open' : 'resolved',
+              detected_at: v.detected_at,
+              resolved_at: v.resolved_at,
+              data: (typeof v.metadata === 'object' && v.metadata !== null) ? v.metadata as Record<string, any> : {},
+              remediation_actions: ['Review and resolve violation'],
+              assigned_to: v.resolved_by
+            })));
+          }
+        }
+
+        // Generate mock audit trail and reports since we don't have these tables yet
         generateMockData();
       } catch (error) {
         console.error('Error fetching compliance data:', error);
-        generateMockData();
+        generateMockData(); // Fallback to mock data
       } finally {
         setLoading(false);
       }
