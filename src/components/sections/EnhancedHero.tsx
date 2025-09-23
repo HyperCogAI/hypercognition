@@ -64,10 +64,6 @@ export function EnhancedHero() {
           {/* Hero Headline */}
           <div className="space-y-6">
             <div className="space-y-4">
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary mb-4 animate-fade-in">
-                <Star className="h-4 w-4 mr-2" />
-                Trusted by 10,000+ Traders Worldwide
-              </div>
               
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
                 The Future of{" "}
@@ -132,20 +128,6 @@ export function EnhancedHero() {
               <Play className="h-5 w-5 mr-2 text-white" />
               <span className="text-white font-semibold">Watch Demo</span>
             </CyberButton>
-          </div>
-
-          {/* Social Proof */}
-          <div className="flex flex-col items-center space-y-4">
-            <div className="flex items-center space-x-2 text-sm text-muted-foreground">
-              <Users className="h-4 w-4" />
-              <span>Join 50,000+ active traders</span>
-            </div>
-            <div className="flex items-center space-x-1">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <Star key={i} className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-              ))}
-              <span className="ml-2 text-sm text-muted-foreground">4.9/5 from 2,500+ reviews</span>
-            </div>
           </div>
         </div>
       </div>
