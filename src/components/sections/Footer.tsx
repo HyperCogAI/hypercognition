@@ -11,7 +11,7 @@ export const Footer = () => {
             <img 
               src={hyperCognitionLogo} 
               alt="HyperCognition"
-              className="h-10 w-auto"
+              className="h-9 w-auto"
             />
             <div className="flex gap-3 mt-6">
               <a 
