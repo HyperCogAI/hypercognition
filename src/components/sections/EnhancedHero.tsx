@@ -119,8 +119,8 @@ export function EnhancedHero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <CyberButton variant="neon" size="xl" className="group relative overflow-hidden">
-              <span className="relative z-10 text-white font-semibold">Start Trading Now</span>
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-white relative z-10" />
+              <span className="relative z-10 text-primary-foreground font-semibold">Start Trading Now</span>
+              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-primary-foreground relative z-10" />
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow opacity-0 group-hover:opacity-100 transition-opacity" />
             </CyberButton>
             

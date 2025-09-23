@@ -328,8 +328,8 @@ export function AppSidebar() {
             <WalletSection />
             <CyberButton variant="neon" className="w-full group" asChild>
               <NavLink to="/ai-assistant">
-                <Bot className="h-4 w-4 text-white" />
-                <span className="text-white">AI Assistant</span>
+                <Bot className="h-4 w-4 text-primary-foreground" />
+                <span className="text-primary-foreground">AI Assistant</span>
               </NavLink>
             </CyberButton>
           </div>

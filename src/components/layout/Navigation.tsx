@@ -65,7 +65,7 @@ export function Navigation() {
                   </Link>
                   <Link to="/auth?mode=signup">
                     <CyberButton variant="neon" size="sm">
-                      <span className="text-white">Get Started</span>
+                      <span className="text-primary-foreground">Get Started</span>
                     </CyberButton>
                   </Link>
                 </>
@@ -112,7 +112,7 @@ export function Navigation() {
                       </Link>
                       <Link to="/auth?mode=signup" onClick={() => setIsOpen(false)}>
                         <CyberButton variant="neon" className="w-full justify-start">
-                          <span className="text-white">Get Started</span>
+                          <span className="text-primary-foreground">Get Started</span>
                         </CyberButton>
                       </Link>
                     </div>
