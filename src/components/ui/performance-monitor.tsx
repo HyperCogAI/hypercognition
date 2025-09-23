@@ -27,9 +27,9 @@ export function PerformanceMonitor({ showDetails = false, className }: Performan
   }, [])
 
   const getPerformanceColor = (value: number, thresholds: { good: number; warning: number }) => {
-    if (value <= thresholds.good) return 'success'
-    if (value <= thresholds.warning) return 'warning'
-    return 'destructive'
+    if (value <= thresholds.good) return 'secondary' // Good performance
+    if (value <= thresholds.warning) return 'outline' // Warning
+    return 'destructive' // Poor performance
   }
 
   const formatTime = (ms: number) => `${ms.toFixed(1)}ms`

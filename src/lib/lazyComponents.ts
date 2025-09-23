@@ -1,6 +1,6 @@
 import React, { lazy, Suspense, ComponentType } from 'react'
 import { performanceOptimizer } from './performanceOptimizer'
-import { LoadingSkeletons } from '@/components/ui/loading-skeletons'
+import { DashboardSkeleton } from '@/components/ui/loading-skeletons'
 
 // Enhanced lazy loading with performance tracking and retry logic
 const createEnhancedLazy = <T extends ComponentType<any>>(
@@ -22,7 +22,7 @@ export const withSuspense = <P extends object>(
   fallback?: React.ReactNode
 ) => {
   const WrappedComponent = (props: P) => {
-    const defaultFallback = React.createElement(LoadingSkeletons, { variant: "dashboard" })
+    const defaultFallback = React.createElement(DashboardSkeleton)
     
     return React.createElement(
       Suspense,
