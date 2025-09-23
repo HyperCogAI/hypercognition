@@ -177,6 +177,23 @@
     box-shadow: 0 0 20px hsl(var(--secondary) / 0.5);
   }
 
+  /* Interactive Elements */
+  .story-link {
+    @apply relative inline-block after:content-[''] after:absolute after:w-full after:scale-x-0 after:h-0.5 after:bottom-0 after:left-0 after:bg-primary after:origin-bottom-right after:transition-transform after:duration-300 hover:after:scale-x-100 hover:after:origin-bottom-left;
+  }
+
+  .hover-scale {
+    @apply transition-all duration-300 hover:scale-105 hover:shadow-lg;
+  }
+
+  .hover-glow {
+    @apply transition-all duration-300 hover:shadow-[0_0_20px_hsl(var(--primary)/0.5)];
+  }
+
+  .interactive-card {
+    @apply transition-all duration-300 hover:scale-[1.02] hover:shadow-xl hover:border-primary/30;
+  }
+
   /* Animated Gradients */
   .gradient-animated {
     background: linear-gradient(270deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
@@ -198,24 +215,51 @@
     background-size: 50px 50px;
   }
 
-  /* Floating Animation */
+  /* Enhanced Floating Animation */
   .float {
-    animation: float 3s ease-in-out infinite;
+    animation: float 6s ease-in-out infinite;
   }
 
   @keyframes float {
-    0%, 100% { transform: translateY(0px); }
-    50% { transform: translateY(-10px); }
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    33% { transform: translateY(-10px) rotate(1deg); }
+    66% { transform: translateY(-5px) rotate(-1deg); }
   }
 
   /* Pulse Glow */
   .pulse-glow {
-    animation: pulseGlow 2s ease-in-out infinite alternate;
+    animation: pulseGlow 3s ease-in-out infinite alternate;
   }
 
   @keyframes pulseGlow {
-    from { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
-    to { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
+    from { 
+      box-shadow: 0 0 20px hsl(var(--primary) / 0.3);
+      transform: scale(1);
+    }
+    to { 
+      box-shadow: 0 0 40px hsl(var(--primary) / 0.6), 0 0 60px hsl(var(--primary) / 0.3);
+      transform: scale(1.02);
+    }
+  }
+
+  /* Stagger Animation Delays */
+  .animate-stagger-1 { animation-delay: 0.1s; }
+  .animate-stagger-2 { animation-delay: 0.2s; }
+  .animate-stagger-3 { animation-delay: 0.3s; }
+  .animate-stagger-4 { animation-delay: 0.4s; }
+  .animate-stagger-5 { animation-delay: 0.5s; }
+  .animate-stagger-6 { animation-delay: 0.6s; }
+
+  /* Enhanced Skeleton Loading */
+  .skeleton-shimmer {
+    background: linear-gradient(
+      90deg,
+      hsl(var(--muted) / 0.4) 25%,
+      hsl(var(--muted) / 0.8) 50%,
+      hsl(var(--muted) / 0.4) 75%
+    );
+    background-size: 200% 100%;
+    animation: shimmer 2s infinite;
   }
 
   /* Mobile-specific optimizations */
@@ -251,14 +295,50 @@
     font-size: clamp(1.5rem, 5vw, 2.25rem);
   }
 
+  /* Enhanced Micro-interactions */
+  .micro-bounce {
+    @apply transition-transform duration-150 active:scale-95;
+  }
+
+  .micro-lift {
+    @apply transition-all duration-300 hover:-translate-y-1 hover:shadow-xl;
+  }
+
+  /* Loading States */
+  .loading-dots::after {
+    content: '';
+    animation: loadingDots 1.5s infinite;
+  }
+
+  @keyframes loadingDots {
+    0%, 20% { content: ''; }
+    40% { content: '.'; }
+    60% { content: '..'; }
+    80%, 100% { content: '...'; }
+  }
+
   /* Mobile-optimized animations */
   @media (prefers-reduced-motion: reduce) {
     .float,
     .pulse-glow,
     .gradient-animated,
     .animate-pulse,
-    .animate-spin {
+    .animate-spin,
+    .hover-scale,
+    .interactive-card {
       animation: none;
+      transition: none;
+    }
+  }
+
+  /* High contrast mode support */
+  @media (prefers-contrast: high) {
+    .glow-primary,
+    .glow-accent,
+    .glow-secondary,
+    .pulse-glow {
+      box-shadow: none;
+      border: 2px solid currentColor;
     }
   }
 }
