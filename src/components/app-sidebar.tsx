@@ -72,19 +72,19 @@ const professionalItems = [
   { title: "Risk Management", url: "/risk-management", icon: Shield },
   { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
   { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
+  { title: "Advanced AI", url: "/advanced-ai", icon: Bot },
+  { title: "Enhanced Features", url: "/enhanced-features", icon: Sparkles },
   { title: "Institutional", url: "/institutional", icon: Building2 },
   { title: "Institutional APIs", url: "/institutional-apis", icon: Briefcase },
   { title: "Compliance", url: "/compliance", icon: Scale },
-  { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
-  { title: "Premium", url: "/premium", icon: Crown },
   { title: "White Label", url: "/white-label", icon: Package },
   { title: "Multi Language", url: "/multi-language", icon: Globe },
   { title: "Admin", url: "/admin", icon: Settings },
 ]
 
 const resourceItems = [
-  { title: "Advanced AI", url: "/advanced-ai", icon: Bot },
-  { title: "Enhanced Features", url: "/enhanced-features", icon: Sparkles },
+  { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
+  { title: "Premium", url: "/premium", icon: Crown },
   { title: "Contact", url: "/contact", icon: HelpCircle },
   { title: "Docs", url: "https://whitepaper.hypercognition.io/hypercognition/", icon: FileText, external: true },
 ]
