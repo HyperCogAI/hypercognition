@@ -62,10 +62,10 @@ const AIAssistant = () => {
         description="Access AI-powered trading insights, market analysis, and personalized trading recommendations for AI agent investments with real-time data analysis."
         keywords="AI trading assistant, market analysis, trading insights, portfolio optimization, AI recommendations"
       />
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 p-4">
-        <div className="max-w-7xl mx-auto space-y-6">
+      <div className="min-h-screen bg-gradient-to-b from-background to-background/80 p-6">
+        <div className="max-w-7xl mx-auto space-y-12">
           {/* Header */}
-          <div className="text-center space-y-4">
+          <div className="text-center space-y-6 pt-8 pb-4">
             <div className="flex items-center justify-center gap-3">
               <Brain className="h-8 w-8 text-primary" />
               <h1 className="text-4xl font-bold">AI Trading Assistant</h1>
@@ -73,19 +73,19 @@ const AIAssistant = () => {
                 Powered by GPT-4
               </Badge>
             </div>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
               Get intelligent market insights, personalized trading recommendations, and real-time analysis 
               to make better trading decisions with AI-powered assistance.
             </p>
           </div>
 
           <Tabs defaultValue="assistant" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto">
+            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
               <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
               <TabsTrigger value="features">Features</TabsTrigger>
             </TabsList>
 
-            <TabsContent value="assistant" className="space-y-6">
+            <TabsContent value="assistant" className="space-y-8">
               <AITradingAssistant 
                 selectedAgent={selectedAgent}
                 portfolio={mockPortfolio}
@@ -93,20 +93,20 @@ const AIAssistant = () => {
               />
             </TabsContent>
 
-            <TabsContent value="features" className="space-y-6">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <TabsContent value="features" className="space-y-10">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {features.map((feature, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-all duration-300">
-                    <CardHeader>
+                  <Card key={index} className="hover:shadow-lg transition-all duration-300 h-full">
+                    <CardHeader className="pb-4">
                       <CardTitle className="flex items-center gap-3">
-                        <div className="p-2 rounded-lg bg-primary/10">
-                          <feature.icon className="h-5 w-5 text-primary" />
+                        <div className="p-3 rounded-lg bg-primary/10">
+                          <feature.icon className="h-6 w-6 text-primary" />
                         </div>
                         {feature.title}
                       </CardTitle>
                     </CardHeader>
-                    <CardContent>
-                      <p className="text-muted-foreground">{feature.description}</p>
+                    <CardContent className="pt-0">
+                      <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
                     </CardContent>
                   </Card>
                 ))}
@@ -121,21 +121,29 @@ const AIAssistant = () => {
                   backgroundRepeat: 'no-repeat'
                 }}
               >
-                <CardContent className="p-8 text-center space-y-4">
-                  <Brain className="h-12 w-12 mx-auto text-primary" />
-                  <h3 className="text-2xl font-bold">Ready to Start Trading Smarter?</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
+                <CardContent className="p-12 text-center space-y-6">
+                  <Brain className="h-16 w-16 mx-auto text-primary" />
+                  <h3 className="text-3xl font-bold text-white">Ready to Start Trading Smarter?</h3>
+                  <p className="text-white/80 max-w-lg mx-auto text-lg leading-relaxed">
                     Our AI assistant is trained on vast amounts of market data and uses advanced 
                     machine learning to provide you with the best possible trading insights.
                   </p>
-                  <div className="flex gap-3 justify-center">
-                    <Button onClick={() => setSelectedAgent(undefined)} size="lg" className="gap-2">
-                      <Zap className="h-4 w-4" />
+                  <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                    <Button 
+                      onClick={() => setSelectedAgent(undefined)} 
+                      size="lg" 
+                      className="gap-2 bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3"
+                    >
+                      <Zap className="h-5 w-5" />
                       Try AI Assistant Now
                     </Button>
                     <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
-                      <Button variant="outline" size="lg" className="gap-2">
-                        <Mic className="h-4 w-4" />
+                      <Button 
+                        variant="outline" 
+                        size="lg" 
+                        className="gap-2 border-white/30 text-white hover:bg-white/10 px-8 py-3"
+                      >
+                        <Mic className="h-5 w-5" />
                         Voice Mode
                       </Button>
                     </VoiceAssistantModal>
