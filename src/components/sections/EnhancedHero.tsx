@@ -133,7 +133,7 @@ export function EnhancedHero() {
       </div>
 
       {/* Scroll Indicator */}
-      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 -ml-4 z-20 animate-bounce">
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 -ml-6 z-20 animate-bounce">
         <div className="flex flex-col items-center space-y-2 text-muted-foreground">
           <span className="text-xs uppercase tracking-wider">Scroll to explore</span>
           <ChevronDown className="h-5 w-5" />
