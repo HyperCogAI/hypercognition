@@ -28,7 +28,7 @@ const HeroSkeleton = () => (
       </div>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
         {[...Array(3)].map((_, i) => (
-          <EnhancedCard key={i} className={cn("animate-scale-in", `animate-stagger-${i + 2}`)}>
+          <EnhancedCard key={i} className={`animate-scale-in animate-stagger-${i + 2}`}>
             <div className="p-6 space-y-4">
               <Skeleton className="h-8 w-16 mx-auto skeleton-shimmer" />
               <Skeleton className="h-4 w-24 mx-auto skeleton-shimmer" />
@@ -53,7 +53,7 @@ const MarketNewsSkeleton = () => (
       </div>
       <div className="grid gap-4">
         {[...Array(3)].map((_, i) => (
-          <div key={i} className={cn("flex gap-4 animate-fade-in", `animate-stagger-${i + 1}`)}>
+          <div key={i} className={`flex gap-4 animate-fade-in animate-stagger-${i + 1}`}>
             <Skeleton className="h-16 w-16 rounded skeleton-shimmer" />
             <div className="flex-1 space-y-2">
               <Skeleton className="h-4 w-3/4 skeleton-shimmer" />
@@ -78,7 +78,7 @@ const MarketplaceSkeleton = () => (
     </div>
     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       {[...Array(6)].map((_, i) => (
-        <EnhancedCard key={i} className={cn("animate-scale-in", `animate-stagger-${Math.min(i + 1, 6)}`)}>
+        <EnhancedCard key={i} className={`animate-scale-in animate-stagger-${Math.min(i + 1, 6)}`}>
           <div className="p-6 space-y-4">
             <div className="flex items-center gap-3">
               <Skeleton className="h-12 w-12 rounded-full skeleton-shimmer" />
@@ -109,7 +109,7 @@ const StatsSkeleton = () => (
       </div>
       <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className={cn("text-center space-y-2 animate-scale-in", `animate-stagger-${i + 1}`)}>
+          <div key={i} className={`text-center space-y-2 animate-scale-in animate-stagger-${i + 1}`}>
             <Skeleton className="h-8 w-16 mx-auto skeleton-shimmer" />
             <Skeleton className="h-4 w-20 mx-auto skeleton-shimmer" />
           </div>
@@ -153,7 +153,7 @@ const FeaturesSkeleton = () => (
       {/* Features Grid */}
       <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
         {[...Array(6)].map((_, i) => (
-          <EnhancedCard key={i} className={cn("p-6 animate-scale-in", `animate-stagger-${Math.min(i + 1, 6)}`)}>
+          <EnhancedCard key={i} className={`p-6 animate-scale-in animate-stagger-${Math.min(i + 1, 6)}`}>
             <div className="space-y-4">
               <Skeleton className="h-12 w-12 skeleton-shimmer" />
               <Skeleton className="h-6 w-3/4 skeleton-shimmer" />
@@ -186,7 +186,7 @@ const FooterSkeleton = () => (
     <div className="container mx-auto px-6">
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {[...Array(4)].map((_, i) => (
-          <div key={i} className={cn("space-y-4 animate-scale-in", `animate-stagger-${i + 1}`)}>
+          <div key={i} className={`space-y-4 animate-scale-in animate-stagger-${i + 1}`}>
             <Skeleton className="h-6 w-24 skeleton-shimmer" />
             {[...Array(4)].map((_, j) => (
               <Skeleton key={j} className="h-4 w-20 skeleton-shimmer" />
