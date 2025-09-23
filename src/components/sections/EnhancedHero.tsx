@@ -1,12 +1,8 @@
 import { CyberButton } from "@/components/ui/cyber-button"
 import { ArrowRight, Star, Zap, Shield, TrendingUp, Users, Target, Play, ChevronDown } from "lucide-react"
 import { useState, useEffect } from "react"
-import { OptimizedVideo } from "@/components/optimized/OptimizedVideo"
-import heroVideo from "@/assets/hero-video.mp4"
 
 export function EnhancedHero() {
-  const [videoLoaded, setVideoLoaded] = useState(false)
-  const [videoError, setVideoError] = useState(false)
   const [typedText, setTypedText] = useState("")
 
   const heroTexts = [
@@ -53,19 +49,6 @@ export function EnhancedHero() {
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-      {/* Background Video */}
-      <div className="absolute top-0 left-0 right-0 bottom-0 z-0 flex items-start justify-center -mt-96">
-        <OptimizedVideo
-          src={heroVideo}
-          className="w-full h-full max-w-full max-h-full object-cover opacity-40"
-          autoPlay
-          loop
-          muted
-          playsInline
-          onLoadedData={() => setVideoLoaded(true)}
-          onError={() => setVideoError(true)}
-        />
-      </div>
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95 z-5" />
