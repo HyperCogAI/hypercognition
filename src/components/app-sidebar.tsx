@@ -30,15 +30,8 @@ const coreItems = [
 
 // Trading and investment items
 const tradingItems = [
-  { title: "Multi-Exchange", url: "/multi-exchange", icon: ArrowLeftRight },
-  { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
-  { title: "Advanced Trading", url: "/advanced-trading", icon: Target },
-  { title: "Live Trading", url: "/real-time-market", icon: Activity },
-  { title: "Social Trading", url: "/social-trading", icon: Share2 },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
-  { title: "Order Management", url: "/order-management", icon: ListOrdered },
   { title: "Trading Signals", url: "/trading-signals", icon: Target },
-  { title: "Solana Signals", url: "/solana-signals", icon: Sparkles },
 ]
 
 // DeFi and crypto features
@@ -54,11 +47,7 @@ const defiItems = [
 // Analytics and management
 const analyticsItems = [
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
-  { title: "Risk Management", url: "/risk-management", icon: Shield },
-  { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
   { title: "Notifications", url: "/notifications", icon: Bell },
-  { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
 ]
 
 // Community and social features  
@@ -72,6 +61,17 @@ const communityItems = [
 
 // Professional and enterprise features
 const professionalItems = [
+  { title: "Multi-Exchange", url: "/multi-exchange", icon: ArrowLeftRight },
+  { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
+  { title: "Advanced Trading", url: "/advanced-trading", icon: Target },
+  { title: "Live Trading", url: "/real-time-market", icon: Activity },
+  { title: "Social Trading", url: "/social-trading", icon: Share2 },
+  { title: "Order Management", url: "/order-management", icon: ListOrdered },
+  { title: "Solana Signals", url: "/solana-signals", icon: Sparkles },
+  { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
+  { title: "Risk Management", url: "/risk-management", icon: Shield },
+  { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
+  { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
   { title: "Institutional", url: "/institutional", icon: Building2 },
   { title: "Institutional APIs", url: "/institutional-apis", icon: Briefcase },
   { title: "Compliance", url: "/compliance", icon: Scale },
