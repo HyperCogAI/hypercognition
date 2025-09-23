@@ -97,55 +97,33 @@ export const useCustomerSupport = () => {
     try {
       setLoading(true);
       
-      // In a real implementation, this would fetch from the database
-      // For now, using mock data
-      const mockTickets: SupportTicket[] = [
-        {
-          id: 'ticket_1',
-          user_id: user.id,
-          subject: 'Cannot connect to Binance exchange',
-          description: 'I\'m getting authentication errors when trying to connect my Binance account. I\'ve double-checked my API keys.',
-          category: 'technical',
-          priority: 'high',
-          status: 'in_progress',
-          assigned_agent_id: 'agent_1',
-          created_at: new Date(Date.now() - 7200000).toISOString(),
-          updated_at: new Date(Date.now() - 3600000).toISOString(),
-          tags: ['exchange', 'binance', 'api'],
-          attachments: []
-        },
-        {
-          id: 'ticket_2',
-          user_id: user.id,
-          subject: 'Feature request: Dark mode for mobile app',
-          description: 'It would be great to have a dark mode option for the mobile application to reduce eye strain during night trading.',
-          category: 'feature_request',
-          priority: 'medium',
-          status: 'open',
-          created_at: new Date(Date.now() - 172800000).toISOString(),
-          updated_at: new Date(Date.now() - 86400000).toISOString(),
-          tags: ['mobile', 'ui', 'dark-mode'],
-          attachments: []
-        },
-        {
-          id: 'ticket_3',
-          user_id: user.id,
-          subject: 'Billing inquiry about premium features',
-          description: 'I\'m interested in upgrading to premium but have questions about the features included and billing cycle.',
-          category: 'billing',
-          priority: 'low',
-          status: 'resolved',
-          assigned_agent_id: 'agent_2',
-          created_at: new Date(Date.now() - 259200000).toISOString(),
-          updated_at: new Date(Date.now() - 86400000).toISOString(),
-          resolved_at: new Date(Date.now() - 86400000).toISOString(),
-          customer_satisfaction_rating: 5,
-          tags: ['billing', 'premium'],
-          attachments: []
-        }
-      ];
+      // Fetch real tickets from Supabase
+      const { data: ticketsData, error } = await supabase
+        .from('support_tickets')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
 
-      setTickets(mockTickets);
+      if (error) throw error;
+
+      // Transform data to match interface
+      const transformedTickets: SupportTicket[] = (ticketsData || []).map(ticket => ({
+        id: ticket.id,
+        user_id: ticket.user_id,
+        subject: ticket.subject,
+        description: ticket.description,
+        category: ticket.category as any,
+        priority: ticket.priority as any,
+        status: ticket.status as 'open' | 'in_progress' | 'waiting_for_customer' | 'resolved' | 'closed',
+        assigned_agent_id: ticket.assigned_to,
+        created_at: ticket.created_at,
+        updated_at: ticket.updated_at,
+        resolved_at: ticket.resolved_at,
+        tags: Array.isArray(ticket.metadata) ? [] : (ticket.metadata as any)?.tags || [],
+        attachments: Array.isArray(ticket.metadata) ? [] : (ticket.metadata as any)?.attachments || []
+      }));
+
+      setTickets(transformedTickets);
     } catch (error) {
       console.error('Failed to fetch tickets:', error);
       toast({
@@ -158,57 +136,37 @@ export const useCustomerSupport = () => {
     }
   }, [user, toast]);
 
-  // Fetch messages for a ticket
   const fetchTicketMessages = useCallback(async (ticketId: string) => {
     try {
-      // Mock messages
-      const mockMessages: SupportMessage[] = [
-        {
-          id: 'msg_1',
-          ticket_id: ticketId,
-          sender_id: user?.id || 'user_1',
-          sender_type: 'customer',
-          message: 'I\'m getting authentication errors when trying to connect my Binance account. I\'ve double-checked my API keys.',
-          is_internal_note: false,
-          created_at: new Date(Date.now() - 7200000).toISOString()
-        },
-        {
-          id: 'msg_2',
-          ticket_id: ticketId,
-          sender_id: 'agent_1',
-          sender_type: 'agent',
-          message: 'Thank you for contacting us. I\'ve reviewed your case and it looks like there might be an issue with the API permissions. Can you please check if your API key has trading permissions enabled?',
-          is_internal_note: false,
-          created_at: new Date(Date.now() - 5400000).toISOString()
-        },
-        {
-          id: 'msg_3',
-          ticket_id: ticketId,
-          sender_id: user?.id || 'user_1',
-          sender_type: 'customer',
-          message: 'I checked and the API key does have trading permissions. The error message says "Invalid signature" - could this be a timestamp issue?',
-          is_internal_note: false,
-          created_at: new Date(Date.now() - 3600000).toISOString()
-        },
-        {
-          id: 'msg_4',
-          ticket_id: ticketId,
-          sender_id: 'agent_1',
-          sender_type: 'agent',
-          message: 'That\'s a good observation! Invalid signature errors are often related to timestamp synchronization. Please try the following steps:\n\n1. Make sure your system clock is synchronized\n2. Clear browser cache and cookies\n3. Try connecting again\n\nLet me know if this resolves the issue.',
-          is_internal_note: false,
-          created_at: new Date(Date.now() - 1800000).toISOString()
-        }
-      ];
+      // Fetch real messages from Supabase
+      const { data: messagesData, error } = await supabase
+        .from('support_ticket_messages')
+        .select('*')
+        .eq('ticket_id', ticketId)
+        .order('created_at', { ascending: true });
+
+      if (error) throw error;
+
+      // Transform data to match interface
+      const transformedMessages: SupportMessage[] = (messagesData || []).map(msg => ({
+        id: msg.id,
+        ticket_id: msg.ticket_id,
+        sender_id: msg.user_id,
+        sender_type: msg.is_staff_response ? 'agent' : 'customer',
+        message: msg.message,
+        is_internal_note: false,
+        attachments: Array.isArray(msg.attachments) ? msg.attachments as string[] : [],
+        created_at: msg.created_at
+      }));
 
       setMessages(prev => ({
         ...prev,
-        [ticketId]: mockMessages
+        [ticketId]: transformedMessages
       }));
     } catch (error) {
       console.error('Failed to fetch ticket messages:', error);
     }
-  }, [user]);
+  }, []);
 
   // Fetch available agents
   const fetchAgents = useCallback(async () => {
@@ -318,18 +276,41 @@ export const useCustomerSupport = () => {
     }
   }, []);
 
-  // Create new support ticket
   const createTicket = async (ticketData: Omit<SupportTicket, 'id' | 'user_id' | 'status' | 'created_at' | 'updated_at'>) => {
     try {
       setLoading(true);
 
+      const { data, error } = await supabase
+        .from('support_tickets')
+        .insert([{
+          user_id: user?.id,
+          subject: ticketData.subject,
+          description: ticketData.description,
+          category: ticketData.category,
+          priority: ticketData.priority,
+          metadata: {
+            tags: ticketData.tags,
+            attachments: ticketData.attachments || []
+          }
+        }])
+        .select()
+        .single();
+
+      if (error) throw error;
+
+      // Transform response to match interface
       const newTicket: SupportTicket = {
-        id: `ticket_${Date.now()}`,
-        user_id: user?.id || '',
-        status: 'open',
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        ...ticketData
+        id: data.id,
+        user_id: data.user_id,
+        subject: data.subject,
+        description: data.description,
+        category: data.category as 'technical' | 'billing' | 'general' | 'feature_request' | 'bug_report',
+        priority: data.priority as 'low' | 'medium' | 'high' | 'urgent',
+        status: data.status as 'open' | 'in_progress' | 'waiting_for_customer' | 'resolved' | 'closed',
+        created_at: data.created_at,
+        updated_at: data.updated_at,
+        tags: Array.isArray(data.metadata) ? [] : (data.metadata as any)?.tags || [],
+        attachments: Array.isArray(data.metadata) ? [] : (data.metadata as any)?.attachments || []
       };
 
       setTickets(prev => [newTicket, ...prev]);
