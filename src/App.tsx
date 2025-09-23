@@ -58,7 +58,7 @@ const Favorites = lazy(() => import('./pages/Favorites'));
 
 // Lazy loaded components - DeFi & Blockchain
 const DeFi = lazy(() => import('./pages/DeFi'));
-const NFTMarketplace = lazy(() => import('./pages/NFTMarketplace'));
+
 const Staking = lazy(() => import('./pages/Staking'));
 const SolanaDashboard = lazy(() => import('./pages/SolanaDashboard'));
 const SolanaStaking = lazy(() => import('./pages/SolanaStaking'));
@@ -220,7 +220,7 @@ const AppLayout = () => {
           <Route path="/customer-support" element={<CustomerSupport />} />
           <Route path="/defi" element={<DeFi />} />
           <Route path="/solana" element={<SolanaDashboard />} />
-          <Route path="/nft-marketplace" element={<NFTMarketplace />} />
+          
           <Route path="/staking" element={<Staking />} />
           <Route path="/solana-staking" element={<SolanaStaking />} />
           <Route path="/referrals" element={<Referrals />} />

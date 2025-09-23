@@ -46,7 +46,7 @@ const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
   { title: "Solana", url: "/solana", icon: Sparkles },
   { title: "Solana Staking", url: "/solana-staking", icon: Lock },
-  { title: "NFT Marketplace", url: "/nft-marketplace", icon: Users },
+  
   { title: "Staking", url: "/staking", icon: Shield },
   { title: "Referrals", url: "/referrals", icon: Star },
 ]

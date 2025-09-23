@@ -9,7 +9,7 @@ export const loadFeatureModule = async (feature: string) => {
     'portfolio-optimizer': () => import('@/components/portfolio/PortfolioOptimizer'),
     'risk-management': () => import('@/components/portfolio/RiskManagementDashboard'),
     'technical-analysis': () => import('@/components/analytics/TechnicalAnalysisDashboard'),
-    'nft-marketplace': () => import('@/components/nft/NFTMarketplace'),
+    
     'defi-dashboard': () => import('@/components/defi/DeFiDashboard'),
     'compliance-dashboard': () => import('@/components/compliance/ComplianceDashboard'),
     'institutional-features': () => import('@/components/institutional/InstitutionalDashboard'),
@@ -76,7 +76,7 @@ export const ROUTE_CHUNKS = {
   SOCIAL: ['social-trading', 'communities', 'agent-comparison'],
   
   // DeFi & Blockchain
-  DEFI: ['defi', 'staking', 'solana-dashboard', 'nft-marketplace'],
+  DEFI: ['defi', 'staking', 'solana-dashboard'],
   
   // Administrative
   ADMIN: ['admin', 'institutional', 'compliance', 'customer-support'],

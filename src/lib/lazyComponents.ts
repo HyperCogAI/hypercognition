@@ -75,10 +75,6 @@ export const LazyCustomerSupportDashboard = createEnhancedLazy(
   'customer-support-dashboard'
 )
 
-export const LazyNFTMarketplace = createEnhancedLazy(
-  () => import('@/components/nft/NFTMarketplace').then(m => ({ default: m.NFTMarketplace })),
-  'nft-marketplace'
-)
 
 export const LazyDeFiDashboard = createEnhancedLazy(
   () => import('@/components/defi/DeFiDashboard').then(m => ({ default: m.DeFiDashboard })),

@@ -113,7 +113,7 @@ const MOCK_RESULTS: SearchResult[] = [
   }
 ]
 
-const CATEGORIES = ['All', 'DeFi', 'Yield', 'Trading', 'NFT', 'Gaming', 'Meme']
+const CATEGORIES = ['All', 'DeFi', 'Yield', 'Trading', 'Gaming', 'Meme']
 const CHAINS = ['Ethereum', 'Polygon', 'Solana', 'BSC', 'Arbitrum', 'Optimism']
 const FEATURES = ['Arbitrage', 'DeFi', 'Yield Farming', 'Momentum', 'Technical Analysis', 'Conservative', 'High Frequency']
 const RISK_LEVELS = ['All', 'Low', 'Medium', 'High']

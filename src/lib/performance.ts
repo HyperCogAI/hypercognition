@@ -27,8 +27,6 @@ export const lazyImports = {
   // Support components
   CustomerSupportDashboard: () => import('@/components/support/CustomerSupportDashboard'),
   
-  // NFT components
-  NFTMarketplace: () => import('@/components/nft/NFTMarketplace'),
   
   // DeFi components
   DeFiDashboard: () => import('@/components/defi/DeFiDashboard'),
