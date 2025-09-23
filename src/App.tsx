@@ -250,6 +250,7 @@ const AppLayout = () => {
                 <Route path="/multi-language" element={<MultiLanguage />} />
                 <Route path="/white-label" element={<WhiteLabel />} />
                 <Route path="/advanced-ai" element={<AdvancedAI />} />
+                <Route path="/enhanced-features" element={<EnhancedFeatures />} />
                 <Route path="/institutional-apis" element={<InstitutionalAPIs />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
