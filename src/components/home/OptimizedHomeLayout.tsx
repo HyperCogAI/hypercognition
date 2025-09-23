@@ -243,10 +243,6 @@ export function OptimizedHomeLayout() {
           </section>
         </div>
 
-        {/* Stats Section */}
-        <Suspense fallback={<StatsSkeleton />}>
-          <Stats />
-        </Suspense>
 
         {/* Features Section */}
         <Suspense fallback={<FeaturesSkeleton />}>
