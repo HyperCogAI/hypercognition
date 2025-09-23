@@ -242,13 +242,6 @@ export function OptimizedHomeLayout() {
         <Footer />
       </Suspense>
 
-      {/* Performance Monitor for Development */}
-      {process.env.NODE_ENV === 'development' && performanceData && (
-        <div className="fixed bottom-4 right-4 bg-card/90 backdrop-blur-sm border border-border rounded-lg p-3 text-xs z-50">
-          <div className="text-primary font-semibold">Home Performance</div>
-          <div>Render: {performanceData.renderTime.toFixed(2)}ms</div>
-        </div>
-      )}
     </div>
   )
 }
