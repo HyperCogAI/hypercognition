@@ -71,6 +71,9 @@
     --sidebar-border: 220 13% 91%;
 
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* Sidebar active state */
+    --sidebar-active: 222 30% 8%;
   }
 
     /* Gradients for Backgrounds */
@@ -213,5 +216,49 @@
   @keyframes pulseGlow {
     from { box-shadow: 0 0 20px hsl(var(--primary) / 0.3); }
     to { box-shadow: 0 0 40px hsl(var(--primary) / 0.6); }
+  }
+
+  /* Mobile-specific optimizations */
+  .safe-area-pb {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+
+  .safe-area-pt {
+    padding-top: env(safe-area-inset-top);
+  }
+
+  .safe-area-px {
+    padding-left: env(safe-area-inset-left);
+    padding-right: env(safe-area-inset-right);
+  }
+
+  /* Touch-friendly interactions */
+  .touch-target {
+    min-height: 44px;
+    min-width: 44px;
+  }
+
+  /* Mobile responsive text */
+  .text-responsive {
+    font-size: clamp(0.875rem, 2.5vw, 1rem);
+  }
+
+  .text-responsive-lg {
+    font-size: clamp(1.125rem, 4vw, 1.5rem);
+  }
+
+  .text-responsive-xl {
+    font-size: clamp(1.5rem, 5vw, 2.25rem);
+  }
+
+  /* Mobile-optimized animations */
+  @media (prefers-reduced-motion: reduce) {
+    .float,
+    .pulse-glow,
+    .gradient-animated,
+    .animate-pulse,
+    .animate-spin {
+      animation: none;
+    }
   }
 }
