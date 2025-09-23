@@ -76,21 +76,14 @@ export function EnhancedHero() {
       {/* Floating Particles */}
       <div className="absolute inset-0 z-10">
         {Array.from({ length: 50 }).map((_, i) => (
-          <motion.div
+          <div
             key={i}
-            className="absolute w-1 h-1 bg-primary/30 rounded-full"
+            className="absolute w-1 h-1 bg-primary/30 rounded-full animate-pulse"
             style={{
               left: `${Math.random() * 100}%`,
               top: `${Math.random() * 100}%`,
-            }}
-            animate={{
-              y: [0, -20, 0],
-              opacity: [0.3, 1, 0.3],
-            }}
-            transition={{
-              duration: 3 + Math.random() * 2,
-              repeat: Infinity,
-              delay: Math.random() * 2,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${3 + Math.random() * 2}s`,
             }}
           />
         ))}
@@ -102,13 +95,8 @@ export function EnhancedHero() {
           
           {/* Hero Headline */}
           <div className="space-y-6">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="space-y-4"
-            >
-              <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary mb-4">
+            <div className="space-y-4">
+              <div className="inline-flex items-center px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-sm text-primary mb-4 animate-fade-in">
                 <Star className="h-4 w-4 mr-2" />
                 Trusted by 10,000+ Traders Worldwide
               </div>
@@ -125,15 +113,10 @@ export function EnhancedHero() {
                 Deploy autonomous AI trading agents that learn, adapt, and execute strategies 24/7. 
                 Experience the next generation of algorithmic trading with HyperCognition.
               </p>
-            </motion.div>
+            </div>
 
             {/* Key Features */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8, delay: 0.3 }}
-              className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8"
-            >
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8">
               <div className="flex items-center justify-center space-x-3 p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
                 <Zap className="h-6 w-6 text-yellow-500" />
                 <span className="text-sm font-medium">Lightning Fast Execution</span>
@@ -146,16 +129,11 @@ export function EnhancedHero() {
                 <TrendingUp className="h-6 w-6 text-blue-500" />
                 <span className="text-sm font-medium">AI-Driven Insights</span>
               </div>
-            </motion.div>
+            </div>
           </div>
           
           {/* Stats Row */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.5 }}
-            className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto"
-          >
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
             <div className="text-center p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 backdrop-blur-sm">
               <div className="text-3xl md:text-4xl font-bold text-primary mb-2">$2.4B+</div>
               <div className="text-sm text-muted-foreground">Total Volume Traded</div>
@@ -172,15 +150,10 @@ export function EnhancedHero() {
               <div className="text-3xl md:text-4xl font-bold text-blue-500 mb-2">24/7</div>
               <div className="text-sm text-muted-foreground">Automated Trading</div>
             </div>
-          </motion.div>
+          </div>
           
           {/* CTA Buttons */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.7 }}
-            className="flex flex-col sm:flex-row gap-4 justify-center items-center"
-          >
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
             <CyberButton variant="neon" size="xl" className="group relative overflow-hidden">
               <span className="relative z-10 text-white font-semibold">Start Trading Now</span>
               <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-white relative z-10" />
@@ -191,15 +164,10 @@ export function EnhancedHero() {
               <Play className="h-5 w-5 mr-2 text-white" />
               <span className="text-white font-semibold">Watch Demo</span>
             </CyberButton>
-          </motion.div>
+          </div>
 
           {/* Social Proof */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.8, delay: 0.9 }}
-            className="flex flex-col items-center space-y-4"
-          >
+          <div className="flex flex-col items-center space-y-4">
             <div className="flex items-center space-x-2 text-sm text-muted-foreground">
               <Users className="h-4 w-4" />
               <span>Join 50,000+ active traders</span>
@@ -210,20 +178,17 @@ export function EnhancedHero() {
               ))}
               <span className="ml-2 text-sm text-muted-foreground">4.9/5 from 2,500+ reviews</span>
             </div>
-          </motion.div>
+          </div>
         </div>
       </div>
 
       {/* Scroll Indicator */}
-      <motion.div
-        animate={controls}
-        className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20"
-      >
+      <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-20 animate-bounce">
         <div className="flex flex-col items-center space-y-2 text-muted-foreground">
           <span className="text-xs uppercase tracking-wider">Scroll to explore</span>
-          <ChevronDown className="h-5 w-5 animate-bounce" />
+          <ChevronDown className="h-5 w-5" />
         </div>
-      </motion.div>
+      </div>
     </section>
   )
 }
