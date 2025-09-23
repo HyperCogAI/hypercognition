@@ -17,8 +17,8 @@ export function Navigation() {
     { name: "AI Bots", href: "#bots" },
     { name: "Academy", href: "/trading-academy" },
     { name: "Community", href: "/community" },
+    { name: "Enterprise", href: "/institutional-apis" },
     { name: "Premium", href: "/premium" },
-    { name: "Portfolio", href: "/portfolio" },
     { name: "Docs", href: "https://whitepaper.hypercognition.io/hypercognition/" },
   ]
 

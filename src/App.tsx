@@ -35,6 +35,10 @@ const TechnicalAnalysis = lazy(() => import('./pages/TechnicalAnalysis'));
 const TradingAcademy = lazy(() => import('./pages/TradingAcademy'));
 const Community = lazy(() => import('./pages/Community'));
 const PremiumTiers = lazy(() => import('./pages/PremiumTiers'));
+const MultiLanguage = lazy(() => import('./pages/MultiLanguage'));
+const WhiteLabel = lazy(() => import('./pages/WhiteLabel'));
+const AdvancedAI = lazy(() => import('./pages/AdvancedAI'));
+const InstitutionalAPIs = lazy(() => import('./pages/InstitutionalAPIs'));
 
 // Lazy loaded components - Trading
 const AdvancedTradingPage = lazy(() => import('./pages/AdvancedTrading').then(m => ({ default: m.AdvancedTradingPage })));
@@ -209,6 +213,10 @@ const AppLayout = () => {
                 <Route path="/trading-academy" element={<TradingAcademy />} />
                 <Route path="/community" element={<Community />} />
                 <Route path="/premium" element={<PremiumTiers />} />
+                <Route path="/multi-language" element={<MultiLanguage />} />
+                <Route path="/white-label" element={<WhiteLabel />} />
+                <Route path="/advanced-ai" element={<AdvancedAI />} />
+                <Route path="/institutional-apis" element={<InstitutionalAPIs />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />
