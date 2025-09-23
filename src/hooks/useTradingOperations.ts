@@ -1,168 +1,213 @@
-import { useNotifications } from './useNotifications'
-import { useAuth } from '@/contexts/AuthContext'
+import { useState, useCallback } from 'react'
+import { withErrorHandling, createError, useErrorHandler } from '@/lib/errorHandling'
 import { supabase } from '@/integrations/supabase/client'
-import { useSecurityMiddleware } from '@/hooks/useSecurityMiddleware'
+import { cache, CACHE_KEYS, CACHE_TTL, CACHE_TAGS } from '@/lib/cache'
 
-export const useTradingOperations = () => {
-  const { showSuccess, showError } = useNotifications()
-  const { isConnected, user } = useAuth()
-  const { withSecurityCheck } = useSecurityMiddleware()
+export type OrderType = 'market' | 'limit' | 'stop_loss' | 'take_profit'
+export type OrderSide = 'buy' | 'sell'
+export type OrderStatus = 'pending' | 'filled' | 'cancelled' | 'expired'
 
-  const executeBuy = async (agentId: string, amount: number, price: number) => {
-    if (!isConnected || !user) {
-      showError('Please connect your wallet first')
-      return false
+export interface OrderData {
+  agent_id: string
+  type: OrderType
+  side: OrderSide
+  amount: number
+  price?: number
+  trigger_price?: number
+  expires_at?: string
+  fill_or_kill?: boolean
+  stop_loss_price?: number
+  take_profit_price?: number
+  trailing_stop_percent?: number
+}
+
+export const useTradingOperations = (userId?: string) => {
+  const [isLoading, setIsLoading] = useState(false)
+  const { captureError } = useErrorHandler()
+
+  const placeOrder = useCallback(async (orderData: OrderData) => {
+    if (!userId) {
+      throw createError.auth('User must be authenticated to place orders', {
+        component: 'useTradingOperations',
+        action: 'placeOrder'
+      })
     }
 
-    try {
-      return await withSecurityCheck('trading', async () => {
-        const totalValue = amount * price
-        const gasEstimate = totalValue * 0.003 // 0.3% gas fee estimate
-        
-        // Insert transaction record and execute trade logic
-        const { data: transaction, error: txError } = await supabase
-          .from('transactions')
-          .insert({
-            user_id: user.id,
-            agent_id: agentId,
-            type: 'buy',
-            amount: amount,
-            price_per_token: price,
-            total_value: totalValue,
-            gas_fee: gasEstimate,
-            status: 'pending'
-          })
-          .select()
-          .single()
+    return withErrorHandling(async () => {
+      setIsLoading(true)
 
-        if (txError) throw txError
-
-        // Simulate transaction delay
-        await new Promise(resolve => setTimeout(resolve, 2000))
-        
-        // Simulate success
-        await supabase
-          .from('transactions')
-          .update({ 
-            status: 'completed',
-            transaction_hash: `0x${Math.random().toString(16).substring(2, 66)}`
-          })
-          .eq('id', transaction.id)
-
-        showSuccess(`Successfully bought ${amount} tokens!`)
-        return true
-      }, JSON.stringify({ agentId, amount, price, type: 'buy' }))
-    } catch (error: any) {
-      console.error('Buy transaction error:', error)
-      showError(error.message || 'Transaction failed. Please try again.')
-      return false
-    }
-  }
-
-  const executeSell = async (agentId: string, amount: number, price: number) => {
-    if (!isConnected || !user) {
-      showError('Please connect your wallet first')
-      return false
-    }
-
-    try {
-      return await withSecurityCheck('trading', async () => {
-      // Check if user has enough tokens
-      const { data: holding } = await supabase
-        .from('user_holdings')
-        .select()
-        .eq('user_id', user.id)
-        .eq('agent_id', agentId)
-        .maybeSingle()
-
-      if (!holding || holding.total_amount < amount) {
-        showError('Insufficient token balance')
-        return false
+      // Validate order data
+      if (orderData.amount <= 0) {
+        throw createError.validation('Order amount must be greater than 0')
       }
 
-      const totalValue = amount * price
-      const gasEstimate = totalValue * 0.003 // 0.3% gas fee estimate
-      
-      // Insert transaction record
-      const { data: transaction, error: txError } = await supabase
-        .from('transactions')
+      if (orderData.type === 'limit' && !orderData.price) {
+        throw createError.validation('Limit orders require a price')
+      }
+
+      const { data, error } = await supabase
+        .from('orders')
         .insert({
-          user_id: user.id,
-          agent_id: agentId,
-          type: 'sell',
-          amount: amount,
-          price_per_token: price,
-          total_value: totalValue,
-          gas_fee: gasEstimate,
-          status: 'pending'
+          user_id: userId,
+          ...orderData,
+          status: 'pending' as OrderStatus,
+          filled_amount: 0
         })
         .select()
         .single()
 
-      if (txError) throw txError
-
-      // Simulate transaction delay
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Simulate random success/failure (95% success rate)
-      const success = Math.random() > 0.05
-      
-      if (success) {
-        // Update transaction status
-        await supabase
-          .from('transactions')
-          .update({ 
-            status: 'completed',
-            transaction_hash: `0x${Math.random().toString(16).substring(2, 66)}`
-          })
-          .eq('id', transaction.id)
-
-        // Update holding
-        const newTotalAmount = holding.total_amount - amount
-        const soldPortion = amount / holding.total_amount
-        const realizedPnL = (price - holding.average_cost) * amount
-        
-        if (newTotalAmount > 0) {
-          // Update existing holding
-          await supabase
-            .from('user_holdings')
-            .update({
-              total_amount: newTotalAmount,
-              total_invested: holding.total_invested * (1 - soldPortion),
-              realized_pnl: holding.realized_pnl + realizedPnL,
-              last_updated: new Date().toISOString()
-            })
-            .eq('id', holding.id)
-        } else {
-          // Delete holding if completely sold
-          await supabase
-            .from('user_holdings')
-            .delete()
-            .eq('id', holding.id)
-        }
-
-        showSuccess(`Successfully sold ${amount} tokens!`)
-        return true
-      } else {
-        // Update transaction status to failed
-        await supabase
-          .from('transactions')
-          .update({ status: 'failed' })
-          .eq('id', transaction.id)
-        
-        throw new Error('Transaction failed')
+      if (error) {
+        throw createError.trading(`Failed to place ${orderData.type} order: ${error.message}`, {
+          component: 'useTradingOperations',
+          action: 'placeOrder',
+          userId,
+          additionalData: orderData
+        })
       }
-      }, JSON.stringify({ agentId, amount, price, type: 'sell' }))
-    } catch (error: any) {
-      console.error('Sell transaction error:', error)
-      showError(error.message || 'Transaction failed. Please try again.')
-      return false
+
+      // Invalidate cache for user orders
+      cache.invalidateByTags([CACHE_TAGS.ORDERS])
+
+      return data
+    }, {
+      component: 'useTradingOperations',
+      action: 'placeOrder',
+      userId
+    })
+  }, [userId, captureError])
+
+  const cancelOrder = useCallback(async (orderId: string) => {
+    if (!userId) {
+      throw createError.auth('User must be authenticated to cancel orders')
     }
-  }
+
+    return withErrorHandling(async () => {
+      setIsLoading(true)
+
+      const { data, error } = await supabase
+        .from('orders')
+        .update({ status: 'cancelled' as OrderStatus })
+        .eq('id', orderId)
+        .eq('user_id', userId)
+        .select()
+        .single()
+
+      if (error) {
+        throw createError.trading(`Failed to cancel order: ${error.message}`, {
+          component: 'useTradingOperations',
+          action: 'cancelOrder',
+          userId,
+          additionalData: { orderId }
+        })
+      }
+
+      // Invalidate cache
+      cache.invalidateByTags([CACHE_TAGS.ORDERS])
+
+      return data
+    }, {
+      component: 'useTradingOperations',
+      action: 'cancelOrder',
+      userId
+    })
+  }, [userId, captureError])
+
+  const getOrderHistory = useCallback(async (status?: OrderStatus, limit: number = 50) => {
+    if (!userId) return []
+
+    return withErrorHandling(async () => {
+      const cacheKey = CACHE_KEYS.USER_ORDERS(userId, status)
+      const cached = cache.get(cacheKey)
+      if (cached) return cached
+
+      let query = supabase
+        .from('orders')
+        .select(`*, agent:agents(*)`)
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false })
+        .limit(limit)
+
+      if (status) {
+        query = query.eq('status', status)
+      }
+
+      const { data, error } = await query
+
+      if (error) {
+        throw createError.database('Failed to fetch order history', {
+          component: 'useTradingOperations',
+          action: 'getOrderHistory',
+          userId,
+          additionalData: { status, limit }
+        })
+      }
+
+      cache.set(cacheKey, data || [], {
+        ttl: CACHE_TTL.USER_DATA,
+        tags: [CACHE_TAGS.ORDERS, CACHE_TAGS.USERS]
+      })
+
+      return data || []
+    }, {
+      component: 'useTradingOperations',
+      action: 'getOrderHistory',
+      userId
+    }) || []
+  }, [userId, captureError])
 
   return {
-    executeBuy,
-    executeSell,
-    isConnected
+    placeOrder,
+    cancelOrder,
+    getOrderHistory,
+    isLoading
   }
+}
+
+export const useOrderValidation = () => {
+  const validateOrderData = useCallback((orderData: OrderData) => {
+    const errors: string[] = []
+
+    if (orderData.amount <= 0) {
+      errors.push('Amount must be greater than 0')
+    }
+
+    if (orderData.type === 'limit' && !orderData.price) {
+      errors.push('Limit orders require a price')
+    }
+
+    if (orderData.type === 'stop_loss' && !orderData.trigger_price) {
+      errors.push('Stop loss orders require a trigger price')
+    }
+
+    if (orderData.type === 'take_profit' && !orderData.trigger_price) {
+      errors.push('Take profit orders require a trigger price')
+    }
+
+    if (orderData.price && orderData.price <= 0) {
+      errors.push('Price must be greater than 0')
+    }
+
+    if (orderData.trigger_price && orderData.trigger_price <= 0) {
+      errors.push('Trigger price must be greater than 0')
+    }
+
+    if (orderData.stop_loss_price && orderData.stop_loss_price <= 0) {
+      errors.push('Stop loss price must be greater than 0')
+    }
+
+    if (orderData.take_profit_price && orderData.take_profit_price <= 0) {
+      errors.push('Take profit price must be greater than 0')
+    }
+
+    if (orderData.trailing_stop_percent && (orderData.trailing_stop_percent <= 0 || orderData.trailing_stop_percent > 100)) {
+      errors.push('Trailing stop percentage must be between 0 and 100')
+    }
+
+    return {
+      isValid: errors.length === 0,
+      errors
+    }
+  }, [])
+
+  return { validateOrderData }
 }

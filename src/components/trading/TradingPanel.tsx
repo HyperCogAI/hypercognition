@@ -25,7 +25,7 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
   const [slippage, setSlippage] = useState("0.5")
   const [isTrading, setIsTrading] = useState(false)
   const { isConnected, address } = useAuth()
-  const { executeBuy, executeSell } = useTradingOperations()
+  const { placeOrder } = useTradingOperations()
 
   const handleBuy = async () => {
     if (!buyAmount || parseFloat(buyAmount) <= 0) return
@@ -35,7 +35,13 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
       const amount = parseFloat(buyAmount) / parseFloat(agent.price.replace('$', ''))
       const price = parseFloat(agent.price.replace('$', ''))
       
-      const success = await executeBuy(agentId, amount, price)
+      const success = await placeOrder({
+        agent_id: agentId,
+        type: 'market',
+        side: 'buy',
+        amount: amount,
+        price: price
+      })
       if (success) {
         setBuyAmount("")
         // Refresh the page to show updated balance
@@ -54,7 +60,13 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
       const amount = parseFloat(sellAmount)
       const price = parseFloat(agent.price.replace('$', ''))
       
-      const success = await executeSell(agentId, amount, price)
+      const success = await placeOrder({
+        agent_id: agentId,
+        type: 'market',
+        side: 'sell',
+        amount: amount,
+        price: price
+      })
       if (success) {
         setSellAmount("")
         // Refresh the page to show updated balance

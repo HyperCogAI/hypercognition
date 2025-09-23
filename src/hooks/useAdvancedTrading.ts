@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { useTradingOperations, OrderData } from '@/hooks/useTradingOperations'
+import { useTradingOperations, useOrderValidation, OrderData } from '@/hooks/useTradingOperations'
 import { toast } from '@/hooks/use-toast'
 
 export type OrderType = 'market' | 'limit' | 'stop_loss' | 'take_profit'
@@ -30,8 +30,9 @@ export const useAdvancedTrading = () => {
   const [orders, setOrders] = useState<Order[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
-  // Use simplified trading operations for now
-  const tradingOps = useTradingOperations(user?.id)
+  // Split into smaller, focused operations
+  const { placeOrder, cancelOrder, getOrderHistory } = useTradingOperations(user?.id)
+  const { validateOrderData } = useOrderValidation()
 
   // Fetch user orders
   const fetchOrders = async () => {
@@ -117,6 +118,8 @@ export const useAdvancedTrading = () => {
   return {
     orders,
     isLoading,
+    placeOrder: createOrder,
+    cancelOrder: removeOrder,
     createOrder,
     removeOrder,
     fetchOrders,
