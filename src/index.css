@@ -26,10 +26,10 @@
     --primary-foreground: 0 0% 0%;
     --primary-glow: 190 100% 80%;
 
-    /* Secondary - Match primary light cyan for unified buttons */
-    --secondary: 190 100% 70%;
-    --secondary-foreground: 0 0% 0%;
-    --secondary-glow: 190 100% 80%;
+    /* Secondary - Blue accent */
+    --secondary: 210 100% 65%;
+    --secondary-foreground: 210 40% 95%;
+    --secondary-glow: 210 100% 80%;
 
     /* Muted Elements - Very Dark */
     --muted: 0 0% 8%;
