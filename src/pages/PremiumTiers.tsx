@@ -293,14 +293,14 @@ const PremiumTiers = () => {
         {/* Enterprise CTA */}
         <Card className="mt-12 relative overflow-hidden border-primary/20">
           <div 
-            className="absolute inset-0 bg-cover bg-top bg-no-repeat opacity-80"
+            className="absolute inset-0 bg-cover bg-top bg-no-repeat"
             style={{ backgroundImage: `url('/src/assets/gradient_blur_top_blue-2.png')` }}
           />
-          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/30 to-background/80" />
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent to-background/40" />
           <CardContent className="relative p-8 text-center">
             <Users className="h-12 w-12 mx-auto mb-4 text-primary" />
             <h3 className="text-2xl font-bold mb-4 text-foreground">Need Enterprise Solutions?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-foreground/80 mb-6 max-w-2xl mx-auto">
               Custom pricing and features for large organizations, institutions, and trading firms. 
               Get dedicated support, custom integrations, and enterprise-grade security.
             </p>
