@@ -1,18 +1,32 @@
 import { CyberButton } from "@/components/ui/cyber-button"
-import { ArrowRight } from "lucide-react"
+import { ArrowRight, Play } from "lucide-react"
+import { useState } from "react"
 import heroVideo from "@/assets/hero-video.mp4"
 
 export function Hero() {
+  const [videoLoaded, setVideoLoaded] = useState(false)
+  const [videoError, setVideoError] = useState(false)
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       {/* Background Video */}
       <div className="absolute top-0 left-0 right-0 bottom-0 z-0 flex items-start justify-center -mt-96">
+        {!videoLoaded && !videoError && (
+          <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-background via-card to-background">
+            <div className="animate-pulse">
+              <Play className="h-24 w-24 text-primary/50" />
+            </div>
+          </div>
+        )}
         <video 
-          className="w-full h-full max-w-full max-h-full object-contain opacity-90"
+          className={`w-full h-full max-w-full max-h-full object-contain opacity-90 transition-opacity duration-1000 ${videoLoaded ? 'opacity-90' : 'opacity-0'}`}
           autoPlay
           loop
           muted
           playsInline
+          preload="metadata"
+          onLoadedData={() => setVideoLoaded(true)}
+          onError={() => setVideoError(true)}
         >
           <source src={heroVideo} type="video/mp4" />
         </video>

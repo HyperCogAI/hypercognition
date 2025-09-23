@@ -8,7 +8,7 @@ import { SpotlightAgent } from "@/components/agents/SpotlightAgent"
 import { Button } from "@/components/ui/button"
 import { SearchInput } from "@/components/ui/search-input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
+import { CardSkeleton } from "@/components/ui/loading-skeleton"
 import gradientBlurBg from "@/assets/gradient_blur_top_blue.png"
 import { supabase } from "@/integrations/supabase/client"
 import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
@@ -183,7 +183,7 @@ export const AgentMarketplace = () => {
             <div className="space-y-3">
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <AgentCardSkeleton key={i} />
+                  <CardSkeleton key={i} />
                 ))
               ) : filteredTrendingAgents.slice(0, 5).length > 0 ? (
                 filteredTrendingAgents.slice(0, 5).map((agent, index) => (
@@ -228,7 +228,7 @@ export const AgentMarketplace = () => {
             <div className="space-y-3">
               {isLoading ? (
                 Array.from({ length: 6 }).map((_, i) => (
-                  <AgentCardSkeleton key={i} />
+                  <CardSkeleton key={i} />
                 ))
               ) : filteredTrendingAgents.length > 0 ? (
                 filteredTrendingAgents.map((agent, index) => (
@@ -259,7 +259,7 @@ export const AgentMarketplace = () => {
             <div className="space-y-3">
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <AgentCardSkeleton key={i} />
+                  <CardSkeleton key={i} />
                 ))
               ) : filteredFundamentalAgents.length > 0 ? (
                 filteredFundamentalAgents.map((agent, index) => (

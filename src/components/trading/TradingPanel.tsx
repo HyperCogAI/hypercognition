@@ -6,8 +6,10 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
+import { PaperTradingToggle } from "@/components/ui/paper-trading-toggle"
 import { useAuth } from "@/contexts/AuthContext"
 import { useTradingOperations } from "@/hooks/useTradingOperations"
+import { usePaperTrading } from "@/hooks/usePaperTrading"
 
 interface TradingPanelProps {
   agentId: string
@@ -26,6 +28,12 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
   const [isTrading, setIsTrading] = useState(false)
   const { isConnected, address } = useAuth()
   const { placeOrder } = useTradingOperations()
+  const { 
+    isEnabled: paperTradingEnabled, 
+    togglePaperTrading, 
+    executePaperTrade, 
+    balance: paperBalance 
+  } = usePaperTrading()
 
   const handleBuy = async () => {
     if (!buyAmount || parseFloat(buyAmount) <= 0) return
@@ -35,17 +43,24 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
       const amount = parseFloat(buyAmount) / parseFloat(agent.price.replace('$', ''))
       const price = parseFloat(agent.price.replace('$', ''))
       
-      const success = await placeOrder({
-        agent_id: agentId,
-        type: 'market',
-        side: 'buy',
-        amount: amount,
-        price: price
-      })
-      if (success) {
-        setBuyAmount("")
-        // Refresh the page to show updated balance
-        window.location.reload()
+      if (paperTradingEnabled) {
+        const success = await executePaperTrade('buy', agent.symbol, amount, price)
+        if (success) {
+          setBuyAmount("")
+        }
+      } else {
+        const success = await placeOrder({
+          agent_id: agentId,
+          type: 'market',
+          side: 'buy',
+          amount: amount,
+          price: price
+        })
+        if (success) {
+          setBuyAmount("")
+          // Refresh the page to show updated balance
+          window.location.reload()
+        }
       }
     } finally {
       setIsTrading(false)
@@ -60,17 +75,24 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
       const amount = parseFloat(sellAmount)
       const price = parseFloat(agent.price.replace('$', ''))
       
-      const success = await placeOrder({
-        agent_id: agentId,
-        type: 'market',
-        side: 'sell',
-        amount: amount,
-        price: price
-      })
-      if (success) {
-        setSellAmount("")
-        // Refresh the page to show updated balance
-        window.location.reload()
+      if (paperTradingEnabled) {
+        const success = await executePaperTrade('sell', agent.symbol, amount, price)
+        if (success) {
+          setSellAmount("")
+        }
+      } else {
+        const success = await placeOrder({
+          agent_id: agentId,
+          type: 'market',
+          side: 'sell',
+          amount: amount,
+          price: price
+        })
+        if (success) {
+          setSellAmount("")
+          // Refresh the page to show updated balance
+          window.location.reload()
+        }
       }
     } finally {
       setIsTrading(false)
@@ -93,6 +115,12 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
             </Badge>
           )}
         </CardTitle>
+        <div className="mt-4">
+          <PaperTradingToggle
+            enabled={paperTradingEnabled}
+            onToggle={togglePaperTrading}
+          />
+        </div>
       </CardHeader>
       <CardContent>
         {!isConnected ? (

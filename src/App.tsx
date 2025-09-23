@@ -13,7 +13,7 @@ import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { ErrorBoundary } from "@/components/error/ErrorBoundary"
-import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
+import { CardSkeleton } from "@/components/ui/loading-skeleton"
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
@@ -119,7 +119,7 @@ const AppLayout = () => {
       <div className="min-h-screen flex flex-col">
         <main className="flex-1 pb-16">
           <ErrorBoundary>
-            <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
+            <Suspense fallback={<div className="p-8"><CardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
@@ -165,7 +165,7 @@ const AppLayout = () => {
             <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
           </div>
           <ErrorBoundary>
-            <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
+            <Suspense fallback={<div className="p-8"><CardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />

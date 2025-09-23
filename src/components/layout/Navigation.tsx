@@ -4,6 +4,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { WalletSection } from "@/components/wallet/WalletSection"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Menu, X, Bot, Zap, LogIn } from "lucide-react"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 
@@ -49,6 +50,7 @@ export function Navigation() {
 
           {/* Desktop Auth */}
           <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
             {!isLoading && (
               user ? (
                 <UserMenu />
