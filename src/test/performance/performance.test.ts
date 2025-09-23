@@ -8,7 +8,7 @@ describe('Performance Tests', () => {
       
       // Store 1000 items
       for (let i = 0; i < 1000; i++) {
-        cache.set(`item_${i}`, { id: i, data: `test_data_${i}` }, CACHE_TTL.USER_DATA)
+        cache.set(`item_${i}`, { id: i, data: `test_data_${i}` }, { ttl: CACHE_TTL.USER_DATA })
       }
       
       const writeTime = performance.now() - startTime
@@ -28,8 +28,8 @@ describe('Performance Tests', () => {
     it('invalidates patterns efficiently', () => {
       // Store items with different patterns
       for (let i = 0; i < 100; i++) {
-        cache.set(`user_${i}`, { id: i }, CACHE_TTL.USER_DATA)
-        cache.set(`agent_${i}`, { id: i }, CACHE_TTL.USER_DATA)
+        cache.set(`user_${i}`, { id: i }, { ttl: CACHE_TTL.USER_DATA })
+        cache.set(`agent_${i}`, { id: i }, { ttl: CACHE_TTL.USER_DATA })
       }
 
       const startTime = performance.now()

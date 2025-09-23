@@ -8,7 +8,7 @@ describe('Cache Manager', () => {
 
   it('stores and retrieves data correctly', () => {
     const testData = { id: 1, name: 'test' }
-    cache.set('test-key', testData, 1000)
+    cache.set('test-key', testData, { ttl: 1000 })
     
     const retrieved = cache.get('test-key')
     expect(retrieved).toEqual(testData)
@@ -16,7 +16,7 @@ describe('Cache Manager', () => {
 
   it('respects TTL expiration', async () => {
     const testData = { id: 1, name: 'test' }
-    cache.set('test-key', testData, 10) // 10ms TTL
+    cache.set('test-key', testData, { ttl: 10 }) // 10ms TTL
     
     // Should be available immediately
     expect(cache.get('test-key')).toEqual(testData)
@@ -29,9 +29,9 @@ describe('Cache Manager', () => {
   })
 
   it('invalidates specific patterns', () => {
-    cache.set('user_1_data', { id: 1 }, 1000)
-    cache.set('user_2_data', { id: 2 }, 1000)
-    cache.set('agent_1_data', { id: 1 }, 1000)
+    cache.set('user_1_data', { id: 1 }, { ttl: 1000 })
+    cache.set('user_2_data', { id: 2 }, { ttl: 1000 })
+    cache.set('agent_1_data', { id: 1 }, { ttl: 1000 })
     
     cache.invalidate('user_.*')
     
@@ -43,8 +43,8 @@ describe('Cache Manager', () => {
   it('provides correct cache size', () => {
     expect(cache.size()).toBe(0)
     
-    cache.set('key1', 'value1', 1000)
-    cache.set('key2', 'value2', 1000)
+    cache.set('key1', 'value1', { ttl: 1000 })
+    cache.set('key2', 'value2', { ttl: 1000 })
     
     expect(cache.size()).toBe(2)
   })
@@ -52,6 +52,6 @@ describe('Cache Manager', () => {
   it('generates correct cache keys', () => {
     expect(CACHE_KEYS.AGENT_DETAIL('123')).toBe('agent_detail_123')
     expect(CACHE_KEYS.USER_PORTFOLIO('user1')).toBe('portfolio_user1')
-    expect(CACHE_KEYS.PRICE_HISTORY('agent1')).toBe('price_history_agent1')
+    expect(CACHE_KEYS.PRICE_HISTORY('agent1', '24h')).toBe('price_history_agent1_24h')
   })
 })

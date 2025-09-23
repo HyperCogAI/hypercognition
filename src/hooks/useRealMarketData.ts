@@ -37,7 +37,7 @@ export const useRealMarketData = () => {
 
     try {
       const data = await coinGeckoApi.getTopCryptos(100)
-      cache.set(cacheKey, data, 5 * 60 * 1000) // 5 minutes
+      cache.set(cacheKey, data, { ttl: 5 * 60 * 1000 }) // 5 minutes
       return data
     } catch (error) {
       console.error('Failed to fetch crypto data:', error)
@@ -52,7 +52,7 @@ export const useRealMarketData = () => {
 
     try {
       const data = await jupiterApi.getPopularTokensWithPrices(50)
-      cache.set(cacheKey, data, 5 * 60 * 1000) // 5 minutes
+      cache.set(cacheKey, data, { ttl: 5 * 60 * 1000 }) // 5 minutes
       return data
     } catch (error) {
       console.error('Failed to fetch Solana data:', error)
@@ -125,7 +125,7 @@ export const useRealMarketData = () => {
         data = coinGeckoApi.mapToPriceHistory(chartData, tokenId)
       }
 
-      cache.set(cacheKey, data, 1 * 60 * 1000) // 1 minute
+      cache.set(cacheKey, data, { ttl: 1 * 60 * 1000 }) // 1 minute
       return data
     } catch (error) {
       console.error('Failed to fetch price history:', error)

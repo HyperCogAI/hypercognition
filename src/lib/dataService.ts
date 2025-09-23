@@ -16,7 +16,7 @@ export class DataService {
 
     if (error) throw error
 
-    cache.set(cacheKey, data, CACHE_TTL.AGENTS)
+    cache.set(cacheKey, data, { ttl: CACHE_TTL.AGENTS })
     return data
   }
 
@@ -33,12 +33,12 @@ export class DataService {
 
     if (error) throw error
 
-    cache.set(cacheKey, data, CACHE_TTL.AGENT_DETAIL)
+    cache.set(cacheKey, data, { ttl: CACHE_TTL.AGENT_DETAIL })
     return data
   }
 
   static async getPriceHistory(agentId: string, period: string = '24h') {
-    const cacheKey = `${CACHE_KEYS.PRICE_HISTORY(agentId)}_${period}`
+    const cacheKey = CACHE_KEYS.PRICE_HISTORY(agentId, period)
     const cached = cache.get(cacheKey)
     if (cached) return cached
 
@@ -51,7 +51,7 @@ export class DataService {
 
     if (error) throw error
 
-    cache.set(cacheKey, data, CACHE_TTL.PRICE_HISTORY)
+    cache.set(cacheKey, data, { ttl: CACHE_TTL.PRICE_HISTORY })
     return data
   }
 
@@ -82,7 +82,7 @@ export class DataService {
       transactions: transactionsRes.data || []
     }
 
-    cache.set(cacheKey, result, CACHE_TTL.USER_DATA)
+    cache.set(cacheKey, result, { ttl: CACHE_TTL.USER_DATA })
     return result
   }
 
@@ -113,7 +113,7 @@ export class DataService {
       comments: commentsRes.data || []
     }
 
-    cache.set(cacheKey, result, CACHE_TTL.SOCIAL_DATA)
+    cache.set(cacheKey, result, { ttl: CACHE_TTL.SOCIAL_DATA })
     return result
   }
 
@@ -131,7 +131,7 @@ export class DataService {
 
     if (error) throw error
 
-    cache.set(cacheKey, data, CACHE_TTL.USER_DATA)
+    cache.set(cacheKey, data, { ttl: CACHE_TTL.USER_DATA })
     return data
   }
 

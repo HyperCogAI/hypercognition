@@ -14,63 +14,90 @@ import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
 import { ErrorBoundary } from "@/components/error/ErrorBoundary"
 import { AgentCardSkeleton } from "@/components/ui/loading-skeleton"
-import AdminDashboard from "./pages/AdminDashboard";
-import LogoGenerator from "./pages/LogoGenerator";
-import AgentLogoShowcase from "./pages/AgentLogoShowcase";
-import TradingSignals from "./pages/TradingSignals";
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { useMobile } from "@/hooks/useMobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
-import AdvancedAnalytics from "./pages/AdvancedAnalytics";
-import Notifications from "./pages/Notifications";
 import Home from "./pages/Home";
-import Marketplace from "./pages/Marketplace";
-import { AgentDetail } from "./pages/AgentDetail";
-import { CreateAgent } from "./pages/CreateAgent";
-import Portfolio from "./pages/Portfolio";
-import Analytics from "./pages/Analytics";
-import { AdvancedTradingPage } from "./pages/AdvancedTrading";
-import Favorites from "./pages/Favorites";
-import AgentComparison from "./pages/AgentComparison";
-import Communities from "./pages/Communities";
 import NotFound from "./pages/NotFound";
-import ACP from "./pages/ACP";
-import PrivacyPolicy from "./pages/PrivacyPolicy";
-import TermsOfService from "./pages/TermsOfService";
-import CookiePolicy from "./pages/CookiePolicy";
-import Contact from "./pages/Contact";
-import { EnhancedTrading } from "./pages/EnhancedTrading";
-import OrderManagement from "./pages/OrderManagement";
-import RiskManagement from "./pages/RiskManagement";
-import TechnicalAnalysis from "./pages/TechnicalAnalysis";
-import InstitutionalFeatures from "./pages/InstitutionalFeatures";
-import ComplianceRegulatory from "./pages/ComplianceRegulatory";
-import AdvancedNotifications from "./pages/AdvancedNotifications";
-import SocialTradingPage from "./pages/SocialTrading";
-import { RealTimeMarketPage } from "./pages/RealTimeMarket";
-import AIAssistant from "./pages/AIAssistant";
-import MultiExchange from "./pages/MultiExchange";
-import CustomerSupport from "./pages/CustomerSupport";
-import { ProtectedRoute } from "./components/ProtectedRoute";
-import SolanaDashboard from "./pages/SolanaDashboard";
-import SolanaStaking from "./pages/SolanaStaking";
-import SolanaTradingSignalsPage from "./pages/SolanaTradingSignals";
 import Auth from "./pages/Auth";
+import { ProtectedRoute } from "./components/ProtectedRoute";
 
-// Lazy loaded components
+// Lazy loaded components - Core pages
+const Marketplace = lazy(() => import('./pages/Marketplace'));
+const AgentDetail = lazy(() => import('./pages/AgentDetail').then(m => ({ default: m.AgentDetail })));
+const CreateAgent = lazy(() => import('./pages/CreateAgent').then(m => ({ default: m.CreateAgent })));
+const Portfolio = lazy(() => import('./pages/Portfolio'));
+
+// Lazy loaded components - Analytics & Data
+const Analytics = lazy(() => import('./pages/Analytics'));
+const AdvancedAnalytics = lazy(() => import('./pages/AdvancedAnalytics'));
+const TechnicalAnalysis = lazy(() => import('./pages/TechnicalAnalysis'));
+
+// Lazy loaded components - Trading
+const AdvancedTradingPage = lazy(() => import('./pages/AdvancedTrading').then(m => ({ default: m.AdvancedTradingPage })));
+const EnhancedTrading = lazy(() => import('./pages/EnhancedTrading').then(m => ({ default: m.EnhancedTrading })));
+const OrderManagement = lazy(() => import('./pages/OrderManagement'));
+const RiskManagement = lazy(() => import('./pages/RiskManagement'));
+const TradingSignals = lazy(() => import('./pages/TradingSignals'));
+const RealTimeMarketPage = lazy(() => import('./pages/RealTimeMarket').then(m => ({ default: m.RealTimeMarketPage })));
+const MultiExchange = lazy(() => import('./pages/MultiExchange'));
+
+// Lazy loaded components - Social & Community
+const SocialTradingPage = lazy(() => import('./pages/SocialTrading'));
+const Communities = lazy(() => import('./pages/Communities'));
+const AgentComparison = lazy(() => import('./pages/AgentComparison'));
+const Favorites = lazy(() => import('./pages/Favorites'));
+
+// Lazy loaded components - DeFi & Blockchain
 const DeFi = lazy(() => import('./pages/DeFi'));
 const NFTMarketplace = lazy(() => import('./pages/NFTMarketplace'));
 const Staking = lazy(() => import('./pages/Staking'));
-const Referrals = lazy(() => import('./pages/Referrals'));
+const SolanaDashboard = lazy(() => import('./pages/SolanaDashboard'));
+const SolanaStaking = lazy(() => import('./pages/SolanaStaking'));
+const SolanaTradingSignalsPage = lazy(() => import('./pages/SolanaTradingSignals'));
 
-// Create query client with performance optimizations
+// Lazy loaded components - Administrative
+const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const InstitutionalFeatures = lazy(() => import('./pages/InstitutionalFeatures'));
+const ComplianceRegulatory = lazy(() => import('./pages/ComplianceRegulatory'));
+const CustomerSupport = lazy(() => import('./pages/CustomerSupport'));
+
+// Lazy loaded components - Notifications & Tools
+const Notifications = lazy(() => import('./pages/Notifications'));
+const AdvancedNotifications = lazy(() => import('./pages/AdvancedNotifications'));
+const AIAssistant = lazy(() => import('./pages/AIAssistant'));
+const LogoGenerator = lazy(() => import('./pages/LogoGenerator'));
+const AgentLogoShowcase = lazy(() => import('./pages/AgentLogoShowcase'));
+
+// Lazy loaded components - Support & Legal
+const ACP = lazy(() => import('./pages/ACP'));
+const Referrals = lazy(() => import('./pages/Referrals'));
+const PrivacyPolicy = lazy(() => import('./pages/PrivacyPolicy'));
+const TermsOfService = lazy(() => import('./pages/TermsOfService'));
+const CookiePolicy = lazy(() => import('./pages/CookiePolicy'));
+const Contact = lazy(() => import('./pages/Contact'));
+
+// Create query client with enhanced performance optimizations
 const queryClient = new QueryClient({
   defaultOptions: {
     queries: {
       staleTime: 5 * 60 * 1000, // 5 minutes
-      gcTime: 10 * 60 * 1000, // 10 minutes
-      retry: 3,
+      gcTime: 10 * 60 * 1000, // 10 minutes (formerly cacheTime)
+      retry: (failureCount, error: any) => {
+        // Don't retry on 4xx errors except 401/403
+        if (error?.status >= 400 && error?.status < 500 && ![401, 403].includes(error.status)) {
+          return false
+        }
+        return failureCount < 3
+      },
       retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      refetchOnReconnect: 'always',
+    },
+    mutations: {
+      retry: 1,
+      retryDelay: 1000,
     },
   },
 });
