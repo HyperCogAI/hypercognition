@@ -56,31 +56,19 @@ export function EnhancedHero() {
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 cyber-grid opacity-10 z-10" />
       
-      {/* Matrix-style falling animation */}
-      <div className="absolute inset-0 z-10 overflow-hidden">
-        {Array.from({ length: 30 }).map((_, i) => (
+      {/* Floating Particles */}
+      <div className="absolute inset-0 z-10">
+        {Array.from({ length: 50 }).map((_, i) => (
           <div
             key={i}
-            className="absolute top-0 w-px opacity-20"
+            className="absolute w-1 h-1 bg-primary/30 rounded-full animate-pulse"
             style={{
-              left: `${(i * 100) / 30}%`,
-              height: '100vh',
-              background: `linear-gradient(180deg, transparent, hsl(var(--primary)) 20%, hsl(var(--primary)) 80%, transparent)`,
-              animationDelay: `${i * 0.2}s`,
-              animation: `matrix-fall ${4 + Math.random() * 2}s linear infinite`,
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 2}s`,
+              animationDuration: `${3 + Math.random() * 2}s`,
             }}
-          >
-            {Array.from({ length: 20 }).map((_, j) => (
-              <div
-                key={j}
-                className="w-1 h-1 bg-primary/60 rounded-full mb-8"
-                style={{
-                  animationDelay: `${j * 0.1}s`,
-                  animation: `matrix-pulse ${2 + Math.random()}s ease-in-out infinite`,
-                }}
-              />
-            ))}
-          </div>
+          />
         ))}
       </div>
       
