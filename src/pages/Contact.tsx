@@ -102,8 +102,8 @@ export default function Contact() {
               <CardContent className="space-y-3">
                 <div>
                   <h4 className="font-semibold text-white">General Inquiries</h4>
-                  <a href="mailto:hello@hypercognition.io" className="text-accent hover:underline">
-                    hello@hypercognition.io
+                  <a href="mailto:contact@hypercognition.io" className="text-accent hover:underline">
+                    contact@hypercognition.io
                   </a>
                 </div>
                 <div>
