@@ -1,22 +1,52 @@
 project_id = "xdinlkmqmjlrmunsjswf"
 
+[functions.admin-2fa]
+verify_jwt = true
+
+[functions.api-key-rotation]
+verify_jwt = true
+
+[functions.financial-audit-log]
+verify_jwt = false
+
+[functions.generate-data-export]
+verify_jwt = true
+
+[functions.ai-trading-assistant]
+verify_jwt = false
+
+[functions.competition-scoring]
+verify_jwt = false
+
+[functions.content-moderation]
+verify_jwt = true
+
+[functions.copy-trading-engine]
+verify_jwt = true
+
+[functions.enhanced-auth]
+verify_jwt = false
+
+[functions.generate-agent-logo]
+verify_jwt = true
+
+[functions.health-check]
+verify_jwt = false
+
+[functions.market-news-sentiment]
+verify_jwt = false
+
+[functions.platform-metrics]
+verify_jwt = true
+
+[functions.realtime-market-data]
+verify_jwt = false
+
 [functions.realtime-session]
 verify_jwt = false
 
 [functions.security-middleware]
 verify_jwt = false
 
-[functions.admin-2fa]
-verify_jwt = true
-
-[functions.enhanced-auth]
-verify_jwt = false
-
 [functions.security-monitoring]
 verify_jwt = true
-
-[functions.ai-trading-assistant]
-verify_jwt = false
-
-[functions.realtime-market-data]
-verify_jwt = false

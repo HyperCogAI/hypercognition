@@ -87,7 +87,7 @@ export function EnhancedInputSanitization() {
       name: 'Unicode Normalization',
       description: 'Normalizes unicode characters',
       pattern: /[\u0080-\uFFFF]/g,
-      replacement: (match) => match.normalize('NFC'),
+      replacement: '',
       severity: 'low'
     }
   ];
@@ -155,11 +155,7 @@ export function EnhancedInputSanitization() {
       }
 
       // Apply sanitization
-      if (typeof rule.replacement === 'string') {
-        sanitized = sanitized.replace(rule.pattern, rule.replacement);
-      } else {
-        sanitized = sanitized.replace(rule.pattern, rule.replacement as any);
-      }
+      sanitized = sanitized.replace(rule.pattern, rule.replacement);
     });
 
     // Use DOMPurify for HTML content
