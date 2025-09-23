@@ -57,52 +57,43 @@ export const useCompetitions = () => {
     try {
       setLoading(true);
       
-      // Mock data for now - will use real data once migration is run
-      const mockCompetitions: Competition[] = [
-        {
-          id: '1',
-          title: 'Weekly Trading Championship',
-          description: 'Compete for the highest returns in a week-long trading battle',
-          competition_type: 'weekly_returns',
-          start_date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(), // 2 days ago
-          end_date: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000).toISOString(), // 5 days from now
-          prize_pool: 10000,
-          entry_fee: 100,
-          current_participants: 47,
-          max_participants: 100,
-          is_active: true,
-          rules: { max_position_size: 0.1 },
-          created_at: new Date().toISOString()
-        },
-        {
-          id: '2',
-          title: 'Risk Management Masters',
-          description: 'Achieve the best risk-adjusted returns',
-          competition_type: 'risk_adjusted',
-          start_date: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000).toISOString(), // 7 days from now
-          end_date: new Date(Date.now() + 14 * 24 * 60 * 60 * 1000).toISOString(), // 14 days from now
-          prize_pool: 25000,
-          entry_fee: 250,
-          current_participants: 23,
-          max_participants: 50,
-          is_active: true,
-          rules: { max_drawdown: 0.05 },
-          created_at: new Date().toISOString()
-        }
-      ];
+      // Fetch real competitions from Supabase
+      const { data: competitionsData, error: competitionsError } = await supabase
+        .from('competitions')
+        .select('*')
+        .order('created_at', { ascending: false });
 
-      setCompetitions(mockCompetitions);
+      if (competitionsError) throw competitionsError;
+
+      // Transform data to match interface
+      const competitions: Competition[] = (competitionsData || []).map(comp => ({
+        id: comp.id,
+        title: comp.name,
+        description: comp.description || '',
+        competition_type: comp.type,
+        start_date: comp.start_date,
+        end_date: comp.end_date,
+        prize_pool: comp.total_prize_pool || 0,
+        entry_fee: comp.entry_fee || 0,
+        current_participants: 0, // Will be calculated separately
+        max_participants: comp.max_participants || 0,
+        is_active: comp.status === 'active',
+        rules: comp.rules || {},
+        created_at: comp.created_at
+      }));
+
+      setCompetitions(competitions);
 
       // Calculate stats
-      const totalPrizePool = mockCompetitions.reduce((sum, comp) => sum + (comp.prize_pool || 0), 0);
-      const activeCompetitions = mockCompetitions.filter(comp => comp.is_active).length;
-      const totalParticipants = mockCompetitions.reduce((sum, comp) => sum + comp.current_participants, 0);
+      const totalPrizePool = competitions.reduce((sum, comp) => sum + (comp.prize_pool || 0), 0);
+      const activeCompetitions = competitions.filter(comp => comp.is_active).length;
+      const totalParticipants = competitions.reduce((sum, comp) => sum + comp.current_participants, 0);
 
       setStats({
         totalPrizePool,
         activeCompetitions,
         totalParticipants,
-        myParticipations: 1 // Mock data
+        myParticipations: 0 // Can be calculated based on user participation
       });
 
     } catch (error) {

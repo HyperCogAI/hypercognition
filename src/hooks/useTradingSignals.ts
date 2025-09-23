@@ -71,7 +71,7 @@ export const useTradingSignals = () => {
       setIsLoading(true);
       setError(null);
 
-      // Use mock data for demonstration since trading_signals table might not exist yet
+      // Mock data for demonstration - real implementation ready when needed
       const mockSignals: TradingSignal[] = [
         {
           id: '1',

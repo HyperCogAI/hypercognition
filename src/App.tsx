@@ -23,7 +23,8 @@ import { useMobile } from "@/hooks/useMobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import AdvancedAnalytics from "./pages/AdvancedAnalytics";
 import Notifications from "./pages/Notifications";
-import Index from "./pages/Home";
+import Home from "./pages/Home";
+import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
@@ -95,6 +96,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
@@ -140,6 +142,7 @@ const AppLayout = () => {
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
                 <Route path="/" element={<Index />} />
+                <Route path="/home" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />

@@ -363,6 +363,54 @@ export type Database = {
         }
         Relationships: []
       }
+      competitions: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          end_date: string
+          entry_fee: number | null
+          id: string
+          max_participants: number | null
+          name: string
+          rules: Json | null
+          start_date: string
+          status: string
+          total_prize_pool: number | null
+          type: string
+          updated_at: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          end_date: string
+          entry_fee?: number | null
+          id?: string
+          max_participants?: number | null
+          name: string
+          rules?: Json | null
+          start_date: string
+          status?: string
+          total_prize_pool?: number | null
+          type?: string
+          updated_at?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          end_date?: string
+          entry_fee?: number | null
+          id?: string
+          max_participants?: number | null
+          name?: string
+          rules?: Json | null
+          start_date?: string
+          status?: string
+          total_prize_pool?: number | null
+          type?: string
+          updated_at?: string | null
+        }
+        Relationships: []
+      }
       content_moderation: {
         Row: {
           action: string

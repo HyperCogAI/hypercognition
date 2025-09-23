@@ -1,5 +1,6 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
+import { supabase } from "@/integrations/supabase/client"
 import { ArrowLeft, Upload, Bot, Settings, Zap, Brain } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -53,10 +54,30 @@ export const CreateAgent = () => {
     }))
   }
 
-  const handleSubmit = () => {
-    // TODO: Implement agent creation logic
-    console.log("Creating agent:", agentData)
-    navigate("/")
+  const handleSubmit = async () => {
+    try {
+      const { data, error } = await supabase
+        .from('agents')
+        .insert([{
+          name: agentData.name,
+          symbol: agentData.symbol,
+          description: agentData.description,
+          chain: agentData.chain,
+          avatar_url: agentData.avatar || null,
+          price: parseFloat(agentData.initialPrice) || 0.001,
+          market_cap: (parseFloat(agentData.initialSupply) || 1000000) * (parseFloat(agentData.initialPrice) || 0.001)
+        }])
+        .select()
+        .single()
+
+      if (error) throw error
+      
+      console.log("Agent created successfully:", data)
+      navigate(`/agent/${data.id}`)
+    } catch (error) {
+      console.error("Error creating agent:", error)
+      // Could add toast notification here
+    }
   }
 
   return (
