@@ -58,17 +58,6 @@ export const PerformanceEnhancedHome = memo(function PerformanceEnhancedHome({
   return (
     <div className={className}>
       <OptimizedHomeLayout />
-      
-      {/* Development performance indicator */}
-      {process.env.NODE_ENV === 'development' && (
-        <div className="fixed top-4 right-4 bg-card/90 backdrop-blur-sm border border-border rounded-lg p-2 text-xs z-50">
-          <div className="text-primary font-semibold">Performance</div>
-          <div>Device: {deviceConfig.isMobile ? 'Mobile' : deviceConfig.isTablet ? 'Tablet' : 'Desktop'}</div>
-          {performanceData && (
-            <div>Render: {performanceData.renderTime.toFixed(2)}ms</div>
-          )}
-        </div>
-      )}
     </div>
   )
 })
