@@ -9,7 +9,7 @@ import { cn } from '@/lib/utils'
 
 // Lazy load components for better performance
 const EnhancedHero = lazy(() => import('@/components/sections/EnhancedHero').then(m => ({ default: m.EnhancedHero })))
-const Stats = lazy(() => import('@/components/sections/Stats').then(m => ({ default: m.Stats })))
+
 const HyperFeatures = lazy(() => import('@/components/sections/HyperFeatures').then(m => ({ default: m.HyperFeatures })))
 const HyperCTA = lazy(() => import('@/components/sections/HyperCTA').then(m => ({ default: m.HyperCTA })))
 const Footer = lazy(() => import('@/components/sections/Footer').then(m => ({ default: m.Footer })))
@@ -100,24 +100,6 @@ const MarketplaceSkeleton = () => (
   </div>
 )
 
-const StatsSkeleton = () => (
-  <section className="py-16 animate-fade-in">
-    <div className="container mx-auto px-6">
-      <div className="text-center mb-12">
-        <Skeleton className="h-8 w-1/3 mx-auto mb-4 skeleton-shimmer" />
-        <Skeleton className="h-5 w-1/2 mx-auto skeleton-shimmer" />
-      </div>
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className={`text-center space-y-2 animate-scale-in animate-stagger-${i + 1}`}>
-            <Skeleton className="h-8 w-16 mx-auto skeleton-shimmer" />
-            <Skeleton className="h-4 w-20 mx-auto skeleton-shimmer" />
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-)
 
 const FeaturesSkeleton = () => (
   <section className="py-24 animate-fade-in">
