@@ -31,6 +31,7 @@ const Portfolio = lazy(() => import('./pages/Portfolio'));
 // Lazy loaded components - Analytics & Data
 const Analytics = lazy(() => import('./pages/Analytics'));
 const AdvancedAnalytics = lazy(() => import('./pages/AdvancedAnalytics'));
+const EnhancedFeatures = lazy(() => import('./pages/EnhancedFeatures'));
 const TechnicalAnalysis = lazy(() => import('./pages/TechnicalAnalysis'));
 const TradingAcademy = lazy(() => import('./pages/TradingAcademy'));
 const Community = lazy(() => import('./pages/Community'));
