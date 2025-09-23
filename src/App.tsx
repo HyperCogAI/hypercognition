@@ -32,6 +32,9 @@ const Portfolio = lazy(() => import('./pages/Portfolio'));
 const Analytics = lazy(() => import('./pages/Analytics'));
 const AdvancedAnalytics = lazy(() => import('./pages/AdvancedAnalytics'));
 const TechnicalAnalysis = lazy(() => import('./pages/TechnicalAnalysis'));
+const TradingAcademy = lazy(() => import('./pages/TradingAcademy'));
+const Community = lazy(() => import('./pages/Community'));
+const PremiumTiers = lazy(() => import('./pages/PremiumTiers'));
 
 // Lazy loaded components - Trading
 const AdvancedTradingPage = lazy(() => import('./pages/AdvancedTrading').then(m => ({ default: m.AdvancedTradingPage })));
@@ -203,6 +206,9 @@ const AppLayout = () => {
                 <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
                 <Route path="/advanced-notifications" element={<ProtectedRoute><AdvancedNotifications /></ProtectedRoute>} />
                 <Route path="/social-trading" element={<SocialTradingPage />} />
+                <Route path="/trading-academy" element={<TradingAcademy />} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/premium" element={<PremiumTiers />} />
                 <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
                 <Route path="/privacy" element={<PrivacyPolicy />} />
                 <Route path="/terms" element={<TermsOfService />} />

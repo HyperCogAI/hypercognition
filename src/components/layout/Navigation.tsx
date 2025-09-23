@@ -15,9 +15,10 @@ export function Navigation() {
   const navItems = [
     { name: "Trade", href: "#trade" },
     { name: "AI Bots", href: "#bots" },
-    { name: "ACP", href: "/acp" },
+    { name: "Academy", href: "/trading-academy" },
+    { name: "Community", href: "/community" },
+    { name: "Premium", href: "/premium" },
     { name: "Portfolio", href: "/portfolio" },
-    { name: "Analytics", href: "#analytics" },
     { name: "Docs", href: "https://whitepaper.hypercognition.io/hypercognition/" },
   ]
 

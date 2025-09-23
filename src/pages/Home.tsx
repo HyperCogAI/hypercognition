@@ -3,7 +3,7 @@ import { Stats } from "@/components/sections/Stats"
 import { HyperFeatures } from "@/components/sections/HyperFeatures"
 import { HyperCTA } from "@/components/sections/HyperCTA"
 import { Footer } from "@/components/sections/Footer"
-import { MarketNewsComponent } from "@/components/news/MarketNewsComponent"
+import EnhancedMarketNews from "@/components/news/EnhancedMarketNews"
 import { AgentMarketplace } from "@/components/sections/AgentMarketplace"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { generateWebsiteStructuredData, generateOrganizationStructuredData } from "@/components/seo/StructuredData"
@@ -25,7 +25,9 @@ const Home = () => {
       <main>
         <Hero />
         <div className="container mx-auto px-4 py-8 space-y-12">
-          <MarketNewsComponent className="mb-8" />
+          <section className="mb-8">
+            <EnhancedMarketNews />
+          </section>
           <section id="marketplace" className="scroll-mt-16">
             <AgentMarketplace />
           </section>
