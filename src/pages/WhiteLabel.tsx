@@ -501,9 +501,18 @@ const WhiteLabel = () => {
               ))}
             </div>
 
-            <Card className="bg-gradient-to-r from-primary/10 to-primary/5 border-primary/20">
-              <CardContent className="p-8 text-center">
-                <h3 className="text-2xl font-bold mb-4">Ready to Get Started?</h3>
+            <Card 
+              className="relative overflow-hidden border-primary/20"
+              style={{
+                backgroundImage: "url('/src/assets/gradient_blur_top_blue-3.png')",
+                backgroundSize: "cover",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat"
+              }}
+            >
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent via-background/20 to-background/80" />
+              <CardContent className="relative z-10 p-8 text-center">
+                <h3 className="text-2xl font-bold mb-4 text-foreground">Ready to Get Started?</h3>
                 <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
                   Contact our partnership team to discuss your requirements and get a custom quote
                   for your white-label trading platform.
