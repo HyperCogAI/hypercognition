@@ -125,8 +125,22 @@ const AppLayout = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <main className="flex-1 pb-16">
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8"><CardSkeleton /></div>}>
+          <ErrorBoundary level="page" name="Mobile App">
+            <Suspense fallback={
+              <div className="p-4">
+                <div className="flex items-center justify-center min-h-[400px]">
+                  <div className="text-center space-y-4">
+                    <div className="mx-auto w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-6 w-6 border-2 border-primary border-t-transparent" />
+                    </div>
+                    <div>
+                      <h2 className="text-lg font-semibold">Loading HyperCognition</h2>
+                      <p className="text-sm text-muted-foreground">Preparing your trading experience...</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
@@ -171,8 +185,27 @@ const AppLayout = () => {
           <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
             <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
           </div>
-          <ErrorBoundary>
-            <Suspense fallback={<div className="p-8"><CardSkeleton /></div>}>
+          <ErrorBoundary level="page" name="Desktop App">
+            <Suspense fallback={
+              <div className="p-8">
+                <div className="flex items-center justify-center min-h-[500px]">
+                  <div className="text-center space-y-6">
+                    <div className="mx-auto w-16 h-16 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full flex items-center justify-center">
+                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
+                    </div>
+                    <div className="space-y-2">
+                      <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        Loading HyperCognition
+                      </h2>
+                      <p className="text-muted-foreground">Initializing AI trading platform...</p>
+                    </div>
+                    <div className="w-64 h-2 bg-muted rounded-full overflow-hidden mx-auto">
+                      <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" style={{ width: '70%' }} />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            }>
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />

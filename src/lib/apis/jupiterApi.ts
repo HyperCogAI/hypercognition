@@ -1,3 +1,5 @@
+import { apiErrorHandler, safeFetch } from '@/lib/apiErrorHandler'
+
 interface JupiterToken {
   address: string
   chainId: number
@@ -66,7 +68,12 @@ class JupiterAPI {
     try {
       structuredLogger.apiRequest(url, 'GET', { component: 'JupiterAPI' })
       
-      const response = await fetch(url)
+      const response = await fetch(url, {
+        headers: {
+          'Accept': 'application/json',
+          'Content-Type': 'application/json',
+        }
+      })
       
       structuredLogger.apiResponse(url, response.status, { component: 'JupiterAPI' })
       
@@ -153,8 +160,21 @@ class JupiterAPI {
   }
 
   async getStrictTokenList(): Promise<JupiterToken[]> {
-    const url = `${this.baseUrl}/tokens?tags=strict`
-    return this.fetchWithErrorHandling<JupiterToken[]>(url)
+    // Jupiter API doesn't require authentication for basic token list
+    // Remove the ?tags=strict parameter that might be causing 401
+    const url = `${this.baseUrl}/tokens`
+    try {
+      return this.fetchWithErrorHandling<JupiterToken[]>(url)
+    } catch (error) {
+      // Fallback to basic token list without filters
+      const { structuredLogger } = await import('@/lib/structuredLogger')
+      structuredLogger.warn('Failed to get strict token list, falling back to all tokens', {
+        category: 'api',
+        component: 'JupiterAPI',
+        metadata: { error: error instanceof Error ? error.message : 'Unknown error' }
+      })
+      return this.getAllTokens()
+    }
   }
 
   async getTokenPrices(mints: string[]): Promise<{ data: Record<string, JupiterPrice> }> {

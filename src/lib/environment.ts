@@ -124,18 +124,34 @@ class Logger {
   error(...args: any[]) {
     console.error('[ERROR]', ...args)
     if (this.config.ENABLE_ERROR_TRACKING) {
-      const { errorTracker } = require('./monitoring')
-      errorTracker.captureError(new Error(args.join(' ')), {
-        severity: 'medium',
-        tags: ['logger']
-      })
+      // Browser-safe error tracking without require()
+      try {
+        import('./monitoring').then(({ errorTracker }) => {
+          errorTracker.captureError(new Error(args.join(' ')), {
+            severity: 'medium',
+            tags: ['logger']
+          })
+        }).catch(() => {
+          // Silently fail if monitoring module is not available
+        })
+      } catch {
+        // Fallback: just log to console if dynamic import fails
+      }
     }
   }
   
   performance(name: string, value: number) {
     if (this.config.ENABLE_PERFORMANCE_MONITORING) {
-      const { performanceMonitor } = require('./monitoring')
-      performanceMonitor.recordMetric(name, value, { source: 'logger' })
+      // Browser-safe performance monitoring without require()
+      try {
+        import('./monitoring').then(({ performanceMonitor }) => {
+          performanceMonitor.recordMetric(name, value, { source: 'logger' })
+        }).catch(() => {
+          // Silently fail if monitoring module is not available
+        })
+      } catch {
+        // Fallback: just log to console if dynamic import fails
+      }
     }
   }
 }

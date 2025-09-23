@@ -7,6 +7,8 @@ interface Props {
   children: ReactNode
   fallback?: ReactNode
   onError?: (error: Error, errorInfo: ErrorInfo) => void
+  level?: 'page' | 'section' | 'component'
+  name?: string
 }
 
 interface State {
