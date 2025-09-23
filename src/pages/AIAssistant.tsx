@@ -132,9 +132,9 @@ const AIAssistant = () => {
                     <Button 
                       onClick={() => setSelectedAgent(undefined)} 
                       size="lg" 
-                      className="gap-2 bg-white text-primary hover:bg-white/90 font-semibold px-8 py-3"
+                      className="gap-2"
                     >
-                      <Zap className="h-5 w-5" />
+                      <Zap className="h-4 w-4" />
                       Try AI Assistant Now
                     </Button>
                     <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
