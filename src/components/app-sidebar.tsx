@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
 import {
@@ -37,12 +37,15 @@ const tradingItems = [
   { title: "Social Trading", url: "/social-trading", icon: Share2 },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Order Management", url: "/order-management", icon: ListOrdered },
+  { title: "Trading Signals", url: "/trading-signals", icon: Target },
+  { title: "Solana Signals", url: "/solana-signals", icon: Sparkles },
 ]
 
 // DeFi and crypto features
 const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
   { title: "Solana", url: "/solana", icon: Sparkles },
+  { title: "Solana Staking", url: "/solana-staking", icon: Lock },
   { title: "NFT Marketplace", url: "/nft-marketplace", icon: Users },
   { title: "Staking", url: "/staking", icon: Shield },
   { title: "Referrals", url: "/referrals", icon: Star },
@@ -50,27 +53,45 @@ const defiItems = [
 
 // Analytics and management
 const analyticsItems = [
+  { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
   { title: "Risk Management", url: "/risk-management", icon: Shield },
   { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
-  { title: "Notifications", url: "/advanced-notifications", icon: Bell },
+  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
 ]
 
 // Community and social features  
 const communityItems = [
   { title: "Favorites", url: "/favorites", icon: Star },
   { title: "Compare", url: "/compare", icon: BarChart3 },
+  { title: "Community", url: "/community", icon: Users },
   { title: "Communities", url: "/communities", icon: Users },
+  { title: "Trading Academy", url: "/trading-academy", icon: GraduationCap },
 ]
 
 // Professional and enterprise features
 const professionalItems = [
   { title: "Institutional", url: "/institutional", icon: Building2 },
+  { title: "Institutional APIs", url: "/institutional-apis", icon: Briefcase },
   { title: "Compliance", url: "/compliance", icon: Scale },
   { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
+  { title: "Premium", url: "/premium", icon: Crown },
+  { title: "White Label", url: "/white-label", icon: Package },
+  { title: "Multi Language", url: "/multi-language", icon: Globe },
+  { title: "ACP", url: "/acp", icon: Shield },
+  { title: "Admin", url: "/admin", icon: Settings },
 ]
 
 const resourceItems = [
+  { title: "Advanced AI", url: "/advanced-ai", icon: Bot },
+  { title: "Enhanced Features", url: "/enhanced-features", icon: Sparkles },
+  { title: "Logo Generator", url: "/logo-generator", icon: Star },
+  { title: "Agent Logos", url: "/agent-logo-showcase", icon: Star },
+  { title: "Privacy Policy", url: "/privacy", icon: Shield },
+  { title: "Terms of Service", url: "/terms", icon: FileText },
+  { title: "Cookie Policy", url: "/cookies", icon: FileText },
+  { title: "Contact", url: "/contact", icon: HelpCircle },
   { title: "Docs", url: "https://whitepaper.hypercognition.io/hypercognition/", icon: FileText, external: true },
 ]
 
