@@ -149,10 +149,10 @@ const EnhancedMarketNews = () => {
     <div className="space-y-6">
       {/* Market Alerts */}
       {alerts.length > 0 && (
-        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+        <Card variant="elevated" className="border-primary/20 bg-card shadow-[0_0_20px_hsl(var(--primary)/0.1)]">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-orange-500" />
+              <AlertTriangle className="h-5 w-5 text-primary" />
               Market Alerts
             </CardTitle>
           </CardHeader>
@@ -161,16 +161,16 @@ const EnhancedMarketNews = () => {
               <div 
                 key={alert.id}
                 className={cn(
-                  "p-3 rounded-lg border",
-                  alert.severity === 'high' ? 'border-red-200 bg-red-50/50 dark:border-red-800 dark:bg-red-900/20' :
-                  alert.severity === 'medium' ? 'border-orange-200 bg-orange-50/50 dark:border-orange-800 dark:bg-orange-900/20' :
-                  'border-blue-200 bg-blue-50/50 dark:border-blue-800 dark:bg-blue-900/20'
+                  "p-4 rounded-lg border transition-all duration-200 hover:shadow-sm",
+                  alert.severity === 'high' ? 'border-destructive/30 bg-destructive/5 shadow-[0_0_15px_hsl(var(--destructive)/0.1)]' :
+                  alert.severity === 'medium' ? 'border-accent/30 bg-accent/5 shadow-[0_0_15px_hsl(var(--accent)/0.1)]' :
+                  'border-primary/30 bg-primary/5 shadow-[0_0_15px_hsl(var(--primary)/0.1)]'
                 )}
               >
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <p className="font-medium">{alert.message}</p>
-                    <div className="flex items-center gap-2 mt-1 text-sm text-muted-foreground">
+                    <p className="font-medium text-foreground">{alert.message}</p>
+                    <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
                       <Clock className="h-3 w-3" />
                       {formatTimeAgo(alert.timestamp)}
                       {alert.affectedSymbols.length > 0 && (
@@ -178,7 +178,10 @@ const EnhancedMarketNews = () => {
                       )}
                     </div>
                   </div>
-                  <Badge variant={alert.severity === 'high' ? 'destructive' : 'secondary'}>
+                  <Badge 
+                    variant={alert.severity === 'high' ? 'destructive' : alert.severity === 'medium' ? 'secondary' : 'outline'}
+                    className="ml-3"
+                  >
                     {alert.type}
                   </Badge>
                 </div>
@@ -197,8 +200,8 @@ const EnhancedMarketNews = () => {
 
         <TabsContent value="news" className="space-y-6">
           {/* Filters */}
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-4">
+          <Card variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm">
+            <CardContent className="p-6">
               <div className="flex flex-wrap gap-4">
                 <div className="flex items-center gap-2 flex-1 min-w-64">
                   <Search className="h-4 w-4 text-muted-foreground" />
@@ -206,12 +209,12 @@ const EnhancedMarketNews = () => {
                     placeholder="Search news..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border-0 bg-transparent"
+                    className="border-0 bg-transparent focus-visible:ring-primary/20"
                   />
                 </div>
                 
                 <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-48 bg-background/50 border-border/50">
                     <SelectValue placeholder="Category" />
                   </SelectTrigger>
                   <SelectContent>
@@ -223,7 +226,7 @@ const EnhancedMarketNews = () => {
                 </Select>
                 
                 <Select value={selectedSentiment} onValueChange={setSelectedSentiment}>
-                  <SelectTrigger className="w-48">
+                  <SelectTrigger className="w-48 bg-background/50 border-border/50">
                     <SelectValue placeholder="Sentiment" />
                   </SelectTrigger>
                   <SelectContent>
@@ -240,7 +243,7 @@ const EnhancedMarketNews = () => {
           {/* News Articles */}
           <div className="space-y-4">
             {filteredNews.map((article) => (
-              <Card key={article.id} className="bg-card/50 backdrop-blur-sm border-border/50">
+              <Card key={article.id} variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm hover:border-primary/30 transition-all duration-200">
                 <CardContent className="p-6">
                   <div className="space-y-3">
                     <div className="flex justify-between items-start gap-4">
@@ -292,14 +295,14 @@ const EnhancedMarketNews = () => {
         </TabsContent>
 
         <TabsContent value="trending" className="space-y-6">
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <Card variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Trending Topics</CardTitle>
               <CardDescription>Most discussed topics in the last 24 hours</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               {trendingTopics.map((topic, index) => (
-                <div key={index} className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
+                <div key={index} className="flex justify-between items-center p-4 bg-muted/20 rounded-lg border border-border/30 hover:border-primary/20 transition-colors">
                   <div>
                     <div className="font-semibold">{topic.topic}</div>
                     <div className="text-sm text-muted-foreground">{topic.mentions} mentions</div>
@@ -318,7 +321,7 @@ const EnhancedMarketNews = () => {
         </TabsContent>
 
         <TabsContent value="analysis" className="space-y-6">
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <Card variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm">
             <CardHeader>
               <CardTitle>Market Analysis</CardTitle>
               <CardDescription>AI-powered insights and market sentiment analysis</CardDescription>
@@ -326,16 +329,16 @@ const EnhancedMarketNews = () => {
             <CardContent>
               <div className="space-y-6">
                 <div className="grid gap-4 md:grid-cols-3">
-                  <div className="text-center p-4 bg-green-50/50 dark:bg-green-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-green-600">Bullish</div>
+                  <div className="text-center p-4 bg-secondary/10 border border-secondary/20 rounded-lg">
+                    <div className="text-2xl font-bold text-secondary">Bullish</div>
                     <div className="text-sm text-muted-foreground">Overall Sentiment</div>
                   </div>
-                  <div className="text-center p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-blue-600">72%</div>
+                  <div className="text-center p-4 bg-primary/10 border border-primary/20 rounded-lg">
+                    <div className="text-2xl font-bold text-primary">72%</div>
                     <div className="text-sm text-muted-foreground">Confidence Level</div>
                   </div>
-                  <div className="text-center p-4 bg-orange-50/50 dark:bg-orange-900/20 rounded-lg">
-                    <div className="text-2xl font-bold text-orange-600">High</div>
+                  <div className="text-center p-4 bg-accent/10 border border-accent/20 rounded-lg">
+                    <div className="text-2xl font-bold text-accent">High</div>
                     <div className="text-sm text-muted-foreground">Market Activity</div>
                   </div>
                 </div>
