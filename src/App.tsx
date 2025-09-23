@@ -24,7 +24,6 @@ import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import AdvancedAnalytics from "./pages/AdvancedAnalytics";
 import Notifications from "./pages/Notifications";
 import Home from "./pages/Home";
-import Index from "./pages/Index";
 import Marketplace from "./pages/Marketplace";
 import { AgentDetail } from "./pages/AgentDetail";
 import { CreateAgent } from "./pages/CreateAgent";
@@ -79,9 +78,9 @@ const queryClient = new QueryClient({
 // 3. Create modal
 createWeb3Modal({
   wagmiConfig: config,
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || 'demo-project-id',
-  enableAnalytics: true, // Optional - defaults to your Cloud configuration
-  enableOnramp: true // Optional - false as default
+  projectId: 'demo-project-id',
+  enableAnalytics: true,
+  enableOnramp: true
 })
 
 // App Layout Component
@@ -95,7 +94,7 @@ const AppLayout = () => {
           <ErrorBoundary>
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
@@ -141,7 +140,7 @@ const AppLayout = () => {
           <ErrorBoundary>
             <Suspense fallback={<div className="p-8"><AgentCardSkeleton /></div>}>
               <Routes>
-                <Route path="/" element={<Index />} />
+                <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />

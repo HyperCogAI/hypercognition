@@ -38,38 +38,33 @@ class EnvironmentManager {
   private loadConfig(): EnvironmentConfig {
     return {
       NODE_ENV: (import.meta.env.MODE as any) || 'development',
-      API_BASE_URL: import.meta.env.VITE_API_BASE_URL || window.location.origin,
-      SUPABASE_URL: import.meta.env.VITE_SUPABASE_URL || 'https://xdinlkmqmjlrmunsjswf.supabase.co',
-      SUPABASE_ANON_KEY: import.meta.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaW5sa21xbWpscm11bnNqc3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMzEzMTAsImV4cCI6MjA3MzgwNzMxMH0.tNC5SCsBdGF5sl3vkhvMUaRpqAZrfNxpeUtelvczqiM',
-      ENABLE_ANALYTICS: this.getEnvBoolean('VITE_ENABLE_ANALYTICS', true),
-      ENABLE_ERROR_TRACKING: this.getEnvBoolean('VITE_ENABLE_ERROR_TRACKING', true),
-      ENABLE_PERFORMANCE_MONITORING: this.getEnvBoolean('VITE_ENABLE_PERFORMANCE_MONITORING', true),
-      ENABLE_DEBUG_LOGGING: this.getEnvBoolean('VITE_ENABLE_DEBUG_LOGGING', import.meta.env.MODE === 'development'),
-      RATE_LIMIT_ENABLED: this.getEnvBoolean('VITE_RATE_LIMIT_ENABLED', true),
-      CACHE_ENABLED: this.getEnvBoolean('VITE_CACHE_ENABLED', true),
-      REAL_TIME_ENABLED: this.getEnvBoolean('VITE_REAL_TIME_ENABLED', true),
-      MAINTENANCE_MODE: this.getEnvBoolean('VITE_MAINTENANCE_MODE', false)
+      API_BASE_URL: window.location.origin,
+      SUPABASE_URL: 'https://xdinlkmqmjlrmunsjswf.supabase.co',
+      SUPABASE_ANON_KEY: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InhkaW5sa21xbWpscm11bnNqc3dmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgyMzEzMTAsImV4cCI6MjA3MzgwNzMxMH0.tNC5SCsBdGF5sl3vkhvMUaRpqAZrfNxpeUtelvczqiM',
+      ENABLE_ANALYTICS: true,
+      ENABLE_ERROR_TRACKING: true,
+      ENABLE_PERFORMANCE_MONITORING: true,
+      ENABLE_DEBUG_LOGGING: import.meta.env.MODE === 'development',
+      RATE_LIMIT_ENABLED: true,
+      CACHE_ENABLED: true,
+      REAL_TIME_ENABLED: true,
+      MAINTENANCE_MODE: false
     }
   }
   
   private loadFeatureFlags(): FeatureFlags {
     return {
-      ADVANCED_TRADING: this.getEnvBoolean('VITE_FEATURE_ADVANCED_TRADING', true),
-      SOCIAL_FEATURES: this.getEnvBoolean('VITE_FEATURE_SOCIAL', true),
-      MOBILE_FEATURES: this.getEnvBoolean('VITE_FEATURE_MOBILE', true),
-      NOTIFICATIONS: this.getEnvBoolean('VITE_FEATURE_NOTIFICATIONS', true),
-      ANALYTICS_DASHBOARD: this.getEnvBoolean('VITE_FEATURE_ANALYTICS', true),
-      USER_PROFILES: this.getEnvBoolean('VITE_FEATURE_PROFILES', true),
-      DARK_MODE: this.getEnvBoolean('VITE_FEATURE_DARK_MODE', true),
-      EXPERIMENTAL_FEATURES: this.getEnvBoolean('VITE_FEATURE_EXPERIMENTAL', import.meta.env.MODE === 'development')
+      ADVANCED_TRADING: true,
+      SOCIAL_FEATURES: true,
+      MOBILE_FEATURES: true,
+      NOTIFICATIONS: true,
+      ANALYTICS_DASHBOARD: true,
+      USER_PROFILES: true,
+      DARK_MODE: true,
+      EXPERIMENTAL_FEATURES: import.meta.env.MODE === 'development'
     }
   }
   
-  private getEnvBoolean(key: string, defaultValue: boolean): boolean {
-    const value = import.meta.env[key]
-    if (value === undefined) return defaultValue
-    return value === 'true' || value === '1'
-  }
   
   getConfig(): EnvironmentConfig {
     return { ...this.config }
