@@ -431,29 +431,29 @@ const InstitutionalAPIs = () => {
                   </div>
                   
                   <div className="space-y-4">
-                    <div className="p-4 bg-blue-50/50 dark:bg-blue-900/20 rounded-lg">
-                      <h4 className="font-medium text-blue-700 dark:text-blue-300 mb-2">
+                    <div className="p-4 bg-card/50 border border-border/50 rounded-lg">
+                      <h4 className="font-medium text-foreground mb-2">
                         SLA Credits
                       </h4>
-                      <p className="text-sm text-blue-600 dark:text-blue-400">
+                      <p className="text-sm text-muted-foreground">
                         Automatic service credits when SLA targets are not met
                       </p>
                     </div>
                     
-                    <div className="p-4 bg-green-50/50 dark:bg-green-900/20 rounded-lg">
-                      <h4 className="font-medium text-green-700 dark:text-green-300 mb-2">
+                    <div className="p-4 bg-card/50 border border-border/50 rounded-lg">
+                      <h4 className="font-medium text-foreground mb-2">
                         99.99% Uptime
                       </h4>
-                      <p className="text-sm text-green-600 dark:text-green-400">
+                      <p className="text-sm text-muted-foreground">
                         Maximum 4.38 minutes downtime per month
                       </p>
                     </div>
                     
-                    <div className="p-4 bg-orange-50/50 dark:bg-orange-900/20 rounded-lg">
-                      <h4 className="font-medium text-orange-700 dark:text-orange-300 mb-2">
+                    <div className="p-4 bg-card/50 border border-border/50 rounded-lg">
+                      <h4 className="font-medium text-foreground mb-2">
                         Incident Response
                       </h4>
-                      <p className="text-sm text-orange-600 dark:text-orange-400">
+                      <p className="text-sm text-muted-foreground">
                         24/7 monitoring with immediate incident response
                       </p>
                     </div>
