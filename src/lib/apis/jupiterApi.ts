@@ -107,9 +107,14 @@ class JupiterAPI {
           structuredLogger.warn('Jupiter API unauthorized - using demo data', {
             category: 'api',
             component: 'JupiterAPI',
-            severity: 'low',
+            severity: 'medium',
             metadata: { url, status: response.status }
           })
+          
+          // Return appropriate demo data based on endpoint
+          if (url.includes('/tokens')) {
+            return this.getDemoTokens() as T
+          }
           return this.getDemoData() as T
         }
         
@@ -129,9 +134,7 @@ class JupiterAPI {
 
   private getDemoData(): any {
     // Return demo data for development/testing when API is unavailable
-    return {
-      data: this.getDemoTokens()
-    }
+    return this.getDemoTokens()
   }
 
   private getDemoTokens(): any[] {
@@ -216,6 +219,17 @@ class JupiterAPI {
       })
       
       const tokens = await this.getStrictTokenList()
+      
+      // Fix: Ensure tokens is an array before calling slice
+      if (!Array.isArray(tokens)) {
+        structuredLogger.warn('Token list is not an array, using demo data', {
+          category: 'api',
+          component: 'JupiterAPI',
+          metadata: { tokensType: typeof tokens }
+        })
+        return this.getDemoTokensWithPrices()
+      }
+      
       const popularTokens = tokens.slice(0, limit)
       
       if (popularTokens.length === 0) {
