@@ -1,66 +1,23 @@
 import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase } from '@/integrations/supabase/client'
+import { usePortfolioData, usePortfolioTransactions, usePortfolioStats } from '@/hooks/usePortfolioData'
 
 export const usePortfolio = () => {
   const { user, isConnected } = useAuth()
-  const [holdings, setHoldings] = useState([])
-  const [transactions, setTransactions] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
+  
+  // Use split hooks for better modularity
+  const { holdings, isLoading: holdingsLoading, fetchHoldings } = usePortfolioData(user?.id)
+  const { transactions, isLoading: transactionsLoading, fetchTransactions } = usePortfolioTransactions(user?.id)
+  const portfolioStats = usePortfolioStats(holdings)
 
-  const portfolioStats = {
-    totalValue: holdings.reduce((sum, h) => sum + (h.total_amount * (h.agent?.price || 0)), 0),
-    holdingsCount: holdings.length,
-    totalPnL: holdings.reduce((sum, h) => sum + h.unrealized_pnl, 0),
-    totalInvested: holdings.reduce((sum, h) => sum + h.total_invested, 0),
-    change24h: 0,
-    bestPerformer: holdings.length > 0 ? holdings[0] : null
-  }
+  const isLoading = holdingsLoading || transactionsLoading
 
-  useEffect(() => {
+  const refetchAll = async () => {
     if (isConnected && user) {
-      fetchPortfolioData()
-    }
-  }, [isConnected, user])
-
-  const fetchPortfolioData = async () => {
-    try {
-      setIsLoading(true)
-      
-      const [holdingsRes, transactionsRes] = await Promise.all([
-        supabase
-          .from('user_holdings')
-          .select(`*, agent:agents(*)`)
-          .eq('user_id', user.id),
-        supabase
-          .from('transactions')
-          .select(`*, agent:agents(*)`)
-          .eq('user_id', user.id)
-          .order('created_at', { ascending: false })
-          .limit(20)
+      await Promise.all([
+        fetchHoldings(),
+        fetchTransactions()
       ])
-
-      // Transform holdings data to match expected interface
-      const transformedHoldings = (holdingsRes.data || []).map((h: any) => ({
-        ...h,
-        average_buy_price: h.average_cost || 0,
-        last_transaction_at: h.last_updated
-      }))
-
-      // Transform transactions data to match expected interface  
-      const transformedTransactions = (transactionsRes.data || []).map((t: any) => ({
-        ...t,
-        price: t.price_per_token || 0,
-        fees: t.gas_fee || 0,
-        type: t.type as 'buy' | 'sell'
-      }))
-
-      setHoldings(transformedHoldings)
-      setTransactions(transformedTransactions)
-    } catch (error) {
-      console.error('Error fetching portfolio:', error)
-    } finally {
-      setIsLoading(false)
     }
   }
 
@@ -69,6 +26,6 @@ export const usePortfolio = () => {
     transactions,
     portfolioStats,
     isLoading,
-    refetch: fetchPortfolioData
+    refetch: refetchAll
   }
 }
