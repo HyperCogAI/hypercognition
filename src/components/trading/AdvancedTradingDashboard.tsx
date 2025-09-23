@@ -4,6 +4,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { ExchangeSelector } from './ExchangeSelector'
 import { RealTimeOrderBook } from './RealTimeOrderBook'
 import { TradingPanel } from './TradingPanel'
+import { TradingViewChart } from '@/components/charts/TradingViewChart'
 import { Badge } from '@/components/ui/badge'
 import { useRealTimeMarketData } from '@/hooks/useRealTimeMarketData'
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
@@ -119,30 +120,46 @@ export const AdvancedTradingDashboard = ({
         {/* Left Column - Charts and Analytics */}
         <div className="lg:col-span-2 space-y-6">
           {/* Price Chart */}
-          <Card>
-            <CardHeader>
-              <CardTitle>Price Chart - {agentSymbol}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="h-[400px]">
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={priceHistory}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="time" />
-                    <YAxis domain={['dataMin', 'dataMax']} />
-                    <Tooltip />
-                    <Line 
-                      type="monotone" 
-                      dataKey="price" 
-                      stroke="#8884d8" 
-                      strokeWidth={2}
-                      dot={false}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              </div>
-            </CardContent>
-          </Card>
+          <Tabs defaultValue="basic" className="w-full">
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="basic">Basic Chart</TabsTrigger>
+              <TabsTrigger value="advanced">TradingView Pro</TabsTrigger>
+            </TabsList>
+            <TabsContent value="basic" className="mt-4">
+              <Card>
+                <CardHeader>
+                  <CardTitle>Price Chart - {agentSymbol}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="h-[400px]">
+                    <ResponsiveContainer width="100%" height="100%">
+                      <LineChart data={priceHistory}>
+                        <CartesianGrid strokeDasharray="3 3" />
+                        <XAxis dataKey="time" />
+                        <YAxis domain={['dataMin', 'dataMax']} />
+                        <Tooltip />
+                        <Line 
+                          type="monotone" 
+                          dataKey="price" 
+                          stroke="#8884d8" 
+                          strokeWidth={2}
+                          dot={false}
+                        />
+                      </LineChart>
+                    </ResponsiveContainer>
+                  </div>
+                </CardContent>
+              </Card>
+            </TabsContent>
+            <TabsContent value="advanced" className="mt-4">
+              <TradingViewChart 
+                symbol={`CRYPTO:${agentSymbol}USD`}
+                height={400}
+                theme="dark"
+                interval="1H"
+              />
+            </TabsContent>
+          </Tabs>
 
           {/* Exchange Management */}
           <ExchangeSelector />
