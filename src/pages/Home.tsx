@@ -1,4 +1,4 @@
-import { Hero } from "@/components/sections/Hero"
+import { EnhancedHero } from "@/components/sections/EnhancedHero"
 import { Stats } from "@/components/sections/Stats"
 import { HyperFeatures } from "@/components/sections/HyperFeatures"
 import { HyperCTA } from "@/components/sections/HyperCTA"
@@ -7,8 +7,24 @@ import EnhancedMarketNews from "@/components/news/EnhancedMarketNews"
 import { AgentMarketplace } from "@/components/sections/AgentMarketplace"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { generateWebsiteStructuredData, generateOrganizationStructuredData } from "@/components/seo/StructuredData"
+import { useState, useEffect } from "react"
 
 const Home = () => {
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  
+  useEffect(() => {
+    const isNewUser = !localStorage.getItem('onboarding_completed')
+    if (isNewUser) {
+      const timer = setTimeout(() => setShowOnboarding(true), 2000)
+      return () => clearTimeout(timer)
+    }
+  }, [])
+
+  const handleOnboardingComplete = () => {
+    localStorage.setItem('onboarding_completed', 'true')
+    setShowOnboarding(false)
+  }
+
   const structuredData = [
     generateWebsiteStructuredData(),
     generateOrganizationStructuredData()
@@ -23,7 +39,7 @@ const Home = () => {
         structuredData={structuredData}
       />
       <main>
-        <Hero />
+        <EnhancedHero />
         <div className="container mx-auto px-4 py-8 space-y-12">
           <section className="mb-8">
             <EnhancedMarketNews />
