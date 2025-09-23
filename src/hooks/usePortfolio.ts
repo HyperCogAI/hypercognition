@@ -40,8 +40,23 @@ export const usePortfolio = () => {
           .limit(20)
       ])
 
-      setHoldings(holdingsRes.data || [])
-      setTransactions(transactionsRes.data || [])
+      // Transform holdings data to match expected interface
+      const transformedHoldings = (holdingsRes.data || []).map((h: any) => ({
+        ...h,
+        average_buy_price: h.average_cost || 0,
+        last_transaction_at: h.last_updated
+      }))
+
+      // Transform transactions data to match expected interface  
+      const transformedTransactions = (transactionsRes.data || []).map((t: any) => ({
+        ...t,
+        price: t.price_per_token || 0,
+        fees: t.gas_fee || 0,
+        type: t.type as 'buy' | 'sell'
+      }))
+
+      setHoldings(transformedHoldings)
+      setTransactions(transformedTransactions)
     } catch (error) {
       console.error('Error fetching portfolio:', error)
     } finally {
