@@ -174,6 +174,37 @@ export const AgentMarketplace = () => {
             <SpotlightAgent />
           </div>
 
+          {/* Mobile Fundamentals */}
+          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 mb-4">
+              <BarChart3 className="h-4 w-4 text-primary" />
+              <h2 className="text-lg font-semibold">Fundamentals</h2>
+            </div>
+            <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
+            <div className="text-xs text-muted-foreground mb-4">All Time Buyback / Revenue</div>
+            <div className="space-y-3">
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
+                  <CardSkeleton key={i} />
+                ))
+              ) : filteredFundamentalAgents.length > 0 ? (
+                filteredFundamentalAgents.map((agent, index) => (
+                  <div
+                    key={agent.id}
+                    className="animate-fade-in"
+                    style={{ animationDelay: `${index * 150}ms` }}
+                  >
+                    <AgentFundamentals agent={agent} />
+                  </div>
+                ))
+              ) : (
+                <div className="text-center text-muted-foreground py-8 animate-fade-in">
+                  No agents found matching "{searchTerm}"
+                </div>
+              )}
+            </div>
+          </div>
+
           {/* Mobile Trending */}
           <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
             <div className="flex items-center gap-2 mb-4">
@@ -215,93 +246,93 @@ export const AgentMarketplace = () => {
       ) : (
         /* Desktop/Tablet Grid Layout */
         <div className={`grid gap-4 lg:gap-6 ${isTablet ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-12'}`}>
-          {/* Left Column - Trending & Fundamentals */}
+          {/* Left Column - Spotlight Agent */}
+          <div className={isTablet ? '' : 'lg:col-span-4'}>
+            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="h-5 w-5 bg-primary rounded-full" />
+                <h2 className="text-xl font-semibold">Spotlight Agent</h2>
+              </div>
+              <SpotlightAgent />
+            </div>
+          </div>
+
+          {/* Middle Column - Fundamentals */}
+          <div className={isTablet ? '' : 'lg:col-span-4'}>
+            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
+              <div className="flex items-center gap-2 mb-4">
+                <BarChart3 className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">Fundamentals</h2>
+              </div>
+              <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
+              <div className="text-xs text-muted-foreground mb-4">All Time Buyback / Revenue</div>
+              <div className="space-y-3">
+                {isLoading ? (
+                  Array.from({ length: 4 }).map((_, i) => (
+                    <CardSkeleton key={i} />
+                  ))
+                ) : filteredFundamentalAgents.length > 0 ? (
+                  filteredFundamentalAgents.map((agent, index) => (
+                    <div
+                      key={agent.id}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${index * 150}ms` }}
+                    >
+                      <AgentFundamentals agent={agent} />
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-8 animate-fade-in">
+                    No agents found matching "{searchTerm}"
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Trending & Network */}
           <div className={`space-y-6 ${isTablet ? '' : 'lg:col-span-4'}`}>
-          {/* Trending AI Agents */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Trending</h2>
-            </div>
-            <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
-            <div className="text-xs text-muted-foreground mb-4">FDV/Price %Δ</div>
-            <div className="space-y-3">
-              {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
-                  <CardSkeleton key={i} />
-                ))
-              ) : filteredTrendingAgents.length > 0 ? (
-                filteredTrendingAgents.map((agent, index) => (
-                  <div
-                    key={agent.id}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${index * 100}ms` }}
-                  >
-                    <AgentCard agent={agent} variant="trending" />
+            {/* Trending AI Agents */}
+            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <TrendingUp className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">Trending</h2>
+              </div>
+              <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
+              <div className="text-xs text-muted-foreground mb-4">FDV/Price %Δ</div>
+              <div className="space-y-3">
+                {isLoading ? (
+                  Array.from({ length: 6 }).map((_, i) => (
+                    <CardSkeleton key={i} />
+                  ))
+                ) : filteredTrendingAgents.length > 0 ? (
+                  filteredTrendingAgents.map((agent, index) => (
+                    <div
+                      key={agent.id}
+                      className="animate-fade-in"
+                      style={{ animationDelay: `${index * 100}ms` }}
+                    >
+                      <AgentCard agent={agent} variant="trending" />
+                    </div>
+                  ))
+                ) : (
+                  <div className="text-center text-muted-foreground py-8 animate-fade-in">
+                    No agents found matching "{searchTerm}"
                   </div>
-                ))
-              ) : (
-                <div className="text-center text-muted-foreground py-8 animate-fade-in">
-                  No agents found matching "{searchTerm}"
-                </div>
-              )}
+                )}
+              </div>
             </div>
-          </div>
 
-          {/* Fundamentals */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <BarChart3 className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Fundamentals</h2>
-            </div>
-            <div className="text-sm text-muted-foreground mb-4">AI Agents</div>
-            <div className="text-xs text-muted-foreground mb-4">All Time Buyback / Revenue</div>
-            <div className="space-y-3">
-              {isLoading ? (
-                Array.from({ length: 4 }).map((_, i) => (
-                  <CardSkeleton key={i} />
-                ))
-              ) : filteredFundamentalAgents.length > 0 ? (
-                filteredFundamentalAgents.map((agent, index) => (
-                  <div
-                    key={agent.id}
-                    className="animate-fade-in"
-                    style={{ animationDelay: `${index * 150}ms` }}
-                  >
-                    <AgentFundamentals agent={agent} />
-                  </div>
-                ))
-              ) : (
-                <div className="text-center text-muted-foreground py-8 animate-fade-in">
-                  No agents found matching "{searchTerm}"
-                </div>
-              )}
+            {/* Agent Network */}
+            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <Network className="h-5 w-5 text-primary" />
+                <h2 className="text-xl font-semibold">Agent Network</h2>
+              </div>
+              <AgentNetwork />
             </div>
           </div>
         </div>
-
-        {/* Middle Column - Spotlight Agent */}
-        <div className={isTablet ? '' : 'lg:col-span-4'}>
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="h-5 w-5 bg-primary rounded-full" />
-              <h2 className="text-xl font-semibold">Spotlight Agent</h2>
-            </div>
-            <SpotlightAgent />
-          </div>
-        </div>
-
-        {/* Right Column - Agent Network */}
-        <div className={isTablet ? '' : 'lg:col-span-4'}>
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
-            <div className="flex items-center gap-2 mb-4">
-              <Network className="h-5 w-5 text-primary" />
-              <h2 className="text-xl font-semibold">Agent Network</h2>
-            </div>
-            <AgentNetwork />
-          </div>
-        </div>
-      </div>
       )}
 
       {/* Bottom Section - Genesis Launches */}
