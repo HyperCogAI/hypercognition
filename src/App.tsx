@@ -21,6 +21,7 @@ import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import { ProtectedRoute } from "./components/ProtectedRoute";
+import { Footer } from "./components/sections/Footer";
 
 // Lazy loaded components - Core pages
 const Marketplace = lazy(() => import('./pages/Marketplace'));
@@ -173,6 +174,7 @@ const AppLayout = () => {
           </ErrorBoundary>
           <AITradingAssistant />
         </main>
+        <Footer />
         <MobileNavigation />
       </div>
     )
@@ -182,87 +184,90 @@ const AppLayout = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <main className="flex-1 relative">
+        <div className="flex-1 flex flex-col">
           <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
             <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
           </div>
-          <ErrorBoundary level="page" name="Desktop App">
-            <Suspense fallback={
-              <div className="p-8">
-                <div className="flex items-center justify-center min-h-[500px]">
-                  <div className="text-center space-y-6">
-                    <div className="mx-auto w-16 h-16 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full flex items-center justify-center">
-                      <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
-                    </div>
-                    <div className="space-y-2">
-                      <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
-                        Loading HyperCognition
-                      </h2>
-                      <p className="text-muted-foreground">Initializing AI trading platform...</p>
-                    </div>
-                    <div className="w-64 h-2 bg-muted rounded-full overflow-hidden mx-auto">
-                      <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" style={{ width: '70%' }} />
+          <main className="flex-1 relative">
+            <ErrorBoundary level="page" name="Desktop App">
+              <Suspense fallback={
+                <div className="p-8">
+                  <div className="flex items-center justify-center min-h-[500px]">
+                    <div className="text-center space-y-6">
+                      <div className="mx-auto w-16 h-16 bg-gradient-to-r from-primary/20 to-secondary/20 rounded-full flex items-center justify-center">
+                        <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
+                      </div>
+                      <div className="space-y-2">
+                        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                          Loading HyperCognition
+                        </h2>
+                        <p className="text-muted-foreground">Initializing AI trading platform...</p>
+                      </div>
+                      <div className="w-64 h-2 bg-muted rounded-full overflow-hidden mx-auto">
+                        <div className="h-full bg-gradient-to-r from-primary to-secondary rounded-full animate-pulse" style={{ width: '70%' }} />
+                      </div>
                     </div>
                   </div>
                 </div>
-              </div>
-            }>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/home" element={<Home />} />
-                <Route path="/auth" element={<Auth />} />
-                <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
-                <Route path="/enhanced-trading" element={<EnhancedTrading />} />
-                <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
-          <Route path="/real-time-market" element={<RealTimeMarketPage />} />
-          <Route path="/ai-assistant" element={<AIAssistant />} />
-                <Route path="/marketplace" element={<Marketplace />} />
-          <Route path="/customer-support" element={<CustomerSupport />} />
-          <Route path="/defi" element={<DeFi />} />
-          <Route path="/solana" element={<SolanaDashboard />} />
-          
-          <Route path="/staking" element={<Staking />} />
-          <Route path="/solana-staking" element={<SolanaStaking />} />
-          <Route path="/referrals" element={<Referrals />} />
-                <Route path="/agent/:id" element={<AgentDetail />} />
-                <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
-                <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
-                <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
-                 <Route path="/trading-signals" element={<TradingSignals />} />
-                 <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
-                <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
-                <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
-                <Route path="/logo-generator" element={<LogoGenerator />} />
-                <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
-                <Route path="/compare" element={<AgentComparison />} />
-                <Route path="/communities" element={<Communities />} />
-                <Route path="/order-management" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
-                <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
-                <Route path="/technical-analysis" element={<ProtectedRoute><TechnicalAnalysis /></ProtectedRoute>} />
-                <Route path="/institutional" element={<ProtectedRoute><InstitutionalFeatures /></ProtectedRoute>} />
-                <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
-                <Route path="/advanced-notifications" element={<ProtectedRoute><AdvancedNotifications /></ProtectedRoute>} />
-                <Route path="/social-trading" element={<SocialTradingPage />} />
-                <Route path="/trading-academy" element={<TradingAcademy />} />
-                <Route path="/community" element={<Community />} />
-                <Route path="/premium" element={<PremiumTiers />} />
-                <Route path="/multi-language" element={<MultiLanguage />} />
-                <Route path="/white-label" element={<WhiteLabel />} />
-                <Route path="/advanced-ai" element={<AdvancedAI />} />
-                <Route path="/enhanced-features" element={<EnhancedFeatures />} />
-                <Route path="/institutional-apis" element={<InstitutionalAPIs />} />
-                <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
-                <Route path="/privacy" element={<PrivacyPolicy />} />
-                <Route path="/terms" element={<TermsOfService />} />
-                <Route path="/cookies" element={<CookiePolicy />} />
-                <Route path="/contact" element={<Contact />} />
-                <Route path="*" element={<NotFound />} />
-              </Routes>
-            </Suspense>
-          </ErrorBoundary>
-          <AITradingAssistant />
-        </main>
+              }>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
+                  <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+                  <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
+            <Route path="/real-time-market" element={<RealTimeMarketPage />} />
+            <Route path="/ai-assistant" element={<AIAssistant />} />
+                  <Route path="/marketplace" element={<Marketplace />} />
+            <Route path="/customer-support" element={<CustomerSupport />} />
+            <Route path="/defi" element={<DeFi />} />
+            <Route path="/solana" element={<SolanaDashboard />} />
+            
+            <Route path="/staking" element={<Staking />} />
+            <Route path="/solana-staking" element={<SolanaStaking />} />
+            <Route path="/referrals" element={<Referrals />} />
+                  <Route path="/agent/:id" element={<AgentDetail />} />
+                  <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
+                  <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
+                  <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                   <Route path="/trading-signals" element={<TradingSignals />} />
+                   <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
+                  <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
+                  <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/logo-generator" element={<LogoGenerator />} />
+                  <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
+                  <Route path="/compare" element={<AgentComparison />} />
+                  <Route path="/communities" element={<Communities />} />
+                  <Route path="/order-management" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
+                  <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
+                  <Route path="/technical-analysis" element={<ProtectedRoute><TechnicalAnalysis /></ProtectedRoute>} />
+                  <Route path="/institutional" element={<ProtectedRoute><InstitutionalFeatures /></ProtectedRoute>} />
+                  <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
+                  <Route path="/advanced-notifications" element={<ProtectedRoute><AdvancedNotifications /></ProtectedRoute>} />
+                  <Route path="/social-trading" element={<SocialTradingPage />} />
+                  <Route path="/trading-academy" element={<TradingAcademy />} />
+                  <Route path="/community" element={<Community />} />
+                  <Route path="/premium" element={<PremiumTiers />} />
+                  <Route path="/multi-language" element={<MultiLanguage />} />
+                  <Route path="/white-label" element={<WhiteLabel />} />
+                  <Route path="/advanced-ai" element={<AdvancedAI />} />
+                  <Route path="/enhanced-features" element={<EnhancedFeatures />} />
+                  <Route path="/institutional-apis" element={<InstitutionalAPIs />} />
+                  <Route path="/acp" element={<ProtectedRoute><ACP /></ProtectedRoute>} />
+                  <Route path="/privacy" element={<PrivacyPolicy />} />
+                  <Route path="/terms" element={<TermsOfService />} />
+                  <Route path="/cookies" element={<CookiePolicy />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="*" element={<NotFound />} />
+                </Routes>
+              </Suspense>
+            </ErrorBoundary>
+            <AITradingAssistant />
+          </main>
+          <Footer />
+        </div>
       </div>
     </SidebarProvider>
   )
