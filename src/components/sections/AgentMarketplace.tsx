@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { SolanaTokenGrid } from "@/components/trading/SolanaTokenGrid"
 import { TrendingUp, BarChart3, Network } from "lucide-react"
 import { AgentCard } from "@/components/agents/AgentCard"
 import { AgentFundamentals } from "@/components/agents/AgentFundamentals"
@@ -341,6 +342,9 @@ export const AgentMarketplace = () => {
             <TabsTrigger value="upcoming">{isMobile ? '📅' : '📅 Upcoming'}</TabsTrigger>
             {!isMobile && <TabsTrigger value="succeeded">✅ Succeeded</TabsTrigger>}
           </TabsList>
+          <TabsContent value="solana" className="mt-6">
+            <SolanaTokenGrid />
+          </TabsContent>
           <TabsContent value="all" className="mt-6">
             <div className="text-center text-muted-foreground py-12">
               {isLoading ? (

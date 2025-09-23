@@ -1,5 +1,6 @@
 import React from 'react';
 import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
+import { SolanaAnalyticsDashboard } from '@/components/analytics/SolanaAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
 import { TradingSignalsPanel } from '@/components/trading/TradingSignalsPanel';
 import { SEOHead } from '@/components/seo/SEOHead';
@@ -22,15 +23,20 @@ const Analytics = () => {
           </p>
         </div>
         
-        <Tabs defaultValue="analytics" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+        <Tabs defaultValue="agents" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-4">
+            <TabsTrigger value="agents">AI Agents</TabsTrigger>
+            <TabsTrigger value="solana">Solana</TabsTrigger>
             <TabsTrigger value="signals">Trading Signals</TabsTrigger>
             <TabsTrigger value="news">Market News</TabsTrigger>
           </TabsList>
           
-          <TabsContent value="analytics">
+          <TabsContent value="agents">
             <AdvancedAnalyticsDashboard />
+          </TabsContent>
+          
+          <TabsContent value="solana">
+            <SolanaAnalyticsDashboard />
           </TabsContent>
           
           <TabsContent value="signals">

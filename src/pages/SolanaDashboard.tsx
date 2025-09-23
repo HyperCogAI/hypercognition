@@ -2,7 +2,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SolanaPortfolioCard } from "@/components/portfolio/SolanaPortfolioCard"
 import { SolanaMarketOverview } from "@/components/trading/SolanaMarketOverview"
-// Placeholder for future chart components
+import { SolanaAnalyticsDashboard } from "@/components/analytics/SolanaAnalyticsDashboard"
+import { SolanaPriceChart } from "@/components/trading/SolanaPriceChart"
+import { SolanaOrderManager } from "@/components/trading/SolanaOrderManager"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Activity, Zap, DollarSign, BarChart3 } from "lucide-react"
@@ -131,17 +133,9 @@ const SolanaDashboard = () => {
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             <SolanaMarketOverview />
-            <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle>Price Chart</CardTitle>
-                <CardDescription>Coming soon - Interactive price charts</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-64 flex items-center justify-center text-muted-foreground">
-                  Chart component will be available soon
-                </div>
-              </CardContent>
-            </Card>
+            {topTokens.length > 0 && (
+              <SolanaPriceChart token={topTokens[0]} />
+            )}
           </div>
         </TabsContent>
 
@@ -150,27 +144,28 @@ const SolanaDashboard = () => {
         </TabsContent>
 
         <TabsContent value="trading" className="space-y-6">
-          <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Solana Trading</CardTitle>
-              <CardDescription>
-                Trade Solana tokens with Jupiter DEX integration
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <p className="text-muted-foreground mb-4">
-                Use the marketplace to trade individual tokens or access advanced trading features.
-              </p>
-              <div className="flex gap-4">
-                <Button asChild>
-                  <a href="/marketplace">Visit Marketplace</a>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <SolanaOrderManager />
+            <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
+              <CardHeader>
+                <CardTitle>Quick Actions</CardTitle>
+                <CardDescription>
+                  Access trading features and marketplace
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <Button asChild className="w-full">
+                  <a href="/marketplace">Visit Token Marketplace</a>
                 </Button>
-                <Button variant="outline" asChild>
+                <Button variant="outline" asChild className="w-full">
                   <a href="/advanced-trading">Advanced Trading</a>
                 </Button>
-              </div>
-            </CardContent>
-          </Card>
+                <Button variant="outline" asChild className="w-full">
+                  <a href="/portfolio">Portfolio Overview</a>
+                </Button>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
 
         <TabsContent value="staking" className="space-y-6">
@@ -223,17 +218,7 @@ const SolanaDashboard = () => {
         </TabsContent>
 
         <TabsContent value="analytics" className="space-y-6">
-          <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Analytics Dashboard</CardTitle>
-              <CardDescription>Coming soon - Advanced Solana analytics</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="h-96 flex items-center justify-center text-muted-foreground">
-                Advanced analytics charts will be available soon
-              </div>
-            </CardContent>
-          </Card>
+          <SolanaAnalyticsDashboard />
         </TabsContent>
       </Tabs>
     </div>
