@@ -1,37 +1,176 @@
-import { lazy } from 'react';
+import React, { lazy, Suspense, ComponentType } from 'react'
+import { performanceOptimizer } from './performanceOptimizer'
+import { LoadingSkeletons } from '@/components/ui/loading-skeletons'
+
+// Enhanced lazy loading with performance tracking and retry logic
+const createEnhancedLazy = <T extends ComponentType<any>>(
+  importFn: () => Promise<{ default: T }>,
+  chunkName: string,
+  preload: boolean = false
+) => {
+  return performanceOptimizer.createLazyComponent(importFn, {
+    chunkName,
+    preload,
+    retryDelay: 1000,
+    maxRetries: 3
+  })
+}
+
+// Enhanced wrapper with fallback loading
+export const withSuspense = <P extends object>(
+  Component: ComponentType<P>,
+  fallback?: React.ReactNode
+) => {
+  const WrappedComponent = (props: P) => {
+    const defaultFallback = React.createElement(LoadingSkeletons, { variant: "dashboard" })
+    
+    return React.createElement(
+      Suspense,
+      { fallback: fallback || defaultFallback },
+      React.createElement(Component, props)
+    )
+  }
+  
+  return WrappedComponent
+}
 
 // Performance-optimized lazy loading for large components
-export const LazyTradingDashboard = lazy(() => import('@/components/trading/AdvancedTradingDashboard').then(m => ({ default: m.AdvancedTradingDashboard })));
-export const LazyMultiExchangeDashboard = lazy(() => import('@/components/trading/MultiExchangeDashboard').then(m => ({ default: m.MultiExchangeDashboard })));
-export const LazyAnalyticsDashboard = lazy(() => import('@/components/analytics/AdvancedAnalyticsDashboard'));
-export const LazyTechnicalAnalysis = lazy(() => import('@/components/analytics/TechnicalAnalysisDashboard').then(m => ({ default: m.TechnicalAnalysisDashboard })));
-export const LazySocialTradingDashboard = lazy(() => import('@/components/social/SocialTradingDashboard').then(m => ({ default: m.SocialTradingDashboard })));
-export const LazyInstitutionalDashboard = lazy(() => import('@/components/institutional/InstitutionalDashboard').then(m => ({ default: m.InstitutionalDashboard })));
-export const LazyComplianceDashboard = lazy(() => import('@/components/compliance/ComplianceDashboard').then(m => ({ default: m.ComplianceDashboard })));
-export const LazyCustomerSupportDashboard = lazy(() => import('@/components/support/CustomerSupportDashboard').then(m => ({ default: m.CustomerSupportDashboard })));
-export const LazyNFTMarketplace = lazy(() => import('@/components/nft/NFTMarketplace').then(m => ({ default: m.NFTMarketplace })));
-export const LazyDeFiDashboard = lazy(() => import('@/components/defi/DeFiDashboard').then(m => ({ default: m.DeFiDashboard })));
-export const LazyStakingDashboard = lazy(() => import('@/components/staking/StakingDashboard').then(m => ({ default: m.StakingDashboard })));
+export const LazyTradingDashboard = createEnhancedLazy(
+  () => import('@/components/trading/AdvancedTradingDashboard').then(m => ({ default: m.AdvancedTradingDashboard })),
+  'trading-dashboard'
+)
 
-// Legacy lazy components (keep for compatibility)
-export const LazyAgentDetail = lazy(() => import('@/pages/AgentDetail').then(m => ({ default: m.AgentDetail })));
-export const LazyPortfolio = lazy(() => import('@/pages/Portfolio'));
-export const LazyAnalytics = lazy(() => import('@/pages/Analytics'));
-export const LazyCreateAgent = lazy(() => import('@/pages/CreateAgent').then(m => ({ default: m.CreateAgent })));
-export const LazyAgentComparison = lazy(() => import('@/pages/AgentComparison'));
-export const LazyCommunities = lazy(() => import('@/pages/Communities'));
-export const LazyFavorites = lazy(() => import('@/pages/Favorites'));
+export const LazyMultiExchangeDashboard = createEnhancedLazy(
+  () => import('@/components/trading/MultiExchangeDashboard').then(m => ({ default: m.MultiExchangeDashboard })),
+  'multi-exchange-dashboard'
+)
+
+export const LazyAnalyticsDashboard = createEnhancedLazy(
+  () => import('@/components/analytics/AdvancedAnalyticsDashboard'),
+  'analytics-dashboard'
+)
+
+export const LazyTechnicalAnalysis = createEnhancedLazy(
+  () => import('@/components/analytics/TechnicalAnalysisDashboard').then(m => ({ default: m.TechnicalAnalysisDashboard })),
+  'technical-analysis'
+)
+
+export const LazySocialTradingDashboard = createEnhancedLazy(
+  () => import('@/components/social/SocialTradingDashboard').then(m => ({ default: m.SocialTradingDashboard })),
+  'social-trading-dashboard'
+)
+
+export const LazyInstitutionalDashboard = createEnhancedLazy(
+  () => import('@/components/institutional/InstitutionalDashboard').then(m => ({ default: m.InstitutionalDashboard })),
+  'institutional-dashboard'
+)
+
+export const LazyComplianceDashboard = createEnhancedLazy(
+  () => import('@/components/compliance/ComplianceDashboard').then(m => ({ default: m.ComplianceDashboard })),
+  'compliance-dashboard'
+)
+
+export const LazyCustomerSupportDashboard = createEnhancedLazy(
+  () => import('@/components/support/CustomerSupportDashboard').then(m => ({ default: m.CustomerSupportDashboard })),
+  'customer-support-dashboard'
+)
+
+export const LazyNFTMarketplace = createEnhancedLazy(
+  () => import('@/components/nft/NFTMarketplace').then(m => ({ default: m.NFTMarketplace })),
+  'nft-marketplace'
+)
+
+export const LazyDeFiDashboard = createEnhancedLazy(
+  () => import('@/components/defi/DeFiDashboard').then(m => ({ default: m.DeFiDashboard })),
+  'defi-dashboard'
+)
+
+export const LazyStakingDashboard = createEnhancedLazy(
+  () => import('@/components/staking/StakingDashboard').then(m => ({ default: m.StakingDashboard })),
+  'staking-dashboard'
+)
+
+// Page-level lazy components
+export const LazyAgentDetail = createEnhancedLazy(
+  () => import('@/pages/AgentDetail').then(m => ({ default: m.AgentDetail })),
+  'agent-detail'
+)
+
+export const LazyPortfolio = createEnhancedLazy(
+  () => import('@/pages/Portfolio'),
+  'portfolio',
+  true // Preload critical page
+)
+
+export const LazyAnalytics = createEnhancedLazy(
+  () => import('@/pages/Analytics'),
+  'analytics'
+)
+
+export const LazyCreateAgent = createEnhancedLazy(
+  () => import('@/pages/CreateAgent').then(m => ({ default: m.CreateAgent })),
+  'create-agent'
+)
+
+export const LazyAgentComparison = createEnhancedLazy(
+  () => import('@/pages/AgentComparison'),
+  'agent-comparison'
+)
+
+export const LazyCommunities = createEnhancedLazy(
+  () => import('@/pages/Communities'),
+  'communities'
+)
+
+export const LazyFavorites = createEnhancedLazy(
+  () => import('@/pages/Favorites'),
+  'favorites'
+)
 
 // Trading component lazy loading
-export const LazyAdvancedTradingDashboard = lazy(() => import('@/components/trading/AdvancedTradingDashboard').then(module => ({ default: module.AdvancedTradingDashboard })));
-export const LazyOrderBook = lazy(() => import('@/components/trading/OrderBook').then(module => ({ default: module.OrderBook })));
-export const LazyPriceChart = lazy(() => import('@/components/charts/PriceChart').then(module => ({ default: module.PriceChart })));
-export const LazySocialPanel = lazy(() => import('@/components/social/SocialPanel').then(module => ({ default: module.SocialPanel })));
+export const LazyAdvancedTradingDashboard = createEnhancedLazy(
+  () => import('@/components/trading/AdvancedTradingDashboard').then(module => ({ default: module.AdvancedTradingDashboard })),
+  'advanced-trading-dashboard'
+)
+
+export const LazyOrderBook = createEnhancedLazy(
+  () => import('@/components/trading/OrderBook').then(module => ({ default: module.OrderBook })),
+  'order-book'
+)
+
+export const LazyPriceChart = createEnhancedLazy(
+  () => import('@/components/charts/PriceChart').then(module => ({ default: module.PriceChart })),
+  'price-chart'
+)
+
+export const LazySocialPanel = createEnhancedLazy(
+  () => import('@/components/social/SocialPanel').then(module => ({ default: module.SocialPanel })),
+  'social-panel'
+)
 
 // Real-time components
-export const LazyRealTimeMarket = lazy(() => import('@/pages/RealTimeMarket').then(m => ({ default: m.RealTimeMarketPage })));
+export const LazyRealTimeMarket = createEnhancedLazy(
+  () => import('@/pages/RealTimeMarket').then(m => ({ default: m.RealTimeMarketPage })),
+  'real-time-market'
+)
 
-// Additional performance utilities
-export const preloadComponent = (importFn: () => Promise<any>) => {
-  importFn();
-};
+// Preload critical components
+export const preloadCriticalComponents = async () => {
+  const criticalComponents = [
+    () => import('@/pages/Portfolio'),
+    () => import('@/components/trading/AdvancedTradingDashboard'),
+    () => import('@/components/analytics/AdvancedAnalyticsDashboard')
+  ]
+
+  await Promise.allSettled(
+    criticalComponents.map(component => performanceOptimizer.preloadComponent(component))
+  )
+}
+
+// Initialize preloading on app start
+if (typeof window !== 'undefined') {
+  // Preload after initial render
+  requestIdleCallback(() => {
+    preloadCriticalComponents()
+  })
+}
