@@ -122,6 +122,8 @@ createWeb3Modal({
 // App Layout Component
 const AppLayout = () => {
   const { isMobile } = useMobile()
+  const location = window.location
+  const isAIAssistantPage = location.pathname === '/ai-assistant'
 
   if (isMobile) {
     return (
@@ -172,7 +174,7 @@ const AppLayout = () => {
               </Routes>
             </Suspense>
           </ErrorBoundary>
-          <AITradingAssistant />
+          {!isAIAssistantPage && <AITradingAssistant />}
         </main>
         <Footer />
         <MobileNavigation />
@@ -264,7 +266,7 @@ const AppLayout = () => {
                 </Routes>
               </Suspense>
             </ErrorBoundary>
-            <AITradingAssistant />
+            {!isAIAssistantPage && <AITradingAssistant />}
           </main>
           <Footer />
         </div>
