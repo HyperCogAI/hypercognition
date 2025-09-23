@@ -245,20 +245,21 @@ export const AgentMarketplace = () => {
         </div>
       ) : (
         /* Desktop/Tablet Grid Layout */
-        <div className={`grid gap-4 lg:gap-6 ${isTablet ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-8'}`}>
-          {/* Left Column - Spotlight Agent & Fundamentals */}
-          <div className={`space-y-6 ${isTablet ? '' : 'lg:col-span-3'}`}>
-            {/* Spotlight Agent */}
-            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
+        <div className={`grid gap-4 lg:gap-6 ${isTablet ? 'grid-cols-1 lg:grid-cols-2' : 'grid-cols-1 lg:grid-cols-12'}`}>
+          {/* Left Column - Spotlight Agent */}
+          <div className={isTablet ? '' : 'lg:col-span-4'}>
+            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
               <div className="flex items-center gap-2 mb-4">
                 <div className="h-5 w-5 bg-primary rounded-full" />
                 <h2 className="text-xl font-semibold">Spotlight Agent</h2>
               </div>
               <SpotlightAgent />
             </div>
+          </div>
 
-            {/* Fundamentals */}
-            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
+          {/* Middle Column - Fundamentals */}
+          <div className={isTablet ? '' : 'lg:col-span-4'}>
+            <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
               <div className="flex items-center gap-2 mb-4">
                 <BarChart3 className="h-5 w-5 text-primary" />
                 <h2 className="text-xl font-semibold">Fundamentals</h2>
@@ -290,7 +291,7 @@ export const AgentMarketplace = () => {
           </div>
 
           {/* Right Column - Trending & Network */}
-          <div className={`space-y-6 ${isTablet ? '' : 'lg:col-span-5'}`}>
+          <div className={`space-y-6 ${isTablet ? '' : 'lg:col-span-4'}`}>
             {/* Trending AI Agents */}
             <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
               <div className="flex items-center gap-2 mb-4">
