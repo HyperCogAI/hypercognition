@@ -356,17 +356,17 @@ const AdvancedAI = () => {
               <CardContent>
                 <div className="grid gap-6 md:grid-cols-3">
                   <div className="text-center p-6 bg-card/50 border border-border/50 rounded-lg">
-                    <div className="text-3xl font-bold text-foreground mb-2">Bullish</div>
+                    <div className="text-3xl font-bold text-green-600 mb-2">Bullish</div>
                     <div className="text-sm text-muted-foreground">Overall Market</div>
                     <div className="text-xs text-muted-foreground mt-1">Confidence: 76%</div>
                   </div>
                   <div className="text-center p-6 bg-card/50 border border-border/50 rounded-lg">
-                    <div className="text-3xl font-bold text-foreground mb-2">Neutral</div>
+                    <div className="text-3xl font-bold text-blue-600 mb-2">Neutral</div>
                     <div className="text-sm text-muted-foreground">Social Media</div>
                     <div className="text-xs text-muted-foreground mt-1">Confidence: 82%</div>
                   </div>
                   <div className="text-center p-6 bg-card/50 border border-border/50 rounded-lg">
-                    <div className="text-3xl font-bold text-foreground mb-2">Cautious</div>
+                    <div className="text-3xl font-bold text-orange-600 mb-2">Cautious</div>
                     <div className="text-sm text-muted-foreground">Institutional</div>
                     <div className="text-xs text-muted-foreground mt-1">Confidence: 89%</div>
                   </div>
