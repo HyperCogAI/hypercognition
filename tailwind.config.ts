@@ -101,6 +101,16 @@ export default {
           "0%": { backgroundPosition: "-200% 0" },
           "100%": { backgroundPosition: "200% 0" },
         },
+        "matrix-fall": {
+          "0%": { transform: "translateY(-100vh)", opacity: "0" },
+          "10%": { opacity: "1" },
+          "90%": { opacity: "1" },
+          "100%": { transform: "translateY(100vh)", opacity: "0" },
+        },
+        "matrix-pulse": {
+          "0%, 100%": { opacity: "0.3", transform: "scale(0.8)" },
+          "50%": { opacity: "1", transform: "scale(1.2)" },
+        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -111,6 +121,8 @@ export default {
         "slide-up": "slide-up 0.5s ease-out",
         "cyber-pulse": "cyber-pulse 2s ease-in-out infinite",
         "shimmer": "shimmer 2s linear infinite",
+        "matrix-fall": "matrix-fall 6s linear infinite",
+        "matrix-pulse": "matrix-pulse 2s ease-in-out infinite",
       },
     },
   },
