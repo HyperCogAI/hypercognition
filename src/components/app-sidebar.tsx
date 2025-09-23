@@ -79,18 +79,12 @@ const professionalItems = [
   { title: "Premium", url: "/premium", icon: Crown },
   { title: "White Label", url: "/white-label", icon: Package },
   { title: "Multi Language", url: "/multi-language", icon: Globe },
-  { title: "ACP", url: "/acp", icon: Shield },
   { title: "Admin", url: "/admin", icon: Settings },
 ]
 
 const resourceItems = [
   { title: "Advanced AI", url: "/advanced-ai", icon: Bot },
   { title: "Enhanced Features", url: "/enhanced-features", icon: Sparkles },
-  { title: "Logo Generator", url: "/logo-generator", icon: Star },
-  { title: "Agent Logos", url: "/agent-logo-showcase", icon: Star },
-  { title: "Privacy Policy", url: "/privacy", icon: Shield },
-  { title: "Terms of Service", url: "/terms", icon: FileText },
-  { title: "Cookie Policy", url: "/cookies", icon: FileText },
   { title: "Contact", url: "/contact", icon: HelpCircle },
   { title: "Docs", url: "https://whitepaper.hypercognition.io/hypercognition/", icon: FileText, external: true },
 ]
