@@ -146,7 +146,7 @@ const EnhancedMarketNews = () => {
   }
 
   return (
-    <div className="space-y-6 border border-border/20 rounded-lg p-6 bg-card/50 backdrop-blur-sm">
+    <div className="space-y-6 p-6 border border-border/50 rounded-lg bg-card/80 backdrop-blur-sm shadow-sm">
       {/* Market Alerts */}
       {alerts.length > 0 && (
         <Card variant="elevated" className="border-primary/20 bg-card shadow-[0_0_20px_hsl(var(--primary)/0.1)]">
