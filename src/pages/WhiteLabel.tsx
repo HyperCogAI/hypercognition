@@ -504,7 +504,7 @@ const WhiteLabel = () => {
             <Card 
               className="relative overflow-hidden border-primary/20"
               style={{
-                backgroundImage: "url('/src/assets/gradient_blur_top_blue-3.png')",
+                backgroundImage: "url('/src/assets/gradient_blur_mid_blue.png')",
                 backgroundSize: "cover",
                 backgroundPosition: "center",
                 backgroundRepeat: "no-repeat"
