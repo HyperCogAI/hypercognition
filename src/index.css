@@ -21,10 +21,10 @@
     --popover: 0 0% 4%;
     --popover-foreground: 210 15% 90%;
 
-    /* Primary - Cyan/Teal like Virtuals */
-    --primary: 186 100% 62%;
+    /* Primary - Bright Cyan like in image */
+    --primary: 190 100% 70%;
     --primary-foreground: 222 30% 7%;
-    --primary-glow: 186 100% 75%;
+    --primary-glow: 190 100% 80%;
 
     /* Secondary - Blue accent */
     --secondary: 210 100% 65%;
