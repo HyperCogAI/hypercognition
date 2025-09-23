@@ -56,21 +56,6 @@ export function EnhancedHero() {
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 cyber-grid opacity-10 z-10" />
       
-      {/* Floating Particles */}
-      <div className="absolute inset-0 z-10">
-        {Array.from({ length: 50 }).map((_, i) => (
-          <div
-            key={i}
-            className="absolute w-1 h-1 bg-primary/30 rounded-full animate-pulse"
-            style={{
-              left: `${Math.random() * 100}%`,
-              top: `${Math.random() * 100}%`,
-              animationDelay: `${Math.random() * 2}s`,
-              animationDuration: `${3 + Math.random() * 2}s`,
-            }}
-          />
-        ))}
-      </div>
       
       {/* Content */}
       <div className="relative z-20 container mx-auto px-6 text-center">
