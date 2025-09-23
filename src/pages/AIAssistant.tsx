@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import gradientBlurMidBlue from '@/assets/gradient_blur_mid_blue-2.png';
 import AITradingAssistant from '@/components/ai/AITradingAssistant';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -111,7 +112,15 @@ const AIAssistant = () => {
                 ))}
               </div>
 
-              <Card className="bg-gradient-to-br from-primary/5 to-primary/10 border-primary/20">
+              <Card 
+                className="border-primary/20 relative overflow-hidden"
+                style={{ 
+                  backgroundImage: `url(${gradientBlurMidBlue})`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  backgroundRepeat: 'no-repeat'
+                }}
+              >
                 <CardContent className="p-8 text-center space-y-4">
                   <Brain className="h-12 w-12 mx-auto text-primary" />
                   <h3 className="text-2xl font-bold">Ready to Start Trading Smarter?</h3>
