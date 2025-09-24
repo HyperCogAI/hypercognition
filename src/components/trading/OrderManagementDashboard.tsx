@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { ScrollArea } from '@/components/ui/scroll-area'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { useAdvancedOrders } from '@/hooks/useAdvancedOrders'
 import { 
   ListOrdered, 
@@ -200,33 +201,35 @@ export function OrderManagementDashboard() {
             <div className="flex items-center gap-2">
               <Filter className="h-4 w-4 text-muted-foreground" />
               <Label>Status:</Label>
-              <select 
-                value={filterStatus} 
-                onChange={(e) => setFilterStatus(e.target.value)}
-                className="border rounded px-2 py-1"
-              >
-                <option value="all">All</option>
-                <option value="pending">Pending</option>
-                <option value="partial">Partial</option>
-                <option value="filled">Filled</option>
-                <option value="cancelled">Cancelled</option>
-              </select>
+              <Select value={filterStatus} onValueChange={setFilterStatus}>
+                <SelectTrigger className="w-32 bg-background">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background border shadow-lg z-50">
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="pending">Pending</SelectItem>
+                  <SelectItem value="partial">Partial</SelectItem>
+                  <SelectItem value="filled">Filled</SelectItem>
+                  <SelectItem value="cancelled">Cancelled</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="flex items-center gap-2">
               <Label>Type:</Label>
-              <select 
-                value={filterType} 
-                onChange={(e) => setFilterType(e.target.value)}
-                className="border rounded px-2 py-1"
-              >
-                <option value="all">All</option>
-                <option value="market">Market</option>
-                <option value="limit">Limit</option>
-                <option value="stop_market">Stop Market</option>
-                <option value="stop_limit">Stop Limit</option>
-                <option value="trailing_stop">Trailing Stop</option>
-              </select>
+              <Select value={filterType} onValueChange={setFilterType}>
+                <SelectTrigger className="w-36 bg-background">
+                  <SelectValue />
+                </SelectTrigger>
+                <SelectContent className="bg-background border shadow-lg z-50">
+                  <SelectItem value="all">All</SelectItem>
+                  <SelectItem value="market">Market</SelectItem>
+                  <SelectItem value="limit">Limit</SelectItem>
+                  <SelectItem value="stop_market">Stop Market</SelectItem>
+                  <SelectItem value="stop_limit">Stop Limit</SelectItem>
+                  <SelectItem value="trailing_stop">Trailing Stop</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
         </CardContent>
@@ -307,7 +310,7 @@ export function OrderManagementDashboard() {
                           <MoreVertical className="h-4 w-4" />
                         </Button>
                       </DropdownMenuTrigger>
-                      <DropdownMenuContent align="end">
+                      <DropdownMenuContent align="end" className="bg-background border shadow-lg z-50">
                         {['pending', 'partial'].includes(order.status) && (
                           <DropdownMenuItem
                             onClick={() => handleCancelOrder(order.id)}
