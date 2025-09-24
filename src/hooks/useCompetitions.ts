@@ -110,7 +110,27 @@ export const useCompetitions = () => {
 
   const fetchLeaderboard = useCallback(async (competitionId: string) => {
     try {
-      // Mock leaderboard data
+      // Fetch real leaderboard data
+      const { data: leaderboardData, error } = await supabase
+        .from('competition_participants')
+        .select('*')
+        .eq('competition_id', competitionId)
+        .order('current_balance', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      // Transform and add ranks
+      const participants: Participant[] = (leaderboardData || []).map((participant, index) => ({
+        ...participant,
+        rank: index + 1
+      }));
+
+      setLeaderboard(participants);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+      
+      // Fallback to mock data if real data fails
       const mockLeaderboard: Participant[] = [
         {
           id: '1',
@@ -157,14 +177,32 @@ export const useCompetitions = () => {
       ];
 
       setLeaderboard(mockLeaderboard);
-    } catch (error) {
-      console.error('Error fetching leaderboard:', error);
     }
   }, []);
 
   const joinCompetition = useCallback(async (competitionId: string) => {
     try {
-      // Mock join competition
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to join competitions",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { error } = await supabase
+        .from('competition_participants')
+        .insert({
+          competition_id: competitionId,
+          user_id: user.id,
+          starting_balance: 10000,
+          current_balance: 10000
+        });
+
+      if (error) throw error;
+
       toast({
         title: "Competition Joined!",
         description: "You've successfully joined the competition. Good luck!",

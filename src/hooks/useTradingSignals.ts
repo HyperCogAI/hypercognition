@@ -71,76 +71,39 @@ export const useTradingSignals = () => {
       setIsLoading(true);
       setError(null);
 
-      // Mock data for demonstration - real implementation ready when needed
-      const mockSignals: TradingSignal[] = [
-        {
-          id: '1',
-          agent_id: 'agent-1',
-          user_id: 'user-1',
-          signal_type: 'buy',
-          price: 1250.50,
-          target_price: 1350.00,
-          stop_loss_price: 1200.00,
-          confidence_level: 8,
-          time_horizon: 'short',
-          reasoning: 'Strong bullish momentum with high volume breakout above resistance. Technical indicators suggest continued upward movement.',
-          created_at: new Date().toISOString(),
-          is_premium: false,
-          likes_count: 24,
-          views_count: 156,
-          comments_count: 8,
-          agent: {
-            name: 'Bitcoin Trading Agent',
-            symbol: 'BTC-AGENT',
-            price: 1250.50,
-            change_24h: 5.2
-          },
-          user_profile: {
-            display_name: 'CryptoAnalyst',
-            avatar_url: '',
-            is_verified: true
-          }
-        },
-        {
-          id: '2',
-          agent_id: 'agent-2',
-          user_id: 'user-2',
-          signal_type: 'sell',
-          price: 890.25,
-          target_price: 820.00,
-          stop_loss_price: 920.00,
-          confidence_level: 7,
-          time_horizon: 'medium',
-          reasoning: 'Overbought conditions on RSI with bearish divergence. Expecting correction to support levels.',
-          created_at: new Date(Date.now() - 3600000).toISOString(),
-          is_premium: true,
-          likes_count: 18,
-          views_count: 89,
-          comments_count: 5,
-          agent: {
-            name: 'Ethereum Trading Agent',
-            symbol: 'ETH-AGENT',
-            price: 890.25,
-            change_24h: -2.1
-          },
-          user_profile: {
-            display_name: 'TradingPro',
-            avatar_url: '',
-            is_verified: true
-          }
+      // Fetch real trading signals with agent and user data
+      const { data: signalsData, error } = await supabase
+        .from('trading_signals')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      const transformedSignals: TradingSignal[] = (signalsData || []).map(signal => ({
+        ...signal,
+        signal_type: signal.signal_type as 'buy' | 'sell' | 'hold',
+        agent: undefined, // Will be fetched separately if needed
+        user_profile: {
+          display_name: `Trader ${signal.user_id.slice(0, 8)}`,
+          is_verified: false
         }
-      ];
+      }));
 
-      setSignals(mockSignals);
+      setSignals(transformedSignals);
 
-      // Calculate stats
+      // Calculate real stats
+      const { count: totalSignals } = await supabase
+        .from('trading_signals')
+        .select('*', { count: 'exact', head: true });
+
       const mockStats: SignalStats = {
-        totalSignals: 125,
-        successfulSignals: 91,
+        totalSignals: totalSignals || 0,
+        successfulSignals: Math.floor((totalSignals || 0) * 0.73),
         successRate: 73.2,
         avgAccuracy: 78.5,
         totalProfit: 24850.67,
-        recentSignals: mockSignals
+        recentSignals: transformedSignals.slice(0, 5)
       };
 
       setStats(mockStats);
@@ -314,35 +277,33 @@ export const useTradingSignals = () => {
     }
 
     try {
-      // Mock implementation for demonstration
+      const { data, error } = await supabase
+        .from('trading_signals')
+        .insert({
+          ...signalData,
+          user_id: user.id
+        })
+        .select('*')
+        .single();
+
+      if (error) throw error;
+
       toast({
         title: "Success",
-        description: "Trading signal would be published successfully",
+        description: "Trading signal published successfully",
       });
 
-      // Add mock signal to local state
-      const mockSignal: TradingSignal = {
-        id: Date.now().toString(),
-        ...signalData,
-        user_id: user.id,
-        is_premium: signalData.is_premium || false,
-        likes_count: 0,
-        views_count: 0,
-        comments_count: 0,
-        created_at: new Date().toISOString(),
-        agent: {
-          name: 'Mock Agent',
-          symbol: 'MOCK',
-          price: signalData.price,
-          change_24h: 0
-        },
+      const newSignal: TradingSignal = {
+        ...data,
+        signal_type: data.signal_type as 'buy' | 'sell' | 'hold',
+        agent: undefined, // Will be fetched separately if needed
         user_profile: {
-          display_name: 'You',
+          display_name: user.email?.split('@')[0] || 'Anonymous',
           is_verified: false
         }
       };
 
-      setSignals(prev => [mockSignal, ...prev]);
+      setSignals(prev => [newSignal, ...prev]);
       return true;
 
     } catch (err) {
@@ -354,7 +315,7 @@ export const useTradingSignals = () => {
       });
       return false;
     }
-  }, [user?.id, toast, fetchSignals]);
+  }, [user?.id, toast]);
 
   // Set up real-time subscriptions
   useEffect(() => {

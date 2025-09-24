@@ -1,507 +1,266 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Switch } from '@/components/ui/switch'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Alert, AlertDescription } from '@/components/ui/alert'
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts'
-import { Radio, TrendingUp, TrendingDown, Bell, Target, Zap, Activity, Settings } from 'lucide-react'
-
-interface TradingSignal {
-  id: string
-  symbol: string
-  type: 'buy' | 'sell' | 'hold'
-  strength: 'weak' | 'moderate' | 'strong'
-  confidence: number
-  price: number
-  targetPrice: number
-  stopLoss: number
-  timeframe: '1m' | '5m' | '15m' | '1h' | '4h' | '1d'
-  source: string
-  reason: string
-  timestamp: Date
-  isActive: boolean
-  pnl?: number
-}
-
-interface SignalProvider {
-  id: string
-  name: string
-  description: string
-  successRate: number
-  totalSignals: number
-  isActive: boolean
-  subscription: 'free' | 'premium'
-  averageReturn: number
-  riskScore: number
-}
+import { Radio, TrendingUp, TrendingDown, Bell, Target, Zap, Activity } from 'lucide-react'
+import { useTradingSignals } from '@/hooks/useTradingSignals'
 
 export const TradingSignalsManager: React.FC = () => {
-  const [signals, setSignals] = useState<TradingSignal[]>([])
-  const [providers, setProviders] = useState<SignalProvider[]>([])
-  const [enabledProviders, setEnabledProviders] = useState<string[]>([])
+  const {
+    signals,
+    alerts,
+    stats,
+    isLoading,
+    error,
+    refreshData
+  } = useTradingSignals();
+
   const [autoTrading, setAutoTrading] = useState(false)
-  const [signalHistory, setSignalHistory] = useState<any[]>([])
   const [filter, setFilter] = useState<'all' | 'buy' | 'sell' | 'hold'>('all')
 
-  useEffect(() => {
-    // Generate mock signals
-    const mockSignals: TradingSignal[] = [
-      {
-        id: 'sig-1',
-        symbol: 'BTC/USDT',
-        type: 'buy',
-        strength: 'strong',
-        confidence: 85,
-        price: 65000,
-        targetPrice: 68000,
-        stopLoss: 63000,
-        timeframe: '4h',
-        source: 'AI Analysis Pro',
-        reason: 'Bullish divergence on RSI with volume confirmation',
-        timestamp: new Date(Date.now() - 900000),
-        isActive: true,
-        pnl: 1200
-      },
-      {
-        id: 'sig-2',
-        symbol: 'ETH/USDT',
-        type: 'sell',
-        strength: 'moderate',
-        confidence: 72,
-        price: 2600,
-        targetPrice: 2480,
-        stopLoss: 2680,
-        timeframe: '1h',
-        source: 'Technical Scanner',
-        reason: 'Resistance at key level, bearish momentum',
-        timestamp: new Date(Date.now() - 1800000),
-        isActive: true,
-        pnl: -150
-      },
-      {
-        id: 'sig-3',
-        symbol: 'SOL/USDT',
-        type: 'buy',
-        strength: 'weak',
-        confidence: 58,
-        price: 190,
-        targetPrice: 205,
-        stopLoss: 185,
-        timeframe: '15m',
-        source: 'Community Signals',
-        reason: 'Oversold conditions, potential bounce',
-        timestamp: new Date(Date.now() - 3600000),
-        isActive: false
-      }
-    ]
-
-    const mockProviders: SignalProvider[] = [
-      {
-        id: 'provider-1',
-        name: 'AI Analysis Pro',
-        description: 'Advanced AI-powered technical analysis with ML predictions',
-        successRate: 78.5,
-        totalSignals: 342,
-        isActive: true,
-        subscription: 'premium',
-        averageReturn: 12.4,
-        riskScore: 6.2
-      },
-      {
-        id: 'provider-2',
-        name: 'Technical Scanner',
-        description: 'Real-time technical indicators and pattern recognition',
-        successRate: 65.8,
-        totalSignals: 156,
-        isActive: true,
-        subscription: 'free',
-        averageReturn: 8.7,
-        riskScore: 5.1
-      },
-      {
-        id: 'provider-3',
-        name: 'Community Signals',
-        description: 'Crowdsourced trading signals from verified traders',
-        successRate: 52.3,
-        totalSignals: 89,
-        isActive: false,
-        subscription: 'free',
-        averageReturn: 4.2,
-        riskScore: 7.8
-      },
-      {
-        id: 'provider-4',
-        name: 'Whale Tracker',
-        description: 'Large order flow analysis and whale movement tracking',
-        successRate: 71.2,
-        totalSignals: 67,
-        isActive: true,
-        subscription: 'premium',
-        averageReturn: 15.8,
-        riskScore: 5.9
-      }
-    ]
-
-    // Generate signal performance history
-    const history = Array.from({ length: 24 }, (_, i) => ({
-      hour: `${23 - i}h`,
-      signals: Math.floor(Math.random() * 10) + 2,
-      successRate: 60 + Math.random() * 25,
-      avgReturn: Math.random() * 20 - 5,
-      confidence: 70 + Math.random() * 20
-    })).reverse()
-
-    setSignals(mockSignals)
-    setProviders(mockProviders)
-    setEnabledProviders(['provider-1', 'provider-2', 'provider-4'])
-    setSignalHistory(history)
-  }, [])
+  // Filter signals based on selected filter
+  const filteredSignals = signals.filter(signal => 
+    filter === 'all' || signal.signal_type === filter
+  )
 
   const getSignalIcon = (type: string) => {
     switch (type) {
       case 'buy':
-        return <TrendingUp className="h-4 w-4 text-success" />
+        return <TrendingUp className="h-4 w-4 text-green-600" />
       case 'sell':
-        return <TrendingDown className="h-4 w-4 text-destructive" />
+        return <TrendingDown className="h-4 w-4 text-red-600" />
       default:
-        return <Target className="h-4 w-4 text-muted-foreground" />
+        return <Target className="h-4 w-4 text-blue-600" />
     }
   }
 
-  const getSignalBadge = (type: string) => {
-    const variants = {
-      buy: 'default',
-      sell: 'destructive',
-      hold: 'secondary'
-    } as const
-
-    return <Badge variant={variants[type as keyof typeof variants]}>{type.toUpperCase()}</Badge>
+  const getSignalColor = (type: string) => {
+    switch (type) {
+      case 'buy':
+        return 'text-green-600 bg-green-50 border-green-200'
+      case 'sell':
+        return 'text-red-600 bg-red-50 border-red-200'
+      default:
+        return 'text-blue-600 bg-blue-50 border-blue-200'
+    }
   }
-
-  const getStrengthBadge = (strength: string) => {
-    const variants = {
-      weak: 'outline',
-      moderate: 'secondary',
-      strong: 'default'
-    } as const
-
-    return <Badge variant={variants[strength as keyof typeof variants]}>{strength}</Badge>
-  }
-
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return 'text-success'
-    if (confidence >= 60) return 'text-warning'
-    return 'text-destructive'
-  }
-
-  const getPnlColor = (pnl?: number) => {
-    if (!pnl) return 'text-muted-foreground'
-    return pnl >= 0 ? 'text-success' : 'text-destructive'
-  }
-
-  const toggleProvider = (providerId: string) => {
-    setEnabledProviders(prev => 
-      prev.includes(providerId)
-        ? prev.filter(id => id !== providerId)
-        : [...prev, providerId]
-    )
-  }
-
-  const filteredSignals = signals.filter(signal => 
-    filter === 'all' || signal.type === filter
-  )
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-2xl font-bold flex items-center gap-2">
-            <Radio className="h-6 w-6" />
-            Trading Signals Manager
-          </h2>
-          <p className="text-muted-foreground">Monitor and manage trading signals from multiple sources</p>
+          <h1 className="text-3xl font-bold">Trading Signals</h1>
+          <p className="text-muted-foreground">
+            AI-powered trading signals and market alerts
+          </p>
         </div>
-        <div className="flex items-center gap-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm">Auto Trading</span>
-            <Switch checked={autoTrading} onCheckedChange={setAutoTrading} />
-          </div>
-          <Button>
-            <Settings className="h-4 w-4 mr-2" />
-            Settings
+        <div className="flex items-center gap-3">
+          <Badge variant="outline" className="flex items-center gap-2">
+            <Radio className="h-3 w-3 text-green-500" />
+            Live Signals
+          </Badge>
+          <Button onClick={refreshData} variant="outline" size="sm">
+            <Activity className="h-4 w-4 mr-2" />
+            Refresh
           </Button>
         </div>
       </div>
 
-      {/* Auto Trading Alert */}
-      {autoTrading && (
-        <Alert>
-          <Zap className="h-4 w-4" />
-          <AlertDescription>
-            Auto trading is enabled. Signals will be executed automatically based on your configured parameters.
-          </AlertDescription>
-        </Alert>
-      )}
-
-      {/* Overview Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Radio className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Active Signals</span>
-            </div>
-            <div className="text-2xl font-bold">{signals.filter(s => s.isActive).length}</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Activity className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Success Rate</span>
-            </div>
-            <div className="text-2xl font-bold text-success">73.2%</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <TrendingUp className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Avg Return</span>
-            </div>
-            <div className="text-2xl font-bold text-success">+8.4%</div>
-          </CardContent>
-        </Card>
-
-        <Card>
-          <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Bell className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Providers</span>
-            </div>
-            <div className="text-2xl font-bold">{enabledProviders.length}/{providers.length}</div>
-          </CardContent>
-        </Card>
-      </div>
-
-      <Tabs defaultValue="signals" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="signals">Live Signals</TabsTrigger>
-          <TabsTrigger value="providers">Signal Providers</TabsTrigger>
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="alerts">Alert Settings</TabsTrigger>
-        </TabsList>
-
-        <TabsContent value="signals">
+      {/* Stats Cards */}
+      {stats && (
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center justify-between">
-                Trading Signals
-                <div className="flex gap-2">
-                  {(['all', 'buy', 'sell', 'hold'] as const).map(type => (
-                    <Button
-                      key={type}
-                      variant={filter === type ? "default" : "outline"}
-                      size="sm"
-                      onClick={() => setFilter(type)}
-                    >
-                      {type.charAt(0).toUpperCase() + type.slice(1)}
-                    </Button>
-                  ))}
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Signals</p>
+                  <p className="text-2xl font-bold">{stats.totalSignals}</p>
                 </div>
-              </CardTitle>
-              <CardDescription>
-                Real-time trading signals from enabled providers
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-2">
-                {/* Header */}
-                <div className="grid grid-cols-10 gap-4 p-3 text-sm font-medium text-muted-foreground border-b">
-                  <div>Symbol</div>
-                  <div>Signal</div>
-                  <div>Strength</div>
-                  <div>Confidence</div>
-                  <div>Price</div>
-                  <div>Target</div>
-                  <div>Stop Loss</div>
-                  <div>Source</div>
-                  <div>P&L</div>
-                  <div>Actions</div>
-                </div>
-
-                {/* Signal Rows */}
-                {filteredSignals.map(signal => (
-                  <div key={signal.id} className="grid grid-cols-10 gap-4 p-3 hover:bg-muted/50 rounded-lg">
-                    <div className="font-medium">{signal.symbol}</div>
-                    <div className="flex items-center gap-2">
-                      {getSignalIcon(signal.type)}
-                      {getSignalBadge(signal.type)}
-                    </div>
-                    <div>{getStrengthBadge(signal.strength)}</div>
-                    <div className={getConfidenceColor(signal.confidence)}>
-                      {signal.confidence}%
-                    </div>
-                    <div className="text-sm">${signal.price.toLocaleString()}</div>
-                    <div className="text-sm">${signal.targetPrice.toLocaleString()}</div>
-                    <div className="text-sm">${signal.stopLoss.toLocaleString()}</div>
-                    <div className="text-sm">{signal.source}</div>
-                    <div className={`text-sm font-medium ${getPnlColor(signal.pnl)}`}>
-                      {signal.pnl ? `$${signal.pnl}` : '-'}
-                    </div>
-                    <div className="flex items-center gap-1">
-                      <Button variant="ghost" size="sm">
-                        <Target className="h-3 w-3" />
-                      </Button>
-                      <Button variant="ghost" size="sm">
-                        <Bell className="h-3 w-3" />
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                <Activity className="h-8 w-8 text-primary" />
               </div>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="providers">
-          <div className="space-y-4">
-            {providers.map(provider => (
-              <Card key={provider.id}>
-                <CardContent className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-3">
-                        <h3 className="font-medium">{provider.name}</h3>
-                        <Badge variant={provider.subscription === 'premium' ? 'default' : 'outline'}>
-                          {provider.subscription}
-                        </Badge>
-                        <Badge 
-                          variant={enabledProviders.includes(provider.id) ? 'default' : 'destructive'}
-                        >
-                          {enabledProviders.includes(provider.id) ? 'Active' : 'Inactive'}
-                        </Badge>
-                      </div>
-                      <p className="text-sm text-muted-foreground">{provider.description}</p>
-                      <div className="flex items-center gap-6 text-sm">
-                        <span>
-                          Success Rate: <span className="text-success font-medium">{provider.successRate}%</span>
-                        </span>
-                        <span>
-                          Signals: <span className="font-medium">{provider.totalSignals}</span>
-                        </span>
-                        <span>
-                          Avg Return: <span className="text-success font-medium">+{provider.averageReturn}%</span>
-                        </span>
-                        <span>
-                          Risk: <span className="font-medium">{provider.riskScore}/10</span>
-                        </span>
-                      </div>
-                    </div>
-                    <Switch
-                      checked={enabledProviders.includes(provider.id)}
-                      onCheckedChange={() => toggleProvider(provider.id)}
-                    />
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="performance">
           <Card>
-            <CardHeader>
-              <CardTitle>Signal Performance</CardTitle>
-              <CardDescription>Historical performance of trading signals</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <LineChart data={signalHistory}>
-                  <CartesianGrid strokeDasharray="3 3" />
-                  <XAxis dataKey="hour" />
-                  <YAxis />
-                  <Tooltip />
-                  <Line 
-                    type="monotone" 
-                    dataKey="successRate" 
-                    stroke="hsl(var(--success))" 
-                    strokeWidth={2}
-                    name="Success Rate (%)"
-                  />
-                  <Line 
-                    type="monotone" 
-                    dataKey="avgReturn" 
-                    stroke="hsl(var(--primary))" 
-                    strokeWidth={2}
-                    name="Avg Return (%)"
-                  />
-                </LineChart>
-              </ResponsiveContainer>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Success Rate</p>
+                  <p className="text-2xl font-bold">{stats.successRate}%</p>
+                </div>
+                <Target className="h-8 w-8 text-green-600" />
+              </div>
             </CardContent>
           </Card>
-        </TabsContent>
 
-        <TabsContent value="alerts">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
-              <CardHeader>
-                <CardTitle>Notification Settings</CardTitle>
-                <CardDescription>Configure how you receive signal alerts</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium">Push Notifications</span>
-                    <p className="text-sm text-muted-foreground">Real-time alerts to your device</p>
-                  </div>
-                  <Switch defaultChecked />
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Avg Accuracy</p>
+                  <p className="text-2xl font-bold">{stats.avgAccuracy}%</p>
                 </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium">Email Alerts</span>
-                    <p className="text-sm text-muted-foreground">Email notifications for signals</p>
-                  </div>
-                  <Switch />
-                </div>
-                <div className="flex items-center justify-between">
-                  <div>
-                    <span className="font-medium">Sound Alerts</span>
-                    <p className="text-sm text-muted-foreground">Audio notifications</p>
-                  </div>
-                  <Switch defaultChecked />
-                </div>
-              </CardContent>
-            </Card>
+                <Zap className="h-8 w-8 text-blue-600" />
+              </div>
+            </CardContent>
+          </Card>
 
-            <Card>
-              <CardHeader>
-                <CardTitle>Signal Filters</CardTitle>
-                <CardDescription>Set minimum criteria for signal alerts</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Minimum Confidence</label>
-                  <div className="text-2xl font-bold">70%</div>
+          <Card>
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-muted-foreground">Total Profit</p>
+                  <p className="text-2xl font-bold">${stats.totalProfit.toLocaleString()}</p>
                 </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Signal Strength</label>
-                  <div className="text-sm">Moderate or higher</div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Timeframes</label>
-                  <div className="text-sm">1h, 4h, 1d</div>
-                </div>
-              </CardContent>
-            </Card>
+                <TrendingUp className="h-8 w-8 text-green-600" />
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Filter Controls */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-4">
+          <label className="text-sm font-medium">Filter:</label>
+          <div className="flex gap-2">
+            {(['all', 'buy', 'sell', 'hold'] as const).map((filterType) => (
+              <Button
+                key={filterType}
+                variant={filter === filterType ? "default" : "outline"}
+                size="sm"
+                onClick={() => setFilter(filterType)}
+              >
+                {filterType === 'all' ? 'All' : filterType.charAt(0).toUpperCase() + filterType.slice(1)}
+              </Button>
+            ))}
           </div>
-        </TabsContent>
-      </Tabs>
+        </div>
+
+        <div className="flex items-center gap-4">
+          <div className="flex items-center space-x-2">
+            <Switch
+              id="auto-trading"
+              checked={autoTrading}
+              onCheckedChange={setAutoTrading}
+            />
+            <label htmlFor="auto-trading" className="text-sm font-medium">
+              Auto Trading
+            </label>
+          </div>
+        </div>
+      </div>
+
+      {/* Trading Signals */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Radio className="h-5 w-5" />
+            Active Trading Signals
+          </CardTitle>
+          <CardDescription>
+            Real-time signals from AI trading algorithms
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoading ? (
+            <div className="space-y-4">
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="animate-pulse">
+                  <div className="h-20 bg-muted rounded"></div>
+                </div>
+              ))}
+            </div>
+          ) : error ? (
+            <Alert>
+              <AlertDescription>{error}</AlertDescription>
+            </Alert>
+          ) : (
+            <div className="space-y-4">
+              {filteredSignals.map((signal) => (
+                <div
+                  key={signal.id}
+                  className="border rounded-lg p-4 space-y-3"
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      {getSignalIcon(signal.signal_type)}
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">
+                            {signal.agent?.symbol || 'Unknown'}
+                          </span>
+                          <Badge className={getSignalColor(signal.signal_type)}>
+                            {signal.signal_type.toUpperCase()}
+                          </Badge>
+                          <Badge variant="outline">
+                            Confidence: {signal.confidence_level}/10
+                          </Badge>
+                        </div>
+                        <p className="text-sm text-muted-foreground">
+                          {signal.agent?.name || 'Unknown Agent'}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="text-right">
+                      <p className="font-semibold">${signal.price}</p>
+                      <p className="text-sm text-muted-foreground">
+                        {signal.time_horizon}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+                    {signal.target_price && (
+                      <div>
+                        <span className="text-muted-foreground">Target: </span>
+                        <span className="font-medium">${signal.target_price}</span>
+                      </div>
+                    )}
+                    {signal.stop_loss_price && (
+                      <div>
+                        <span className="text-muted-foreground">Stop Loss: </span>
+                        <span className="font-medium">${signal.stop_loss_price}</span>
+                      </div>
+                    )}
+                    <div>
+                      <span className="text-muted-foreground">Time: </span>
+                      <span className="font-medium">
+                        {new Date(signal.created_at).toLocaleTimeString()}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-sm">{signal.reasoning}</p>
+
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                      <span>👍 {signal.likes_count}</span>
+                      <span>👁 {signal.views_count}</span>
+                      <span>💬 {signal.comments_count}</span>
+                      <span>By: {signal.user_profile?.display_name}</span>
+                    </div>
+                    {autoTrading && (
+                      <Button size="sm" variant="outline">
+                        Execute
+                      </Button>
+                    )}
+                  </div>
+                </div>
+              ))}
+
+              {filteredSignals.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  No trading signals found for the selected filter.
+                </div>
+              )}
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   )
 }

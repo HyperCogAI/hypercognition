@@ -60,76 +60,42 @@ export const useSocialFeed = () => {
       if (offset === 0) setLoading(true);
       else setLoadingMore(true);
 
-      // Mock data for now - will use real data once we have authentication
-      const mockPosts: SocialPost[] = [
-        {
-          id: '1',
-          user_id: 'user1',
-          content: 'Just made a 15% gain on $AGENT! The AI trading signals are getting more accurate every day. 🚀 #TradingWin',
-          post_type: 'trade_update',
-          related_agent_id: 'agent-123',
-          likes_count: 24,
-          comments_count: 8,
-          shares_count: 3,
-          views_count: 156,
-          is_pinned: false,
-          created_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(), // 2 hours ago
-          updated_at: new Date(Date.now() - 2 * 60 * 60 * 1000).toISOString(),
-          user_display_name: 'CryptoKing',
-          user_avatar: '',
-          agent_name: 'Agent Alpha',
-          agent_symbol: 'AGENT',
-          is_liked: false,
-          is_following_author: true
-        },
-        {
-          id: '2',
-          user_id: 'user2',
-          content: 'Market analysis: The current dip presents a great buying opportunity. Looking at the technicals, we might see a bounce in the next 24-48 hours. DCA strategy recommended. 📈',
-          post_type: 'market_analysis',
-          likes_count: 67,
-          comments_count: 23,
-          shares_count: 12,
-          views_count: 489,
-          is_pinned: false,
-          created_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(), // 4 hours ago
-          updated_at: new Date(Date.now() - 4 * 60 * 60 * 1000).toISOString(),
-          user_display_name: 'TradingGuru',
-          user_avatar: '',
-          is_liked: true,
-          is_following_author: false
-        },
-        {
-          id: '3',
-          user_id: 'user3',
-          content: 'New to the platform and loving the copy trading feature! Already following 3 top performers. Thanks for the warm welcome everyone! 👋',
-          post_type: 'general',
-          likes_count: 18,
-          comments_count: 12,
-          shares_count: 1,
-          views_count: 234,
-          is_pinned: false,
-          created_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(), // 6 hours ago
-          updated_at: new Date(Date.now() - 6 * 60 * 60 * 1000).toISOString(),
-          user_display_name: 'NewTrader',
-          user_avatar: '',
-          is_liked: false,
-          is_following_author: false
-        }
-      ];
+      // Fetch real social posts with user information
+      const { data: postsData, error } = await supabase
+        .from('social_posts')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .range(offset, offset + limit - 1);
+
+      if (error) throw error;
+
+      // Transform data and add derived fields
+      const transformedPosts: SocialPost[] = (postsData || []).map(post => ({
+        ...post,
+        agent_name: undefined, // Will be fetched separately if needed
+        agent_symbol: undefined,
+        is_liked: false, // Will be updated with real data
+        is_following_author: false, // Will be updated with real data
+        user_display_name: `User ${post.user_id.slice(0, 8)}`, // Placeholder for now
+        user_avatar: ''
+      }));
 
       if (offset === 0) {
-        setPosts(mockPosts);
+        setPosts(transformedPosts);
       } else {
-        setPosts(prev => [...prev, ...mockPosts]);
+        setPosts(prev => [...prev, ...transformedPosts]);
       }
 
-      // Mock stats
+      // Fetch real stats
+      const { count: totalPosts } = await supabase
+        .from('social_posts')
+        .select('*', { count: 'exact', head: true });
+
       setStats({
-        totalPosts: 156,
-        totalFollowing: 23,
-        totalFollowers: 87,
-        totalLikes: 432
+        totalPosts: totalPosts || 0,
+        totalFollowing: 0, // Will be calculated from follows table
+        totalFollowers: 0, // Will be calculated from follows table
+        totalLikes: 0 // Will be calculated from likes
       });
 
     } catch (error) {
@@ -147,21 +113,32 @@ export const useSocialFeed = () => {
 
   const createPost = useCallback(async (content: string, postType: string = 'general', relatedAgentId?: string) => {
     try {
-      // Mock post creation
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) {
+        toast({
+          title: "Authentication Required",
+          description: "Please log in to create posts",
+          variant: "destructive"
+        });
+        return;
+      }
+
+      const { data, error } = await supabase
+        .from('social_posts')
+        .insert({
+          user_id: user.id,
+          content,
+          post_type: postType,
+          related_agent_id: relatedAgentId
+        })
+        .select()
+        .single();
+
+      if (error) throw error;
+
       const newPost: SocialPost = {
-        id: Date.now().toString(),
-        user_id: 'current_user',
-        content,
-        post_type: postType,
-        related_agent_id: relatedAgentId,
-        likes_count: 0,
-        comments_count: 0,
-        shares_count: 0,
-        views_count: 1,
-        is_pinned: false,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-        user_display_name: 'You',
+        ...data,
+        user_display_name: user.email?.split('@')[0] || 'Anonymous',
         user_avatar: '',
         is_liked: false,
         is_following_author: false
@@ -187,17 +164,45 @@ export const useSocialFeed = () => {
 
   const likePost = useCallback(async (postId: string) => {
     try {
-      setPosts(prev => prev.map(post => {
-        if (post.id === postId) {
-          const isLiked = !post.is_liked;
-          return {
-            ...post,
-            is_liked: isLiked,
-            likes_count: isLiked ? post.likes_count + 1 : post.likes_count - 1
-          };
-        }
-        return post;
-      }));
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      // Check if already liked
+      const { data: existingLike } = await supabase
+        .from('post_likes')
+        .select('id')
+        .eq('user_id', user.id)
+        .eq('post_id', postId)
+        .single();
+
+      if (existingLike) {
+        // Unlike
+        await supabase
+          .from('post_likes')
+          .delete()
+          .eq('user_id', user.id)
+          .eq('post_id', postId);
+
+        setPosts(prev => prev.map(post => 
+          post.id === postId 
+            ? { ...post, is_liked: false, likes_count: post.likes_count - 1 }
+            : post
+        ));
+      } else {
+        // Like
+        await supabase
+          .from('post_likes')
+          .insert({
+            user_id: user.id,
+            post_id: postId
+          });
+
+        setPosts(prev => prev.map(post => 
+          post.id === postId 
+            ? { ...post, is_liked: true, likes_count: post.likes_count + 1 }
+            : post
+        ));
+      }
     } catch (error) {
       console.error('Error liking post:', error);
     }
@@ -205,7 +210,18 @@ export const useSocialFeed = () => {
 
   const followUser = useCallback(async (userId: string) => {
     try {
-      // Mock follow action
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) return;
+
+      const { error } = await supabase
+        .from('social_follows')
+        .insert({
+          follower_id: user.id,
+          following_id: userId
+        });
+
+      if (error) throw error;
+
       toast({
         title: "Following User",
         description: "You are now following this trader",
