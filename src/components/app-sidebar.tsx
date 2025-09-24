@@ -322,17 +322,6 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
 
-        {/* Assistant CTA */}
-        {!isCollapsed && (
-          <div className="px-4 py-3">
-            <CyberButton variant="neon" className="w-full group" asChild>
-              <NavLink to="/ai-assistant">
-                <Bot className="h-4 w-4 text-primary-foreground" />
-                <span className="text-primary-foreground">AI Assistant</span>
-              </NavLink>
-            </CyberButton>
-          </div>
-        )}
 
         {/* Settings at bottom */}
         <div className="mt-auto border-t border-border/30 bg-background">
