@@ -86,11 +86,7 @@ const AIAssistant = () => {
             </TabsList>
 
             <TabsContent value="assistant" className="space-y-8">
-              <AITradingAssistant 
-                selectedAgent={selectedAgent}
-                portfolio={mockPortfolio}
-                marketData={{}}
-              />
+              {/* AI Trading Assistant removed */}
             </TabsContent>
 
             <TabsContent value="features" className="space-y-10">
