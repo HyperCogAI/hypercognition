@@ -1,0 +1,76 @@
+import React from 'react'
+import { ExchangeConnector } from '@/components/trading/ExchangeConnector'
+import { AdvancedOrderForm } from '@/components/trading/AdvancedOrderForm'
+import { RealTimeOrderBook } from '@/components/trading/RealTimeOrderBook'
+import { PortfolioManager } from '@/components/trading/PortfolioManager'
+import { RiskManager } from '@/components/trading/RiskManager'
+import { TradingAnalytics } from '@/components/trading/TradingAnalytics'
+import { MarketDataFeed } from '@/components/trading/MarketDataFeed'
+import { LiquidityAnalyzer } from '@/components/trading/LiquidityAnalyzer'
+import { SEOHead } from '@/components/seo/SEOHead'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+
+const ExchangeTrading = () => {
+  return (
+    <>
+      <SEOHead 
+        title="Exchange Trading Platform - HyperCognition"
+        description="Professional cryptocurrency trading platform with advanced order types, risk management, and real-time market data across multiple exchanges."
+        keywords="crypto trading, exchange trading, order book, portfolio management, risk management"
+      />
+      <div className="container mx-auto px-4 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold mb-2">Exchange Trading</h1>
+          <p className="text-muted-foreground">Professional trading tools and analytics</p>
+        </div>
+
+        <Tabs defaultValue="trading" className="space-y-6">
+          <TabsList className="grid w-full grid-cols-8">
+            <TabsTrigger value="trading">Trading</TabsTrigger>
+            <TabsTrigger value="exchanges">Exchanges</TabsTrigger>
+            <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
+            <TabsTrigger value="risk">Risk</TabsTrigger>
+            <TabsTrigger value="analytics">Analytics</TabsTrigger>
+            <TabsTrigger value="market">Market Data</TabsTrigger>
+            <TabsTrigger value="orderbook">Order Book</TabsTrigger>
+            <TabsTrigger value="liquidity">Liquidity</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="trading">
+            <AdvancedOrderForm />
+          </TabsContent>
+
+          <TabsContent value="exchanges">
+            <ExchangeConnector />
+          </TabsContent>
+
+          <TabsContent value="portfolio">
+            <PortfolioManager />
+          </TabsContent>
+
+          <TabsContent value="risk">
+            <RiskManager />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <TradingAnalytics />
+          </TabsContent>
+
+          <TabsContent value="market">
+            <MarketDataFeed />
+          </TabsContent>
+
+          <TabsContent value="orderbook">
+            <RealTimeOrderBook />
+          </TabsContent>
+
+          <TabsContent value="liquidity">
+            <LiquidityAnalyzer />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </>
+  )
+}
+
+export default ExchangeTrading
