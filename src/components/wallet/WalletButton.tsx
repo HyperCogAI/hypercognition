@@ -11,6 +11,8 @@ import {
 export const WalletButton = () => {
   const { address, isConnected, isConnecting, connectWallet, disconnectWallet } = useWallet()
 
+  console.log('WalletButton state:', { address, isConnected, isConnecting })
+
   if (isConnecting) {
     return (
       <CyberButton variant="neon" size="sm" disabled>
@@ -22,15 +24,8 @@ export const WalletButton = () => {
 
   if (!isConnected) {
     return (
-      <CyberButton 
-        variant="neon" 
-        size="sm" 
-        onClick={connectWallet}
-        className="w-full"
-      >
-        <Wallet className="h-4 w-4 text-white" />
-        <span className="text-white">Connect EVM</span>
-      </CyberButton>
+      // @ts-ignore - Web3Modal button is dynamically loaded
+      <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
     )
   }
 

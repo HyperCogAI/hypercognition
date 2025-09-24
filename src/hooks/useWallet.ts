@@ -8,8 +8,15 @@ export const useWallet = () => {
 
   const connectWallet = async () => {
     try {
+      console.log('Web3Modal hook available:', !!open)
       console.log('Opening Web3Modal...')
-      await open()
+      
+      if (typeof open === 'function') {
+        await open()
+        console.log('Web3Modal opened successfully')
+      } else {
+        console.error('Web3Modal open function not available')
+      }
     } catch (error) {
       console.error('Error opening wallet modal:', error)
     }

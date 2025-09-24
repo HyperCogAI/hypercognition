@@ -111,8 +111,8 @@ const queryClient = new QueryClient({
   },
 });
 
-// 3. Create modal
-createWeb3Modal({
+// 3. Create modal - Must be called before components render
+const web3Modal = createWeb3Modal({
   wagmiConfig: config,
   projectId: WALLETCONNECT_PROJECT_ID,
   enableAnalytics: true,
@@ -129,6 +129,8 @@ createWeb3Modal({
     'ecc4036f814562b41a5268adc86270fca6567550d28a70c4dc1c6b3a5ccb8de', // Coinbase Wallet
   ]
 })
+
+console.log('Web3Modal created:', web3Modal)
 
 // App Layout Component
 const AppLayout = () => {
