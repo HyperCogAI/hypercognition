@@ -6,12 +6,16 @@ export const WalletSection = () => {
   return (
     <div className="flex flex-col gap-3">
       <div className="flex items-center gap-2">
-        <Badge variant="secondary" className="text-xs">EVM</Badge>
-        <WalletButton />
+        <Badge variant="secondary" className="text-xs w-10 justify-center">EVM</Badge>
+        <div className="flex-1">
+          <WalletButton />
+        </div>
       </div>
       <div className="flex items-center gap-2">
-        <Badge variant="outline" className="text-xs">SOL</Badge>
-        <SolanaWalletButton />
+        <Badge variant="outline" className="text-xs w-10 justify-center">SOL</Badge>
+        <div className="flex-1">
+          <SolanaWalletButton />
+        </div>
       </div>
     </div>
   )
