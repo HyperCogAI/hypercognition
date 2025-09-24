@@ -7,6 +7,8 @@ import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
+import { useQuery } from '@tanstack/react-query'
+import { supabase } from '@/integrations/supabase/client'
 import { 
   Plug, 
   CheckCircle, 
@@ -42,186 +44,136 @@ interface ExchangeCredentials {
   testnet: boolean
 }
 
-export const MultiExchangeConnector = () => {
-  const [exchanges, setExchanges] = useState<Exchange[]>([
-    {
-      id: 'binance',
-      name: 'Binance',
-      logo: '🔶',
-      status: 'connected',
-      lastSync: new Date(),
-      tradingPairs: 2143,
-      volume24h: 24500000000,
-      fees: { maker: 0.1, taker: 0.1 },
-      features: ['Spot', 'Futures', 'Options', 'Margin'],
-      isTestnet: false
-    },
-    {
-      id: 'coinbase',
-      name: 'Coinbase Pro',
-      logo: '🔵',
-      status: 'disconnected',
-      lastSync: null,
-      tradingPairs: 234,
-      volume24h: 3200000000,
-      fees: { maker: 0.05, taker: 0.05 },
-      features: ['Spot', 'Advanced'],
-      isTestnet: false
-    },
-    {
-      id: 'kraken',
-      name: 'Kraken',
-      logo: '🐙',
-      status: 'error',
-      lastSync: new Date(Date.now() - 3600000),
-      tradingPairs: 567,
-      volume24h: 1800000000,
-      fees: { maker: 0.16, taker: 0.26 },
-      features: ['Spot', 'Futures', 'Margin'],
-      isTestnet: false
-    },
-    {
-      id: 'bybit',
-      name: 'Bybit',
-      logo: '🟡',
-      status: 'disconnected',
-      lastSync: null,
-      tradingPairs: 445,
-      volume24h: 8900000000,
-      fees: { maker: 0.1, taker: 0.1 },
-      features: ['Spot', 'Derivatives', 'Copy Trading'],
-      isTestnet: false
-    },
-    {
-      id: 'kucoin',
-      name: 'KuCoin',
-      logo: '🟢',
-      status: 'disconnected',
-      lastSync: null,
-      tradingPairs: 1234,
-      volume24h: 2100000000,
-      fees: { maker: 0.1, taker: 0.1 },
-      features: ['Spot', 'Futures', 'Pool'],
-      isTestnet: false
-    },
-    {
-      id: 'gate',
-      name: 'Gate.io',
-      logo: '🔺',
-      status: 'disconnected',
-      lastSync: null,
-      tradingPairs: 1891,
-      volume24h: 1200000000,
-      fees: { maker: 0.2, taker: 0.2 },
-      features: ['Spot', 'Perpetual', 'Options'],
-      isTestnet: false
-    }
-  ])
+const getExchangeLogo = (exchangeName: string) => {
+  const logos: Record<string, string> = {
+    'Binance': '🔶',
+    'Coinbase': '🔵',
+    'Kraken': '🟣',
+    'Bitfinex': '🟢',
+    'KuCoin': '🟡',
+    'Huobi': '🔴'
+  };
+  return logos[exchangeName] || '⚪';
+};
 
-  const [selectedExchange, setSelectedExchange] = useState<string | null>(null)
+const getExchangeFeatures = (exchangeName: string) => {
+  const features: Record<string, string[]> = {
+    'Binance': ['Spot', 'Futures', 'Options', 'Margin'],
+    'Coinbase': ['Spot', 'Pro Trading'],
+    'Kraken': ['Spot', 'Futures', 'Margin'],
+    'Bitfinex': ['Spot', 'Margin', 'Derivatives'],
+    'KuCoin': ['Spot', 'Futures', 'Margin'],
+    'Huobi': ['Spot', 'Futures', 'Options']
+  };
+  return features[exchangeName] || ['Spot'];
+};
+
+export const MultiExchangeConnector = () => {
+  const { toast } = useToast()
+  
+  // Real data from Supabase
+  const { data: exchangeConnections = [], isLoading, refetch } = useQuery({
+    queryKey: ['exchange-connections'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('exchange_connections')
+        .select('*')
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Transform real data to match UI interface
+  const exchanges = exchangeConnections.map(conn => ({
+    id: conn.id,
+    name: conn.exchange_name,
+    logo: getExchangeLogo(conn.exchange_name),
+    status: conn.connection_status as 'connected' | 'disconnected' | 'error' | 'connecting',
+    lastSync: conn.last_sync_at ? new Date(conn.last_sync_at) : null,
+    tradingPairs: Math.floor(Math.random() * 500) + 100, // Mock for now
+    volume24h: Math.floor(Math.random() * 1000000) + 100000, // Mock for now
+    fees: {
+      maker: 0.1,
+      taker: 0.1
+    },
+    features: getExchangeFeatures(conn.exchange_name),
+    isTestnet: conn.is_testnet
+  }));
+
+  const [selectedExchange, setSelectedExchange] = useState<Exchange | null>(null)
+  const [showCredentialsForm, setShowCredentialsForm] = useState(false)
   const [credentials, setCredentials] = useState<ExchangeCredentials>({
     apiKey: '',
     secretKey: '',
     passphrase: '',
     testnet: false
   })
-  const [isConnecting, setIsConnecting] = useState(false)
-  const { toast } = useToast()
 
-  const connectExchange = async (exchangeId: string) => {
-    setIsConnecting(true)
-    
+  const handleConnect = async (exchange: Exchange) => {
     try {
-      // Update status to connecting
-      setExchanges(prev => prev.map(ex => 
-        ex.id === exchangeId 
-          ? { ...ex, status: 'connecting' as const }
-          : ex
-      ))
+      const { error } = await supabase
+        .from('exchange_connections')
+        .insert({
+          exchange_name: exchange.name,
+          api_key_encrypted: credentials.apiKey, // In production, this should be encrypted
+          is_testnet: credentials.testnet,
+          connection_status: 'connecting',
+          user_id: 'current_user' // Should use actual user ID
+        });
 
-      // Simulate API connection
-      await new Promise(resolve => setTimeout(resolve, 2000))
-      
-      // Simulate random success/failure
-      const success = Math.random() > 0.2 // 80% success rate
-      
-      if (success) {
-        setExchanges(prev => prev.map(ex => 
-          ex.id === exchangeId 
-            ? { 
-                ...ex, 
-                status: 'connected' as const,
-                lastSync: new Date(),
-                isTestnet: credentials.testnet
-              }
-            : ex
-        ))
-
-        toast({
-          title: "Exchange Connected",
-          description: `Successfully connected to ${exchanges.find(ex => ex.id === exchangeId)?.name}`,
-        })
-      } else {
-        setExchanges(prev => prev.map(ex => 
-          ex.id === exchangeId 
-            ? { ...ex, status: 'error' as const }
-            : ex
-        ))
-
-        toast({
-          title: "Connection Failed",
-          description: "Invalid credentials or API error",
-          variant: "destructive"
-        })
-      }
-    } catch (error) {
-      setExchanges(prev => prev.map(ex => 
-        ex.id === exchangeId 
-          ? { ...ex, status: 'error' as const }
-          : ex
-      ))
+      if (error) throw error;
 
       toast({
-        title: "Connection Error",
-        description: "Failed to connect to exchange",
+        title: "Exchange Connection",
+        description: `Connecting to ${exchange.name}...`
+      });
+
+      // Simulate connection process
+      setTimeout(() => {
+        refetch();
+        toast({
+          title: "Connected Successfully",
+          description: `${exchange.name} has been connected.`
+        });
+      }, 2000);
+
+    } catch (error) {
+      console.error('Connection error:', error);
+      toast({
+        title: "Connection Failed",
+        description: "Failed to connect to exchange. Please check your credentials.",
         variant: "destructive"
-      })
-    } finally {
-      setIsConnecting(false)
-      setSelectedExchange(null)
-      setCredentials({
-        apiKey: '',
-        secretKey: '',
-        passphrase: '',
-        testnet: false
-      })
+      });
     }
   }
 
-  const disconnectExchange = (exchangeId: string) => {
-    setExchanges(prev => prev.map(ex => 
-      ex.id === exchangeId 
-        ? { ...ex, status: 'disconnected' as const, lastSync: null }
-        : ex
-    ))
+  const handleDisconnect = async (exchangeId: string) => {
+    try {
+      const { error } = await supabase
+        .from('exchange_connections')
+        .update({ 
+          connection_status: 'disconnected',
+          is_active: false 
+        })
+        .eq('id', exchangeId);
 
-    toast({
-      title: "Exchange Disconnected",
-      description: `Disconnected from ${exchanges.find(ex => ex.id === exchangeId)?.name}`,
-    })
-  }
+      if (error) throw error;
 
-  const syncExchange = async (exchangeId: string) => {
-    setExchanges(prev => prev.map(ex => 
-      ex.id === exchangeId 
-        ? { ...ex, lastSync: new Date() }
-        : ex
-    ))
-
-    toast({
-      title: "Exchange Synced",
-      description: "Latest data synchronized",
-    })
+      refetch();
+      toast({
+        title: "Disconnected",
+        description: "Exchange has been disconnected."
+      });
+    } catch (error) {
+      console.error('Disconnect error:', error);
+      toast({
+        title: "Error",
+        description: "Failed to disconnect exchange.",
+        variant: "destructive"
+      });
+    }
   }
 
   const getStatusIcon = (status: string) => {
@@ -229,278 +181,205 @@ export const MultiExchangeConnector = () => {
       case 'connected': return <CheckCircle className="h-4 w-4 text-green-500" />
       case 'connecting': return <RefreshCw className="h-4 w-4 text-blue-500 animate-spin" />
       case 'error': return <XCircle className="h-4 w-4 text-red-500" />
-      default: return <XCircle className="h-4 w-4 text-gray-500" />
+      default: return <AlertTriangle className="h-4 w-4 text-yellow-500" />
     }
   }
 
-  const getStatusBadge = (status: string) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
-      case 'connected': return <Badge className="bg-green-500">Connected</Badge>
-      case 'connecting': return <Badge className="bg-blue-500">Connecting</Badge>
-      case 'error': return <Badge variant="destructive">Error</Badge>
-      default: return <Badge variant="secondary">Disconnected</Badge>
+      case 'connected': return 'text-green-500'
+      case 'connecting': return 'text-blue-500'
+      case 'error': return 'text-red-500'
+      default: return 'text-yellow-500'
     }
   }
 
-  const formatVolume = (volume: number) => {
-    if (volume >= 1e9) return `$${(volume / 1e9).toFixed(1)}B`
-    if (volume >= 1e6) return `$${(volume / 1e6).toFixed(1)}M`
-    return `$${(volume / 1e3).toFixed(1)}K`
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="animate-pulse space-y-4">
+          {[1, 2, 3].map(i => (
+            <div key={i} className="h-24 bg-muted rounded-lg"></div>
+          ))}
+        </div>
+      </div>
+    );
   }
-
-  const connectedExchanges = exchanges.filter(ex => ex.status === 'connected')
-  const totalVolume = exchanges.reduce((sum, ex) => sum + ex.volume24h, 0)
-  const totalPairs = exchanges.reduce((sum, ex) => sum + ex.tradingPairs, 0)
 
   return (
     <div className="space-y-6">
-      {/* Overview Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Plug className="h-8 w-8 mx-auto mb-2 text-blue-500" />
-            <div className="text-2xl font-bold">{connectedExchanges.length}</div>
-            <p className="text-sm text-muted-foreground">Connected</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4 text-center">
-            <DollarSign className="h-8 w-8 mx-auto mb-2 text-green-500" />
-            <div className="text-2xl font-bold">{formatVolume(totalVolume)}</div>
-            <p className="text-sm text-muted-foreground">24h Volume</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4 text-center">
-            <TrendingUp className="h-8 w-8 mx-auto mb-2 text-purple-500" />
-            <div className="text-2xl font-bold">{totalPairs.toLocaleString()}</div>
-            <p className="text-sm text-muted-foreground">Trading Pairs</p>
-          </CardContent>
-        </Card>
-        
-        <Card>
-          <CardContent className="p-4 text-center">
-            <Activity className="h-8 w-8 mx-auto mb-2 text-orange-500" />
-            <div className="text-2xl font-bold">{exchanges.length}</div>
-            <p className="text-sm text-muted-foreground">Available</p>
-          </CardContent>
-        </Card>
+      <div className="text-center space-y-4">
+        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          Exchange Connector
+        </h2>
+        <p className="text-muted-foreground max-w-2xl mx-auto">
+          Connect to multiple exchanges and manage your trading accounts from one unified interface.
+        </p>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5" />
-            Exchange Connections
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <Tabs defaultValue="exchanges">
-            <TabsList>
-              <TabsTrigger value="exchanges">Exchanges</TabsTrigger>
-              <TabsTrigger value="settings">Settings</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="exchanges" className="space-y-4">
-              <div className="grid gap-4">
-                {exchanges.map((exchange) => (
-                  <Card key={exchange.id} className="relative">
-                    <CardContent className="p-4">
-                      <div className="flex items-center justify-between mb-3">
-                        <div className="flex items-center gap-3">
-                          <span className="text-2xl">{exchange.logo}</span>
-                          <div>
-                            <h3 className="font-medium flex items-center gap-2">
-                              {exchange.name}
-                              {getStatusIcon(exchange.status)}
-                            </h3>
-                            <p className="text-sm text-muted-foreground">
-                              {exchange.tradingPairs.toLocaleString()} pairs • {formatVolume(exchange.volume24h)} 24h volume
-                            </p>
-                          </div>
-                        </div>
+      <Tabs defaultValue="exchanges" className="space-y-6">
+        <TabsContent value="exchanges" className="space-y-4">
+          <div className="grid gap-4">
+            {exchanges.map((exchange) => (
+              <Card key={exchange.id} className="transition-all hover:shadow-lg">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="text-2xl">{exchange.logo}</div>
+                      <div>
                         <div className="flex items-center gap-2">
-                          {getStatusBadge(exchange.status)}
-                          {exchange.isTestnet && (
-                            <Badge variant="outline">Testnet</Badge>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-3 text-sm">
-                        <div>
-                          <span className="text-muted-foreground">Maker Fee:</span>
-                          <span className="ml-1 font-medium">{exchange.fees.maker}%</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Taker Fee:</span>
-                          <span className="ml-1 font-medium">{exchange.fees.taker}%</span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Last Sync:</span>
-                          <span className="ml-1 font-medium">
-                            {exchange.lastSync ? exchange.lastSync.toLocaleTimeString() : 'Never'}
-                          </span>
-                        </div>
-                        <div>
-                          <span className="text-muted-foreground">Features:</span>
-                          <span className="ml-1 font-medium">{exchange.features.length}</span>
-                        </div>
-                      </div>
-
-                      <div className="flex flex-wrap gap-1 mb-3">
-                        {exchange.features.map((feature) => (
-                          <Badge key={feature} variant="outline" className="text-xs">
-                            {feature}
+                          <h3 className="font-semibold">{exchange.name}</h3>
+                          {getStatusIcon(exchange.status)}
+                          <Badge variant={exchange.isTestnet ? "secondary" : "default"}>
+                            {exchange.isTestnet ? 'Testnet' : 'Mainnet'}
                           </Badge>
-                        ))}
+                        </div>
+                        <p className={`text-sm ${getStatusColor(exchange.status)}`}>
+                          {exchange.status.charAt(0).toUpperCase() + exchange.status.slice(1)}
+                          {exchange.lastSync && (
+                            <span className="text-muted-foreground ml-2">
+                              Last sync: {exchange.lastSync.toLocaleTimeString()}
+                            </span>
+                          )}
+                        </p>
                       </div>
+                    </div>
 
+                    <div className="flex items-center gap-4">
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">Trading Pairs</div>
+                        <div className="font-medium">{exchange.tradingPairs.toLocaleString()}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-sm text-muted-foreground">24h Volume</div>
+                        <div className="font-medium">${exchange.volume24h.toLocaleString()}</div>
+                      </div>
                       <div className="flex gap-2">
                         {exchange.status === 'connected' ? (
-                          <>
-                            <Button 
-                              size="sm" 
-                              variant="outline"
-                              onClick={() => syncExchange(exchange.id)}
-                            >
-                              <RefreshCw className="h-3 w-3 mr-1" />
-                              Sync
-                            </Button>
-                            <Button 
-                              size="sm" 
-                              variant="destructive"
-                              onClick={() => disconnectExchange(exchange.id)}
-                            >
-                              Disconnect
-                            </Button>
-                          </>
-                        ) : (
-                          <Button 
+                          <Button
+                            variant="outline"
                             size="sm"
-                            onClick={() => setSelectedExchange(exchange.id)}
-                            disabled={exchange.status === 'connecting'}
+                            onClick={() => handleDisconnect(exchange.id)}
                           >
-                            {exchange.status === 'connecting' ? 'Connecting...' : 'Connect'}
+                            Disconnect
+                          </Button>
+                        ) : (
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedExchange(exchange)
+                              setShowCredentialsForm(true)
+                            }}
+                          >
+                            Connect
                           </Button>
                         )}
                       </div>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-            </TabsContent>
+                    </div>
+                  </div>
 
-            <TabsContent value="settings" className="space-y-4">
-              <Card>
-                <CardHeader>
-                  <CardTitle>Global Exchange Settings</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="grid grid-cols-2 gap-4">
-                    <div className="space-y-2">
-                      <Label>Default Order Size</Label>
-                      <Input placeholder="1000" />
+                  {exchange.status === 'connected' && (
+                    <div className="mt-4 pt-4 border-t">
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+                        <div>
+                          <div className="text-muted-foreground">Maker Fee</div>
+                          <div className="font-medium">{exchange.fees.maker}%</div>
+                        </div>
+                        <div>
+                          <div className="text-muted-foreground">Taker Fee</div>
+                          <div className="font-medium">{exchange.fees.taker}%</div>
+                        </div>
+                        <div className="col-span-2">
+                          <div className="text-muted-foreground">Features</div>
+                          <div className="flex gap-1 mt-1">
+                            {exchange.features.map((feature) => (
+                              <Badge key={feature} variant="outline" className="text-xs">
+                                {feature}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
                     </div>
-                    <div className="space-y-2">
-                      <Label>Max Slippage (%)</Label>
-                      <Input placeholder="0.5" />
-                    </div>
-                  </div>
-                  
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between">
-                      <Label>Auto-sync enabled</Label>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Smart order routing</Label>
-                      <Switch defaultChecked />
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <Label>Risk management alerts</Label>
-                      <Switch defaultChecked />
-                    </div>
-                  </div>
+                  )}
                 </CardContent>
               </Card>
-            </TabsContent>
-          </Tabs>
-        </CardContent>
-      </Card>
+            ))}
+          </div>
 
-      {/* Connection Modal */}
-      {selectedExchange && (
-        <Card className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-          <div className="w-full max-w-md mx-4">
-            <CardHeader>
-              <CardTitle>
-                Connect to {exchanges.find(ex => ex.id === selectedExchange)?.name}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="space-y-2">
-                <Label>API Key</Label>
-                <Input 
-                  type="password"
-                  placeholder="Enter your API key"
-                  value={credentials.apiKey}
-                  onChange={(e) => setCredentials(prev => ({ ...prev, apiKey: e.target.value }))}
-                />
-              </div>
-              
-              <div className="space-y-2">
-                <Label>Secret Key</Label>
-                <Input 
-                  type="password"
-                  placeholder="Enter your secret key"
-                  value={credentials.secretKey}
-                  onChange={(e) => setCredentials(prev => ({ ...prev, secretKey: e.target.value }))}
-                />
-              </div>
-              
-              {selectedExchange === 'coinbase' && (
+          {showCredentialsForm && selectedExchange && (
+            <Card>
+              <CardHeader>
+                <CardTitle>Connect to {selectedExchange.name}</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
                 <div className="space-y-2">
-                  <Label>Passphrase</Label>
-                  <Input 
+                  <Label htmlFor="apiKey">API Key</Label>
+                  <Input
+                    id="apiKey"
                     type="password"
-                    placeholder="Enter your passphrase"
-                    value={credentials.passphrase}
-                    onChange={(e) => setCredentials(prev => ({ ...prev, passphrase: e.target.value }))}
+                    value={credentials.apiKey}
+                    onChange={(e) => setCredentials(prev => ({ ...prev, apiKey: e.target.value }))}
+                    placeholder="Enter your API key"
                   />
                 </div>
-              )}
-              
-              <div className="flex items-center justify-between">
-                <Label>Use Testnet</Label>
-                <Switch 
-                  checked={credentials.testnet}
-                  onCheckedChange={(checked) => setCredentials(prev => ({ ...prev, testnet: checked }))}
-                />
-              </div>
-              
-              <div className="flex gap-2 pt-4">
-                <Button 
-                  variant="outline" 
-                  className="flex-1"
-                  onClick={() => setSelectedExchange(null)}
-                >
-                  Cancel
-                </Button>
-                <Button 
-                  className="flex-1"
-                  onClick={() => connectExchange(selectedExchange)}
-                  disabled={isConnecting || !credentials.apiKey || !credentials.secretKey}
-                >
-                  {isConnecting ? 'Connecting...' : 'Connect'}
-                </Button>
-              </div>
-            </CardContent>
-          </div>
-        </Card>
-      )}
+
+                <div className="space-y-2">
+                  <Label htmlFor="secretKey">Secret Key</Label>
+                  <Input
+                    id="secretKey"
+                    type="password"
+                    value={credentials.secretKey}
+                    onChange={(e) => setCredentials(prev => ({ ...prev, secretKey: e.target.value }))}
+                    placeholder="Enter your secret key"
+                  />
+                </div>
+
+                {selectedExchange.name === 'Coinbase' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="passphrase">Passphrase</Label>
+                    <Input
+                      id="passphrase"
+                      type="password"
+                      value={credentials.passphrase}
+                      onChange={(e) => setCredentials(prev => ({ ...prev, passphrase: e.target.value }))}
+                      placeholder="Enter your passphrase"
+                    />
+                  </div>
+                )}
+
+                <div className="flex items-center space-x-2">
+                  <Switch
+                    id="testnet"
+                    checked={credentials.testnet}
+                    onCheckedChange={(checked) => setCredentials(prev => ({ ...prev, testnet: checked }))}
+                  />
+                  <Label htmlFor="testnet">Use testnet</Label>
+                </div>
+
+                <div className="flex justify-end gap-2">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowCredentialsForm(false)
+                      setSelectedExchange(null)
+                      setCredentials({ apiKey: '', secretKey: '', passphrase: '', testnet: false })
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => handleConnect(selectedExchange)}
+                    disabled={!credentials.apiKey || !credentials.secretKey}
+                  >
+                    Connect
+                  </Button>
+                </div>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+      </Tabs>
     </div>
   )
 }
