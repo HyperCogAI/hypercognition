@@ -313,7 +313,7 @@ export function OnboardingFlow() {
                     <Button
                       size="sm"
                       onClick={() => handleStepAction(step, index)}
-                      className="bg-primary/10 hover:bg-primary/20 text-primary border border-primary/30"
+                      className="bg-primary/60 hover:bg-primary/70 text-primary-foreground border border-white"
                     >
                       <ArrowRight className="h-4 w-4" />
                     </Button>

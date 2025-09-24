@@ -154,7 +154,7 @@ export const MobileAgentDetailSheet = ({
               View Chart
             </Button>
             <Button 
-              className="h-12 bg-primary hover:bg-primary/90"
+              className="h-12 bg-primary/60 border border-white hover:bg-primary/70 text-primary-foreground"
               onClick={handleTrade}
             >
               <TrendingUp className="h-4 w-4 mr-2" />

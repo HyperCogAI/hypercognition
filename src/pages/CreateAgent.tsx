@@ -371,7 +371,7 @@ export const CreateAgent = () => {
                 </Button>
                 <Button 
                   onClick={handleSubmit}
-                  className="bg-primary hover:bg-primary/90"
+                  className="bg-primary/60 border border-white hover:bg-primary/70"
                 >
                   Launch Agent
                 </Button>
