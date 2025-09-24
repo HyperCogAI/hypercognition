@@ -15,8 +15,8 @@ const resolveProjectId = (): string => {
       if (stored && stored.trim()) return stored.trim()
     }
   } catch {}
-  // Fallback demo placeholder (safe/public). Replace via ?wc_pid=YOUR_ID
-  return '2d6a1b2f8c4e6a7b9d3e5f7g8h9i0j1k'
+  // Your Reown Project ID
+  return '089da49c593aacde18802acaacbdf911'
 }
 
 export const WALLETCONNECT_PROJECT_ID = resolveProjectId()
