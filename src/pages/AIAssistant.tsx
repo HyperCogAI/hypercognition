@@ -110,7 +110,7 @@ const AIAssistant = () => {
               <CardContent className="p-12 text-center space-y-6">
                 <Brain className="h-16 w-16 mx-auto text-primary" />
                 <h3 className="text-3xl font-bold text-white">Ready to Start Trading Smarter?</h3>
-                <p className="text-white/80 max-w-lg mx-auto text-lg leading-relaxed">
+                <p className="text-muted-foreground max-w-lg mx-auto text-lg leading-relaxed">
                   Our AI assistant is trained on vast amounts of market data and uses advanced 
                   machine learning to provide you with the best possible trading insights.
                 </p>
