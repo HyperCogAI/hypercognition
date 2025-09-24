@@ -162,7 +162,12 @@ export const validateEmail = (email: string): boolean => {
 }
 
 export const validateWalletAddress = (address: string): boolean => {
-  return PATTERNS.ETHEREUM_ADDRESS.test(address)
+  // Ethereum address validation
+  const ethRegex = /^0x[a-fA-F0-9]{40}$/;
+  // Solana address validation (base58, 32-44 characters)
+  const solRegex = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/;
+  
+  return ethRegex.test(address) || solRegex.test(address);
 }
 
 export const validateTradeAmount = (balance: number, amount: number): boolean => {
@@ -171,7 +176,22 @@ export const validateTradeAmount = (balance: number, amount: number): boolean =>
 
 export const sanitizeInput = (input: string | null | undefined): string => {
   if (!input) return ''
-  return input.replace(/<[^>]*>/g, '') // Simple HTML removal
+  
+  // Enhanced XSS protection
+  let sanitized = input
+    .replace(/<script[^>]*>.*?<\/script>/gi, '')
+    .replace(/javascript:/gi, '')
+    .replace(/data:/gi, '')
+    .replace(/vbscript:/gi, '')
+    .replace(/on\w+\s*=/gi, '')
+    .replace(/<[^>]*>/g, ''); // Remove all HTML tags
+  
+  // SQL injection protection
+  if (/(\bunion\b|\bselect\b|\binsert\b|\bupdate\b|\bdelete\b|\bdrop\b|\bcreate\b|\balter\b)\s+/i.test(sanitized)) {
+    sanitized = sanitized.replace(/(\bunion\b|\bselect\b|\binsert\b|\bupdate\b|\bdelete\b|\bdrop\b|\bcreate\b|\balter\b)\s+/gi, '');
+  }
+  
+  return sanitized;
 }
 
 // Pre-built schemas for common use cases

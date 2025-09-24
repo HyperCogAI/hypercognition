@@ -78,7 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
         return await disableTwoFactor(supabase, user.id);
       
       case 'generate_backup_codes':
-        return await generateBackupCodes(supabase, user.id);
+        return await generateBackupCodesForUser(supabase, user.id);
       
       default:
         return new Response(JSON.stringify({ error: 'Invalid action' }), {
@@ -192,7 +192,7 @@ const disableTwoFactor = async (supabase: any, userId: string) => {
   });
 };
 
-const generateBackupCodes = async (supabase: any, userId: string) => {
+const generateBackupCodesForUser = async (supabase: any, userId: string) => {
   const codes = generateBackupCodes();
   
   const { error } = await supabase

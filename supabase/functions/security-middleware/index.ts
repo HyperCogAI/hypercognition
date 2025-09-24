@@ -56,13 +56,15 @@ const handler = async (req: Request): Promise<Response> => {
         break;
     }
 
-    // Check rate limit using database function
-    const { data: rateLimitCheck, error: rateLimitError } = await supabase
-      .rpc('check_rate_limit', {
+    // Use enhanced rate limiting with IP tracking
+    const { data: rateLimitResult, error: rateLimitError } = await supabase
+      .rpc('enhanced_rate_limit_check', {
         identifier_param: rateLimitIdentifier,
         endpoint_param: endpoint,
+        ip_address_param: clientIP,
         max_requests: maxRequests,
-        window_minutes: windowMinutes
+        window_minutes: windowMinutes,
+        burst_protection: true
       });
 
     if (rateLimitError) {
@@ -76,7 +78,7 @@ const handler = async (req: Request): Promise<Response> => {
       });
     }
 
-    if (!rateLimitCheck) {
+    if (!rateLimitResult?.allowed) {
       // Log security event for rate limit exceeded
       await supabase.from('security_audit_log').insert({
         action: 'rate_limit_exceeded',
@@ -93,29 +95,35 @@ const handler = async (req: Request): Promise<Response> => {
 
       return new Response(JSON.stringify({ 
         allowed: false, 
-        reason: 'rate_limit_exceeded',
-        retryAfter: windowMinutes * 60
+        reason: rateLimitResult.reason || 'rate_limit_exceeded',
+        retryAfter: rateLimitResult.retry_after || windowMinutes * 60,
+        rateLimitStatus: {
+          remaining: 0,
+          resetTime: rateLimitResult.reset_time || Date.now() + (windowMinutes * 60 * 1000)
+        }
       }), {
         status: 429,
         headers: { 
           'Content-Type': 'application/json',
-          'Retry-After': (windowMinutes * 60).toString(),
+          'Retry-After': (rateLimitResult.retry_after || windowMinutes * 60).toString(),
           ...corsHeaders 
         }
       });
     }
 
-    // Validate content if provided
+    // Enhanced content validation if provided
     let contentValid = true;
+    let sanitizedContent = contentToValidate;
     if (contentToValidate) {
       const { data: validationResult, error: validationError } = await supabase
-        .rpc('validate_input_security', {
+        .rpc('validate_and_sanitize_input', {
           input_text: contentToValidate,
           max_length: 10000,
-          allow_html: false
+          allow_html: false,
+          strict_mode: true
         });
 
-      if (validationError || !validationResult) {
+      if (validationError || !validationResult?.valid) {
         contentValid = false;
         
         // Log security event for invalid content
@@ -125,11 +133,14 @@ const handler = async (req: Request): Promise<Response> => {
           details: {
             identifier: rateLimitIdentifier,
             content_length: contentToValidate.length,
+            validation_errors: validationResult?.errors || ['validation_failed'],
             user_agent: userAgent
           },
           ip_address: clientIP,
           user_agent: userAgent
         });
+      } else {
+        sanitizedContent = validationResult.sanitized;
       }
     }
 
@@ -165,13 +176,14 @@ const handler = async (req: Request): Promise<Response> => {
       allowed: contentValid,
       reason: contentValid ? 'allowed' : 'invalid_content',
       rateLimitStatus: {
-        remaining: maxRequests - 1,
-        resetTime: Date.now() + (windowMinutes * 60 * 1000)
+        remaining: rateLimitResult?.remaining || maxRequests - 1,
+        resetTime: rateLimitResult?.reset_time || Date.now() + (windowMinutes * 60 * 1000)
       },
       securityFlags: {
         suspicious: isSuspicious,
         contentFiltered: !contentValid
-      }
+      },
+      sanitizedContent: sanitizedContent
     };
 
     return new Response(JSON.stringify(result), {
