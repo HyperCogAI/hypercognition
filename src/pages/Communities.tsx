@@ -191,7 +191,7 @@ export default function Communities() {
                                 </div>
                               </div>
                             </div>
-                            <Badge variant="secondary" className="bg-primary/10 text-primary border-primary/30">
+                            <Badge variant="secondary" className="bg-primary/60 border border-white text-primary-foreground">
                               Trending
                             </Badge>
                           </div>
@@ -237,7 +237,7 @@ export default function Communities() {
                             <div className="font-medium flex items-center gap-2">
                               {community.name}
                               {community.trending && (
-                                <Badge variant="secondary" className="text-xs bg-primary/10 text-primary">
+                                <Badge variant="secondary" className="text-xs bg-primary/60 border border-white text-primary-foreground">
                                   Trending
                                 </Badge>
                               )}

@@ -263,7 +263,7 @@ export function OnboardingFlow() {
               <Bot className="h-5 w-5 text-primary" />
               Get Started with HyperCognition
             </CardTitle>
-            <Badge variant="outline" className="text-primary border-primary/30">
+            <Badge variant="outline" className="text-primary bg-primary/60 border border-white">
               {completedSteps}/{steps.length}
             </Badge>
           </div>
