@@ -1,5 +1,4 @@
 import { useAuth } from "@/contexts/AuthContext"
-import { WalletButton } from "@/components/wallet/WalletButton"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
 import {
   DropdownMenu,
@@ -16,7 +15,7 @@ export const UserMenu = () => {
   const navigate = useNavigate()
 
   if (!isConnected || !user) {
-    return <WalletButton />
+    return null
   }
 
   const formatAddress = (addr: string) => {
