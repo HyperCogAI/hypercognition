@@ -28,6 +28,8 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { useQuery } from "@tanstack/react-query"
+import { supabase } from "@/integrations/supabase/client"
 
 interface Secret {
   id: string
@@ -294,7 +296,6 @@ function SecretForm({
 }
 
 export function EnvironmentVariablesManager() {
-  const [secrets, setSecrets] = useState<Secret[]>(MOCK_SECRETS)
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [searchQuery, setSearchQuery] = useState('')
   const [showAddDialog, setShowAddDialog] = useState(false)
@@ -303,6 +304,33 @@ export function EnvironmentVariablesManager() {
   const [copiedId, setCopiedId] = useState<string | null>(null)
   
   const { toast } = useToast()
+
+  // Fetch environment variables
+  const { data: secrets = [], isLoading, refetch } = useQuery({
+    queryKey: ['environment-variables'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('environment_variables')
+        .select('*')
+        .eq('is_active', true)
+        .order('created_at', { ascending: false });
+      
+      if (error) throw error;
+      
+      // Transform to match UI interface
+      return (data || []).map(env => ({
+        id: env.id,
+        name: env.name,
+        value: env.is_secret ? '***' + (env.value_encrypted?.slice(-4) || '****') : env.value_plain || '',
+        description: env.description || '',
+        category: 'custom' as const, // Map to category
+        isPublic: !env.is_secret,
+        lastUpdated: env.updated_at,
+        usedInFunctions: [], // Could be enhanced with actual function usage tracking
+        isActive: env.is_active
+      }));
+    }
+  });
 
   const categories = ['all', ...new Set(secrets.map(s => s.category))]
   
@@ -313,14 +341,23 @@ export function EnvironmentVariablesManager() {
     return categoryMatch && searchMatch
   })
 
-  const handleSaveSecret = (secretData: Omit<Secret, 'id' | 'lastUpdated'>) => {
-    if (editingSecret) {
-      // Update existing secret
-      setSecrets(prev => prev.map(s => 
-        s.id === editingSecret.id 
-          ? { ...secretData, id: editingSecret.id, lastUpdated: new Date().toISOString() }
-          : s
-      ))
+  const handleSaveSecret = async (secretData: Omit<Secret, 'id' | 'lastUpdated'>) => {
+    try {
+      if (editingSecret) {
+        // Update existing secret
+        const { error } = await supabase
+          .from('environment_variables')
+          .update({
+            name: secretData.name,
+            description: secretData.description,
+            is_secret: !secretData.isPublic,
+            value_encrypted: secretData.isPublic ? null : secretData.value,
+            value_plain: secretData.isPublic ? secretData.value : null,
+            is_active: secretData.isActive
+          })
+          .eq('id', editingSecret.id);
+
+        if (error) throw error;
       toast({
         title: "Secret Updated",
         description: `${secretData.name} has been updated successfully`

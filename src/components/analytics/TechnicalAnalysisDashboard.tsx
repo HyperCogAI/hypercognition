@@ -9,27 +9,52 @@ import { Badge } from '@/components/ui/badge';
 import { TechnicalChart } from '@/components/charts/TechnicalChart';
 import { Search, TrendingUp, BarChart3, Activity, Zap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-
-// Mock data for popular agents
-const popularAgents = [
-  { id: '1', symbol: 'AIBOT', name: 'AI Trading Bot', price: 125.67, change: 5.23, volume: 2450000 },
-  { id: '2', symbol: 'DEGEN', name: 'Degen Trader', price: 89.34, change: -2.15, volume: 1850000 },
-  { id: '3', symbol: 'ALPHA', name: 'Alpha Agent', price: 201.45, change: 12.67, volume: 3200000 },
-  { id: '4', symbol: 'SIGMA', name: 'Sigma Strategy', price: 67.89, change: 3.45, volume: 1650000 },
-  { id: '5', symbol: 'QUANTUM', name: 'Quantum AI', price: 156.78, change: -1.23, volume: 2100000 }
-];
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 export const TechnicalAnalysisDashboard: React.FC = () => {
-  const [selectedAgent, setSelectedAgent] = useState(popularAgents[0]);
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const filteredAgents = popularAgents.filter(agent =>
+  // Fetch agents from database
+  const { data: agents = [], isLoading: agentsLoading } = useQuery({
+    queryKey: ['agents-technical'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('id, name, symbol, price, change_24h, volume_24h')
+        .order('volume_24h', { ascending: false })
+        .limit(20);
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  // Fetch technical indicators
+  const { data: technicalIndicators = [] } = useQuery({
+    queryKey: ['technical-indicators'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('technical_indicators')
+        .select('*')
+        .order('calculated_at', { ascending: false })
+        .limit(100);
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
+
+  const [selectedAgent, setSelectedAgent] = useState(agents[0] || null);
+
+  const filteredAgents = agents.filter(agent =>
     agent.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     agent.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
-  const handleAgentSelect = (agent: typeof popularAgents[0]) => {
+  const handleAgentSelect = (agent: typeof agents[0]) => {
+    if (!agent) return;
     setLoading(true);
     setSelectedAgent(agent);
     // Simulate loading
@@ -110,16 +135,16 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                             <div className="text-sm text-muted-foreground">{agent.name}</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium">{formatCurrency(agent.price)}</div>
-                            <div className={`text-sm ${agent.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                              {agent.change >= 0 ? '+' : ''}{agent.change.toFixed(2)}%
+                            <div className="font-medium">{formatCurrency(Number(agent.price))}</div>
+                            <div className={`text-sm ${Number(agent.change_24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                              {Number(agent.change_24h) >= 0 ? '+' : ''}{Number(agent.change_24h).toFixed(2)}%
                             </div>
                           </div>
                         </div>
                         <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
-                          <span>Vol: {formatVolume(agent.volume)}</span>
+                          <span>Vol: {formatVolume(Number(agent.volume_24h))}</span>
                           <Badge variant="outline" className="text-xs">
-                            {agent.change >= 0 ? 'Bullish' : 'Bearish'}
+                            {Number(agent.change_24h) >= 0 ? 'Bullish' : 'Bearish'}
                           </Badge>
                         </div>
                       </div>
@@ -131,7 +156,7 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
 
             {/* Chart Area */}
             <div className="lg:col-span-3">
-              {loading ? (
+              {loading || agentsLoading ? (
                 <div className="space-y-4">
                   <Skeleton className="h-12" />
                   <Skeleton className="h-96" />
@@ -140,12 +165,16 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                     <Skeleton className="h-32" />
                   </div>
                 </div>
-              ) : (
+              ) : selectedAgent ? (
                 <TechnicalChart
                   agentId={selectedAgent.id}
                   agentSymbol={selectedAgent.symbol}
-                  currentPrice={selectedAgent.price}
+                  currentPrice={Number(selectedAgent.price)}
                 />
+              ) : (
+                <div className="text-center p-8 text-muted-foreground">
+                  Select an agent to view technical analysis
+                </div>
               )}
             </div>
           </div>
@@ -241,18 +270,23 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {popularAgents.map((agent) => (
+                      {filteredAgents.map((agent) => (
                         <tr key={agent.id} className="border-b hover:bg-muted/50">
                           <td className="p-2 font-medium">{agent.symbol}</td>
-                          <td className="text-right p-2">{formatCurrency(agent.price)}</td>
-                          <td className={`text-right p-2 ${agent.change >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {agent.change >= 0 ? '+' : ''}{agent.change.toFixed(2)}%
+                          <td className="text-right p-2">{formatCurrency(Number(agent.price))}</td>
+                          <td className={`text-right p-2 ${Number(agent.change_24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            {Number(agent.change_24h) >= 0 ? '+' : ''}{Number(agent.change_24h).toFixed(2)}%
                           </td>
-                          <td className="text-right p-2">{formatVolume(agent.volume)}</td>
-                          <td className="text-right p-2">{(Math.random() * 100).toFixed(0)}</td>
+                          <td className="text-right p-2">{formatVolume(Number(agent.volume_24h))}</td>
                           <td className="text-right p-2">
-                            <Badge variant={agent.change >= 0 ? 'default' : 'destructive'}>
-                              {agent.change >= 0 ? 'Buy' : 'Sell'}
+                            {technicalIndicators
+                              .filter(ti => ti.agent_id === agent.id && ti.indicator_type === 'rsi')
+                              .slice(0, 1)
+                              .map(ti => Number(ti.value).toFixed(0))[0] || 'N/A'}
+                          </td>
+                          <td className="text-right p-2">
+                            <Badge variant={Number(agent.change_24h) >= 0 ? 'default' : 'destructive'}>
+                              {Number(agent.change_24h) >= 0 ? 'Buy' : 'Sell'}
                             </Badge>
                           </td>
                         </tr>
@@ -330,20 +364,40 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                 </Button>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  {['triangle', 'head-shoulders', 'double-top', 'flag'].map((pattern, index) => (
-                    <div key={pattern} className="border rounded-lg p-4">
+                  {technicalIndicators
+                    .filter(ti => ['triangle', 'head_shoulders', 'double_top', 'flag'].includes(ti.indicator_type))
+                    .slice(0, 4)
+                    .map((indicator, index) => {
+                      const agent = agents.find(a => a.id === indicator.agent_id);
+                      return (
+                        <div key={indicator.id} className="border rounded-lg p-4">
+                          <div className="flex items-center justify-between mb-2">
+                            <h4 className="font-medium capitalize">{indicator.indicator_type.replace('_', ' ')}</h4>
+                            <Badge variant="outline">
+                              {indicator.strength ? `${Number(indicator.strength).toFixed(0)}%` : '65%'} confidence
+                            </Badge>
+                          </div>
+                          <div className="text-sm text-muted-foreground mb-2">
+                            Found in: {agent?.symbol || 'Unknown'}
+                          </div>
+                          <div className="text-sm">
+                            Pattern suggests {indicator.signal === 'buy' ? 'bullish' : 'bearish'} {indicator.signal || 'continuation'}.
+                            {agent && (
+                              <>Target: {formatCurrency(Number(agent.price) * (indicator.signal === 'buy' ? 1.05 : 0.95))}</>
+                            )}
+                          </div>
+                        </div>
+                      );
+                    })}
+                  {/* Fill with mock data if insufficient real data */}
+                  {Array.from({ length: Math.max(0, 4 - technicalIndicators.filter(ti => ['triangle', 'head_shoulders', 'double_top', 'flag'].includes(ti.indicator_type)).length) }, (_, index) => (
+                    <div key={`mock-${index}`} className="border rounded-lg p-4">
                       <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium capitalize">{pattern.replace('-', ' ')}</h4>
-                        <Badge variant="outline">
-                          {65 + index * 5}% confidence
-                        </Badge>
+                        <h4 className="font-medium">Pattern Detection</h4>
+                        <Badge variant="outline">Scanning...</Badge>
                       </div>
-                      <div className="text-sm text-muted-foreground mb-2">
-                        Found in: {popularAgents[index % popularAgents.length].symbol}
-                      </div>
-                      <div className="text-sm">
-                        Pattern suggests {index % 2 === 0 ? 'bullish' : 'bearish'} continuation.
-                        Target: {formatCurrency(popularAgents[index % popularAgents.length].price * (1 + (index % 2 === 0 ? 0.05 : -0.05)))}
+                      <div className="text-sm text-muted-foreground">
+                        No patterns detected in current timeframe
                       </div>
                     </div>
                   ))}
