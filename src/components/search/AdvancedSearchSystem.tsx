@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react"
+import { useState, useCallback, useEffect } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -25,7 +25,7 @@ import {
   Shield
 } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { useDebounce } from "@/hooks/useDebounceThrottle"
+
 
 interface SearchFilters {
   query: string
@@ -77,7 +77,14 @@ export function AdvancedSearchSystem() {
   })
 
   const [showFilters, setShowFilters] = useState(false)
-  const debouncedQuery = useDebounce(filters.query, 300)
+  const [debouncedQuery, setDebouncedQuery] = useState(filters.query)
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedQuery(filters.query)
+    }, 300)
+    return () => clearTimeout(timer)
+  }, [filters.query])
 
   // Real data from multiple Supabase tables
   const { data: searchResults = [], isLoading } = useQuery({
