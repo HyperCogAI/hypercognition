@@ -20,7 +20,7 @@ import {
   TrendingUp
 } from 'lucide-react';
 import { useAdmin } from '@/hooks/useAdmin';
-import { supabase } from '@/integrations/supabase/client';
+import { RealSecurityMonitoringService } from '../../services/RealSecurityMonitoringService';
 
 interface SecurityCheck {
   id: string;
@@ -74,23 +74,42 @@ export function SecurityAuditDashboard() {
     try {
       setLoading(true);
       
-      // Fetch security audit logs
-      const { data: auditLogs } = await supabase
-        .from('security_audit_log')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
+      // Load real security data
+      const [auditLogs, realChecks, realVulns] = await Promise.all([
+        RealSecurityMonitoringService.getSecurityEvents(),
+        RealSecurityMonitoringService.getSecurityChecks(),
+        RealSecurityMonitoringService.getVulnerabilities()
+      ]);
 
-      // Generate comprehensive security checks
-      const checks = generateSecurityChecks();
-      setSecurityChecks(checks);
+      // Transform real data to match interface
+      const transformedChecks = realChecks.map(check => ({
+        id: check.id,
+        name: check.check_name,
+        category: check.category as SecurityCheck['category'],
+        status: check.status as SecurityCheck['status'],
+        severity: check.severity as SecurityCheck['severity'],
+        description: check.description,
+        remediation: check.remediation_steps || undefined,
+        lastCheck: check.last_checked
+      }));
 
-      // Generate vulnerability reports
-      const vulns = generateVulnerabilityReports();
-      setVulnerabilities(vulns);
+      const transformedVulns = realVulns.map(vuln => ({
+        id: vuln.id,
+        type: vuln.vulnerability_type,
+        severity: vuln.severity as VulnerabilityReport['severity'],
+        component: vuln.affected_component,
+        description: vuln.description,
+        impact: vuln.impact_assessment,
+        remediation: vuln.remediation_steps,
+        status: vuln.status as VulnerabilityReport['status'],
+        discovered: vuln.discovered_at
+      }));
+
+      setSecurityChecks(transformedChecks);
+      setVulnerabilities(transformedVulns);
 
       // Calculate audit score
-      calculateAuditScore(checks, vulns);
+      calculateAuditScore(transformedChecks, transformedVulns);
       
     } catch (error) {
       console.error('Error loading security data:', error);

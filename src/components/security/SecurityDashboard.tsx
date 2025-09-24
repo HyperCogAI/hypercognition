@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { AlertTriangle, Shield, Users, Activity, Eye, EyeOff } from 'lucide-react';
 import { useAdmin } from '@/hooks/useAdmin';
-import { supabase } from '@/integrations/supabase/client';
+import { RealSecurityMonitoringService } from '../../services/RealSecurityMonitoringService';
 import { toast } from '@/hooks/use-toast';
 
 interface SecurityEvent {
@@ -44,25 +44,14 @@ export const SecurityDashboard = () => {
     try {
       setLoading(true);
       
-      // Load security audit logs
-      const { data: events, error: eventsError } = await supabase
-        .from('security_audit_log')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(100);
+      // Load real security data using the service
+      const [events, limits] = await Promise.all([
+        RealSecurityMonitoringService.getSecurityEvents(),
+        RealSecurityMonitoringService.getRateLimits()
+      ]);
 
-      if (eventsError) throw eventsError;
-      setSecurityEvents(events || []);
-
-      // Load rate limit data
-      const { data: limits, error: limitsError } = await supabase
-        .from('rate_limits')
-        .select('*')
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (limitsError) throw limitsError;
-      setRateLimits(limits || []);
+      setSecurityEvents(events);
+      setRateLimits(limits);
 
     } catch (error: any) {
       console.error('Failed to load security data:', error);

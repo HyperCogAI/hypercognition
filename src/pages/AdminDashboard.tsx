@@ -14,9 +14,95 @@ import {
 } from 'lucide-react'
 import { useAdmin } from '@/hooks/useAdmin'
 import { Navigate } from 'react-router-dom'
+import { RealAdminService } from '../services/RealAdminService'
 
 const AdminDashboard = () => {
   const { isAdmin, isLoading, adminRole } = useAdmin()
+  const [metrics, setMetrics] = React.useState([
+    {
+      title: "Total Users",
+      value: "...",
+      change: "...",
+      icon: Users,
+      trend: "up"
+    },
+    {
+      title: "Active Traders", 
+      value: "...",
+      change: "...",
+      icon: TrendingUp,
+      trend: "up"
+    },
+    {
+      title: "Total Volume",
+      value: "...",
+      change: "...",
+      icon: DollarSign,
+      trend: "up"
+    },
+    {
+      title: "Platform Revenue",
+      value: "...",
+      change: "...",
+      icon: BarChart3,
+      trend: "up"
+    }
+  ])
+  const [alerts, setAlerts] = React.useState<any[]>([])
+
+  React.useEffect(() => {
+    if (isAdmin) {
+      loadAdminData()
+    }
+  }, [isAdmin])
+
+  const loadAdminData = async () => {
+    try {
+      const [adminMetrics, adminAlerts] = await Promise.all([
+        RealAdminService.getAdminMetrics(),
+        RealAdminService.getSystemAlerts()
+      ])
+
+      setMetrics([
+        {
+          title: "Total Users",
+          value: adminMetrics.total_users.toString(),
+          change: `+${adminMetrics.users_growth}%`,
+          icon: Users,
+          trend: "up"
+        },
+        {
+          title: "Active Traders",
+          value: adminMetrics.active_traders.toString(),
+          change: `+${adminMetrics.trading_growth}%`,
+          icon: TrendingUp,
+          trend: "up"
+        },
+        {
+          title: "Total Volume",
+          value: `$${(adminMetrics.total_volume / 1000000).toFixed(1)}M`,
+          change: `+${adminMetrics.volume_growth}%`,
+          icon: DollarSign,
+          trend: "up"
+        },
+        {
+          title: "Platform Revenue",
+          value: `$${(adminMetrics.platform_revenue / 1000).toFixed(0)}K`,
+          change: `+${adminMetrics.revenue_growth}%`,
+          icon: BarChart3,
+          trend: "up"
+        }
+      ])
+
+      setAlerts(adminAlerts.map(alert => ({
+        type: alert.severity === 'high' ? 'error' : alert.severity === 'medium' ? 'warning' : 'info',
+        message: alert.description,
+        time: new Date(alert.created_at).toLocaleString()
+      })))
+    } catch (error) {
+      console.error('Error loading admin data:', error)
+    }
+  }
 
   if (isLoading) {
     return (
@@ -29,55 +115,6 @@ const AdminDashboard = () => {
   if (!isAdmin) {
     return <Navigate to="/" replace />
   }
-
-  const metrics = [
-    {
-      title: "Total Users",
-      value: "2,847",
-      change: "+12%",
-      icon: Users,
-      trend: "up"
-    },
-    {
-      title: "Active Traders",
-      value: "1,253",
-      change: "+8%",
-      icon: TrendingUp,
-      trend: "up"
-    },
-    {
-      title: "Total Volume",
-      value: "$2.4M",
-      change: "+23%",
-      icon: DollarSign,
-      trend: "up"
-    },
-    {
-      title: "Platform Revenue",
-      value: "$48K",
-      change: "+15%",
-      icon: BarChart3,
-      trend: "up"
-    }
-  ]
-
-  const alerts = [
-    {
-      type: "warning",
-      message: "High trading volume detected on AI-TRADE agent",
-      time: "2 minutes ago"
-    },
-    {
-      type: "info",
-      message: "New agent listing pending approval: QUANTUM-BOT",
-      time: "15 minutes ago"
-    },
-    {
-      type: "error",
-      message: "System maintenance required for exchange API",
-      time: "1 hour ago"
-    }
-  ]
 
   return (
     <div className="space-y-6 p-6">
