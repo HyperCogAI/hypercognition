@@ -32,7 +32,7 @@ export const SolanaWalletButton = () => {
     return (
       <CyberButton variant="neon" size="sm" onClick={connectWallet}>
         <Wallet className="h-4 w-4 text-primary-foreground" />
-        <span className="text-primary-foreground">Connect Solana</span>
+        <span className="text-primary-foreground">Connect</span>
       </CyberButton>
     )
   }
