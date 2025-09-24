@@ -114,9 +114,14 @@ const queryClient = new QueryClient({
 // 3. Create modal
 createWeb3Modal({
   wagmiConfig: config,
-  projectId: 'demo-project-id',
+  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '2d6a1b2f8c4e6a7b9d3e5f7g8h9i0j1k',
   enableAnalytics: true,
-  enableOnramp: true
+  enableOnramp: true,
+  themeMode: 'dark',
+  themeVariables: {
+    '--w3m-font-family': 'inherit',
+    '--w3m-accent': 'hsl(var(--primary))',
+  }
 })
 
 // App Layout Component
