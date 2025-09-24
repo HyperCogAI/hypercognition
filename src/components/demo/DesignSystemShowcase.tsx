@@ -4,6 +4,7 @@ import { ResponsiveContainer, ResponsiveGrid, ResponsiveStack } from '@/componen
 import { Button } from '@/components/ui/button'
 import { CyberButton } from '@/components/ui/cyber-button'
 import { Badge } from '@/components/ui/badge'
+import { useShowcaseInteractions } from '@/hooks/useShowcaseInteractions'
 import { 
   Palette, 
   Layout, 
@@ -20,6 +21,12 @@ import {
 } from 'lucide-react'
 
 export function DesignSystemShowcase() {
+  const { trackInteraction } = useShowcaseInteractions()
+
+  const handleComponentInteraction = (componentType: string, action: string) => {
+    trackInteraction('design-system', `${componentType}-${action}`)
+  }
+
   return (
     <ResponsiveContainer variant="wide" padding="lg">
       <div className="space-y-8">
@@ -107,20 +114,20 @@ export function DesignSystemShowcase() {
             <div className="p-6 space-y-4">
               <h3 className="font-semibold">Button Variants</h3>
               <ResponsiveStack direction={{ mobile: 'column', tablet: 'row', desktop: 'row' }} gap="md" wrap>
-                <Button>Default</Button>
-                <Button variant="destructive">Destructive</Button>
-                <Button variant="outline">Outline</Button>
-                <Button variant="secondary">Secondary</Button>
-                <Button variant="ghost">Ghost</Button>
-                <Button variant="link">Link</Button>
+                <Button onClick={() => handleComponentInteraction('button', 'default')}>Default</Button>
+                <Button variant="destructive" onClick={() => handleComponentInteraction('button', 'destructive')}>Destructive</Button>
+                <Button variant="outline" onClick={() => handleComponentInteraction('button', 'outline')}>Outline</Button>
+                <Button variant="secondary" onClick={() => handleComponentInteraction('button', 'secondary')}>Secondary</Button>
+                <Button variant="ghost" onClick={() => handleComponentInteraction('button', 'ghost')}>Ghost</Button>
+                <Button variant="link" onClick={() => handleComponentInteraction('button', 'link')}>Link</Button>
               </ResponsiveStack>
               
               <h4 className="font-medium text-sm text-muted-foreground">Cyber Buttons</h4>
               <ResponsiveStack direction={{ mobile: 'column', tablet: 'row', desktop: 'row' }} gap="md" wrap>
-                <CyberButton variant="cyber">Cyber</CyberButton>
-                <CyberButton variant="neon">Neon</CyberButton>
-                <CyberButton variant="analytics">Analytics</CyberButton>
-                <CyberButton variant="ai">AI Assistant</CyberButton>
+                <CyberButton variant="cyber" onClick={() => handleComponentInteraction('cyber-button', 'cyber')}>Cyber</CyberButton>
+                <CyberButton variant="neon" onClick={() => handleComponentInteraction('cyber-button', 'neon')}>Neon</CyberButton>
+                <CyberButton variant="analytics" onClick={() => handleComponentInteraction('cyber-button', 'analytics')}>Analytics</CyberButton>
+                <CyberButton variant="ai" onClick={() => handleComponentInteraction('cyber-button', 'ai')}>AI Assistant</CyberButton>
               </ResponsiveStack>
             </div>
           </Card>
@@ -201,7 +208,7 @@ export function DesignSystemShowcase() {
                 badge="NEW"
                 action={{
                   label: "Learn More",
-                  onClick: () => console.log('Mobile features clicked')
+                  onClick: () => handleComponentInteraction('feature-card', 'mobile-features')
                 }}
               />
               
@@ -211,7 +218,7 @@ export function DesignSystemShowcase() {
                 icon={Zap}
                 action={{
                   label: "View Metrics",
-                  onClick: () => console.log('Performance clicked')
+                  onClick: () => handleComponentInteraction('feature-card', 'performance')
                 }}
               />
               
@@ -221,7 +228,7 @@ export function DesignSystemShowcase() {
                 icon={Monitor}
                 action={{
                   label: "Explore",
-                  onClick: () => console.log('Desktop features clicked')
+                  onClick: () => handleComponentInteraction('feature-card', 'desktop-features')
                 }}
               />
             </ResponsiveGrid>
@@ -262,7 +269,7 @@ export function DesignSystemShowcase() {
         <div className="space-y-6">
           <h2 className="text-responsive-lg font-semibold">Interactive Experience</h2>
           
-          <Card variant="cyber" clickable onCardClick={() => console.log('Cyber card clicked!')}>
+          <Card variant="cyber" clickable onCardClick={() => handleComponentInteraction('card', 'cyber-demo')}>
             <div className="p-6 text-center space-y-4">
               <div className="w-16 h-16 mx-auto rounded-full bg-primary/20 flex items-center justify-center">
                 <Sparkles className="w-8 h-8 text-primary" />

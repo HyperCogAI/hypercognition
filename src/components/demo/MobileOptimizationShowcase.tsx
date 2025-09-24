@@ -3,10 +3,16 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { ResponsiveContainer, ResponsiveGrid, ResponsiveStack, MobileOptimizedCard } from '@/components/ui/responsive-components'
 import { useDeviceDetection } from '@/hooks/useDeviceDetection'
+import { useShowcaseInteractions } from '@/hooks/useShowcaseInteractions'
 import { Smartphone, Tablet, Monitor, Wifi, WifiOff, Battery, Signal } from 'lucide-react'
 
 export function MobileOptimizationShowcase() {
   const deviceInfo = useDeviceDetection()
+  const { trackInteraction } = useShowcaseInteractions()
+
+  const handleMobileInteraction = (feature: string) => {
+    trackInteraction('mobile-optimization', feature, { deviceInfo })
+  }
 
   return (
     <ResponsiveContainer variant="wide" padding="lg">
@@ -58,7 +64,7 @@ export function MobileOptimizationShowcase() {
           <h2 className="text-responsive-lg font-semibold">Responsive Components</h2>
           
           <ResponsiveGrid cols={{ mobile: 1, tablet: 2, desktop: 3 }} gap="md">
-            <MobileOptimizedCard clickable onClick={() => console.log('Card clicked!')}>
+            <MobileOptimizedCard clickable onClick={() => handleMobileInteraction('touch-optimized')}>
               <div className="space-y-2">
                 <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
                   <Signal className="w-4 h-4 text-primary" />
@@ -70,7 +76,7 @@ export function MobileOptimizationShowcase() {
               </div>
             </MobileOptimizedCard>
 
-            <MobileOptimizedCard clickable onClick={() => console.log('Card clicked!')}>
+            <MobileOptimizedCard clickable onClick={() => handleMobileInteraction('performance-first')}>
               <div className="space-y-2">
                 <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
                   <Battery className="w-4 h-4 text-secondary" />
@@ -82,7 +88,7 @@ export function MobileOptimizationShowcase() {
               </div>
             </MobileOptimizedCard>
 
-            <MobileOptimizedCard clickable onClick={() => console.log('Card clicked!')}>
+            <MobileOptimizedCard clickable onClick={() => handleMobileInteraction('offline-ready')}>
               <div className="space-y-2">
                 <div className="w-8 h-8 rounded-full bg-accent/20 flex items-center justify-center">
                   <Wifi className="w-4 h-4 text-accent" />
@@ -113,8 +119,8 @@ export function MobileOptimizationShowcase() {
                 </p>
               </div>
               <div className="space-y-2 sm:space-y-0 sm:space-x-2 flex flex-col sm:flex-row">
-                <Button size="sm" className="touch-target">Primary</Button>
-                <Button size="sm" variant="outline" className="touch-target">Secondary</Button>
+                <Button size="sm" className="touch-target" onClick={() => handleMobileInteraction('responsive-button-primary')}>Primary</Button>
+                <Button size="sm" variant="outline" className="touch-target" onClick={() => handleMobileInteraction('responsive-button-secondary')}>Secondary</Button>
               </div>
             </ResponsiveStack>
           </MobileOptimizedCard>

@@ -968,6 +968,48 @@ export type Database = {
         }
         Relationships: []
       }
+      logo_generation_history: {
+        Row: {
+          agent_name: string
+          agent_symbol: string
+          created_at: string
+          error_message: string | null
+          generation_time_ms: number | null
+          id: string
+          image_url: string | null
+          prompt_used: string | null
+          style: string
+          success: boolean
+          user_id: string | null
+        }
+        Insert: {
+          agent_name: string
+          agent_symbol: string
+          created_at?: string
+          error_message?: string | null
+          generation_time_ms?: number | null
+          id?: string
+          image_url?: string | null
+          prompt_used?: string | null
+          style: string
+          success?: boolean
+          user_id?: string | null
+        }
+        Update: {
+          agent_name?: string
+          agent_symbol?: string
+          created_at?: string
+          error_message?: string | null
+          generation_time_ms?: number | null
+          id?: string
+          image_url?: string | null
+          prompt_used?: string | null
+          style?: string
+          success?: boolean
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       market_data_feeds: {
         Row: {
           agent_id: string
@@ -2119,6 +2161,33 @@ export type Database = {
         }
         Relationships: []
       }
+      showcase_interactions: {
+        Row: {
+          component_type: string
+          created_at: string
+          data: Json | null
+          id: string
+          interaction_type: string
+          user_id: string | null
+        }
+        Insert: {
+          component_type: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          interaction_type: string
+          user_id?: string | null
+        }
+        Update: {
+          component_type?: string
+          created_at?: string
+          data?: Json | null
+          id?: string
+          interaction_type?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       signal_comments: {
         Row: {
           content: string
@@ -2870,6 +2939,81 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      tutorial_progress: {
+        Row: {
+          completed: boolean
+          completed_at: string | null
+          created_at: string
+          id: string
+          step_id: string
+          tutorial_id: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          step_id: string
+          tutorial_id: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          completed?: boolean
+          completed_at?: string | null
+          created_at?: string
+          id?: string
+          step_id?: string
+          tutorial_id?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      tutorials: {
+        Row: {
+          category: string
+          created_at: string
+          description: string | null
+          difficulty: string
+          duration: string | null
+          icon: string | null
+          id: string
+          is_active: boolean
+          steps: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          category: string
+          created_at?: string
+          description?: string | null
+          difficulty: string
+          duration?: string | null
+          icon?: string | null
+          id: string
+          is_active?: boolean
+          steps?: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          category?: string
+          created_at?: string
+          description?: string | null
+          difficulty?: string
+          duration?: string | null
+          icon?: string | null
+          id?: string
+          is_active?: boolean
+          steps?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
       }
       user_2fa: {
         Row: {

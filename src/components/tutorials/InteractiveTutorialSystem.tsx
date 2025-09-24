@@ -21,6 +21,7 @@ import {
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
+import { useTutorialProgress } from "@/hooks/useTutorialProgress"
 
 interface TutorialStep {
   id: string
@@ -45,112 +46,25 @@ interface Tutorial {
   completed: boolean
 }
 
-const TUTORIALS: Tutorial[] = [
-  {
-    id: 'trading-basics',
-    title: 'Trading Basics',
-    description: 'Learn the fundamentals of cryptocurrency trading',
-    category: 'Getting Started',
-    difficulty: 'beginner',
-    duration: '10 min',
-    icon: TrendingUp,
-    completed: false,
-    steps: [
-      {
-        id: 'step-1',
-        title: 'Understanding Market Data',
-        description: 'Learn to read price charts and market indicators',
-        content: 'Market data shows you the current price, volume, and price movements of trading pairs. The price chart displays how the asset has performed over time.',
-        action: 'Click on any price chart to explore',
-        targetSelector: '.price-chart',
-        position: 'bottom',
-        completed: false
-      },
-      {
-        id: 'step-2',
-        title: 'Order Types',
-        description: 'Understand different order types available',
-        content: 'Market orders execute immediately at current price. Limit orders execute only when price reaches your specified level. Stop orders help manage risk.',
-        action: 'Navigate to the trading panel',
-        targetSelector: '.trading-panel',
-        position: 'left',
-        completed: false
-      },
-      {
-        id: 'step-3',
-        title: 'Risk Management',
-        description: 'Learn to set stop-loss and take-profit levels',
-        content: 'Always set stop-loss orders to limit potential losses. Take-profit orders help secure gains automatically.',
-        action: 'Try setting a stop-loss order',
-        targetSelector: '.stop-loss-input',
-        position: 'top',
-        completed: false
-      }
-    ]
-  },
-  {
-    id: 'ai-agents',
-    title: 'AI Trading Agents',
-    description: 'Discover how to use and configure AI trading agents',
-    category: 'AI Features',
-    difficulty: 'intermediate',
-    duration: '15 min',
-    icon: Bot,
-    completed: false,
-    steps: [
-      {
-        id: 'agent-1',
-        title: 'Browse Agent Marketplace',
-        description: 'Explore available AI trading agents',
-        content: 'Each AI agent has unique strategies, risk profiles, and performance metrics. Compare agents before selection.',
-        action: 'Visit the Agent Marketplace',
-        targetSelector: '.agent-marketplace',
-        position: 'bottom',
-        completed: false
-      },
-      {
-        id: 'agent-2',
-        title: 'Agent Configuration',
-        description: 'Learn to configure agent parameters',
-        content: 'Set risk tolerance, position size, and trading frequency to match your preferences.',
-        action: 'Configure an agent',
-        targetSelector: '.agent-config',
-        position: 'right',
-        completed: false
-      }
-    ]
-  },
-  {
-    id: 'portfolio-management',
-    title: 'Portfolio Management',
-    description: 'Master portfolio tracking and optimization',
-    category: 'Advanced',
-    difficulty: 'advanced',
-    duration: '20 min',
-    icon: BarChart3,
-    completed: false,
-    steps: [
-      {
-        id: 'portfolio-1',
-        title: 'Portfolio Dashboard',
-        description: 'Understanding your portfolio metrics',
-        content: 'Track total value, P&L, asset allocation, and performance over time.',
-        action: 'Explore portfolio dashboard',
-        targetSelector: '.portfolio-dashboard',
-        position: 'top',
-        completed: false
-      }
-    ]
-  }
-]
-
-interface TutorialPlayerProps {
-  tutorial: Tutorial
-  onComplete: () => void
-  onClose: () => void
+// Icon mapping for tutorial icons
+const ICON_MAP: Record<string, any> = {
+  TrendingUp,
+  Bot,
+  BarChart3,
+  Wallet,
+  Shield,
+  Book
 }
 
-function TutorialPlayer({ tutorial, onComplete, onClose }: TutorialPlayerProps) {
+interface TutorialPlayerProps {
+  tutorial: any
+  onComplete: () => void
+  onClose: () => void
+  onStepComplete: (stepId: string) => Promise<boolean>
+  isStepCompleted: (stepId: string) => boolean
+}
+
+function TutorialPlayer({ tutorial, onComplete, onClose, onStepComplete, isStepCompleted }: TutorialPlayerProps) {
   const [currentStep, setCurrentStep] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const { toast } = useToast()
@@ -158,7 +72,11 @@ function TutorialPlayer({ tutorial, onComplete, onClose }: TutorialPlayerProps) 
   const currentStepData = tutorial.steps[currentStep]
   const progress = ((currentStep + 1) / tutorial.steps.length) * 100
 
-  const handleNext = () => {
+  const handleNext = async () => {
+    // Mark current step as completed
+    const success = await onStepComplete(currentStepData.id)
+    if (!success) return
+
     if (currentStep < tutorial.steps.length - 1) {
       setCurrentStep(currentStep + 1)
     } else {
@@ -209,7 +127,11 @@ function TutorialPlayer({ tutorial, onComplete, onClose }: TutorialPlayerProps) 
           </div>
           {currentStepData.action && (
             <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
-              <Circle className="h-4 w-4 text-primary" />
+              {isStepCompleted(currentStepData.id) ? (
+                <CheckCircle className="h-4 w-4 text-green-500" />
+              ) : (
+                <Circle className="h-4 w-4 text-primary" />
+              )}
               <span className="text-sm font-medium">{currentStepData.action}</span>
             </div>
           )}
@@ -255,10 +177,17 @@ function TutorialPlayer({ tutorial, onComplete, onClose }: TutorialPlayerProps) 
 }
 
 export function InteractiveTutorialSystem() {
-  const [tutorials, setTutorials] = useState(TUTORIALS)
+  const { 
+    tutorials, 
+    loading, 
+    markStepCompleted, 
+    getTutorialProgress, 
+    isTutorialCompleted, 
+    isStepCompleted 
+  } = useTutorialProgress()
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
-  const [activeTutorial, setActiveTutorial] = useState<Tutorial | null>(null)
+  const [activeTutorial, setActiveTutorial] = useState<any>(null)
 
   const categories = ['all', ...new Set(tutorials.map(t => t.category))]
   const difficulties = ['all', 'beginner', 'intermediate', 'advanced']
@@ -269,12 +198,7 @@ export function InteractiveTutorialSystem() {
     return categoryMatch && difficultyMatch
   })
 
-  const completeTutorial = (tutorialId: string) => {
-    setTutorials(prev => prev.map(tutorial => 
-      tutorial.id === tutorialId 
-        ? { ...tutorial, completed: true }
-        : tutorial
-    ))
+  const completeTutorial = () => {
     setActiveTutorial(null)
   }
 
@@ -338,72 +262,100 @@ export function InteractiveTutorialSystem() {
 
       {/* Tutorial Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {filteredTutorials.map(tutorial => {
-          const Icon = tutorial.icon
-          return (
-            <Card key={tutorial.id} className="relative overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300">
-              {tutorial.completed && (
-                <div className="absolute top-3 right-3">
-                  <CheckCircle className="h-5 w-5 text-green-500" />
-                </div>
-              )}
-              
-              <CardHeader>
-                <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-primary/10">
-                    <Icon className="h-5 w-5 text-primary" />
+        {loading ? (
+          Array.from({ length: 6 }).map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <div className="p-6 space-y-4">
+                <div className="h-6 bg-muted rounded" />
+                <div className="h-4 bg-muted rounded w-3/4" />
+                <div className="h-10 bg-muted rounded" />
+              </div>
+            </Card>
+          ))
+        ) : (
+          filteredTutorials.map(tutorial => {
+            const Icon = ICON_MAP[tutorial.icon] || Book
+            const progress = getTutorialProgress(tutorial.id)
+            const completed = isTutorialCompleted(tutorial.id)
+            return (
+              <Card key={tutorial.id} className="relative overflow-hidden border-border/50 hover:border-primary/30 transition-all duration-300">
+                {completed && (
+                  <div className="absolute top-3 right-3">
+                    <CheckCircle className="h-5 w-5 text-green-500" />
                   </div>
-                  <div className="flex-1">
-                    <CardTitle className="text-lg">{tutorial.title}</CardTitle>
-                    <div className="flex items-center gap-2 mt-1">
-                      <Badge 
-                        variant="outline" 
-                        className={cn("text-xs", getDifficultyColor(tutorial.difficulty))}
-                      >
-                        {tutorial.difficulty}
-                      </Badge>
-                      <span className="text-xs text-muted-foreground">{tutorial.duration}</span>
+                )}
+                
+                {progress.percentage > 0 && progress.percentage < 100 && (
+                  <div className="absolute top-3 right-3">
+                    <div className="relative">
+                      <Circle className="h-5 w-5 text-muted-foreground" />
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <span className="text-xs font-medium">{Math.round(progress.percentage)}%</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </CardHeader>
-              
-              <CardContent className="space-y-4">
-                <p className="text-sm text-muted-foreground">{tutorial.description}</p>
+                )}
                 
-                <div className="flex items-center justify-between">
-                  <span className="text-xs text-muted-foreground">
-                    {tutorial.steps.length} steps
-                  </span>
+                <CardHeader>
+                  <div className="flex items-center gap-3">
+                    <div className="p-2 rounded-lg bg-primary/10">
+                      <Icon className="h-5 w-5 text-primary" />
+                    </div>
+                    <div className="flex-1">
+                      <CardTitle className="text-lg">{tutorial.title}</CardTitle>
+                      <div className="flex items-center gap-2 mt-1">
+                        <Badge 
+                          variant="outline" 
+                          className={cn("text-xs", getDifficultyColor(tutorial.difficulty))}
+                        >
+                          {tutorial.difficulty}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground">{tutorial.duration}</span>
+                      </div>
+                    </div>
+                  </div>
+                </CardHeader>
+                
+                <CardContent className="space-y-4">
+                  <p className="text-sm text-muted-foreground">{tutorial.description}</p>
                   
-                  <Dialog>
-                    <DialogTrigger asChild>
-                      <Button 
-                        size="sm"
-                        onClick={() => setActiveTutorial(tutorial)}
-                        disabled={tutorial.completed}
-                      >
-                        {tutorial.completed ? 'Completed' : 'Start Tutorial'}
-                      </Button>
-                    </DialogTrigger>
-                    <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                      <DialogHeader>
-                        <DialogTitle>Interactive Tutorial</DialogTitle>
-                      </DialogHeader>
-                      {activeTutorial && (
-                        <TutorialPlayer
-                          tutorial={activeTutorial}
-                          onComplete={() => completeTutorial(activeTutorial.id)}
-                          onClose={() => setActiveTutorial(null)}
-                        />
-                      )}
-                    </DialogContent>
-                  </Dialog>
-                </div>
-              </CardContent>
-            </Card>
-          )
-        })}
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-muted-foreground">
+                      {tutorial.steps.length} steps
+                    </span>
+                    
+                    <Dialog>
+                      <DialogTrigger asChild>
+                        <Button 
+                          size="sm"
+                          onClick={() => setActiveTutorial(tutorial)}
+                          disabled={completed}
+                          variant={progress.percentage > 0 && !completed ? "outline" : "default"}
+                        >
+                          {completed ? 'Completed' : progress.percentage > 0 ? 'Continue' : 'Start Tutorial'}
+                        </Button>
+                      </DialogTrigger>
+                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                        <DialogHeader>
+                          <DialogTitle>Interactive Tutorial</DialogTitle>
+                        </DialogHeader>
+                        {activeTutorial && (
+                          <TutorialPlayer
+                            tutorial={activeTutorial}
+                            onComplete={completeTutorial}
+                            onClose={() => setActiveTutorial(null)}
+                            onStepComplete={(stepId) => markStepCompleted(activeTutorial.id, stepId)}
+                            isStepCompleted={(stepId) => isStepCompleted(activeTutorial.id, stepId)}
+                          />
+                        )}
+                      </DialogContent>
+                    </Dialog>
+                  </div>
+                </CardContent>
+              </Card>
+            )
+          })
+        )}
       </div>
 
       {/* Progress Summary */}
@@ -418,7 +370,7 @@ export function InteractiveTutorialSystem() {
           <div className="grid gap-4 md:grid-cols-3">
             <div className="text-center">
               <div className="text-2xl font-bold text-primary">
-                {tutorials.filter(t => t.completed).length}
+                {tutorials.filter(t => isTutorialCompleted(t.id)).length}
               </div>
               <div className="text-sm text-muted-foreground">Completed</div>
             </div>
@@ -430,7 +382,7 @@ export function InteractiveTutorialSystem() {
             </div>
             <div className="text-center">
               <div className="text-2xl font-bold text-accent">
-                {Math.round((tutorials.filter(t => t.completed).length / tutorials.length) * 100)}%
+                {tutorials.length > 0 ? Math.round((tutorials.filter(t => isTutorialCompleted(t.id)).length / tutorials.length) * 100) : 0}%
               </div>
               <div className="text-sm text-muted-foreground">Progress</div>
             </div>
