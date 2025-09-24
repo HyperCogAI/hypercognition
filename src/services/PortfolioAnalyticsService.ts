@@ -44,11 +44,24 @@ export interface PerformanceHistory {
 
 export class PortfolioAnalyticsService {
   static async calculatePortfolioMetrics(userId: string): Promise<PortfolioMetrics> {
-    const portfolio = await DatabaseService.getUserPortfolio(userId)
+    const { data: portfolio, error } = await supabase
+      .from('portfolios')
+      .select('*')
+      .eq('user_id', userId)
     
-    if (!portfolio.length) {
+    if (error) throw error
+    if (!portfolio?.length) {
       return this.getEmptyMetrics()
     }
+
+    // Get agent data separately to avoid join issues
+    const agentIds = portfolio.map(p => p.agent_id)
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('*')
+      .in('id', agentIds)
+    
+    const agentMap = new Map(agents?.map(a => [a.id, a]) || [])
 
     let totalValue = 0
     let totalCost = 0
@@ -58,7 +71,10 @@ export class PortfolioAnalyticsService {
     let minPnL = Infinity
 
     const holdings = portfolio.map(holding => {
-      const currentValue = holding.amount * holding.agent.price
+      const agent = agentMap.get(holding.agent_id)
+      if (!agent) return null
+      
+      const currentValue = holding.amount * agent.price
       const cost = holding.amount * holding.purchase_price
       const pnl = currentValue - cost
       const pnlPercentage = cost > 0 ? (pnl / cost) * 100 : 0
@@ -70,7 +86,7 @@ export class PortfolioAnalyticsService {
         maxPnL = pnl
         bestPerformer = {
           agent_id: holding.agent_id,
-          symbol: holding.agent.symbol,
+          symbol: agent.symbol,
           pnl,
           pnlPercentage
         }
@@ -80,14 +96,14 @@ export class PortfolioAnalyticsService {
         minPnL = pnl
         worstPerformer = {
           agent_id: holding.agent_id,
-          symbol: holding.agent.symbol,
+          symbol: agent.symbol,
           pnl,
           pnlPercentage
         }
       }
 
-      return { ...holding, currentValue, cost, pnl, pnlPercentage }
-    })
+      return { ...holding, agent, currentValue, cost, pnl, pnlPercentage }
+    }).filter(Boolean)
 
     const totalPnL = totalValue - totalCost
     const pnlPercentage = totalCost > 0 ? (totalPnL / totalCost) * 100 : 0
@@ -127,13 +143,29 @@ export class PortfolioAnalyticsService {
   }
 
   static async getAssetAllocation(userId: string): Promise<AssetAllocation[]> {
-    const portfolio = await DatabaseService.getUserPortfolio(userId)
+    const { data: portfolio, error } = await supabase
+      .from('portfolios')
+      .select('*')
+      .eq('user_id', userId)
     
-    if (!portfolio.length) return []
+    if (error) throw error
+    if (!portfolio?.length) return []
+
+    // Get agent data separately
+    const agentIds = portfolio.map(p => p.agent_id)
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('*')
+      .in('id', agentIds)
+    
+    const agentMap = new Map(agents?.map(a => [a.id, a]) || [])
 
     let totalValue = 0
     const allocations = portfolio.map(holding => {
-      const currentValue = holding.amount * holding.agent.price
+      const agent = agentMap.get(holding.agent_id)
+      if (!agent) return null
+      
+      const currentValue = holding.amount * agent.price
       const cost = holding.amount * holding.purchase_price
       const pnl = currentValue - cost
       const pnlPercentage = cost > 0 ? (pnl / cost) * 100 : 0
@@ -142,14 +174,14 @@ export class PortfolioAnalyticsService {
 
       return {
         agent_id: holding.agent_id,
-        symbol: holding.agent.symbol,
-        name: holding.agent.name,
+        symbol: agent.symbol,
+        name: agent.name,
         value: currentValue,
         pnl,
         pnlPercentage,
         percentage: 0 // Will be calculated after we have total value
       }
-    })
+    }).filter(Boolean)
 
     // Calculate percentages
     return allocations.map(allocation => ({

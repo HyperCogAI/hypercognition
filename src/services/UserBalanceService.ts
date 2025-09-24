@@ -35,25 +35,45 @@ export class UserBalanceService {
   }
 
   static async getUserBalance(userId: string): Promise<UserBalance> {
-    // Calculate balance from portfolio and orders
-    const portfolio = await DatabaseService.getUserPortfolio(userId)
-    const orders = await DatabaseService.getUserOrders(userId, 'pending')
+    // Get portfolio data without joins to avoid relation errors
+    const { data: portfolio, error: portfolioError } = await supabase
+      .from('portfolios')
+      .select('*')
+      .eq('user_id', userId)
+    
+    if (portfolioError) throw portfolioError
+
+    // Get agent data separately
+    const agentIds = portfolio?.map(p => p.agent_id) || []
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('*')
+      .in('id', agentIds)
+    
+    const agentMap = new Map(agents?.map(a => [a.id, a]) || [])
     
     // Calculate total portfolio value
-    const portfolioValue = portfolio.reduce((total, holding) => {
-      return total + (holding.amount * holding.agent.price)
-    }, 0)
+    const portfolioValue = portfolio?.reduce((total, holding) => {
+      const agent = agentMap.get(holding.agent_id)
+      return total + (holding.amount * (agent?.price || 0))
+    }, 0) || 0
+    
+    const { data: orders } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId)
+      .eq('status', 'pending')
     
     // Calculate pending orders value
-    const pendingValue = orders.reduce((total, order) => {
+    const pendingValue = orders?.reduce((total, order) => {
       return total + (order.amount * (order.price || 0))
-    }, 0)
+    }, 0) || 0
     
     // For demo, assume user starts with $10,000 and can add more
     const initialBalance = 10000
-    const totalSpent = portfolio.reduce((total, holding) => {
+    const totalSpent = portfolio?.reduce((total, holding) => {
       return total + (holding.amount * holding.purchase_price)
-    }, 0)
+    }, 0) || 0
     
     const availableBalance = Math.max(0, initialBalance - totalSpent - pendingValue)
     
@@ -96,7 +116,7 @@ export class UserBalanceService {
       category: 'trading',
       priority: 'normal',
       title: `${type.charAt(0).toUpperCase() + type.slice(1)} Order Executed`,
-      message: `${type === 'buy' ? 'Bought' : 'Sold'} ${amount} ${order.agent.symbol} at $${price}`,
+      message: `${type === 'buy' ? 'Bought' : 'Sold'} ${amount} tokens at $${price}`,
       action_url: `/portfolio`,
       data: {
         orderId: order.id,
@@ -106,6 +126,13 @@ export class UserBalanceService {
         totalValue
       }
     })
+    
+    // Get agent data for proper symbol/name
+    const { data: agent } = await supabase
+      .from('agents')
+      .select('*')
+      .eq('id', agentId)
+      .single()
     
     return {
       id: order.id,
@@ -118,34 +145,61 @@ export class UserBalanceService {
       fee,
       status: 'completed',
       timestamp: order.created_at,
-      agent: {
-        id: order.agent.id,
-        name: order.agent.name,
-        symbol: order.agent.symbol
+      agent: agent ? {
+        id: agent.id,
+        name: agent.name,
+        symbol: agent.symbol
+      } : {
+        id: agentId,
+        name: 'Unknown',
+        symbol: 'UNK'
       }
     }
   }
 
   static async getUserTransactions(userId: string, limit: number = 50): Promise<Transaction[]> {
-    const orders = await DatabaseService.getUserOrders(userId)
+    const { data: orders, error } = await supabase
+      .from('orders')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+      .limit(limit)
     
-    return orders.slice(0, limit).map(order => ({
-      id: order.id,
-      user_id: order.user_id,
-      agent_id: order.agent_id,
-      type: order.side as 'buy' | 'sell',
-      amount: order.amount,
-      price: order.price || 0,
-      total_value: order.amount * (order.price || 0),
-      fee: 0, // Would calculate from order executions
-      status: order.status === 'filled' ? 'completed' : order.status as any,
-      timestamp: order.created_at,
-      agent: {
-        id: order.agent.id,
-        name: order.agent.name,
-        symbol: order.agent.symbol
+    if (error) throw error
+    
+    // Get agent data for all orders
+    const agentIds = orders?.map(o => o.agent_id) || []
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('*')
+      .in('id', agentIds)
+    
+    const agentMap = new Map(agents?.map(a => [a.id, a]) || [])
+    
+    return (orders || []).map(order => {
+      const agent = agentMap.get(order.agent_id)
+      return {
+        id: order.id,
+        user_id: order.user_id,
+        agent_id: order.agent_id,
+        type: order.side as 'buy' | 'sell',
+        amount: order.amount,
+        price: order.price || 0,
+        total_value: order.amount * (order.price || 0),
+        fee: 0,
+        status: order.status === 'filled' ? 'completed' : order.status as any,
+        timestamp: order.created_at,
+        agent: agent ? {
+          id: agent.id,
+          name: agent.name,
+          symbol: agent.symbol
+        } : {
+          id: order.agent_id,
+          name: 'Unknown',
+          symbol: 'UNK'
+        }
       }
-    }))
+    })
   }
 
   static async getTransactionHistory(
@@ -155,40 +209,53 @@ export class UserBalanceService {
     startDate?: string,
     endDate?: string
   ): Promise<Transaction[]> {
-    let query = supabase
+    const { data: orders, error } = await supabase
       .from('orders')
-      .select(`
-        *,
-        agent:agents(*)
-      `)
+      .select('*')
       .eq('user_id', userId)
       .order('created_at', { ascending: false })
     
-    if (agentId) query = query.eq('agent_id', agentId)
-    if (type) query = query.eq('side', type)
-    if (startDate) query = query.gte('created_at', startDate)
-    if (endDate) query = query.lte('created_at', endDate)
-    
-    const { data, error } = await query
     if (error) throw error
     
-    return (data || []).map(order => ({
-      id: order.id,
-      user_id: order.user_id,
-      agent_id: order.agent_id,
-      type: order.side as 'buy' | 'sell',
-      amount: order.amount,
-      price: order.price || 0,
-      total_value: order.amount * (order.price || 0),
-      fee: 0,
-      status: order.status === 'filled' ? 'completed' : order.status as any,
-      timestamp: order.created_at,
-      agent: {
-        id: order.agent.id,
-        name: order.agent.name,
-        symbol: order.agent.symbol
+    let query = orders || []
+    if (agentId) query = query.filter(o => o.agent_id === agentId)
+    if (type) query = query.filter(o => o.side === type)
+    if (startDate) query = query.filter(o => o.created_at >= startDate)
+    if (endDate) query = query.filter(o => o.created_at <= endDate)
+    
+    // Get agent data
+    const agentIds = query.map(o => o.agent_id)
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('*')
+      .in('id', agentIds)
+    
+    const agentMap = new Map(agents?.map(a => [a.id, a]) || [])
+    
+    return query.map(order => {
+      const agent = agentMap.get(order.agent_id)
+      return {
+        id: order.id,
+        user_id: order.user_id,
+        agent_id: order.agent_id,
+        type: order.side as 'buy' | 'sell',
+        amount: order.amount,
+        price: order.price || 0,
+        total_value: order.amount * (order.price || 0),
+        fee: 0,
+        status: order.status === 'filled' ? 'completed' : order.status as any,
+        timestamp: order.created_at,
+        agent: agent ? {
+          id: agent.id,
+          name: agent.name,
+          symbol: agent.symbol
+        } : {
+          id: order.agent_id,
+          name: 'Unknown',
+          symbol: 'UNK'
+        }
       }
-    }))
+    })
   }
 
   static async calculatePnL(userId: string, agentId?: string): Promise<{
@@ -196,17 +263,37 @@ export class UserBalanceService {
     unrealized_pnl: number
     total_pnl: number
   }> {
-    const portfolio = agentId 
-      ? (await DatabaseService.getUserPortfolio(userId)).filter(h => h.agent_id === agentId)
-      : await DatabaseService.getUserPortfolio(userId)
+    const { data: portfolio, error } = await supabase
+      .from('portfolios')
+      .select('*')
+      .eq('user_id', userId)
+    
+    if (error) throw error
+    
+    let filteredPortfolio = portfolio || []
+    if (agentId) {
+      filteredPortfolio = filteredPortfolio.filter(h => h.agent_id === agentId)
+    }
+    
+    // Get agent data
+    const agentIds = filteredPortfolio.map(p => p.agent_id)
+    const { data: agents } = await supabase
+      .from('agents')
+      .select('*')
+      .in('id', agentIds)
+    
+    const agentMap = new Map(agents?.map(a => [a.id, a]) || [])
     
     let realizedPnL = 0 // Would come from closed positions
     let unrealizedPnL = 0
     
-    portfolio.forEach(holding => {
-      const currentValue = holding.amount * holding.agent.price
-      const cost = holding.amount * holding.purchase_price
-      unrealizedPnL += currentValue - cost
+    filteredPortfolio.forEach(holding => {
+      const agent = agentMap.get(holding.agent_id)
+      if (agent) {
+        const currentValue = holding.amount * agent.price
+        const cost = holding.amount * holding.purchase_price
+        unrealizedPnL += currentValue - cost
+      }
     })
     
     return {

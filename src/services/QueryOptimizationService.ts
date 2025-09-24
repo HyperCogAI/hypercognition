@@ -76,36 +76,57 @@ export class QueryOptimizationService {
   }
 
   static async preloadData(userId: string): Promise<void> {
-    // Preload commonly accessed data for a user
-    const preloadQueries = [
-      {
-        key: `user:${userId}:portfolio`,
-        query: () => supabase
-          .from('portfolios')
-          .select(`*, agent:agents(*)`),
-        cacheOptions: { ttl: 2 * 60 * 1000 } // 2 minutes
-      },
-      {
-        key: `user:${userId}:orders:active`,
-        query: () => supabase
-          .from('orders')
-          .select(`*, agent:agents(*)`),
-        cacheOptions: { ttl: 1 * 60 * 1000 } // 1 minute
-      },
-      {
-        key: `user:${userId}:notifications:unread`,
-        query: () => supabase
-          .from('notifications')
-          .select('*'),
-        cacheOptions: { ttl: 30 * 1000 } // 30 seconds
-      }
-    ]
+    // Preload commonly accessed data for a user - simplified to avoid complex joins
+    try {
+      // Preload portfolio
+      await this.optimizedQuery(
+        `user:${userId}:portfolio`,
+        async () => {
+          const { data, error } = await supabase
+            .from('portfolios')
+            .select('*')
+            .eq('user_id', userId)
+          return { data, error }
+        },
+        { ttl: 2 * 60 * 1000 } // 2 minutes
+      )
 
-    await this.batchQuery(preloadQueries)
+      // Preload active orders
+      await this.optimizedQuery(
+        `user:${userId}:orders:active`,
+        async () => {
+          const { data, error } = await supabase
+            .from('orders')
+            .select('*')
+            .eq('user_id', userId)
+            .in('status', ['pending', 'partially_filled'])
+            .limit(50)
+          return { data, error }
+        },
+        { ttl: 1 * 60 * 1000 } // 1 minute
+      )
+
+      // Preload unread notifications
+      await this.optimizedQuery(
+        `user:${userId}:notifications:unread`,
+        async () => {
+          const { data, error } = await supabase
+            .from('notifications')
+            .select('*')
+            .eq('user_id', userId)
+            .eq('read', false)
+            .limit(20)
+          return { data, error }
+        },
+        { ttl: 30 * 1000 } // 30 seconds
+      )
+    } catch (error) {
+      console.error('Error preloading data:', error)
+    }
   }
 
   static async optimizedPagination<T>(
-    tableName: string,
+    tableName: 'portfolios' | 'orders' | 'agents' | 'notifications',
     options: {
       select?: string
       filters?: Record<string, any>
@@ -128,26 +149,31 @@ export class QueryOptimizationService {
     const result = await this.optimizedQuery(
       queryKey,
       async () => {
-        let query = supabase
-          .from(tableName)
-          .select(select, { count: 'exact' })
-          .range(offset, offset + pageSize - 1)
+        try {
+          let query = supabase
+            .from(tableName as any)
+            .select(select, { count: 'exact' })
+            .range(offset, offset + pageSize - 1)
 
-        // Apply filters
-        Object.entries(filters).forEach(([key, value]) => {
-          if (Array.isArray(value)) {
-            query = query.in(key, value)
-          } else {
-            query = query.eq(key, value)
+          // Apply filters
+          Object.entries(filters).forEach(([key, value]) => {
+            if (Array.isArray(value)) {
+              query = query.in(key, value)
+            } else {
+              query = query.eq(key, value)
+            }
+          })
+
+          // Apply ordering
+          if (orderBy) {
+            query = query.order(orderBy.column, { ascending: orderBy.ascending ?? true })
           }
-        })
 
-        // Apply ordering
-        if (orderBy) {
-          query = query.order(orderBy.column, { ascending: orderBy.ascending ?? true })
+          const response = await query
+          return { data: response.data, error: response.error }
+        } catch (error) {
+          return { data: null, error }
         }
-
-        return query
       },
       { ttl: 2 * 60 * 1000 } // 2 minutes for pagination
     )
@@ -245,14 +271,14 @@ export class QueryOptimizationService {
   }
 
   static getSlowQueries(thresholdMs: number = 1000): QueryPerformanceMetrics[] {
-    return this.performanceMetrics.filter(metric =>
+    return this.performanceMetrics.filter(metric => 
       metric.execution_time > thresholdMs && !metric.cache_hit
     )
   }
 
   static getCacheHitRate(): number {
     if (this.performanceMetrics.length === 0) return 0
-
+    
     const cacheHits = this.performanceMetrics.filter(m => m.cache_hit).length
     return (cacheHits / this.performanceMetrics.length) * 100
   }
@@ -260,7 +286,7 @@ export class QueryOptimizationService {
   static getAverageExecutionTime(): number {
     const nonCachedQueries = this.performanceMetrics.filter(m => !m.cache_hit)
     if (nonCachedQueries.length === 0) return 0
-
+    
     const totalTime = nonCachedQueries.reduce((sum, metric) => sum + metric.execution_time, 0)
     return totalTime / nonCachedQueries.length
   }

@@ -191,26 +191,38 @@ export class DataMigrationService {
 
   private static async checkDuplicateRecords(): Promise<DataIntegrityCheck> {
     try {
-      // Check for duplicate portfolio entries (same user_id + agent_id)
-      const { data: portfolioDuplicates, error } = await supabase
-        .rpc('find_duplicate_portfolios')
+      // Check for duplicate portfolio entries manually
+      const { data: portfolios, error } = await supabase
+        .from('portfolios')
+        .select('user_id, agent_id')
 
-      if (error && !error.message.includes('does not exist')) {
-        console.warn('Duplicate check function not available, skipping:', error)
-      }
+      if (error) throw error
+
+      // Find duplicates by grouping user_id + agent_id
+      const seen = new Set()
+      const duplicates: any[] = []
+      
+      portfolios?.forEach(portfolio => {
+        const key = `${portfolio.user_id}-${portfolio.agent_id}`
+        if (seen.has(key)) {
+          duplicates.push(portfolio)
+        } else {
+          seen.add(key)
+        }
+      })
 
       return {
         check_name: 'duplicate_records',
         table_name: 'portfolios',
-        passed: !portfolioDuplicates || portfolioDuplicates.length === 0,
-        duplicate_records: portfolioDuplicates || []
+        passed: duplicates.length === 0,
+        duplicate_records: duplicates
       }
     } catch (error) {
       return {
         check_name: 'duplicate_records',
         table_name: 'portfolios',
         passed: true, // Assume no duplicates if check fails
-        error_message: 'Duplicate check function not available'
+        error_message: 'Duplicate check failed: ' + (error instanceof Error ? error.message : 'Unknown error')
       }
     }
   }

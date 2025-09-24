@@ -337,7 +337,7 @@ export class NotificationService {
         })
 
         // Send notification
-        await this.sendPriceAlertNotification(alert.user_id, alert, currentPrice)
+        await this.sendPriceAlertNotification(alert.user_id, alert as PriceAlert, currentPrice)
       }
     }
   }
