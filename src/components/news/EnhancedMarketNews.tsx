@@ -250,7 +250,13 @@ const EnhancedMarketNews = () => {
                         <Badge variant="outline" className="text-xs">
                           {alert.type.toUpperCase()}
                         </Badge>
-                        <Badge variant={alert.severity === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                        <Badge 
+                          variant={alert.severity === 'high' ? 'destructive' : alert.severity === 'medium' ? 'default' : 'secondary'} 
+                          className={cn(
+                            "text-xs",
+                            alert.severity === 'medium' && "bg-orange-500 hover:bg-orange-600 text-white"
+                          )}
+                        >
                           {alert.severity.toUpperCase()}
                         </Badge>
                       </div>
