@@ -109,11 +109,11 @@ const EnhancedMarketNews = () => {
   const getSentimentColor = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
-        return 'text-green-600 bg-green-50 border-green-200'
+        return 'text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-950/30 border-green-200 dark:border-green-800'
       case 'negative':
-        return 'text-red-600 bg-red-50 border-red-200'
+        return 'text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/30 border-red-200 dark:border-red-800'
       default:
-        return 'text-gray-600 bg-gray-50 border-gray-200'
+        return 'text-muted-foreground bg-muted border-border'
     }
   }
 
@@ -156,9 +156,9 @@ const EnhancedMarketNews = () => {
             {alerts.map((alert) => (
               <Card key={alert.id} className={cn(
                 "border-l-4",
-                alert.severity === 'high' && "border-l-red-500 bg-red-50/50",
-                alert.severity === 'medium' && "border-l-orange-500 bg-orange-50/50",
-                alert.severity === 'low' && "border-l-blue-500 bg-blue-50/50"
+                alert.severity === 'high' && "border-l-destructive bg-destructive/5",
+                alert.severity === 'medium' && "border-l-orange-500 dark:border-l-orange-400 bg-orange-50/50 dark:bg-orange-950/20",
+                alert.severity === 'low' && "border-l-primary bg-primary/5"
               )}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between">
@@ -328,7 +328,7 @@ const EnhancedMarketNews = () => {
         <TabsContent value="breaking" className="space-y-6">
           <div className="grid gap-6">
             {filteredNews.filter(article => article.impact === 'high').map((article) => (
-              <Card key={article.id} className="border-l-4 border-l-red-500 bg-red-50/30">
+              <Card key={article.id} className="border-l-4 border-l-destructive bg-destructive/5">
                 <CardHeader>
                   <div className="flex items-center gap-2 mb-2">
                     <Badge variant="destructive" className="text-xs">BREAKING</Badge>
