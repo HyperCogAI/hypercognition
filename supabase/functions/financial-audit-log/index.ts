@@ -260,7 +260,7 @@ const checkComplianceViolations = async (supabase: any, event: FinancialAuditEve
       .eq('user_id', event.userId)
       .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
 
-    const totalDaily = dailyTotal?.reduce((sum, log) => sum + (log.amount || 0), 0) || 0;
+    const totalDaily = dailyTotal?.reduce((sum: number, log: any) => sum + (log.amount || 0), 0) || 0;
     
     if (totalDaily + event.amount > 100000) {
       flags.push('daily_limit_exceeded');
@@ -297,7 +297,7 @@ const checkSuspiciousActivity = async (supabase: any, event: FinancialAuditEvent
     .limit(100);
 
   if (userPattern && userPattern.length > 10) {
-    const avgAmount = userPattern.reduce((sum, log) => sum + (log.amount || 0), 0) / userPattern.length;
+    const avgAmount = userPattern.reduce((sum: number, log: any) => sum + (log.amount || 0), 0) / userPattern.length;
     
     // Flag if current transaction is 10x average
     if (event.amount && event.amount > avgAmount * 10) {
