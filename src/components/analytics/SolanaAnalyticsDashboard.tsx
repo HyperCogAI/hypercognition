@@ -1,19 +1,39 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
 import { TrendingUp, TrendingDown, DollarSign, Activity, BarChart3, Zap } from "lucide-react"
+import { RealTechnicalAnalysisService } from '@/services/RealTechnicalAnalysisService'
+import { RealMarketSentimentService } from '@/services/RealMarketSentimentService'
 
 export const SolanaAnalyticsDashboard = () => {
   const { tokens, isLoading } = useSolanaRealtime()
   const [selectedMetric, setSelectedMetric] = useState<'price' | 'volume' | 'market_cap'>('price')
+  const [enhancedAnalytics, setEnhancedAnalytics] = useState<any>(null)
+  const [sentiment, setSentiment] = useState<any>(null)
 
-  // Calculate analytics data
+  useEffect(() => {
+    const fetchEnhancedData = async () => {
+      try {
+        const [sentimentData, onChainMetrics] = await Promise.all([
+          RealMarketSentimentService.getSentimentData(),
+          RealMarketSentimentService.getOnChainMetrics()
+        ]);
+        setSentiment(sentimentData);
+        setEnhancedAnalytics(onChainMetrics);
+      } catch (error) {
+        console.error('Error fetching enhanced analytics:', error);
+      }
+    };
+    fetchEnhancedData();
+  }, []);
+
+  // Calculate analytics data with enhanced metrics
   const totalMarketCap = tokens.reduce((sum, token) => sum + token.market_cap, 0)
-  const totalVolume = tokens.reduce((sum, token) => sum + token.volume_24h, 0)
-  const averageChange = tokens.reduce((sum, token) => sum + token.change_24h, 0) / tokens.length
+  const totalVolume = enhancedAnalytics ? enhancedAnalytics.transactionVolume : tokens.reduce((sum, token) => sum + token.volume_24h, 0)
+  const averageChange = tokens.reduce((sum, token) => sum + token.change_24h, 0) / (tokens.length || 1)
   const topGainers = tokens.filter(t => t.change_24h > 0).slice(0, 5)
   const topLosers = tokens.filter(t => t.change_24h < 0).slice(0, 5)
 

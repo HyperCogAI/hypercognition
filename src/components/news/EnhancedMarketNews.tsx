@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TrendingUp, TrendingDown, Clock, Search, Filter, Globe, Newspaper, AlertTriangle } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { RealMarketSentimentService } from '@/services/RealMarketSentimentService'
 
 interface NewsArticle {
   id: string
@@ -34,20 +35,25 @@ const EnhancedMarketNews = () => {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("all")
   const [selectedSentiment, setSelectedSentiment] = useState("all")
+  const [news, setNews] = useState<NewsArticle[]>([])
+  const [loading, setLoading] = useState(true)
 
-  // Mock data - in real app, this would come from API
-  const [news] = useState<NewsArticle[]>([
-    {
-      id: "1",
-      title: "AI Trading Volume Surges 300% in December",
-      summary: "Institutional adoption of AI trading strategies reaches new heights as major funds report significant gains...",
-      source: "CryptoDaily",
-      publishedAt: "2024-01-15T10:30:00Z",
-      category: "Market Analysis",
-      sentiment: "positive",
-      impact: "high",
-      relatedAgents: ["ALPHA", "BETA", "GAMMA"],
-      url: "#"
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const newsData = await RealMarketSentimentService.getMarketNews(50);
+        const formattedNews: NewsArticle[] = newsData.map(item => ({
+          id: item.id,
+          title: item.title,
+          summary: item.summary,
+          source: item.source,
+          publishedAt: item.publishedAt,
+          category: "Market Analysis",
+          sentiment: item.sentiment > 0.2 ? "positive" : item.sentiment < -0.2 ? "negative" : "neutral",
+          impact: item.impact,
+          relatedAgents: ["ALPHA", "BETA", "GAMMA"],
+          url: item.url
+        }));
     },
     {
       id: "2",
@@ -67,13 +73,21 @@ const EnhancedMarketNews = () => {
       summary: "Latest integration with major DeFi protocols shows 40% improvement in execution speeds...",
       source: "DeFi Pulse",
       publishedAt: "2024-01-15T08:45:00Z",
-      category: "Technology",
-      sentiment: "positive",
-      impact: "medium",
-      relatedAgents: ["DELTA", "EPSILON"],
-      url: "#"
-    }
-  ])
+          category: "Technology",
+          sentiment: "positive",
+          impact: "medium",
+          relatedAgents: ["DELTA", "EPSILON"],
+          url: "#"
+        }));
+        setNews(formattedNews);
+      } catch (error) {
+        console.error('Error fetching news:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchNews();
+  }, []);
 
   const [alerts] = useState<MarketAlert[]>([
     {

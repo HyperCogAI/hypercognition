@@ -20,6 +20,7 @@ import {
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useSocialFeed } from '@/hooks/useSocialFeed';
+import { RealMarketSentimentService } from '@/services/RealMarketSentimentService';
 
 interface SocialPost {
   id: string;
