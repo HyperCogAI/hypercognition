@@ -121,8 +121,8 @@ export function AppSidebar() {
 
         {/* User Menu Section */}
         <div className="p-4 border-b border-border/30">
-          <div className="flex items-center justify-between">
-            <UserMenu />
+          <div className="flex items-center justify-between gap-3">
+            <WalletSection />
             <NotificationCenter />
           </div>
         </div>
@@ -324,8 +324,7 @@ export function AppSidebar() {
 
         {/* Assistant CTA */}
         {!isCollapsed && (
-          <div className="px-4 py-3 space-y-3">
-            <WalletSection />
+          <div className="px-4 py-3">
             <CyberButton variant="neon" className="w-full group" asChild>
               <NavLink to="/ai-assistant">
                 <Bot className="h-4 w-4 text-primary-foreground" />
