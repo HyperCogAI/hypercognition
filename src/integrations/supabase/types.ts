@@ -223,6 +223,59 @@ export type Database = {
           },
         ]
       }
+      agent_interactions: {
+        Row: {
+          agent_id: string
+          amount: number | null
+          completed_at: string | null
+          created_at: string
+          description: string | null
+          from_user_id: string | null
+          id: string
+          interaction_type: string
+          metadata: Json | null
+          status: string
+          to_user_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          amount?: number | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          from_user_id?: string | null
+          id?: string
+          interaction_type: string
+          metadata?: Json | null
+          status?: string
+          to_user_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          amount?: number | null
+          completed_at?: string | null
+          created_at?: string
+          description?: string | null
+          from_user_id?: string | null
+          id?: string
+          interaction_type?: string
+          metadata?: Json | null
+          status?: string
+          to_user_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_interactions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_ratings: {
         Row: {
           agent_id: string
@@ -303,6 +356,56 @@ export type Database = {
           volume_24h?: number
         }
         Relationships: []
+      }
+      agents_earnings: {
+        Row: {
+          agent_id: string
+          amount: number
+          created_at: string
+          currency: string
+          description: string | null
+          earnings_type: string
+          id: string
+          metadata: Json | null
+          processed_at: string | null
+          source_transaction_id: string | null
+          user_id: string | null
+        }
+        Insert: {
+          agent_id: string
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          earnings_type: string
+          id?: string
+          metadata?: Json | null
+          processed_at?: string | null
+          source_transaction_id?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          created_at?: string
+          currency?: string
+          description?: string | null
+          earnings_type?: string
+          id?: string
+          metadata?: Json | null
+          processed_at?: string | null
+          source_transaction_id?: string | null
+          user_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agents_earnings_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       ai_assistant_logs: {
         Row: {
@@ -854,6 +957,129 @@ export type Database = {
           symbol?: string
           timestamp?: string
           volume_24h?: number | null
+        }
+        Relationships: []
+      }
+      execution_orders: {
+        Row: {
+          agent_id: string
+          amount: number
+          created_at: string
+          exchange_order_id: string | null
+          executed_amount: number | null
+          executed_price: number | null
+          execution_time: string | null
+          fees: number | null
+          id: string
+          latency_ms: number | null
+          metadata: Json | null
+          order_type: string
+          price: number | null
+          side: string
+          status: string
+          strategy_id: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          amount: number
+          created_at?: string
+          exchange_order_id?: string | null
+          executed_amount?: number | null
+          executed_price?: number | null
+          execution_time?: string | null
+          fees?: number | null
+          id?: string
+          latency_ms?: number | null
+          metadata?: Json | null
+          order_type: string
+          price?: number | null
+          side: string
+          status?: string
+          strategy_id?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          amount?: number
+          created_at?: string
+          exchange_order_id?: string | null
+          executed_amount?: number | null
+          executed_price?: number | null
+          execution_time?: string | null
+          fees?: number | null
+          id?: string
+          latency_ms?: number | null
+          metadata?: Json | null
+          order_type?: string
+          price?: number | null
+          side?: string
+          status?: string
+          strategy_id?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "execution_orders_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "execution_orders_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "execution_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      execution_strategies: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          parameters: Json
+          strategy_type: string
+          successful_executions: number
+          total_executions: number
+          total_pnl: number
+          total_volume: number
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          parameters?: Json
+          strategy_type: string
+          successful_executions?: number
+          total_executions?: number
+          total_pnl?: number
+          total_volume?: number
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          parameters?: Json
+          strategy_type?: string
+          successful_executions?: number
+          total_executions?: number
+          total_pnl?: number
+          total_volume?: number
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: []
       }
@@ -2722,6 +2948,78 @@ export type Database = {
           },
         ]
       }
+      trader_profiles: {
+        Row: {
+          avatar_url: string | null
+          avg_hold_time: unknown | null
+          bio: string | null
+          created_at: string
+          display_name: string | null
+          id: string
+          is_public: boolean
+          is_verified: boolean
+          max_drawdown: number
+          monthly_return: number
+          pnl_percentage: number
+          risk_score: number | null
+          sharpe_ratio: number | null
+          tier: string
+          total_followers: number
+          total_following: number
+          total_pnl: number
+          total_trades: number
+          updated_at: string
+          user_id: string
+          win_rate: number
+        }
+        Insert: {
+          avatar_url?: string | null
+          avg_hold_time?: unknown | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_public?: boolean
+          is_verified?: boolean
+          max_drawdown?: number
+          monthly_return?: number
+          pnl_percentage?: number
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          tier?: string
+          total_followers?: number
+          total_following?: number
+          total_pnl?: number
+          total_trades?: number
+          updated_at?: string
+          user_id: string
+          win_rate?: number
+        }
+        Update: {
+          avatar_url?: string | null
+          avg_hold_time?: unknown | null
+          bio?: string | null
+          created_at?: string
+          display_name?: string | null
+          id?: string
+          is_public?: boolean
+          is_verified?: boolean
+          max_drawdown?: number
+          monthly_return?: number
+          pnl_percentage?: number
+          risk_score?: number | null
+          sharpe_ratio?: number | null
+          tier?: string
+          total_followers?: number
+          total_following?: number
+          total_pnl?: number
+          total_trades?: number
+          updated_at?: string
+          user_id?: string
+          win_rate?: number
+        }
+        Relationships: []
+      }
       trading_competitions: {
         Row: {
           competition_type: string
@@ -2769,6 +3067,77 @@ export type Database = {
           title?: string
         }
         Relationships: []
+      }
+      trading_positions: {
+        Row: {
+          agent_id: string
+          closed_at: string | null
+          created_at: string
+          current_price: number
+          entry_price: number
+          id: string
+          leverage: number | null
+          margin: number
+          opened_at: string
+          position_type: string
+          realized_pnl: number
+          size: number
+          status: string
+          stop_loss_price: number | null
+          take_profit_price: number | null
+          unrealized_pnl: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          agent_id: string
+          closed_at?: string | null
+          created_at?: string
+          current_price: number
+          entry_price: number
+          id?: string
+          leverage?: number | null
+          margin: number
+          opened_at?: string
+          position_type: string
+          realized_pnl?: number
+          size: number
+          status?: string
+          stop_loss_price?: number | null
+          take_profit_price?: number | null
+          unrealized_pnl?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          agent_id?: string
+          closed_at?: string | null
+          created_at?: string
+          current_price?: number
+          entry_price?: number
+          id?: string
+          leverage?: number | null
+          margin?: number
+          opened_at?: string
+          position_type?: string
+          realized_pnl?: number
+          size?: number
+          status?: string
+          stop_loss_price?: number | null
+          take_profit_price?: number | null
+          unrealized_pnl?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_positions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trading_profiles: {
         Row: {
