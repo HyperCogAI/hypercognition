@@ -7,6 +7,11 @@ import { RiskManager } from '@/components/trading/RiskManager'
 import { TradingAnalytics } from '@/components/trading/TradingAnalytics'
 import { MarketDataFeed } from '@/components/trading/MarketDataFeed'
 import { LiquidityAnalyzer } from '@/components/trading/LiquidityAnalyzer'
+import { OrderManagementDashboard } from '@/components/trading/OrderManagementDashboard'
+import { ExecutionEngine } from '@/components/trading/ExecutionEngine'
+import { ArbitrageDetector } from '@/components/trading/ArbitrageDetector'
+import { PositionTracker } from '@/components/trading/PositionTracker'
+import { TradingSignalsManager } from '@/components/trading/TradingSignalsManager'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 
@@ -25,19 +30,43 @@ const ExchangeTrading = () => {
         </div>
 
         <Tabs defaultValue="trading" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-8">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
             <TabsTrigger value="trading">Trading</TabsTrigger>
+            <TabsTrigger value="orders">Orders</TabsTrigger>
+            <TabsTrigger value="execution">Execution</TabsTrigger>
+            <TabsTrigger value="positions">Positions</TabsTrigger>
+            <TabsTrigger value="signals">Signals</TabsTrigger>
+            <TabsTrigger value="arbitrage">Arbitrage</TabsTrigger>
             <TabsTrigger value="exchanges">Exchanges</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="risk">Risk</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
             <TabsTrigger value="market">Market Data</TabsTrigger>
-            <TabsTrigger value="orderbook">Order Book</TabsTrigger>
             <TabsTrigger value="liquidity">Liquidity</TabsTrigger>
           </TabsList>
 
           <TabsContent value="trading">
             <AdvancedOrderForm />
+          </TabsContent>
+
+          <TabsContent value="orders">
+            <OrderManagementDashboard />
+          </TabsContent>
+
+          <TabsContent value="execution">
+            <ExecutionEngine />
+          </TabsContent>
+
+          <TabsContent value="positions">
+            <PositionTracker />
+          </TabsContent>
+
+          <TabsContent value="signals">
+            <TradingSignalsManager />
+          </TabsContent>
+
+          <TabsContent value="arbitrage">
+            <ArbitrageDetector />
           </TabsContent>
 
           <TabsContent value="exchanges">
@@ -58,10 +87,6 @@ const ExchangeTrading = () => {
 
           <TabsContent value="market">
             <MarketDataFeed />
-          </TabsContent>
-
-          <TabsContent value="orderbook">
-            <RealTimeOrderBook symbol="BTC/USDT" />
           </TabsContent>
 
           <TabsContent value="liquidity">
