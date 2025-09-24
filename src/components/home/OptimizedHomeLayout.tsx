@@ -173,11 +173,6 @@ export function OptimizedHomeLayout() {
     generateOrganizationStructuredData()
   ]
 
-  // Adjust grid spacing for mobile
-  const containerClass = isMobile 
-    ? "container mx-auto px-4 py-6 space-y-8" 
-    : "container mx-auto px-4 py-8 space-y-12"
-
   return (
     <div className="min-h-screen bg-background">
       <SEOHead 
@@ -187,28 +182,25 @@ export function OptimizedHomeLayout() {
         structuredData={structuredData}
       />
       
-      <main>
+      <main className="space-y-16">
         {/* Hero Section with Priority Loading */}
         <Suspense fallback={<HeroSkeleton />}>
           <EnhancedHero />
         </Suspense>
 
-        <div className={containerClass}>
-          {/* Market News Section */}
-          <section className="mb-8">
-            <Suspense fallback={<MarketNewsSkeleton />}>
-              <EnhancedMarketNews />
-            </Suspense>
-          </section>
+        {/* Market News Section */}
+        <section className="container mx-auto px-4">
+          <Suspense fallback={<MarketNewsSkeleton />}>
+            <EnhancedMarketNews />
+          </Suspense>
+        </section>
 
-          {/* Agent Marketplace Section */}
-          <section id="marketplace" className="scroll-mt-16">
-            <Suspense fallback={<MarketplaceSkeleton />}>
-              <AgentMarketplace />
-            </Suspense>
-          </section>
-        </div>
-
+        {/* Agent Marketplace Section */}
+        <section id="marketplace" className="scroll-mt-16 container mx-auto px-4">
+          <Suspense fallback={<MarketplaceSkeleton />}>
+            <AgentMarketplace />
+          </Suspense>
+        </section>
 
         {/* Features Section */}
         <Suspense fallback={<FeaturesSkeleton />}>
