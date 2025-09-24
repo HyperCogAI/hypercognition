@@ -152,7 +152,7 @@ export function AdvancedOrderForm({
             <div>
               <Label>Order Type</Label>
               <Select value={orderType} onValueChange={setOrderType}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-card border-border/60">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -243,7 +243,7 @@ export function AdvancedOrderForm({
           <Separator />
 
           {/* Advanced Options */}
-          <div className="space-y-4">
+          <div className="space-y-4 rounded-lg border bg-card/40 p-4">
             <h4 className="font-medium flex items-center gap-2">
               <Settings className="h-4 w-4" />
               Advanced Options
@@ -252,7 +252,7 @@ export function AdvancedOrderForm({
             <div>
               <Label>Time in Force</Label>
               <Select value={timeInForce} onValueChange={setTimeInForce}>
-                <SelectTrigger>
+                <SelectTrigger className="bg-card border-border/60">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
