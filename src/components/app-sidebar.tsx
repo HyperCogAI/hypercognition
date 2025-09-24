@@ -111,11 +111,11 @@ export function AppSidebar() {
         {/* Logo */}
         <div className="p-4 border-b border-border/30 bg-background">
           <div className="flex items-center justify-start">
-            <div className="w-8 h-8 bg-gradient-to-br from-cyan-400 to-blue-600 rounded-lg flex items-center justify-center">
-              <div className="w-6 h-6 bg-gradient-to-br from-cyan-300 to-blue-500 rounded transform rotate-45 relative">
-                <div className="absolute inset-0 bg-gradient-to-tr from-transparent via-white/20 to-transparent rounded"></div>
-              </div>
-            </div>
+            <img 
+              src={hyperCognitionLogo} 
+              alt="HyperCognition Logo" 
+              className="h-12 w-auto object-contain"
+            />
           </div>
         </div>
 
