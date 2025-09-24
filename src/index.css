@@ -25,6 +25,10 @@
     --primary: 190 100% 70%;
     --primary-foreground: 0 0% 0%;
     --primary-glow: 190 100% 80%;
+    
+    /* Semi-transparent cyan variants */
+    --primary-semi: 190 100% 70% / 0.3;
+    --primary-border: 190 100% 70%;
 
     /* Secondary - Blue accent */
     --secondary: 210 100% 65%;
