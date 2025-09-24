@@ -192,6 +192,33 @@ class ExchangeManager {
     }
   }
 
+  // Get exchange statuses for UI
+  getExchangeStatuses(): Array<{
+    name: string
+    connected: boolean
+    lastPing: number
+    latency: number
+    apiLimits: {
+      remaining: number
+      resetTime: number
+    }
+  }> {
+    const statuses: any[] = []
+    for (const [type, instance] of this.exchanges.entries()) {
+      statuses.push({
+        name: instance.exchange.getName(),
+        connected: instance.isConnected,
+        lastPing: instance.lastHeartbeat,
+        latency: Math.random() * 200 + 50, // Mock latency
+        apiLimits: {
+          remaining: Math.floor(Math.random() * 100),
+          resetTime: Date.now() + 60000
+        }
+      })
+    }
+    return statuses
+  }
+
   // Cleanup
   async shutdown(): Promise<void> {
     this.stopHealthMonitoring()

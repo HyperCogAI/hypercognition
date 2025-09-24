@@ -20,13 +20,18 @@ import {
 } from 'lucide-react'
 
 interface AdvancedOrderFormProps {
-  agentId: string
-  agentSymbol: string
-  currentPrice: number
+  agentId?: string
+  agentSymbol?: string
+  currentPrice?: number
   onOrderCreate?: () => void
 }
 
-export function AdvancedOrderForm({ agentId, agentSymbol, currentPrice, onOrderCreate }: AdvancedOrderFormProps) {
+export function AdvancedOrderForm({ 
+  agentId = "1", 
+  agentSymbol = "BTC/USDT", 
+  currentPrice = 65000, 
+  onOrderCreate 
+}: AdvancedOrderFormProps) {
   const { user } = useAuth()
   const { createOrder, executeMarketOrder, isCreating } = useAdvancedOrders()
   

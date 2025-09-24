@@ -61,7 +61,7 @@ const ExchangeTrading = () => {
           </TabsContent>
 
           <TabsContent value="orderbook">
-            <RealTimeOrderBook />
+            <RealTimeOrderBook symbol="BTC/USDT" />
           </TabsContent>
 
           <TabsContent value="liquidity">
