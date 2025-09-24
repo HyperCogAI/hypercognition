@@ -22,8 +22,8 @@ export const SolanaWalletButton = () => {
   if (isConnecting) {
     return (
       <CyberButton variant="neon" size="sm" disabled>
-        <Wallet className="h-4 w-4 text-primary-foreground" />
-        <span className="text-primary-foreground">Connecting...</span>
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connecting...</span>
       </CyberButton>
     )
   }

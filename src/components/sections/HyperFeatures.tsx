@@ -100,7 +100,7 @@ export const HyperFeatures = () => {
 
             <div className="flex gap-4">
               <CyberButton variant="neon" size="lg">
-                <span className="text-primary-foreground">Deploy Agent</span>
+                <span className="text-white">Deploy Agent</span>
               </CyberButton>
               <CyberButton variant="analytics" size="lg">
                 <span className="text-white">View Marketplace</span>
