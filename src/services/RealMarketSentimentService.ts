@@ -266,37 +266,37 @@ export const RealMarketSentimentService = {
     }
   },
 
-  // Private helper methods
-  private generateSocialSentiment(): number {
+  // Helper methods
+  generateSocialSentiment(): number {
     // Simulate aggregated social media sentiment
     return (Math.random() - 0.5) * 2; // -1 to 1
   },
 
-  private generateNewsSentiment(): number {
+  generateNewsSentiment(): number {
     // Simulate news sentiment analysis
     return (Math.random() - 0.3) * 1.5; // Slightly more positive bias
   },
 
-  private generateOnChainSentiment(): number {
+  generateOnChainSentiment(): number {
     // Simulate on-chain data sentiment
     return (Math.random() - 0.4) * 1.2; // Based on network activity
   },
 
-  private determineVolumeLevel(sentiment: number): 'low' | 'medium' | 'high' {
+  determineVolumeLevel(sentiment: number): 'low' | 'medium' | 'high' {
     const abs = Math.abs(sentiment);
     if (abs > 0.7) return 'high';
     if (abs > 0.3) return 'medium';
     return 'low';
   },
 
-  private calculateConfidence(social: number, news: number, onChain: number): number {
+  calculateConfidence(social: number, news: number, onChain: number): number {
     // Higher confidence when all sources agree
     const variance = Math.abs(social - news) + Math.abs(news - onChain) + Math.abs(onChain - social);
     const baseConfidence = 90 - (variance * 15);
     return Math.max(50, Math.min(95, baseConfidence));
   },
 
-  private generateTrendingTopics(): string[] {
+  generateTrendingTopics(): string[] {
     const topics = [
       'AI Trading', 'DeFi Yields', 'Market Volatility', 'Regulatory News',
       'Institutional Adoption', 'Technical Analysis', 'Whale Activity',

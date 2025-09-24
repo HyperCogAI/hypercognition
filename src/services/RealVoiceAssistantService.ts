@@ -96,8 +96,8 @@ export const RealVoiceAssistantService = {
     }
   },
 
-  // Private helper methods
-  private async convertSpeechToText(audioBlob: Blob): Promise<string> {
+  // Helper methods
+  async convertSpeechToText(audioBlob: Blob): Promise<string> {
     // Simulate speech-to-text conversion
     // In production, this would use Whisper API or similar
     const sampleCommands = [
@@ -112,7 +112,7 @@ export const RealVoiceAssistantService = {
     return sampleCommands[Math.floor(Math.random() * sampleCommands.length)];
   },
 
-  private parseCommand(text: string): VoiceCommand {
+  parseCommand(text: string): VoiceCommand {
     // Trading commands
     if (text.includes('buy') || text.includes('purchase')) {
       return this.parseTradingCommand(text, 'buy');
@@ -149,7 +149,7 @@ export const RealVoiceAssistantService = {
     return { command: text, type: 'query', confidence: 0.5 };
   },
 
-  private parseTradingCommand(text: string, action: 'buy' | 'sell'): VoiceCommand {
+  parseTradingCommand(text: string, action: 'buy' | 'sell'): VoiceCommand {
     const parameters: Record<string, any> = { action };
     
     // Extract amount
@@ -181,7 +181,7 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handleTradingCommand(command: VoiceCommand): Promise<VoiceResponse> {
+  async handleTradingCommand(command: VoiceCommand): Promise<VoiceResponse> {
     const params = command.parameters || {};
     
     if (!params.agent) {
@@ -226,7 +226,7 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handleQueryCommand(command: VoiceCommand): Promise<VoiceResponse> {
+  async handleQueryCommand(command: VoiceCommand): Promise<VoiceResponse> {
     const text = command.command;
     
     if (text.includes('price')) {
@@ -239,7 +239,7 @@ export const RealVoiceAssistantService = {
       const change = ((Math.random() - 0.5) * 20).toFixed(2);
       
       return {
-        text: `${agent.toUpperCase()} is currently trading at $${price}, ${change > 0 ? 'up' : 'down'} ${Math.abs(parseFloat(change))}% in the last 24 hours.`,
+        text: `${agent.toUpperCase()} is currently trading at $${price}, ${parseFloat(change) > 0 ? 'up' : 'down'} ${Math.abs(parseFloat(change))}% in the last 24 hours.`,
         actions: [
           {
             type: 'display',
@@ -256,7 +256,7 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handleAnalysisCommand(command: VoiceCommand): Promise<VoiceResponse> {
+  async handleAnalysisCommand(command: VoiceCommand): Promise<VoiceResponse> {
     const text = command.command;
     const agentMatch = text.match(/agent\s*(\w+)|(\w+)\s*analysis/i);
     const agent = agentMatch ? (agentMatch[1] || agentMatch[2]) : 'AGENT1';
@@ -280,14 +280,14 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handlePortfolioCommand(command: VoiceCommand): Promise<VoiceResponse> {
+  async handlePortfolioCommand(command: VoiceCommand): Promise<VoiceResponse> {
     // Simulate portfolio data
     const totalValue = (Math.random() * 100000 + 10000).toFixed(2);
     const dailyChange = ((Math.random() - 0.5) * 5000).toFixed(2);
     const changePercent = ((parseFloat(dailyChange) / parseFloat(totalValue)) * 100).toFixed(2);
     
     return {
-      text: `Your portfolio is currently worth $${totalValue}, ${dailyChange > 0 ? 'up' : 'down'} $${Math.abs(parseFloat(dailyChange))} (${Math.abs(parseFloat(changePercent))}%) today.`,
+      text: `Your portfolio is currently worth $${totalValue}, ${parseFloat(dailyChange) > 0 ? 'up' : 'down'} $${Math.abs(parseFloat(dailyChange))} (${Math.abs(parseFloat(changePercent))}%) today.`,
       actions: [
         {
           type: 'navigate',
@@ -302,7 +302,7 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handleNewsCommand(command: VoiceCommand): Promise<VoiceResponse> {
+  async handleNewsCommand(command: VoiceCommand): Promise<VoiceResponse> {
     const newsItems = [
       "AI trading algorithms show 25% improvement in performance this quarter",
       "New regulatory framework provides clarity for digital asset trading",
@@ -322,7 +322,7 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handleHelpCommand(command: VoiceCommand): Promise<VoiceResponse> {
+  async handleHelpCommand(command: VoiceCommand): Promise<VoiceResponse> {
     const helpText = `I can help you with trading, portfolio management, and market analysis. Try saying things like:
     
     "Buy 100 tokens of Agent Alpha"
@@ -342,7 +342,7 @@ export const RealVoiceAssistantService = {
     };
   },
 
-  private async handleUnknownCommand(text: string): Promise<VoiceResponse> {
+  async handleUnknownCommand(text: string): Promise<VoiceResponse> {
     return {
       text: `I'm not sure I understood "${text}". I can help with trading, portfolio queries, market analysis, and news updates. Say "help" to see available commands.`,
       actions: []

@@ -335,7 +335,7 @@ export const RealTechnicalAnalysisService = {
     }
   },
 
-  private getPatternDescription(type: TechnicalPattern['type'], direction: 'bullish' | 'bearish' | 'neutral'): string {
+  getPatternDescription(type: TechnicalPattern['type'], direction: 'bullish' | 'bearish' | 'neutral'): string {
     const descriptions = {
       triangle: `${direction.charAt(0).toUpperCase() + direction.slice(1)} triangle pattern forming with converging trend lines`,
       head_shoulders: `${direction === 'bullish' ? 'Inverse' : 'Classic'} head and shoulders pattern indicating potential ${direction === 'bullish' ? 'upward' : 'downward'} reversal`,
