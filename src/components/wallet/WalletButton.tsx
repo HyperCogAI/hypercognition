@@ -23,10 +23,27 @@ export const WalletButton = () => {
   }
 
   if (!isConnected) {
-    return (
-      // @ts-ignore - Web3Modal button is dynamically loaded
-      <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
-    )
+    const inIframe = typeof window !== 'undefined' && window.top !== window.self
+    if (inIframe) {
+      const href = window.location.href
+      return (
+        <div className="w-full flex flex-col gap-2">
+          {/* @ts-ignore */}
+          <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
+          <a
+            href={href}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-xs underline opacity-80 hover:opacity-100"
+          >
+            Having trouble in preview? Open in a new tab to connect.
+          </a>
+        </div>
+      )
+    }
+
+    // @ts-ignore - Web3Modal button is dynamically loaded
+    return <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
   }
 
   const formatAddress = (addr: string) => {
