@@ -62,9 +62,7 @@ export class DataExportService {
       // Start processing job asynchronously
       this.processExportJob(job, request).catch(error => {
         structuredLogger.error('Export job processing failed', {
-          component: 'DataExportService',
-          jobId,
-          error: error.message
+          component: 'DataExportService'
         })
       })
 
