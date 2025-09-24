@@ -101,6 +101,41 @@ export function AdvancedOrderForm({
     return calculateOrderValue() * 0.001 // 0.1% fee
   }
 
+  // Themed numeric input with custom +/- controls (dark-friendly)
+  const StepInput: React.FC<{value: string; onChange: (v: string) => void; step: number; placeholder?: string; required?: boolean; id?: string; min?: number; max?: number;}> = ({ value, onChange, step, placeholder, required, id, min, max }) => {
+    const handleChange = (v: number) => {
+      if (isNaN(v)) return
+      if (min !== undefined && v < min) v = min
+      if (max !== undefined && v > max) v = max
+      onChange(String(v))
+    }
+    const parsed = parseFloat(value || '0') || 0
+    return (
+      <div className="relative">
+        <Input
+          id={id}
+          type="number"
+          step={step}
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          placeholder={placeholder}
+          required={required}
+          min={min}
+          max={max}
+          className="pr-20"
+        />
+        <div className="absolute right-1 top-1/2 -translate-y-1/2 flex gap-1">
+          <Button type="button" variant="outline" size="icon" className="h-8 w-8 bg-muted hover:bg-muted/80 border-input" onClick={() => handleChange(parsed - step)} aria-label="Decrease">
+            –
+          </Button>
+          <Button type="button" variant="outline" size="icon" className="h-8 w-8 bg-muted hover:bg-muted/80 border-input" onClick={() => handleChange(parsed + step)} aria-label="Increase">
+            +
+          </Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <Card>
       <CardHeader>
@@ -158,53 +193,28 @@ export function AdvancedOrderForm({
           {/* Amount */}
           <div>
             <Label>Amount ({agentSymbol})</Label>
-            <Input
-              type="number"
-              step="0.0001"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-              placeholder="0.0000"
-              required
-            />
+            <StepInput value={amount} onChange={setAmount} step={0.0001} placeholder="0.0000" required />
           </div>
 
           {/* Price Fields */}
           {(orderType === 'limit' || orderType === 'stop_limit') && (
             <div>
               <Label>Limit Price ($)</Label>
-              <Input
-                type="number"
-                step="0.0001"
-                value={price}
-                onChange={(e) => setPrice(e.target.value)}
-                placeholder={currentPrice.toFixed(4)}
-              />
+              <StepInput value={price} onChange={setPrice} step={0.0001} placeholder={currentPrice.toFixed(4)} />
             </div>
           )}
 
           {(orderType === 'stop_market' || orderType === 'stop_limit') && (
             <div>
               <Label>Trigger Price ($)</Label>
-              <Input
-                type="number"
-                step="0.0001"
-                value={triggerPrice}
-                onChange={(e) => setTriggerPrice(e.target.value)}
-                placeholder={currentPrice.toFixed(4)}
-              />
+              <StepInput value={triggerPrice} onChange={setTriggerPrice} step={0.0001} placeholder={currentPrice.toFixed(4)} />
             </div>
           )}
 
           {orderType === 'trailing_stop' && (
             <div>
               <Label>Trailing Stop (%)</Label>
-              <Input
-                type="number"
-                step="0.1"
-                value={trailingStopPercent}
-                onChange={(e) => setTrailingStopPercent(e.target.value)}
-                placeholder="5.0"
-              />
+              <StepInput value={trailingStopPercent} onChange={setTrailingStopPercent} step={0.1} placeholder="5.0" />
             </div>
           )}
 
@@ -220,24 +230,12 @@ export function AdvancedOrderForm({
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>Stop Loss ($)</Label>
-                <Input
-                  type="number"
-                  step="0.0001"
-                  value={stopLossPrice}
-                  onChange={(e) => setStopLossPrice(e.target.value)}
-                  placeholder="Optional"
-                />
+                <StepInput value={stopLossPrice} onChange={setStopLossPrice} step={0.0001} placeholder="Optional" />
               </div>
               
               <div>
                 <Label>Take Profit ($)</Label>
-                <Input
-                  type="number"
-                  step="0.0001"
-                  value={takeProfitPrice}
-                  onChange={(e) => setTakeProfitPrice(e.target.value)}
-                  placeholder="Optional"
-                />
+                <StepInput value={takeProfitPrice} onChange={setTakeProfitPrice} step={0.0001} placeholder="Optional" />
               </div>
             </div>
           </div>
