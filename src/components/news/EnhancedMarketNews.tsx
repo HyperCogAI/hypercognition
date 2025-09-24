@@ -157,7 +157,7 @@ const EnhancedMarketNews = () => {
               <Card key={alert.id} className={cn(
                 "border-l-4",
                 alert.severity === 'high' && "border-l-destructive bg-destructive/5",
-                alert.severity === 'medium' && "border-l-orange-500 dark:border-l-orange-400 bg-orange-50/50 dark:bg-orange-950/20",
+                alert.severity === 'medium' && "border-l-orange-500 dark:border-l-orange-400 bg-orange-500/10 dark:bg-orange-950/20",
                 alert.severity === 'low' && "border-l-primary bg-primary/5"
               )}>
                 <CardContent className="p-4">
