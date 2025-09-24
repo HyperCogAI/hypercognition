@@ -323,7 +323,7 @@ export const AgentMarketplace = () => {
             </div>
             <div className={`${isMobile ? 'text-left' : 'text-right flex items-center'}`}>
               <Button 
-                className="bg-primary/60 border border-white hover:bg-primary/70 w-full sm:w-auto"
+                className="bg-primary/60 border border-white hover:bg-primary/70 text-white w-full sm:w-auto"
                 onClick={() => window.location.href = '/create-agent'}
               >
                 Create Agent

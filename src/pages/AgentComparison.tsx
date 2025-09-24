@@ -272,7 +272,7 @@ export default function AgentComparison() {
                         <div className="font-medium w-32">{data.metric}</div>
                         <div className="flex-1 flex items-center gap-4">
                           <div className="flex-1 text-right">
-                            <Badge variant="outline" className="bg-primary/60 border border-white text-primary-foreground">
+                            <Badge variant="outline" className="bg-primary/60 border border-white text-white">
                               {data.metric.includes('%') ? 
                                 `${data.agent1 >= 0 ? '+' : ''}${data.agent1.toFixed(2)}%` :
                                 data.metric.includes('M') || data.metric.includes('K') ?

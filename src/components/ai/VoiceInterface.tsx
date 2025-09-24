@@ -293,7 +293,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
               <Button 
                 onClick={startConversation}
                 disabled={isConnecting}
-                className="bg-primary/60 border border-white hover:bg-primary/70 text-primary-foreground"
+                className="bg-primary/60 border border-white hover:bg-primary/70 text-white"
               >
                 {isConnecting ? (
                   <>

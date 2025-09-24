@@ -172,7 +172,7 @@ const PremiumTiers = () => {
             >
               {tier.popular && (
                 <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                  <Badge className="bg-primary/60 border border-white text-primary-foreground">Most Popular</Badge>
+                  <Badge className="bg-primary/60 border border-white text-white">Most Popular</Badge>
                 </div>
               )}
               

@@ -69,7 +69,7 @@ const AIAssistant = () => {
             <div className="flex items-center justify-center gap-3">
               <Brain className="h-8 w-8 text-primary" />
               <h1 className="text-4xl font-bold">AI Trading Assistant</h1>
-              <Badge variant="secondary" className="bg-primary/60 border border-white text-primary-foreground">
+              <Badge variant="secondary" className="bg-primary/60 border border-white text-white">
                 Powered by GPT-4
               </Badge>
             </div>

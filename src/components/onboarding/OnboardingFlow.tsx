@@ -263,7 +263,7 @@ export function OnboardingFlow() {
               <Bot className="h-5 w-5 text-primary" />
               Get Started with HyperCognition
             </CardTitle>
-            <Badge variant="outline" className="text-primary bg-primary/60 border border-white">
+            <Badge variant="outline" className="text-white bg-primary/60 border border-white">
               {completedSteps}/{steps.length}
             </Badge>
           </div>
@@ -313,7 +313,7 @@ export function OnboardingFlow() {
                     <Button
                       size="sm"
                       onClick={() => handleStepAction(step, index)}
-                      className="bg-primary/60 hover:bg-primary/70 text-primary-foreground border border-white"
+                      className="bg-primary/60 hover:bg-primary/70 text-white border border-white"
                     >
                       <ArrowRight className="h-4 w-4" />
                     </Button>

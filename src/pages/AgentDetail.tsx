@@ -193,7 +193,7 @@ export const AgentDetail = () => {
                 Share
               </Button>
               <Button 
-                className="bg-primary/60 border border-white hover:bg-primary/70"
+                className="bg-primary/60 border border-white hover:bg-primary/70 text-white"
                 onClick={() => document.getElementById('trading-tab')?.click()}
               >
                 Trade Now
