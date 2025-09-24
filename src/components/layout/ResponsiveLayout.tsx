@@ -63,7 +63,7 @@ export function ResponsiveLayout({
           <div className="container flex h-14 max-w-screen-2xl items-center justify-between px-4">
             <div className="flex items-center gap-2">
               <img 
-                src="/assets/hyper-cognition-logo.png" 
+                src="/src/assets/new-logo.png" 
                 alt="HyperCognition" 
                 className="h-8 w-auto"
               />

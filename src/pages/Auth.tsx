@@ -12,7 +12,7 @@ import { WalletSection } from "@/components/wallet/WalletSection"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { useToast } from "@/hooks/use-toast"
 import { ArrowLeft, Eye, EyeOff, Mail, Lock, User, Zap } from "lucide-react"
-import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
+import newLogo from "@/assets/new-logo.png"
 
 export default function Auth() {
   const [searchParams] = useSearchParams()
@@ -113,7 +113,7 @@ export default function Auth() {
           
           <div className="flex justify-center">
             <img 
-              src={hyperCognitionLogo} 
+              src={newLogo} 
               alt="HyperCognition" 
               className="h-12 w-auto"
             />

@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
-import hyperCognitionLogo from "@/assets/hypercognition-new-logo.png"
+import newLogo from "@/assets/new-logo.png"
 import {
   Sidebar,
   SidebarContent,
@@ -112,7 +112,7 @@ export function AppSidebar() {
         <div className="p-4 border-b border-border/30 bg-background relative">
           <div className="flex items-center justify-start gap-4">
             <img 
-              src={hyperCognitionLogo} 
+              src={newLogo} 
               alt="HyperCognition Logo" 
               className="h-12 w-auto object-contain"
             />

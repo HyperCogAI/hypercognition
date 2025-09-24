@@ -1,5 +1,5 @@
 import { Github, Twitter, MessageCircle, ExternalLink, FileText, X } from "lucide-react"
-import hyperCognitionLogo from "../../assets/hyper-cognition-logo.png"
+import newLogo from "../../assets/new-logo.png"
 
 export const Footer = () => {
   return (
@@ -9,7 +9,7 @@ export const Footer = () => {
           {/* Company */}
           <div className="space-y-4">
             <img 
-              src={hyperCognitionLogo} 
+              src={newLogo} 
               alt="HyperCognition"
               className="h-9 w-auto"
             />
