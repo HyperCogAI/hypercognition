@@ -197,15 +197,18 @@ Provide specific, actionable advice based on real market conditions. Be concise 
 
     // Log the interaction
     if (userId) {
-      await supabaseClient
+      const { error: logError } = await supabaseClient
         .from('ai_assistant_logs')
         .insert({
           user_id: userId,
           query: message,
           response: aiResponse.message,
           context: JSON.stringify(context)
-        })
-        .catch(error => console.error('Failed to log interaction:', error))
+        });
+      
+      if (logError) {
+        console.error('Failed to log interaction:', logError);
+      }
     }
 
     console.log('Final AI response:', aiResponse)

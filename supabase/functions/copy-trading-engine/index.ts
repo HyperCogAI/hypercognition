@@ -199,10 +199,10 @@ serve(async (req) => {
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
 
-  } catch (error) {
+  } catch (error: any) {
     console.error('Error in copy trading engine:', error);
     return new Response(
-      JSON.stringify({ error: 'Internal server error', details: error.message }),
+      JSON.stringify({ error: 'Internal server error', details: error?.message || 'Unknown error' }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
   }
