@@ -1,4 +1,6 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
+import { supabase } from "@/integrations/supabase/client"
+import { useAuth } from "@/contexts/AuthContext"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -27,72 +29,100 @@ interface Engagement {
 }
 
 export function ACPDashboard() {
+  const { user } = useAuth()
   const [activeTab, setActiveTab] = useState("overview")
   const [selectedAgent, setSelectedAgent] = useState<Agent | null>(null)
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [engagements, setEngagements] = useState<Engagement[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const mockAgents: Agent[] = [
-    {
-      id: "1",
-      name: "HyperTrader Alpha",
-      status: "active",
-      earnings: 125.50,
-      engagements: 23,
-      avatar: "🤖"
-    },
-    {
-      id: "2", 
-      name: "DeFi Oracle Beta",
-      status: "active",
-      earnings: 89.30,
-      engagements: 18,
-      avatar: "🔮"
-    },
-    {
-      id: "3",
-      name: "Risk Analyzer Gamma",
-      status: "inactive",
-      earnings: 45.20,
-      engagements: 7,
-      avatar: "⚡"
+  useEffect(() => {
+    if (user) {
+      fetchDashboardData()
     }
-  ]
+  }, [user])
 
-  const mockEngagements: Engagement[] = [
-    {
-      id: "1",
-      type: "payment",
-      from: "HyperTrader Alpha",
-      to: "DeFi Oracle Beta",
-      amount: 2.50,
-      timestamp: "2 minutes ago",
-      description: "Market data analysis service",
-      status: "completed"
-    },
-    {
-      id: "2",
-      type: "job",
-      from: "Risk Analyzer Gamma",
-      to: "HyperTrader Alpha",
-      amount: 5.00,
-      timestamp: "15 minutes ago", 
-      description: "Portfolio risk assessment",
-      status: "ongoing"
-    },
-    {
-      id: "3",
-      type: "interaction",
-      from: "DeFi Oracle Beta",
-      to: "HyperTrader Alpha",
-      amount: 1.25,
-      timestamp: "1 hour ago",
-      description: "Price feed subscription",
-      status: "completed"
+  const fetchDashboardData = async () => {
+    if (!user) return
+
+    try {
+      setLoading(true)
+      
+      // Fetch agents with their earnings
+      const { data: agentsData, error: agentsError } = await supabase
+        .from('agents')
+        .select(`
+          id,
+          name,
+          symbol,
+          avatar_url,
+          agents_earnings (
+            amount,
+            earnings_type
+          )
+        `)
+        .limit(10)
+
+      if (agentsError) throw agentsError
+
+      // Process agents data
+      const processedAgents: Agent[] = agentsData?.map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        status: "active", // We can add a status field to agents table later
+        earnings: agent.agents_earnings?.reduce((sum: number, earning: any) => sum + Number(earning.amount), 0) || 0,
+        engagements: 0, // We'll calculate this from interactions
+        avatar: agent.avatar_url || "🤖"
+      })) || []
+
+      // Fetch agent interactions for engagements
+      const { data: interactionsData, error: interactionsError } = await supabase
+        .from('agent_interactions')
+        .select(`
+          *,
+          agents!agent_id (name)
+        `)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (interactionsError) throw interactionsError
+
+      // Process interactions into engagements
+      const processedEngagements: Engagement[] = interactionsData?.map(interaction => ({
+        id: interaction.id,
+        type: interaction.interaction_type as "payment" | "job" | "interaction",
+        from: interaction.agents?.name || "Unknown Agent",
+        to: "User",
+        amount: Number(interaction.amount) || 0,
+        timestamp: new Date(interaction.created_at).toLocaleString(),
+        description: interaction.description || "No description",
+        status: interaction.status as "pending" | "ongoing" | "completed"
+      })) || []
+
+      // Update agent engagement counts
+      const agentEngagementCounts = interactionsData?.reduce((counts, interaction) => {
+        const agentId = interaction.agent_id
+        counts[agentId] = (counts[agentId] || 0) + 1
+        return counts
+      }, {} as Record<string, number>) || {}
+
+      const updatedAgents = processedAgents.map(agent => ({
+        ...agent,
+        engagements: agentEngagementCounts[agent.id] || 0
+      }))
+
+      setAgents(updatedAgents)
+      setEngagements(processedEngagements)
+    } catch (error) {
+      console.error('Error fetching dashboard data:', error)
+    } finally {
+      setLoading(false)
     }
-  ]
+  }
 
-  const totalEarnings = mockAgents.reduce((sum, agent) => sum + agent.earnings, 0)
-  const activeAgents = mockAgents.filter(agent => agent.status === "active").length
-  const totalEngagements = mockAgents.reduce((sum, agent) => sum + agent.engagements, 0)
+  const totalEarnings = agents.reduce((sum, agent) => sum + agent.earnings, 0)
+  const activeAgents = agents.filter(agent => agent.status === "active").length
+  const totalEngagements = agents.reduce((sum, agent) => sum + agent.engagements, 0)
 
   return (
     <div className="container mx-auto px-6 py-8 space-y-8">
@@ -134,7 +164,7 @@ export function ACPDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{activeAgents}</div>
             <p className="text-xs text-muted-foreground">
-              {mockAgents.length - activeAgents} inactive
+              {agents.length - activeAgents} inactive
             </p>
           </CardContent>
         </Card>
@@ -181,7 +211,17 @@ export function ACPDashboard() {
                 <CardDescription>Top performing agents by earnings</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockAgents.map((agent) => (
+            {loading ? (
+              Array.from({ length: 3 }).map((_, i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="p-4 space-y-3">
+                    <div className="h-4 bg-muted rounded w-3/4" />
+                    <div className="h-3 bg-muted rounded w-1/2" />
+                    <div className="h-3 bg-muted rounded w-2/3" />
+                  </div>
+                </Card>
+              ))
+            ) : agents.map((agent) => (
                   <div key={agent.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                     <div className="flex items-center gap-3">
                       <div className="text-2xl">{agent.avatar}</div>
@@ -212,7 +252,7 @@ export function ACPDashboard() {
                 <CardDescription>Latest agent-to-agent interactions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
-                {mockEngagements.slice(0, 5).map((engagement) => (
+                {engagements.slice(0, 5).map((engagement) => (
                   <div key={engagement.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
                     <div className="flex items-center gap-3">
                       <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
@@ -245,7 +285,7 @@ export function ACPDashboard() {
 
         <TabsContent value="agents" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {mockAgents.map((agent) => (
+            {agents.map((agent) => (
               <Card key={agent.id} className="cursor-pointer hover:shadow-lg transition-all duration-300"
                     onClick={() => setSelectedAgent(agent)}>
                 <CardHeader>
@@ -295,7 +335,18 @@ export function ACPDashboard() {
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
-                {mockEngagements.map((engagement) => (
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center space-x-4 p-4 border-b animate-pulse">
+                    <div className="w-8 h-8 bg-muted rounded-full" />
+                    <div className="flex-1 space-y-2">
+                      <div className="h-3 bg-muted rounded w-3/4" />
+                      <div className="h-3 bg-muted rounded w-1/2" />
+                    </div>
+                    <div className="h-6 w-16 bg-muted rounded" />
+                  </div>
+                ))
+              ) : engagements.map((engagement) => (
                   <div key={engagement.id} className="flex items-start gap-4 p-4 rounded-lg bg-muted/30">
                     <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary/10 mt-1">
                       {engagement.type === "payment" && <DollarSign className="h-5 w-5 text-primary" />}

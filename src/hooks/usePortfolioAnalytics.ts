@@ -98,6 +98,39 @@ export function usePortfolioAnalytics() {
 
       // Calculate portfolio value over time
       const performanceData: PerformanceData[] = []
+
+      // Group price history by date for portfolio calculation
+      const pricesByDate = priceHistory?.reduce((acc, price) => {
+        const date = new Date(price.timestamp).toISOString().split('T')[0]
+        if (!acc[date]) acc[date] = {}
+        acc[date][price.agent_id] = price.price
+        return acc
+      }, {} as Record<string, Record<string, number>>) || {}
+
+      // Calculate daily portfolio values
+      Object.entries(pricesByDate).forEach(([date, prices]) => {
+        let portfolioValue = 0
+        let previousValue = 0
+
+        holdings.forEach(holding => {
+          const price = prices[holding.agent_id] || holding.agents?.price || 0
+          const value = Number(holding.total_amount) * price
+          portfolioValue += value
+          previousValue += Number(holding.total_amount) * (holding.average_cost || 0)
+        })
+
+        const dailyReturn = previousValue > 0 ? (portfolioValue - previousValue) / previousValue : 0
+        const cumulativeReturn = portfolioValue > 0 ? (portfolioValue / (previousValue || portfolioValue)) - 1 : 0
+
+        performanceData.push({
+          date,
+          portfolio_value: portfolioValue,
+          daily_return: dailyReturn,
+          cumulative_return: cumulativeReturn
+        })
+      })
+
+      return performanceData.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime())
       const groupedHistory = priceHistory?.reduce((acc, item) => {
         const date = new Date(item.timestamp).toISOString().split('T')[0]
         if (!acc[date]) acc[date] = []
