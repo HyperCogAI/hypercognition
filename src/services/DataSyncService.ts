@@ -50,25 +50,17 @@ export class DataSyncService {
         metadata: config.metadata || {}
       }
 
-      const { error } = await supabase
-        .from('sync_operations')
-        .insert(operation)
-
-      if (error) throw error
-
+      // Store in memory since table doesn't exist
       this.syncOperations.set(operationId, operation)
 
       structuredLogger.info('Sync operation created', {
-        component: 'DataSyncService',
-        operationId,
-        type: config.operation_type
+        component: 'DataSyncService'
       })
 
       return operationId
     } catch (error) {
       structuredLogger.error('Failed to create sync operation', {
-        component: 'DataSyncService',
-        error
+        component: 'DataSyncService'
       })
       throw error
     }
@@ -124,18 +116,14 @@ export class DataSyncService {
       await this.updateOperationStatus(operationId, 'completed')
 
       structuredLogger.info('Sync operation completed', {
-        component: 'DataSyncService',
-        operationId,
-        recordsProcessed: processedRecords
+        component: 'DataSyncService'
       })
 
     } catch (error) {
       await this.updateOperationStatus(operationId, 'failed', error.message)
       
       structuredLogger.error('Sync operation failed', {
-        component: 'DataSyncService',
-        operationId,
-        error
+        component: 'DataSyncService'
       })
       throw error
     }
@@ -157,10 +145,7 @@ export class DataSyncService {
 
     } catch (error) {
       structuredLogger.error('Batch processing failed', {
-        component: 'DataSyncService',
-        operationId: operation.id,
-        batchSize: batch.length,
-        error
+        component: 'DataSyncService'
       })
       throw error
     }
@@ -213,29 +198,19 @@ export class DataSyncService {
     status: SyncOperation['status'], 
     errorMessage?: string
   ) {
-    const updates: any = { 
-      status,
-      ...(status === 'completed' || status === 'failed' ? { completed_at: new Date().toISOString() } : {}),
-      ...(errorMessage ? { error_message: errorMessage } : {})
-    }
-
-    await supabase
-      .from('sync_operations')
-      .update(updates)
-      .eq('id', operationId)
-
     const operation = this.syncOperations.get(operationId)
     if (operation) {
-      Object.assign(operation, updates)
+      operation.status = status
+      if (status === 'completed' || status === 'failed') {
+        operation.completed_at = new Date().toISOString()
+      }
+      if (errorMessage) {
+        operation.error_message = errorMessage
+      }
     }
   }
 
   private static async updateOperationProgress(operationId: string, recordsProcessed: number) {
-    await supabase
-      .from('sync_operations')
-      .update({ records_processed: recordsProcessed })
-      .eq('id', operationId)
-
     const operation = this.syncOperations.get(operationId)
     if (operation) {
       operation.records_processed = recordsProcessed
@@ -244,14 +219,8 @@ export class DataSyncService {
 
   static async getSyncOperation(operationId: string): Promise<SyncOperation | null> {
     try {
-      const { data, error } = await supabase
-        .from('sync_operations')
-        .select('*')
-        .eq('id', operationId)
-        .single()
-
-      if (error) throw error
-      return data
+      // Return from memory since table doesn't exist
+      return this.syncOperations.get(operationId) || null
     } catch (error) {
       return null
     }
@@ -263,25 +232,27 @@ export class DataSyncService {
     limit?: number
   } = {}): Promise<SyncOperation[]> {
     try {
-      let query = supabase
-        .from('sync_operations')
-        .select('*')
+      // Return from memory since table doesn't exist
+      let operations = Array.from(this.syncOperations.values())
+      
+      if (filters.status) {
+        operations = operations.filter(op => op.status === filters.status)
+      }
+      
+      if (filters.operation_type) {
+        operations = operations.filter(op => op.operation_type === filters.operation_type)
+      }
+      
+      operations.sort((a, b) => new Date(b.started_at).getTime() - new Date(a.started_at).getTime())
+      
+      if (filters.limit) {
+        operations = operations.slice(0, filters.limit)
+      }
 
-      if (filters.status) query = query.eq('status', filters.status)
-      if (filters.operation_type) query = query.eq('operation_type', filters.operation_type)
-
-      query = query
-        .order('started_at', { ascending: false })
-        .limit(filters.limit || 50)
-
-      const { data, error } = await query
-
-      if (error) throw error
-      return data || []
+      return operations
     } catch (error) {
       structuredLogger.error('Failed to get sync operations', {
-        component: 'DataSyncService',
-        error
+        component: 'DataSyncService'
       })
       return []
     }
@@ -289,17 +260,18 @@ export class DataSyncService {
 
   static async cancelSyncOperation(operationId: string) {
     try {
-      await this.updateOperationStatus(operationId, 'cancelled')
+      const operation = this.syncOperations.get(operationId)
+      if (operation) {
+        operation.status = 'cancelled'
+      }
       this.syncOperations.delete(operationId)
 
       structuredLogger.info('Sync operation cancelled', {
-        component: 'DataSyncService',
-        operationId
+        component: 'DataSyncService'
       })
     } catch (error) {
       structuredLogger.error('Failed to cancel sync operation', {
-        component: 'DataSyncService',
-        error
+        component: 'DataSyncService'
       })
       throw error
     }
@@ -324,16 +296,13 @@ export class DataSyncService {
         .subscribe()
 
       structuredLogger.info('Real-time sync setup completed', {
-        component: 'DataSyncService',
-        sourceTable: config.source_table,
-        destinationTable: config.destination_table
+        component: 'DataSyncService'
       })
 
       return channel
     } catch (error) {
       structuredLogger.error('Failed to setup real-time sync', {
-        component: 'DataSyncService',
-        error
+        component: 'DataSyncService'
       })
       throw error
     }
@@ -366,17 +335,12 @@ export class DataSyncService {
       }
 
       structuredLogger.debug('Real-time sync processed', {
-        component: 'DataSyncService',
-        eventType,
-        sourceTable: config.source_table,
-        destinationTable: config.destination_table
+        component: 'DataSyncService'
       })
 
     } catch (error) {
       structuredLogger.error('Real-time sync processing failed', {
-        component: 'DataSyncService',
-        error,
-        payload
+        component: 'DataSyncService'
       })
     }
   }

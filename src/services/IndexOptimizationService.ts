@@ -162,17 +162,14 @@ export class IndexOptimizationService {
         : mockAnalysis
 
       structuredLogger.info('Index analysis completed', {
-        component: 'IndexOptimizationService',
-        tableName,
-        indexesAnalyzed: results.length
+        component: 'IndexOptimizationService'
       })
 
       return results
 
     } catch (error) {
       structuredLogger.error('Index analysis failed', {
-        component: 'IndexOptimizationService',
-        error
+        component: 'IndexOptimizationService'
       })
       return []
     }
@@ -246,16 +243,14 @@ export class IndexOptimizationService {
       ]
 
       structuredLogger.info('Query performance analysis completed', {
-        component: 'IndexOptimizationService',
-        queriesAnalyzed: mockQueries.length
+        component: 'IndexOptimizationService'
       })
 
       return mockQueries
 
     } catch (error) {
       structuredLogger.error('Query performance analysis failed', {
-        component: 'IndexOptimizationService',
-        error
+        component: 'IndexOptimizationService'
       })
       return []
     }
@@ -307,18 +302,14 @@ export class IndexOptimizationService {
       Object.assign(recommendations.reasoning, compositeOpportunities.reasoning)
 
       structuredLogger.info('Index recommendations generated', {
-        component: 'IndexOptimizationService',
-        createCount: recommendations.create_indexes.length,
-        dropCount: recommendations.drop_indexes.length,
-        modifyCount: recommendations.modify_indexes.length
+        component: 'IndexOptimizationService'
       })
 
       return recommendations
 
     } catch (error) {
       structuredLogger.error('Failed to generate index recommendations', {
-        component: 'IndexOptimizationService',
-        error
+        component: 'IndexOptimizationService'
       })
       return {
         create_indexes: [],
@@ -409,10 +400,7 @@ export class IndexOptimizationService {
       )
 
       structuredLogger.info('Index impact estimated', {
-        component: 'IndexOptimizationService',
-        indexDefinition,
-        estimatedSize,
-        affectedQueries
+        component: 'IndexOptimizationService'
       })
 
       return {
@@ -424,8 +412,7 @@ export class IndexOptimizationService {
 
     } catch (error) {
       structuredLogger.error('Failed to estimate index impact', {
-        component: 'IndexOptimizationService',
-        error
+        component: 'IndexOptimizationService'
       })
       return {
         estimated_size_mb: 0,
@@ -497,16 +484,14 @@ export class IndexOptimizationService {
       }
 
       structuredLogger.info('Index usage stats calculated', {
-        component: 'IndexOptimizationService',
-        stats
+        component: 'IndexOptimizationService'
       })
 
       return stats
 
     } catch (error) {
       structuredLogger.error('Failed to get index usage stats', {
-        component: 'IndexOptimizationService',
-        error
+        component: 'IndexOptimizationService'
       })
       return {
         total_indexes: 0,
