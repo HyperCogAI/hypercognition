@@ -1595,6 +1595,113 @@ export type Database = {
           },
         ]
       }
+      marketplace_developers: {
+        Row: {
+          company_name: string
+          created_at: string
+          description: string | null
+          id: string
+          logo_url: string | null
+          total_apis: number
+          total_revenue: number
+          updated_at: string
+          user_id: string
+          verified: boolean
+          website_url: string | null
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          total_apis?: number
+          total_revenue?: number
+          updated_at?: string
+          user_id: string
+          verified?: boolean
+          website_url?: string | null
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          description?: string | null
+          id?: string
+          logo_url?: string | null
+          total_apis?: number
+          total_revenue?: number
+          updated_at?: string
+          user_id?: string
+          verified?: boolean
+          website_url?: string | null
+        }
+        Relationships: []
+      }
+      marketplace_endpoints: {
+        Row: {
+          average_rating: number | null
+          base_url: string
+          category: string
+          created_at: string
+          description: string | null
+          developer_id: string
+          id: string
+          is_active: boolean
+          monthly_price: number | null
+          name: string
+          price_per_request: number | null
+          pricing_model: string
+          rate_limit_per_minute: number | null
+          total_subscribers: number
+          updated_at: string
+          version: string
+        }
+        Insert: {
+          average_rating?: number | null
+          base_url: string
+          category: string
+          created_at?: string
+          description?: string | null
+          developer_id: string
+          id?: string
+          is_active?: boolean
+          monthly_price?: number | null
+          name: string
+          price_per_request?: number | null
+          pricing_model?: string
+          rate_limit_per_minute?: number | null
+          total_subscribers?: number
+          updated_at?: string
+          version?: string
+        }
+        Update: {
+          average_rating?: number | null
+          base_url?: string
+          category?: string
+          created_at?: string
+          description?: string | null
+          developer_id?: string
+          id?: string
+          is_active?: boolean
+          monthly_price?: number | null
+          name?: string
+          price_per_request?: number | null
+          pricing_model?: string
+          rate_limit_per_minute?: number | null
+          total_subscribers?: number
+          updated_at?: string
+          version?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "marketplace_endpoints_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_developers"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       nft_collections: {
         Row: {
           contract_address: string
@@ -2657,6 +2764,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      social_activities: {
+        Row: {
+          activity_type: string
+          comments_count: number
+          content: string | null
+          created_at: string
+          id: string
+          likes_count: number
+          metadata: Json | null
+          privacy_level: string
+          user_id: string
+        }
+        Insert: {
+          activity_type: string
+          comments_count?: number
+          content?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number
+          metadata?: Json | null
+          privacy_level?: string
+          user_id: string
+        }
+        Update: {
+          activity_type?: string
+          comments_count?: number
+          content?: string | null
+          created_at?: string
+          id?: string
+          likes_count?: number
+          metadata?: Json | null
+          privacy_level?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       social_follows: {
         Row: {
@@ -3796,6 +3939,30 @@ export type Database = {
           updated_at?: string
           user_id?: string
           username?: string | null
+        }
+        Relationships: []
+      }
+      user_relationships: {
+        Row: {
+          created_at: string
+          follower_id: string
+          following_id: string
+          id: string
+          status: string
+        }
+        Insert: {
+          created_at?: string
+          follower_id: string
+          following_id: string
+          id?: string
+          status?: string
+        }
+        Update: {
+          created_at?: string
+          follower_id?: string
+          following_id?: string
+          id?: string
+          status?: string
         }
         Relationships: []
       }
