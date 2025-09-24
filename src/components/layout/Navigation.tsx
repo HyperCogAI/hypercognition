@@ -6,7 +6,7 @@ import { UserMenu } from "@/components/UserMenu"
 import { WalletSection } from "@/components/wallet/WalletSection"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Menu, X, Bot, Zap, LogIn } from "lucide-react"
-import hyperCognitionLogo from "@/assets/hyper-cognition-logo.png"
+import newLogo from "@/assets/new-logo.png"
 
 export function Navigation() {
   const [isOpen, setIsOpen] = useState(false)
@@ -29,7 +29,7 @@ export function Navigation() {
           {/* Logo */}
           <div className="flex items-center gap-3">
             <img 
-              src={hyperCognitionLogo} 
+              src={newLogo} 
               alt="HyperCognition" 
               className="h-8 w-auto"
             />
