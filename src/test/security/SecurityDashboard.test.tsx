@@ -41,7 +41,7 @@ describe('Security Dashboard', () => {
         checkAdminStatus: vi.fn()
       })
 
-      mockSupabase.from.mockReturnValue({
+      ;(mockSupabase.from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue({ data: [], error: null })
@@ -79,7 +79,7 @@ describe('Security Dashboard', () => {
         }
       ]
 
-      mockSupabase.from.mockReturnValue({
+      ;(mockSupabase.from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
@@ -107,7 +107,7 @@ describe('Security Dashboard', () => {
         }
       ]
 
-      mockSupabase.from.mockReturnValue({
+      ;(mockSupabase.from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue({ data: mockEvents, error: null })
@@ -147,7 +147,7 @@ describe('Security Dashboard', () => {
         }
       ]
 
-      mockSupabase.from.mockImplementation((table) => {
+      ;(mockSupabase.from as any).mockImplementation((table: string) => {
         if (table === 'security_audit_log') {
           return {
             select: vi.fn().mockReturnValue({
@@ -205,7 +205,7 @@ describe('Security Dashboard', () => {
         }
       ]
 
-      mockSupabase.from.mockReturnValue({
+      ;(mockSupabase.from as any).mockReturnValue({
         select: vi.fn().mockReturnValue({
           order: vi.fn().mockReturnValue({
             limit: vi.fn().mockResolvedValue({ data: recentEvents, error: null })

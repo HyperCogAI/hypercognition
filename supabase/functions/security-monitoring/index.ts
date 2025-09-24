@@ -155,9 +155,9 @@ const getSecuritySummary = async (supabase: any, timeframe: string, includeDetai
   };
 
   if (includeDetails) {
-    summary.details = {
+    (summary as any).details = {
       recentEvents: events?.slice(0, 20) || [],
-      failedLogins: loginAttempts?.filter(l => !l.success).slice(0, 10) || [],
+      failedLogins: loginAttempts?.filter((l: any) => !l.success).slice(0, 10) || [],
       topRateLimitedEndpoints: getTopRateLimitedEndpoints(rateLimits || [])
     };
   }
@@ -219,10 +219,10 @@ const generateSecurityReport = async (supabase: any, timeframe: string) => {
     
     // Executive Summary
     executiveSummary: {
-      totalIncidents: events.data?.filter(e => e.action.includes('failed') || e.action.includes('blocked')).length || 0,
-      criticalThreats: events.data?.filter(e => e.action.includes('brute_force') || e.action.includes('suspicious')).length || 0,
-      successfulLogins: loginAttempts.data?.filter(l => l.success).length || 0,
-      failedLogins: loginAttempts.data?.filter(l => !l.success).length || 0,
+      totalIncidents: events.data?.filter((e: any) => e.action.includes('failed') || e.action.includes('blocked')).length || 0,
+      criticalThreats: events.data?.filter((e: any) => e.action.includes('brute_force') || e.action.includes('suspicious')).length || 0,
+      successfulLogins: loginAttempts.data?.filter((l: any) => l.success).length || 0,
+      failedLogins: loginAttempts.data?.filter((l: any) => !l.success).length || 0,
       rateLimitViolations: rateLimits.data?.length || 0,
       adminActions: adminActions.data?.length || 0
     },
