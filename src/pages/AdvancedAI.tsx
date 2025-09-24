@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Progress } from "@/components/ui/progress"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Brain, TrendingUp, Target, Zap, BarChart3, AlertCircle, Lightbulb, Cpu, LineChart } from "lucide-react"
+import { Brain, TrendingUp, Target, Zap, BarChart3, AlertCircle, Lightbulb, Cpu, LineChart, Activity } from "lucide-react"
 import { SEOHead } from "@/components/seo/SEOHead"
 
 interface AIInsight {
@@ -33,82 +33,155 @@ const AdvancedAI = () => {
   const [selectedTimeframe, setSelectedTimeframe] = useState("1d")
   const [insights, setInsights] = useState<AIInsight[]>([])
   const [predictions, setPredictions] = useState<MarketPrediction[]>([])
+  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
+  const [isUpdating, setIsUpdating] = useState(false)
 
-  // Mock AI insights data
+  // Generate dynamic AI insights with real-time updates
+  const generateInsights = () => {
+    const insightTemplates = [
+      {
+        type: "prediction" as const,
+        titles: [
+          "ALPHA Token Bullish Breakout Predicted",
+          "ETH Cross-Chain Bridge Activity Surge",
+          "BTC Mining Difficulty Adjustment Impact",
+          "DeFi TVL Momentum Building"
+        ],
+        descriptions: [
+          "ML models indicate {confidence}% probability of upward breakout within 24h based on volume surge and technical patterns",
+          "Neural network analysis shows {confidence}% chance of price increase due to institutional accumulation patterns",
+          "Transformer model predicts {confidence}% likelihood of trend continuation based on on-chain metrics",
+          "LSTM analysis indicates {confidence}% probability of resistance level breakthrough"
+        ],
+        category: "Technical Analysis"
+      },
+      {
+        type: "recommendation" as const,
+        titles: [
+          "Portfolio Rebalancing Suggested",
+          "Risk Exposure Optimization Alert",
+          "Correlation-Based Asset Rotation",
+          "Liquidity Pool Reallocation Advised"
+        ],
+        descriptions: [
+          "Current allocation suboptimal. Recommend reducing exposure to DeFi tokens by {percentage}% based on correlation analysis",
+          "Risk-adjusted returns could improve by {percentage}% through sector diversification adjustments",
+          "Cross-asset correlation analysis suggests {percentage}% reallocation to maximize Sharpe ratio",
+          "Portfolio concentration risk detected. Suggest {percentage}% reduction in top holdings"
+        ],
+        category: "Portfolio Management"
+      },
+      {
+        type: "alert" as const,
+        titles: [
+          "Unusual Trading Pattern Detected",
+          "Whale Movement Alert",
+          "Market Maker Activity Surge",
+          "Cross-Exchange Arbitrage Opportunity"
+        ],
+        descriptions: [
+          "BETA agent showing abnormal volume spike (+{percentage}%) with whale accumulation signals",
+          "Large wallet movement detected: {percentage}% of circulating supply transferred",
+          "Orderbook imbalance detected with {percentage}% buy-side dominance",
+          "Price differential of {percentage}% detected across major exchanges"
+        ],
+        category: "Market Anomaly"
+      },
+      {
+        type: "optimization" as const,
+        titles: [
+          "Stop-Loss Optimization Available",
+          "Take-Profit Level Adjustment",
+          "Position Sizing Recommendation",
+          "Trade Timing Enhancement"
+        ],
+        descriptions: [
+          "Dynamic stop-loss adjustment could improve risk-adjusted returns by {percentage}% based on volatility modeling",
+          "Optimal take-profit levels suggest {percentage}% improvement in win rate",
+          "Kelly criterion analysis recommends {percentage}% position size adjustment",
+          "Market microstructure analysis suggests {percentage}% execution cost reduction"
+        ],
+        category: "Risk Management"
+      }
+    ];
+
+    const impacts: ('high' | 'medium' | 'low')[] = ['high', 'medium', 'low'];
+    const now = new Date();
+    
+    return Array.from({ length: 4 }, (_, index) => {
+      const template = insightTemplates[index % insightTemplates.length];
+      const titleIndex = Math.floor(Math.random() * template.titles.length);
+      const descIndex = Math.floor(Math.random() * template.descriptions.length);
+      
+      const confidence = 60 + Math.random() * 35; // 60-95%
+      const percentage = Math.floor(Math.random() * 25) + 5; // 5-30%
+      
+      // Generate timestamps in the last 6 hours
+      const minutesAgo = Math.floor(Math.random() * 360); // 0-6 hours
+      const timestamp = new Date(now.getTime() - minutesAgo * 60 * 1000).toISOString();
+      
+      return {
+        id: `insight_${Date.now()}_${index}`,
+        type: template.type,
+        title: template.titles[titleIndex],
+        description: template.descriptions[descIndex]
+          .replace('{confidence}', Math.floor(confidence).toString())
+          .replace('{percentage}', percentage.toString()),
+        confidence: Math.floor(confidence),
+        impact: impacts[Math.floor(Math.random() * impacts.length)],
+        category: template.category,
+        timestamp
+      };
+    });
+  };
+
+  const generatePredictions = () => {
+    const symbols = ["ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON"];
+    const factors = [
+      ["Volume surge", "RSI oversold", "Whale accumulation"],
+      ["Resistance level", "Market correlation", "Options flow"],
+      ["Technical breakout", "Social sentiment", "News catalyst"],
+      ["Support retest", "DeFi integration", "Tokenomics update"],
+      ["Cross-chain bridge", "Yield farming", "Governance proposal"]
+    ];
+
+    return Array.from({ length: 3 }, (_, index) => {
+      const symbol = symbols[index % symbols.length];
+      const basePrice = 0.5 + Math.random() * 3; // $0.50 - $3.50
+      const priceChange = (Math.random() - 0.5) * 0.4; // ±20% max change
+      const predictedPrice = basePrice + priceChange;
+      
+      return {
+        symbol,
+        currentPrice: Number(basePrice.toFixed(3)),
+        predictedPrice: Number(predictedPrice.toFixed(3)),
+        timeframe: selectedTimeframe as '1h' | '4h' | '1d' | '1w',
+        confidence: Math.floor(60 + Math.random() * 35), // 60-95%
+        factors: factors[index % factors.length]
+      };
+    });
+  };
+
+    // Initialize data and set up real-time updates
   useEffect(() => {
-    const mockInsights: AIInsight[] = [
-      {
-        id: "1",
-        type: "prediction",
-        title: "ALPHA Token Bullish Breakout Predicted",
-        description: "ML models indicate 78% probability of upward breakout within 24h based on volume surge and technical patterns",
-        confidence: 78,
-        impact: "high",
-        category: "Technical Analysis",
-        timestamp: "2024-01-15T10:30:00Z"
-      },
-      {
-        id: "2", 
-        type: "recommendation",
-        title: "Portfolio Rebalancing Suggested",
-        description: "Current allocation suboptimal. Recommend reducing exposure to DeFi tokens by 15% based on correlation analysis",
-        confidence: 85,
-        impact: "medium",
-        category: "Portfolio Management",
-        timestamp: "2024-01-15T09:45:00Z"
-      },
-      {
-        id: "3",
-        type: "alert",
-        title: "Unusual Trading Pattern Detected",
-        description: "BETA agent showing abnormal volume spike (+340%) with whale accumulation signals",
-        confidence: 92,
-        impact: "high", 
-        category: "Market Anomaly",
-        timestamp: "2024-01-15T09:15:00Z"
-      },
-      {
-        id: "4",
-        type: "optimization",
-        title: "Stop-Loss Optimization Available",
-        description: "Dynamic stop-loss adjustment could improve risk-adjusted returns by 12% based on volatility modeling",
-        confidence: 71,
-        impact: "medium",
-        category: "Risk Management", 
-        timestamp: "2024-01-15T08:30:00Z"
-      }
-    ]
+    const updateData = () => {
+      setIsUpdating(true);
+      setInsights(generateInsights());
+      setPredictions(generatePredictions());
+      setLastUpdate(new Date());
+      
+      // Show updating indicator for a brief moment
+      setTimeout(() => setIsUpdating(false), 1000);
+    };
 
-    const mockPredictions: MarketPrediction[] = [
-      {
-        symbol: "ALPHA",
-        currentPrice: 1.23,
-        predictedPrice: 1.45,
-        timeframe: "1d",
-        confidence: 78,
-        factors: ["Volume surge", "RSI oversold", "Whale accumulation"]
-      },
-      {
-        symbol: "BETA", 
-        currentPrice: 0.89,
-        predictedPrice: 0.82,
-        timeframe: "1d",
-        confidence: 83,
-        factors: ["Resistance level", "Market correlation", "Options flow"]
-      },
-      {
-        symbol: "GAMMA",
-        currentPrice: 2.15,
-        predictedPrice: 2.35,
-        timeframe: "1d", 
-        confidence: 65,
-        factors: ["Technical breakout", "Social sentiment", "News catalyst"]
-      }
-    ]
+    // Initial load
+    updateData();
 
-    setInsights(mockInsights)
-    setPredictions(mockPredictions)
-  }, [])
+    // Update every 30 seconds for real-time feel
+    const interval = setInterval(updateData, 30000);
+
+    return () => clearInterval(interval);
+  }, [selectedTimeframe]);
 
   const getInsightIcon = (type: string) => {
     switch (type) {
@@ -209,7 +282,15 @@ const AdvancedAI = () => {
 
           <TabsContent value="insights" className="space-y-6">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">Real-time AI Insights</h2>
+              <div className="flex items-center gap-4">
+                <h2 className="text-2xl font-semibold">Real-time AI Insights</h2>
+                <div className="flex items-center gap-2">
+                  <div className={`w-2 h-2 rounded-full ${isUpdating ? 'bg-yellow-500' : 'bg-green-500'} animate-pulse`} />
+                  <span className="text-sm text-muted-foreground">
+                    Last updated: {lastUpdate.toLocaleTimeString()}
+                  </span>
+                </div>
+              </div>
               <Select defaultValue="all">
                 <SelectTrigger className="w-48">
                   <SelectValue />
