@@ -54,31 +54,6 @@ const EnhancedMarketNews = () => {
           relatedAgents: ["ALPHA", "BETA", "GAMMA"],
           url: item.url
         }));
-    },
-    {
-      id: "2",
-      title: "Regulatory Framework for AI Trading Released",
-      summary: "New guidelines provide clarity for autonomous trading systems and compliance requirements...",
-      source: "FinancialTimes",
-      publishedAt: "2024-01-15T09:15:00Z",
-      category: "Regulatory",
-      sentiment: "neutral",
-      impact: "high",
-      relatedAgents: ["THETA", "SIGMA"],
-      url: "#"
-    },
-    {
-      id: "3",
-      title: "DeFi Integration Boosts Trading Efficiency",
-      summary: "Latest integration with major DeFi protocols shows 40% improvement in execution speeds...",
-      source: "DeFi Pulse",
-      publishedAt: "2024-01-15T08:45:00Z",
-          category: "Technology",
-          sentiment: "positive",
-          impact: "medium",
-          relatedAgents: ["DELTA", "EPSILON"],
-          url: "#"
-        }));
         setNews(formattedNews);
       } catch (error) {
         console.error('Error fetching news:', error);
@@ -93,214 +68,279 @@ const EnhancedMarketNews = () => {
     {
       id: "1",
       type: "breaking",
-      message: "Major exchange announces AI trading integration",
+      message: "Major whale movement detected: 50,000 ETH transferred to unknown wallet",
       severity: "high",
-      timestamp: "2024-01-15T11:00:00Z",
-      affectedSymbols: ["BTC", "ETH", "SOL"]
+      timestamp: "2024-01-15T11:30:00Z",
+      affectedSymbols: ["ETH", "ALPHA"]
     },
     {
       id: "2",
-      type: "price",
-      message: "ALPHA agent breaks $100 resistance level",
+      type: "regulatory",
+      message: "SEC announces new guidelines for AI trading systems",
       severity: "medium",
-      timestamp: "2024-01-15T10:45:00Z",
-      affectedSymbols: ["ALPHA"]
+      timestamp: "2024-01-15T10:15:00Z",
+      affectedSymbols: ["BETA", "GAMMA"]
     }
   ])
 
-  const [trendingTopics] = useState([
-    { topic: "AI Trading", mentions: 1250, change: "+15%" },
-    { topic: "DeFi Integration", mentions: 890, change: "+8%" },
-    { topic: "Regulatory Updates", mentions: 650, change: "-3%" },
-    { topic: "Market Volatility", mentions: 420, change: "+22%" }
-  ])
-
+  // Filter news based on search and filters
   const filteredNews = news.filter(article => {
-    const matchesSearch = article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         article.summary.toLowerCase().includes(searchTerm.toLowerCase())
+    const matchesSearch = searchTerm === "" || 
+      article.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      article.summary.toLowerCase().includes(searchTerm.toLowerCase())
+    
     const matchesCategory = selectedCategory === "all" || article.category === selectedCategory
     const matchesSentiment = selectedSentiment === "all" || article.sentiment === selectedSentiment
     
     return matchesSearch && matchesCategory && matchesSentiment
   })
 
-  const getSentimentColor = (sentiment: string) => {
-    switch (sentiment) {
-      case 'positive': return 'text-green-500'
-      case 'negative': return 'text-red-500'
-      default: return 'text-muted-foreground'
-    }
-  }
-
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
-      case 'positive': return <TrendingUp className="h-4 w-4" />
-      case 'negative': return <TrendingDown className="h-4 w-4" />
-      default: return <Globe className="h-4 w-4" />
+      case 'positive':
+        return <TrendingUp className="h-4 w-4 text-green-600" />
+      case 'negative':
+        return <TrendingDown className="h-4 w-4 text-red-600" />
+      default:
+        return <div className="h-4 w-4 rounded-full bg-gray-400" />
     }
   }
 
-  const getImpactVariant = (impact: string) => {
-    switch (impact) {
-      case 'high': return 'destructive'
-      case 'medium': return 'default'
-      default: return 'secondary'
+  const getSentimentColor = (sentiment: string) => {
+    switch (sentiment) {
+      case 'positive':
+        return 'text-green-600 bg-green-50 border-green-200'
+      case 'negative':
+        return 'text-red-600 bg-red-50 border-red-200'
+      default:
+        return 'text-gray-600 bg-gray-50 border-gray-200'
     }
   }
 
   const formatTimeAgo = (timestamp: string) => {
+    const date = new Date(timestamp)
     const now = new Date()
-    const time = new Date(timestamp)
-    const diff = now.getTime() - time.getTime()
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor(diff / (1000 * 60))
+    const diffInMinutes = Math.floor((now.getTime() - date.getTime()) / (1000 * 60))
     
-    if (hours > 0) return `${hours}h ago`
-    return `${minutes}m ago`
+    if (diffInMinutes < 60) return `${diffInMinutes}m ago`
+    if (diffInMinutes < 1440) return `${Math.floor(diffInMinutes / 60)}h ago`
+    return `${Math.floor(diffInMinutes / 1440)}d ago`
   }
 
   return (
-    <div className="space-y-6 p-6 border border-border/50 rounded-lg bg-card/80 backdrop-blur-sm shadow-sm">
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h1 className="text-3xl font-bold flex items-center gap-3">
+            <Newspaper className="h-8 w-8 text-primary" />
+            Market News & Analysis
+          </h1>
+          <p className="text-muted-foreground mt-2">
+            Real-time market news with AI-powered sentiment analysis
+          </p>
+        </div>
+        <Badge variant="outline" className="flex items-center gap-2">
+          <div className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
+          Live Updates
+        </Badge>
+      </div>
+
       {/* Market Alerts */}
       {alerts.length > 0 && (
-        <Card variant="elevated" className="border-primary/20 bg-card shadow-[0_0_20px_hsl(var(--primary)/0.1)]">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-primary" />
-              Market Alerts
-            </CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3">
+        <div className="space-y-3">
+          <h2 className="text-lg font-semibold flex items-center gap-2">
+            <AlertTriangle className="h-5 w-5 text-orange-500" />
+            Market Alerts
+          </h2>
+          <div className="grid gap-3">
             {alerts.map((alert) => (
-              <div 
-                key={alert.id}
-                className={cn(
-                  "p-4 rounded-lg border transition-all duration-200 hover:shadow-sm",
-                  alert.severity === 'high' ? 'border-destructive/30 bg-destructive/5 shadow-[0_0_15px_hsl(var(--destructive)/0.1)]' :
-                  alert.severity === 'medium' ? 'border-accent/30 bg-accent/5 shadow-[0_0_15px_hsl(var(--accent)/0.1)]' :
-                  'border-primary/30 bg-primary/5 shadow-[0_0_15px_hsl(var(--primary)/0.1)]'
-                )}
-              >
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <p className="font-medium text-foreground">{alert.message}</p>
-                    <div className="flex items-center gap-2 mt-2 text-sm text-muted-foreground">
-                      <Clock className="h-3 w-3" />
-                      {formatTimeAgo(alert.timestamp)}
-                      {alert.affectedSymbols.length > 0 && (
-                        <span>• Affects: {alert.affectedSymbols.join(', ')}</span>
-                      )}
+              <Card key={alert.id} className={cn(
+                "border-l-4",
+                alert.severity === 'high' && "border-l-red-500 bg-red-50/50",
+                alert.severity === 'medium' && "border-l-orange-500 bg-orange-50/50",
+                alert.severity === 'low' && "border-l-blue-500 bg-blue-50/50"
+              )}>
+                <CardContent className="p-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2">
+                        <Badge variant="outline" className="text-xs">
+                          {alert.type.toUpperCase()}
+                        </Badge>
+                        <Badge variant={alert.severity === 'high' ? 'destructive' : 'secondary'} className="text-xs">
+                          {alert.severity.toUpperCase()}
+                        </Badge>
+                      </div>
+                      <p className="text-sm font-medium">{alert.message}</p>
+                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
+                        <span className="flex items-center gap-1">
+                          <Clock className="h-3 w-3" />
+                          {formatTimeAgo(alert.timestamp)}
+                        </span>
+                        <span>Affects: {alert.affectedSymbols.join(', ')}</span>
+                      </div>
                     </div>
                   </div>
-                  <Badge 
-                    variant={alert.severity === 'high' ? 'destructive' : alert.severity === 'medium' ? 'secondary' : 'outline'}
-                    className="ml-3"
-                  >
-                    {alert.type}
-                  </Badge>
-                </div>
-              </div>
+                </CardContent>
+              </Card>
             ))}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       )}
 
-      <Tabs defaultValue="news" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="news">Latest News</TabsTrigger>
-          <TabsTrigger value="trending">Trending</TabsTrigger>
-          <TabsTrigger value="analysis">Analysis</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="all" className="space-y-6">
+        <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
+          <TabsList>
+            <TabsTrigger value="all">All News</TabsTrigger>
+            <TabsTrigger value="breaking">Breaking</TabsTrigger>
+            <TabsTrigger value="analysis">Analysis</TabsTrigger>
+            <TabsTrigger value="regulatory">Regulatory</TabsTrigger>
+          </TabsList>
+          
+          <div className="flex gap-3 w-full lg:w-auto">
+            <div className="relative flex-1 lg:w-64">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input
+                placeholder="Search news..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="pl-10"
+              />
+            </div>
+            
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-40">
+                <SelectValue placeholder="Category" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All Categories</SelectItem>
+                <SelectItem value="Market Analysis">Market Analysis</SelectItem>
+                <SelectItem value="Technology">Technology</SelectItem>
+                <SelectItem value="Regulatory">Regulatory</SelectItem>
+                <SelectItem value="Economics">Economics</SelectItem>
+              </SelectContent>
+            </Select>
+            
+            <Select value={selectedSentiment} onValueChange={setSelectedSentiment}>
+              <SelectTrigger className="w-32">
+                <SelectValue placeholder="Sentiment" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="all">All</SelectItem>
+                <SelectItem value="positive">Positive</SelectItem>
+                <SelectItem value="neutral">Neutral</SelectItem>
+                <SelectItem value="negative">Negative</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
 
-        <TabsContent value="news" className="space-y-6">
-          {/* Filters */}
-          <Card variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm">
-            <CardContent className="p-6">
-              <div className="flex flex-wrap gap-4">
-                <div className="flex items-center gap-2 flex-1 min-w-64">
-                  <Search className="h-4 w-4 text-muted-foreground" />
-                  <Input
-                    placeholder="Search news..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    className="border-0 bg-transparent focus-visible:ring-primary/20"
-                  />
-                </div>
-                
-                <Select value={selectedCategory} onValueChange={setSelectedCategory}>
-                  <SelectTrigger className="w-48 bg-background/50 border-border/50">
-                    <SelectValue placeholder="Category" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="Market Analysis">Market Analysis</SelectItem>
-                    <SelectItem value="Regulatory">Regulatory</SelectItem>
-                    <SelectItem value="Technology">Technology</SelectItem>
-                  </SelectContent>
-                </Select>
-                
-                <Select value={selectedSentiment} onValueChange={setSelectedSentiment}>
-                  <SelectTrigger className="w-48 bg-background/50 border-border/50">
-                    <SelectValue placeholder="Sentiment" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Sentiment</SelectItem>
-                    <SelectItem value="positive">Positive</SelectItem>
-                    <SelectItem value="negative">Negative</SelectItem>
-                    <SelectItem value="neutral">Neutral</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* News Articles */}
-          <div className="space-y-4">
-            {filteredNews.map((article) => (
-              <Card key={article.id} variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm hover:border-primary/30 transition-all duration-200">
-                <CardContent className="p-6">
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-start gap-4">
-                      <h3 className="font-semibold text-lg leading-tight">{article.title}</h3>
-                      <div className="flex items-center gap-2 flex-shrink-0">
-                        <Badge variant={getImpactVariant(article.impact)}>
-                          {article.impact} impact
-                        </Badge>
-                        <div className={cn("flex items-center gap-1", getSentimentColor(article.sentiment))}>
-                          {getSentimentIcon(article.sentiment)}
+        <TabsContent value="all" className="space-y-6">
+          {loading ? (
+            <div className="grid gap-6">
+              {[1, 2, 3].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <CardHeader>
+                    <div className="h-6 bg-muted rounded w-3/4"></div>
+                    <div className="h-4 bg-muted rounded w-1/2"></div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="h-16 bg-muted rounded"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : (
+            <div className="grid gap-6">
+              {filteredNews.map((article) => (
+                <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                  <CardHeader>
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <CardTitle className="text-lg leading-tight mb-2">
+                          {article.title}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {article.summary}
+                        </CardDescription>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        {getSentimentIcon(article.sentiment)}
+                      </div>
+                    </div>
+                  </CardHeader>
+                  
+                  <CardContent className="pt-0">
+                    <div className="flex flex-wrap items-center gap-3 text-sm">
+                      <div className="flex items-center gap-2 text-muted-foreground">
+                        <Globe className="h-4 w-4" />
+                        <span className="font-medium">{article.source}</span>
+                      </div>
+                      
+                      <div className="flex items-center gap-1 text-muted-foreground">
+                        <Clock className="h-4 w-4" />
+                        <span>{formatTimeAgo(article.publishedAt)}</span>
+                      </div>
+                      
+                      <Badge variant="outline" className="text-xs">
+                        {article.category}
+                      </Badge>
+                      
+                      <Badge className={cn("text-xs border", getSentimentColor(article.sentiment))}>
+                        {article.sentiment}
+                      </Badge>
+                      
+                      <Badge variant={article.impact === 'high' ? 'destructive' : article.impact === 'medium' ? 'default' : 'secondary'} className="text-xs">
+                        {article.impact} impact
+                      </Badge>
+                    </div>
+                    
+                    {article.relatedAgents.length > 0 && (
+                      <div className="flex items-center gap-2 mt-3">
+                        <span className="text-xs text-muted-foreground">Related:</span>
+                        <div className="flex gap-1">
+                          {article.relatedAgents.map((agent) => (
+                            <Badge key={agent} variant="outline" className="text-xs">
+                              {agent}
+                            </Badge>
+                          ))}
                         </div>
                       </div>
-                    </div>
-                    
-                    <p className="text-muted-foreground">{article.summary}</p>
-                    
-                    <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Newspaper className="h-4 w-4" />
-                        {article.source}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-4 w-4" />
-                        {formatTimeAgo(article.publishedAt)}
-                      </span>
-                      <Badge variant="outline">{article.category}</Badge>
-                      {article.relatedAgents.length > 0 && (
-                        <span>Related: {article.relatedAgents.join(', ')}</span>
-                      )}
-                    </div>
-                    
-                    <div className="flex justify-between items-center pt-2">
-                      <div className="flex gap-2">
-                        {article.relatedAgents.slice(0, 3).map((agent) => (
-                          <Badge key={agent} variant="secondary" className="text-xs">
-                            {agent}
-                          </Badge>
-                        ))}
-                      </div>
-                      <Button variant="ghost" size="sm">
-                        Read More
-                      </Button>
-                    </div>
+                    )}
+                  </CardContent>
+                </Card>
+              ))}
+              
+              {filteredNews.length === 0 && !loading && (
+                <Card>
+                  <CardContent className="p-8 text-center">
+                    <Newspaper className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                    <p className="text-muted-foreground">
+                      No news articles found matching your criteria.
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+          )}
+        </TabsContent>
+
+        <TabsContent value="breaking" className="space-y-6">
+          <div className="grid gap-6">
+            {filteredNews.filter(article => article.impact === 'high').map((article) => (
+              <Card key={article.id} className="border-l-4 border-l-red-500 bg-red-50/30">
+                <CardHeader>
+                  <div className="flex items-center gap-2 mb-2">
+                    <Badge variant="destructive" className="text-xs">BREAKING</Badge>
+                    <Badge variant="outline" className="text-xs">{article.category}</Badge>
+                  </div>
+                  <CardTitle className="text-lg">{article.title}</CardTitle>
+                  <CardDescription>{article.summary}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                    <span>{article.source}</span>
+                    <span>{formatTimeAgo(article.publishedAt)}</span>
                   </div>
                 </CardContent>
               </Card>
@@ -308,65 +348,46 @@ const EnhancedMarketNews = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="trending" className="space-y-6">
-          <Card variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Trending Topics</CardTitle>
-              <CardDescription>Most discussed topics in the last 24 hours</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {trendingTopics.map((topic, index) => (
-                <div key={index} className="flex justify-between items-center p-4 bg-muted/20 rounded-lg border border-border/30 hover:border-primary/20 transition-colors">
-                  <div>
-                    <div className="font-semibold">{topic.topic}</div>
-                    <div className="text-sm text-muted-foreground">{topic.mentions} mentions</div>
+        <TabsContent value="analysis" className="space-y-6">
+          <div className="grid gap-6">
+            {filteredNews.filter(article => article.category === 'Market Analysis').map((article) => (
+              <Card key={article.id}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{article.title}</CardTitle>
+                  <CardDescription>{article.summary}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="text-muted-foreground">{article.source}</span>
+                    <Badge className={cn("text-xs", getSentimentColor(article.sentiment))}>
+                      {article.sentiment}
+                    </Badge>
+                    <span className="text-muted-foreground">{formatTimeAgo(article.publishedAt)}</span>
                   </div>
-                  <div className={cn(
-                    "flex items-center gap-1 font-medium",
-                    topic.change.startsWith('+') ? 'text-green-500' : 'text-red-500'
-                  )}>
-                    {topic.change.startsWith('+') ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />}
-                    {topic.change}
-                  </div>
-                </div>
-              ))}
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
 
-        <TabsContent value="analysis" className="space-y-6">
-          <Card variant="elevated" className="border-border/50 bg-card/95 backdrop-blur-sm">
-            <CardHeader>
-              <CardTitle>Market Analysis</CardTitle>
-              <CardDescription>AI-powered insights and market sentiment analysis</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-6">
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="text-center p-4 bg-secondary/10 border border-secondary/20 rounded-lg">
-                    <div className="text-2xl font-bold text-secondary">Bullish</div>
-                    <div className="text-sm text-muted-foreground">Overall Sentiment</div>
+        <TabsContent value="regulatory" className="space-y-6">
+          <div className="grid gap-6">
+            {filteredNews.filter(article => article.category === 'Regulatory').map((article) => (
+              <Card key={article.id}>
+                <CardHeader>
+                  <CardTitle className="text-lg">{article.title}</CardTitle>
+                  <CardDescription>{article.summary}</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex items-center gap-4 text-sm">
+                    <span className="text-muted-foreground">{article.source}</span>
+                    <Badge variant="outline" className="text-xs">Regulatory</Badge>
+                    <span className="text-muted-foreground">{formatTimeAgo(article.publishedAt)}</span>
                   </div>
-                  <div className="text-center p-4 bg-primary/10 border border-primary/20 rounded-lg">
-                    <div className="text-2xl font-bold text-primary">72%</div>
-                    <div className="text-sm text-muted-foreground">Confidence Level</div>
-                  </div>
-                  <div className="text-center p-4 bg-accent/10 border border-accent/20 rounded-lg">
-                    <div className="text-2xl font-bold text-accent">High</div>
-                    <div className="text-sm text-muted-foreground">Market Activity</div>
-                  </div>
-                </div>
-                
-                <div className="prose dark:prose-invert max-w-none">
-                  <p className="text-muted-foreground">
-                    Current market analysis shows strong bullish sentiment driven by increased institutional adoption 
-                    of AI trading strategies. Key factors include regulatory clarity, technological improvements, 
-                    and growing confidence in autonomous trading systems.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+                </CardContent>
+              </Card>
+            ))}
+          </div>
         </TabsContent>
       </Tabs>
     </div>
