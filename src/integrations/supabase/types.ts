@@ -989,6 +989,48 @@ export type Database = {
         }
         Relationships: []
       }
+      enhanced_user_sessions: {
+        Row: {
+          created_at: string | null
+          device_fingerprint: string | null
+          expires_at: string
+          id: string
+          ip_address: unknown | null
+          is_active: boolean | null
+          last_activity: string | null
+          location: Json | null
+          session_token: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          device_fingerprint?: string | null
+          expires_at: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity?: string | null
+          location?: Json | null
+          session_token: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          device_fingerprint?: string | null
+          expires_at?: string
+          id?: string
+          ip_address?: unknown | null
+          is_active?: boolean | null
+          last_activity?: string | null
+          location?: Json | null
+          session_token?: string
+          user_agent?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       environment_variables: {
         Row: {
           created_at: string
@@ -4086,6 +4128,29 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      enhanced_rate_limit_check: {
+        Args: {
+          burst_protection?: boolean
+          endpoint_param: string
+          identifier_param: string
+          ip_address_param?: unknown
+          max_requests?: number
+          window_minutes?: number
+        }
+        Returns: Json
+      }
+      get_current_user_admin_role: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
+      is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_super_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
       log_login_attempt: {
         Args: {
           attempt_type_param: string
@@ -4097,6 +4162,15 @@ export type Database = {
         }
         Returns: undefined
       }
+      validate_and_sanitize_input: {
+        Args: {
+          allow_html?: boolean
+          input_text: string
+          max_length?: number
+          strict_mode?: boolean
+        }
+        Returns: Json
+      }
       validate_input_security: {
         Args: { allow_html?: boolean; input_text: string; max_length?: number }
         Returns: boolean
@@ -4104,6 +4178,10 @@ export type Database = {
       validate_password_policy: {
         Args: { password_param: string }
         Returns: boolean
+      }
+      validate_password_strength: {
+        Args: { password_param: string }
+        Returns: Json
       }
     }
     Enums: {
