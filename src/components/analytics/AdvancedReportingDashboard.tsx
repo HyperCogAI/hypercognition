@@ -8,6 +8,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { DateRangePicker } from '@/components/ui/date-range-picker';
 import { LineChart, Line, AreaChart, Area, BarChart, Bar, PieChart, Pie, Cell, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { TrendingUp, TrendingDown, DollarSign, Users, Activity, Download, FileText, Mail } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface ReportData {
   period: string;
@@ -26,33 +28,105 @@ interface UserSegment {
 }
 
 const AdvancedReportingDashboard: React.FC = () => {
-  const [reportData, setReportData] = useState<ReportData[]>([]);
-  const [userSegments, setUserSegments] = useState<UserSegment[]>([]);
   const [timeframe, setTimeframe] = useState('30d');
   const [isGenerating, setIsGenerating] = useState(false);
 
-  useEffect(() => {
-    // Generate mock data for demonstration
-    const mockData: ReportData[] = Array.from({ length: 30 }, (_, i) => ({
-      period: `Day ${i + 1}`,
-      revenue: Math.random() * 10000 + 5000,
-      trades: Math.floor(Math.random() * 1000) + 100,
-      users: Math.floor(Math.random() * 500) + 50,
-      volume: Math.random() * 1000000 + 100000,
-      profit: Math.random() * 5000 + 1000,
-      loss: Math.random() * 2000 + 500
-    }));
+  // Fetch trading data from orders
+  const { data: tradingData } = useQuery({
+    queryKey: ['trading-analytics', timeframe],
+    queryFn: async () => {
+      const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365;
+      const { data, error } = await supabase
+        .from('orders')
+        .select('*')
+        .gte('created_at', new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString())
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
 
-    const mockSegments: UserSegment[] = [
-      { name: 'Active Traders', value: 45, color: 'hsl(var(--primary))' },
-      { name: 'Casual Users', value: 30, color: 'hsl(var(--secondary))' },
-      { name: 'Premium Users', value: 15, color: 'hsl(var(--accent))' },
-      { name: 'Inactive', value: 10, color: 'hsl(var(--muted))' }
-    ];
+  // Fetch agents earnings for revenue data
+  const { data: revenueData } = useQuery({
+    queryKey: ['revenue-analytics', timeframe],
+    queryFn: async () => {
+      const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365;
+      const { data, error } = await supabase
+        .from('agents_earnings')
+        .select('*')
+        .gte('created_at', new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString())
+        .order('created_at', { ascending: true });
+      
+      if (error) throw error;
+      return data || [];
+    }
+  });
 
-    setReportData(mockData);
-    setUserSegments(mockSegments);
-  }, [timeframe]);
+  // Fetch user analytics data  
+  const { data: userData } = useQuery({
+    queryKey: ['user-analytics', timeframe],
+    queryFn: async () => {
+      const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365;
+      const { data: holdings, error } = await supabase
+        .from('user_holdings')
+        .select('user_id, last_updated')
+        .gte('last_updated', new Date(Date.now() - daysBack * 24 * 60 * 60 * 1000).toISOString());
+      
+      if (error) throw error;
+      return holdings || [];
+    }
+  });
+
+  // Process data for charts
+  const reportData: ReportData[] = React.useMemo(() => {
+    if (!tradingData || !revenueData) return [];
+
+    const daysBack = timeframe === '7d' ? 7 : timeframe === '30d' ? 30 : timeframe === '90d' ? 90 : 365;
+    const data: ReportData[] = [];
+
+    for (let i = daysBack - 1; i >= 0; i--) {
+      const date = new Date(Date.now() - i * 24 * 60 * 60 * 1000);
+      const dateStr = date.toISOString().split('T')[0];
+      
+      // Calculate daily metrics
+      const dayTrades = tradingData.filter(order => 
+        new Date(order.created_at).toISOString().split('T')[0] === dateStr
+      );
+      
+      const dayRevenue = revenueData.filter(earning => 
+        new Date(earning.created_at).toISOString().split('T')[0] === dateStr
+      );
+
+      const dayUsers = userData?.filter(user => 
+        new Date(user.last_updated).toISOString().split('T')[0] === dateStr
+      ).length || 0;
+
+      const revenue = dayRevenue.reduce((sum, earning) => sum + Number(earning.amount), 0);
+      const volume = dayTrades.reduce((sum, trade) => sum + (Number(trade.amount) * Number(trade.price || 0)), 0);
+      const profits = dayTrades.filter(t => t.status === 'filled' && t.side === 'sell').length;
+      const losses = dayTrades.filter(t => t.status === 'cancelled' || t.status === 'rejected').length;
+
+      data.push({
+        period: i < 7 ? `Day ${daysBack - i}` : dateStr,
+        revenue,
+        trades: dayTrades.length,
+        users: dayUsers,
+        volume,
+        profit: profits * 100, // Simplified calculation
+        loss: losses * 50 // Simplified calculation
+      });
+    }
+
+    return data;
+  }, [tradingData, revenueData, userData, timeframe]);
+
+  const userSegments: UserSegment[] = [
+    { name: 'Active Traders', value: 45, color: 'hsl(var(--primary))' },
+    { name: 'Casual Users', value: 30, color: 'hsl(var(--secondary))' },
+    { name: 'Premium Users', value: 15, color: 'hsl(var(--accent))' },
+    { name: 'Inactive', value: 10, color: 'hsl(var(--muted))' }
+  ];
 
   const generateReport = async (type: string) => {
     setIsGenerating(true);
