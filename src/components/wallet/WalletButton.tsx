@@ -22,9 +22,14 @@ export const WalletButton = () => {
 
   if (!isConnected) {
     return (
-      <CyberButton variant="neon" size="sm" onClick={connectWallet}>
+      <CyberButton 
+        variant="neon" 
+        size="sm" 
+        onClick={connectWallet}
+        className="w-full"
+      >
         <Wallet className="h-4 w-4 text-white" />
-        <span className="text-white">Connect</span>
+        <span className="text-white">Connect EVM</span>
       </CyberButton>
     )
   }

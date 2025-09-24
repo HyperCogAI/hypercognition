@@ -120,8 +120,14 @@ createWeb3Modal({
   themeMode: 'dark',
   themeVariables: {
     '--w3m-font-family': 'inherit',
-    '--w3m-accent': 'hsl(var(--primary))',
-  }
+    '--w3m-accent': 'hsl(190 100% 70%)',
+    '--w3m-color-mix': 'hsl(190 100% 70%)',
+    '--w3m-color-mix-strength': 40,
+  },
+  featuredWalletIds: [
+    'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
+    'ecc4036f814562b41a5268adc86270fca6567550d28a70c4dc1c6b3a5ccb8de', // Coinbase Wallet
+  ]
 })
 
 // App Layout Component

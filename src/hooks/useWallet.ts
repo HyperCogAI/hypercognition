@@ -6,12 +6,21 @@ export const useWallet = () => {
   const { disconnect } = useDisconnect()
   const { open } = useWeb3Modal()
 
-  const connectWallet = () => {
-    open()
+  const connectWallet = async () => {
+    try {
+      console.log('Opening Web3Modal...')
+      await open()
+    } catch (error) {
+      console.error('Error opening wallet modal:', error)
+    }
   }
 
-  const disconnectWallet = () => {
-    disconnect()
+  const disconnectWallet = async () => {
+    try {
+      await disconnect()
+    } catch (error) {
+      console.error('Error disconnecting wallet:', error)
+    }
   }
 
   return {
