@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard, Layers } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import newLogo from "@/assets/new-logo.png"
 import {
@@ -40,7 +40,7 @@ const defiItems = [
   { title: "Solana", url: "/solana", icon: Sparkles },
   { title: "Solana Staking", url: "/solana-staking", icon: Lock },
   
-  { title: "Staking", url: "/staking", icon: Shield },
+  { title: "Staking", url: "/staking", icon: Layers },
   { title: "Referrals", url: "/referrals", icon: Star },
 ]
 
