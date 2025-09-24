@@ -8,7 +8,7 @@ const cyberButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "bg-primary/30 text-primary-foreground border border-primary shadow hover:bg-primary/40 hover:text-muted-foreground transition-all duration-300",
+        default: "bg-primary/60 text-primary-foreground border border-white shadow hover:bg-primary/70 hover:text-muted-foreground transition-all duration-300",
         destructive: "bg-destructive/80 text-destructive-foreground shadow-sm hover:bg-destructive hover:text-muted-foreground transition-all duration-300",
         outline: "border border-primary/30 bg-transparent text-primary shadow-sm hover:bg-primary/5 hover:border-primary/50 hover:text-muted-foreground transition-all duration-300",
         secondary: "bg-secondary/80 text-secondary-foreground shadow-sm hover:bg-secondary hover:text-muted-foreground transition-all duration-300",
