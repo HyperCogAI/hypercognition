@@ -175,9 +175,9 @@ const InstitutionalAPIs = () => {
         keywords="institutional APIs, enterprise trading, hedge fund APIs, institutional trading, financial APIs, prime brokerage"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-4">
+      <div className="container mx-auto px-4 py-16">
+        <div className="text-center mb-16">
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-6">
             Institutional APIs
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
@@ -186,19 +186,19 @@ const InstitutionalAPIs = () => {
         </div>
 
         {/* Features Grid */}
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3 mb-12">
+        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
           {features.map((feature, index) => (
             <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="p-6 text-center">
-                <feature.icon className="h-12 w-12 mx-auto mb-4 text-primary" />
-                <h3 className="font-semibold text-lg mb-2">{feature.title}</h3>
+              <CardContent className="p-8 text-center">
+                <feature.icon className="h-12 w-12 mx-auto mb-6 text-primary" />
+                <h3 className="font-semibold text-lg mb-3">{feature.title}</h3>
                 <p className="text-sm text-muted-foreground">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <Tabs defaultValue="pricing" className="space-y-6">
+        <Tabs defaultValue="pricing" className="space-y-8">
           <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="pricing">Pricing</TabsTrigger>
             <TabsTrigger value="endpoints">API Reference</TabsTrigger>
@@ -207,7 +207,7 @@ const InstitutionalAPIs = () => {
             <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="pricing" className="space-y-6">
+          <TabsContent value="pricing" className="space-y-8">
             <div className="grid gap-8 lg:grid-cols-3">
               {plans.map((plan) => (
                 <Card 
@@ -269,7 +269,7 @@ const InstitutionalAPIs = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="endpoints" className="space-y-6">
+          <TabsContent value="endpoints" className="space-y-8">
             <div className="space-y-8">
               {apiEndpoints.map((category, index) => (
                 <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50">
@@ -305,7 +305,7 @@ const InstitutionalAPIs = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="authentication" className="space-y-6">
+          <TabsContent value="authentication" className="space-y-8">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
                 <CardTitle>API Key Management</CardTitle>
@@ -405,7 +405,7 @@ const InstitutionalAPIs = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="sla" className="space-y-6">
+          <TabsContent value="sla" className="space-y-8">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
                 <CardTitle>Service Level Agreement</CardTitle>
@@ -463,7 +463,7 @@ const InstitutionalAPIs = () => {
             </Card>
           </TabsContent>
 
-          <TabsContent value="onboarding" className="space-y-6">
+          <TabsContent value="onboarding" className="space-y-8">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
                 <CardTitle>Get Started</CardTitle>
