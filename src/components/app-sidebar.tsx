@@ -301,11 +301,11 @@ export function AppSidebar() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       >
-                        <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                        <item.icon className="h-4 w-4 text-sidebar-foreground/70 group-hover:text-sidebar-accent-foreground group-hover:scale-110 transition-all duration-300" strokeWidth={2.25} />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium text-foreground">{item.title}</span>
-                            <ExternalLink className="h-3 w-3 opacity-60 group-hover:opacity-100" />
+                            <ExternalLink className="h-3 w-3 text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground transition-colors" />
                           </div>
                         )}
                       </a>
