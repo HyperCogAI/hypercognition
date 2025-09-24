@@ -481,6 +481,116 @@ export type Database = {
           },
         ]
       }
+      backup_configs: {
+        Row: {
+          backup_type: string
+          compression_enabled: boolean
+          created_at: string
+          created_by: string
+          description: string | null
+          encryption_enabled: boolean
+          id: string
+          is_active: boolean
+          last_run_at: string | null
+          name: string
+          next_run_at: string | null
+          retention_days: number
+          schedule_cron: string | null
+          storage_location: string
+          updated_at: string
+        }
+        Insert: {
+          backup_type?: string
+          compression_enabled?: boolean
+          created_at?: string
+          created_by: string
+          description?: string | null
+          encryption_enabled?: boolean
+          id?: string
+          is_active?: boolean
+          last_run_at?: string | null
+          name: string
+          next_run_at?: string | null
+          retention_days?: number
+          schedule_cron?: string | null
+          storage_location?: string
+          updated_at?: string
+        }
+        Update: {
+          backup_type?: string
+          compression_enabled?: boolean
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          encryption_enabled?: boolean
+          id?: string
+          is_active?: boolean
+          last_run_at?: string | null
+          name?: string
+          next_run_at?: string | null
+          retention_days?: number
+          schedule_cron?: string | null
+          storage_location?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      backup_records: {
+        Row: {
+          backup_duration_seconds: number | null
+          backup_type: string
+          checksum: string | null
+          completed_at: string | null
+          config_id: string
+          created_at: string
+          error_message: string | null
+          file_path: string | null
+          file_size_bytes: number | null
+          id: string
+          metadata: Json | null
+          started_at: string
+          status: string
+        }
+        Insert: {
+          backup_duration_seconds?: number | null
+          backup_type: string
+          checksum?: string | null
+          completed_at?: string | null
+          config_id: string
+          created_at?: string
+          error_message?: string | null
+          file_path?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          metadata?: Json | null
+          started_at?: string
+          status?: string
+        }
+        Update: {
+          backup_duration_seconds?: number | null
+          backup_type?: string
+          checksum?: string | null
+          completed_at?: string | null
+          config_id?: string
+          created_at?: string
+          error_message?: string | null
+          file_path?: string | null
+          file_size_bytes?: number | null
+          id?: string
+          metadata?: Json | null
+          started_at?: string
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "backup_records_config_id_fkey"
+            columns: ["config_id"]
+            isOneToOne: false
+            referencedRelation: "backup_configs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comment_likes: {
         Row: {
           comment_id: string
@@ -876,6 +986,54 @@ export type Database = {
           tvl?: number
           type?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      environment_variables: {
+        Row: {
+          created_at: string
+          created_by: string
+          description: string | null
+          environment: string
+          id: string
+          is_active: boolean
+          is_secret: boolean
+          last_accessed_at: string | null
+          name: string
+          updated_at: string
+          updated_by: string | null
+          value_encrypted: string | null
+          value_plain: string | null
+        }
+        Insert: {
+          created_at?: string
+          created_by: string
+          description?: string | null
+          environment?: string
+          id?: string
+          is_active?: boolean
+          is_secret?: boolean
+          last_accessed_at?: string | null
+          name: string
+          updated_at?: string
+          updated_by?: string | null
+          value_encrypted?: string | null
+          value_plain?: string | null
+        }
+        Update: {
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          environment?: string
+          id?: string
+          is_active?: boolean
+          is_secret?: boolean
+          last_accessed_at?: string | null
+          name?: string
+          updated_at?: string
+          updated_by?: string | null
+          value_encrypted?: string | null
+          value_plain?: string | null
         }
         Relationships: []
       }
@@ -2944,6 +3102,53 @@ export type Database = {
             columns: ["organization_id"]
             isOneToOne: false
             referencedRelation: "organizations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      technical_indicators: {
+        Row: {
+          agent_id: string
+          calculated_at: string
+          created_at: string
+          id: string
+          indicator_type: string
+          parameters: Json | null
+          signal: string | null
+          strength: number | null
+          timeframe: string
+          value: number
+        }
+        Insert: {
+          agent_id: string
+          calculated_at?: string
+          created_at?: string
+          id?: string
+          indicator_type: string
+          parameters?: Json | null
+          signal?: string | null
+          strength?: number | null
+          timeframe?: string
+          value: number
+        }
+        Update: {
+          agent_id?: string
+          calculated_at?: string
+          created_at?: string
+          id?: string
+          indicator_type?: string
+          parameters?: Json | null
+          signal?: string | null
+          strength?: number | null
+          timeframe?: string
+          value?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "technical_indicators_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
             referencedColumns: ["id"]
           },
         ]
