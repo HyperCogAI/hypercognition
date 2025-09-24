@@ -1,8 +1,9 @@
 // Service Worker for offline functionality and caching
-const CACHE_NAME = 'hypercognition-v1';
-const STATIC_CACHE = 'static-v1';
-const DYNAMIC_CACHE = 'dynamic-v1';
-const API_CACHE = 'api-v1';
+const CACHE_VERSION = Date.now(); // Dynamic versioning for updates
+const CACHE_NAME = `hypercognition-v${CACHE_VERSION}`;
+const STATIC_CACHE = `static-v${CACHE_VERSION}`;
+const DYNAMIC_CACHE = `dynamic-v${CACHE_VERSION}`;
+const API_CACHE = `api-v${CACHE_VERSION}`;
 
 // Assets to cache on install
 const STATIC_ASSETS = [
@@ -110,9 +111,9 @@ async function handleFetch(request) {
   const url = new URL(request.url);
   
   try {
-    // Static assets - Cache First
+    // Static assets - Stale While Revalidate for faster updates
     if (isStaticAsset(url)) {
-      return await cacheFirst(request, STATIC_CACHE);
+      return await staleWhileRevalidate(request, STATIC_CACHE);
     }
 
     // API requests - Network First with fallback
