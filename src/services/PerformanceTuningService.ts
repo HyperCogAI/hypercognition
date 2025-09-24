@@ -417,8 +417,7 @@ export class PerformanceTuningService {
 
     } catch (error) {
       structuredLogger.error('Failed to get performance summary', {
-        component: 'PerformanceTuningService',
-        error
+        component: 'PerformanceTuningService'
       })
       throw error
     }
@@ -445,13 +444,13 @@ export class PerformanceTuningService {
     const recentAvgCpu = recent.reduce((sum, m) => sum + m.cpu_usage_percent, 0) / recent.length
     const olderAvgCpu = older.length > 0 ? older.reduce((sum, m) => sum + m.cpu_usage_percent, 0) / older.length : recentAvgCpu
 
-    const queryTimeTrend = recentAvgQueryTime < olderAvgQueryTime * 0.95 ? 'improving' :
+    const queryTimeTrend: 'improving' | 'stable' | 'degrading' = recentAvgQueryTime < olderAvgQueryTime * 0.95 ? 'improving' :
                           recentAvgQueryTime > olderAvgQueryTime * 1.05 ? 'degrading' : 'stable'
 
-    const throughputTrend = recentAvgThroughput > olderAvgThroughput * 1.05 ? 'improving' :
+    const throughputTrend: 'improving' | 'stable' | 'degrading' = recentAvgThroughput > olderAvgThroughput * 1.05 ? 'improving' :
                            recentAvgThroughput < olderAvgThroughput * 0.95 ? 'degrading' : 'stable'
 
-    const resourceTrend = recentAvgCpu < olderAvgCpu * 0.95 ? 'improving' :
+    const resourceTrend: 'improving' | 'stable' | 'degrading' = recentAvgCpu < olderAvgCpu * 0.95 ? 'improving' :
                          recentAvgCpu > olderAvgCpu * 1.05 ? 'degrading' : 'stable'
 
     return {
