@@ -64,24 +64,107 @@ const EnhancedMarketNews = () => {
     fetchNews();
   }, []);
 
-  const [alerts] = useState<MarketAlert[]>([
-    {
-      id: "1",
-      type: "breaking",
-      message: "Major whale movement detected: 50,000 ETH transferred to unknown wallet",
-      severity: "high",
-      timestamp: "2024-01-15T11:30:00Z",
-      affectedSymbols: ["ETH", "ALPHA"]
-    },
-    {
-      id: "2",
-      type: "regulatory",
-      message: "SEC announces new guidelines for AI trading systems",
-      severity: "medium",
-      timestamp: "2024-01-15T10:15:00Z",
-      affectedSymbols: ["BETA", "GAMMA"]
+  const [alerts, setAlerts] = useState<MarketAlert[]>([])
+
+  const generateMarketAlerts = (): MarketAlert[] => {
+    const alertTypes = ['breaking', 'price', 'regulatory', 'technical'] as const
+    const severities = ['high', 'medium', 'low'] as const
+    const symbols = ['SOL', 'ETH', 'USDT', 'USDC', 'BONK', 'mSOL', 'ALPHA', 'BETA', 'GAMMA']
+    
+    const alertTemplates = [
+      {
+        type: 'breaking',
+        messages: [
+          'Major whale movement detected: {amount} {symbol} transferred to unknown wallet',
+          'Large institutional buy order executed for {symbol}',
+          'Breaking: {symbol} reaches new daily high amid heavy trading volume',
+          'Alert: Unusual trading pattern detected in {symbol} market'
+        ]
+      },
+      {
+        type: 'price',
+        messages: [
+          '{symbol} price surge: +{percent}% in last hour',
+          'Significant price drop: {symbol} down {percent}% from daily high',
+          '{symbol} breaks key resistance level at ${price}',
+          'Flash crash detected: {symbol} recovers from temporary dip'
+        ]
+      },
+      {
+        type: 'regulatory',
+        messages: [
+          'New regulations announced affecting {symbol} trading',
+          'Regulatory clarity improves for {symbol} ecosystem',
+          'Compliance update: Enhanced KYC requirements for {symbol}',
+          'Government statement impacts {symbol} market sentiment'
+        ]
+      },
+      {
+        type: 'technical',
+        messages: [
+          'Golden cross formation detected in {symbol} chart',
+          'RSI oversold condition reached for {symbol}',
+          'Volume spike: {symbol} trading volume up {percent}%',
+          'Technical breakout: {symbol} exits consolidation pattern'
+        ]
+      }
+    ]
+
+    const numAlerts = Math.floor(Math.random() * 4) + 2 // 2-5 alerts
+    const alerts: MarketAlert[] = []
+    
+    for (let i = 0; i < numAlerts; i++) {
+      const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)]
+      const template = alertTemplates.find(t => t.type === alertType)!
+      const messageTemplate = template.messages[Math.floor(Math.random() * template.messages.length)]
+      
+      const symbol = symbols[Math.floor(Math.random() * symbols.length)]
+      const affectedSymbols = [symbol, ...symbols.filter(s => s !== symbol).slice(0, Math.floor(Math.random() * 2))]
+      
+      // Generate dynamic values
+      const amount = (Math.random() * 50000 + 10000).toFixed(0)
+      const percent = (Math.random() * 20 + 5).toFixed(1)
+      const price = (Math.random() * 100 + 10).toFixed(2)
+      
+      const message = messageTemplate
+        .replace('{amount}', amount)
+        .replace('{symbol}', symbol)
+        .replace('{percent}', percent)
+        .replace('{price}', price)
+      
+      // Determine severity based on alert type and random factors
+      let severity: 'high' | 'medium' | 'low' = 'medium'
+      if (alertType === 'breaking' && Math.random() > 0.5) severity = 'high'
+      else if (alertType === 'regulatory' && Math.random() > 0.7) severity = 'high'
+      else if (Math.random() > 0.8) severity = 'low'
+      
+      // Generate recent timestamp (within last 2 hours)
+      const timestamp = new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000).toISOString()
+      
+      alerts.push({
+        id: `alert_${Date.now()}_${i}`,
+        type: alertType,
+        message,
+        severity,
+        timestamp,
+        affectedSymbols
+      })
     }
-  ])
+    
+    return alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+  }
+
+  useEffect(() => {
+    // Initial alert generation
+    setAlerts(generateMarketAlerts())
+    
+    // Update alerts every 2 minutes
+    const alertInterval = setInterval(() => {
+      setAlerts(generateMarketAlerts())
+    }, 120000)
+    
+    return () => clearInterval(alertInterval)
+  }, [])
 
   // Filter news based on search and filters
   const filteredNews = news.filter(article => {
