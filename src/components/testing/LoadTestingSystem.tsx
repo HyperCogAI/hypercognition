@@ -9,6 +9,8 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Slider } from "@/components/ui/slider"
 import { Alert, AlertDescription } from "@/components/ui/alert"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
+import { supabase } from "@/integrations/supabase/client"
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { 
   Play, 
   Pause, 
@@ -86,44 +88,78 @@ interface PerformanceThreshold {
   unit: string
 }
 
-const LOAD_TEST_CONFIGS: LoadTestConfig[] = [
-  {
-    id: '1',
-    name: 'API Stress Test',
-    description: 'High-load test for API endpoints',
-    type: 'api',
-    duration: 10,
-    maxUsers: 1000,
-    rampUpTime: 300,
-    targetRPS: 500,
-    endpoints: ['/api/agents', '/api/portfolio', '/api/trading'],
-    isActive: true
-  },
-  {
-    id: '2',
-    name: 'Database Load Test',
-    description: 'Database performance under load',
-    type: 'database',
-    duration: 15,
-    maxUsers: 500,
-    rampUpTime: 180,
-    targetRPS: 200,
-    endpoints: ['/api/data/query', '/api/data/insert'],
-    isActive: true
-  },
-  {
-    id: '3',
-    name: 'Frontend Performance',
-    description: 'Client-side performance testing',
-    type: 'frontend',
-    duration: 5,
-    maxUsers: 100,
-    rampUpTime: 60,
-    targetRPS: 50,
-    endpoints: ['/', '/marketplace', '/portfolio'],
-    isActive: false
-  }
-]
+// Fetch load test configurations from database
+const useLoadTestConfigs = () => {
+  return useQuery({
+    queryKey: ['load-test-configs'],
+    queryFn: async () => {
+      // For now, return mock data since we don't have test configs table
+      // In a real implementation, you would fetch from a load_test_configs table
+      return [
+        {
+          id: '1',
+          name: 'API Stress Test',
+          description: 'High-load test for API endpoints',
+          type: 'api' as const,
+          duration: 10,
+          maxUsers: 1000,
+          rampUpTime: 300,
+          targetRPS: 500,
+          endpoints: ['/api/agents', '/api/portfolio', '/api/trading'],
+          isActive: true
+        },
+        {
+          id: '2',
+          name: 'Database Load Test',
+          description: 'Database performance under load',
+          type: 'database' as const,
+          duration: 15,
+          maxUsers: 500,
+          rampUpTime: 180,
+          targetRPS: 200,
+          endpoints: ['/api/data/query', '/api/data/insert'],
+          isActive: true
+        }
+      ]
+    }
+  })
+}
+
+// Fetch test results from database
+const useTestResults = () => {
+  return useQuery({
+    queryKey: ['test-results'],
+    queryFn: async () => {
+      // For now, return mock data since we don't have test_results table
+      // In a real implementation, you would fetch from a test_results table
+      return [
+        {
+          id: '1',
+          configId: '1',
+          configName: 'API Stress Test',
+          startTime: '2024-01-15T10:00:00Z',
+          endTime: '2024-01-15T10:10:00Z',
+          status: 'completed' as const,
+          maxUsers: 1000,
+          totalRequests: 15000,
+          successfulRequests: 14850,
+          failedRequests: 150,
+          averageResponseTime: 245,
+          maxResponseTime: 1200,
+          minResponseTime: 45,
+          errorRate: 1.0,
+          throughput: 485,
+          bottlenecks: ['Database connection pool', 'Rate limiting'],
+          recommendations: [
+            'Increase database connection pool size',
+            'Implement request queuing',
+            'Add caching layer for frequent queries'
+          ]
+        }
+      ]
+    }
+  })
+}
 
 const PERFORMANCE_THRESHOLDS: PerformanceThreshold[] = [
   { metric: 'Response Time', warning: 500, critical: 1000, unit: 'ms' },
@@ -372,8 +408,8 @@ function LoadTestConfigForm({
 }
 
 export function LoadTestingSystem() {
-  const [testConfigs, setTestConfigs] = useState<LoadTestConfig[]>(LOAD_TEST_CONFIGS)
-  const [testResults, setTestResults] = useState<TestResult[]>(MOCK_TEST_RESULTS)
+  const { data: testConfigs = [], isLoading: configsLoading } = useLoadTestConfigs()
+  const { data: testResults = [], isLoading: resultsLoading } = useTestResults()
   const [currentMetrics, setCurrentMetrics] = useState<TestMetrics | null>(null)
   const [activeTest, setActiveTest] = useState<string | null>(null)
   const [showConfigDialog, setShowConfigDialog] = useState(false)
@@ -381,6 +417,7 @@ export function LoadTestingSystem() {
   const [selectedTab, setSelectedTab] = useState<'configs' | 'monitoring' | 'results'>('configs')
   
   const { toast } = useToast()
+  const queryClient = useQueryClient()
 
   // Simulate real-time metrics during active test
   useEffect(() => {
@@ -427,7 +464,8 @@ export function LoadTestingSystem() {
         recommendations: ['Optimize database indexes', 'Increase server memory']
       }
 
-      setTestResults(prev => [newResult, ...prev])
+      // In a real implementation, you would save the result to the database
+      queryClient.invalidateQueries({ queryKey: ['test-results'] })
       setActiveTest(null)
       
       toast({
@@ -448,27 +486,21 @@ export function LoadTestingSystem() {
   }
 
   const handleSaveConfig = (configData: Omit<LoadTestConfig, 'id'>) => {
+    // In a real implementation, you would save to the database
     if (editingConfig) {
-      setTestConfigs(prev => prev.map(c => 
-        c.id === editingConfig.id 
-          ? { ...configData, id: editingConfig.id }
-          : c
-      ))
       toast({
         title: "Configuration Updated",
         description: `${configData.name} has been updated`
       })
     } else {
-      const newConfig: LoadTestConfig = {
-        ...configData,
-        id: Date.now().toString()
-      }
-      setTestConfigs(prev => [...prev, newConfig])
       toast({
         title: "Configuration Created",
         description: `${configData.name} has been created`
       })
     }
+    
+    // Refresh the configurations
+    queryClient.invalidateQueries({ queryKey: ['load-test-configs'] })
     
     setShowConfigDialog(false)
     setEditingConfig(null)

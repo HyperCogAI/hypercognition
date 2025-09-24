@@ -16,7 +16,9 @@ import {
   CheckCircle,
   Download
 } from 'lucide-react';
-import { useBundleOptimization, usePerformanceMonitoring } from '@/hooks/useBundleOptimization';
+import { useBundleOptimization } from '@/hooks/useBundleOptimization';
+import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface BundleAnalysis {
   totalSize: number;
@@ -57,35 +59,71 @@ interface PerformanceMetrics {
   };
 }
 
+// Performance analysis query
+const usePerformanceAnalysis = () => {
+  return useQuery({
+    queryKey: ['performance-analysis'],
+    queryFn: async () => {
+      // Collect real performance data
+      const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
+      const paintEntries = performance.getEntriesByType('paint');
+      
+      const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0;
+      const lcp = paintEntries.find(entry => entry.name === 'largest-contentful-paint')?.startTime || 0;
+      
+      return {
+        coreWebVitals: {
+          lcp: lcp || 2500,
+          fid: Math.random() * 100,
+          cls: Math.random() * 0.1,
+          fcp: fcp || 1800,
+          ttfb: navigation?.responseStart - navigation?.requestStart || 150
+        },
+        resourceMetrics: {
+          domNodes: document.querySelectorAll('*').length,
+          scriptSize: 580 * 1024,
+          styleSize: 45 * 1024,
+          imageSize: 380 * 1024,
+          fontSize: 120 * 1024
+        },
+        networkMetrics: {
+          requests: 15,
+          bandwidth: 1.2 * 1024 * 1024,
+          cacheHitRate: 85
+        }
+      };
+    },
+    refetchInterval: 10000, // Refresh every 10 seconds
+  })
+}
+
 export function PerformanceAnalyzer() {
-  const { metrics, updateMetrics, loadFeature, cleanup } = useBundleOptimization();
-  const { performanceData, recordMetric, measureAsync } = usePerformanceMonitoring();
+  const { cleanup } = useBundleOptimization();
+  const { performanceData } = usePerformanceMonitoring('PerformanceAnalyzer');
+  const { data: performanceMetrics, isLoading: metricsLoading, refetch } = usePerformanceAnalysis();
   
   const [bundleAnalysis, setBundleAnalysis] = useState<BundleAnalysis | null>(null);
-  const [performanceMetrics, setPerformanceMetrics] = useState<PerformanceMetrics | null>(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [optimizationScore, setOptimizationScore] = useState(0);
+  
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     runPerformanceAnalysis();
-  }, []);
+  }, [performanceMetrics]);
 
   const runPerformanceAnalysis = async () => {
     setIsAnalyzing(true);
     
     try {
-      await measureAsync('performance_analysis', async () => {
-        // Analyze bundle composition
-        const bundleData = await analyzeBundleComposition();
-        setBundleAnalysis(bundleData);
-        
-        // Collect performance metrics
-        const perfData = await collectPerformanceMetrics();
-        setPerformanceMetrics(perfData);
-        
-        // Calculate optimization score
-        calculateOptimizationScore(bundleData, perfData);
-      });
+      // Analyze bundle composition
+      const bundleData = await analyzeBundleComposition();
+      setBundleAnalysis(bundleData);
+      
+      // Calculate optimization score if we have performance metrics
+      if (performanceMetrics) {
+        calculateOptimizationScore(bundleData, performanceMetrics);
+      }
     } catch (error) {
       console.error('Performance analysis failed:', error);
     } finally {
@@ -138,36 +176,6 @@ export function PerformanceAnalyzer() {
     };
   };
 
-  const collectPerformanceMetrics = async (): Promise<PerformanceMetrics> => {
-    // Collect real performance data
-    const navigation = performance.getEntriesByType('navigation')[0] as PerformanceNavigationTiming;
-    const paintEntries = performance.getEntriesByType('paint');
-    
-    const fcp = paintEntries.find(entry => entry.name === 'first-contentful-paint')?.startTime || 0;
-    const lcp = paintEntries.find(entry => entry.name === 'largest-contentful-paint')?.startTime || 0;
-    
-    return {
-      coreWebVitals: {
-        lcp: lcp || 2500, // Target: < 2.5s
-        fid: Math.random() * 100, // Target: < 100ms
-        cls: Math.random() * 0.1, // Target: < 0.1
-        fcp: fcp || 1800, // Target: < 1.8s
-        ttfb: navigation?.responseStart - navigation?.requestStart || 150
-      },
-      resourceMetrics: {
-        domNodes: document.querySelectorAll('*').length,
-        scriptSize: 580 * 1024,
-        styleSize: 45 * 1024,
-        imageSize: 380 * 1024,
-        fontSize: 120 * 1024
-      },
-      networkMetrics: {
-        requests: 15,
-        bandwidth: 1.2 * 1024 * 1024, // 1.2 MB
-        cacheHitRate: 85
-      }
-    };
-  };
 
   const calculateOptimizationScore = (bundle: BundleAnalysis, perf: PerformanceMetrics) => {
     let score = 100;
@@ -199,7 +207,10 @@ export function PerformanceAnalyzer() {
       // Simulate optimization steps
       await new Promise(resolve => setTimeout(resolve, 2000));
       
-      // Re-analyze after optimization
+      // Refresh performance data
+      queryClient.invalidateQueries({ queryKey: ['performance-analysis'] });
+      
+      // Re-analyze bundle
       await runPerformanceAnalysis();
     } catch (error) {
       console.error('Bundle optimization failed:', error);
