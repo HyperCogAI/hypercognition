@@ -110,7 +110,7 @@ export function AppSidebar() {
       <SidebarContent className="bg-card border-r border-border/30 shadow-2xl">
         {/* Logo */}
         <div className="p-4 border-b border-border/30 bg-background">
-          <div className="flex items-center justify-start pl-2">
+          <div className="flex items-center justify-start pl-1">
             <img 
               src={hyperCognitionLogo} 
               alt="HyperCognition Logo" 
