@@ -9,6 +9,7 @@ import { Slider } from '@/components/ui/slider'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { usePortfolioAnalytics } from '@/hooks/usePortfolioAnalytics'
+import { RealPortfolioService } from '@/services/RealPortfolioService'
 import { 
   Target, 
   TrendingUp, 
@@ -65,12 +66,38 @@ const OPTIMIZATION_STRATEGIES: OptimizationStrategy[] = [
 ]
 
 export function PortfolioOptimizer() {
-  const { holdings, portfolioMetrics, assetAllocation } = usePortfolioAnalytics()
+  const [holdings, setHoldings] = React.useState<any[]>([]);
+  const [portfolioMetrics, setPortfolioMetrics] = React.useState<any>(null);
+  const [assetAllocation, setAssetAllocation] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
   const [selectedStrategy, setSelectedStrategy] = useState<string>('balanced')
   const [customRiskTolerance, setCustomRiskTolerance] = useState([50])
   const [customReturnTarget, setCustomReturnTarget] = useState([15])
   const [optimizationLoading, setOptimizationLoading] = useState(false)
   const [optimizedAllocation, setOptimizedAllocation] = useState<any[]>([])
+
+  React.useEffect(() => {
+    loadPortfolioData();
+  }, []);
+
+  const loadPortfolioData = async () => {
+    try {
+      setIsLoading(true);
+      const [holdingsData, metricsData, allocationData] = await Promise.all([
+        RealPortfolioService.getPortfolioHoldings('current_user'),
+        RealPortfolioService.calculatePortfolioMetrics('current_user'),
+        RealPortfolioService.getAssetAllocation('current_user')
+      ]);
+
+      setHoldings(holdingsData);
+      setPortfolioMetrics(metricsData);
+      setAssetAllocation(allocationData);
+    } catch (error) {
+      console.error('Error loading portfolio data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const strategy = OPTIMIZATION_STRATEGIES.find(s => s.id === selectedStrategy)
 
@@ -103,8 +130,8 @@ export function PortfolioOptimizer() {
             targetAllocation = asset.allocation_percentage
         }
 
-        const currentValue = asset.current_value
-        const totalValue = assetAllocation.reduce((sum, a) => sum + a.current_value, 0)
+        const currentValue = asset.market_value
+        const totalValue = assetAllocation.reduce((sum, a) => sum + a.market_value, 0)
         const targetValue = (totalValue * targetAllocation) / 100
         const difference = targetValue - currentValue
         
@@ -156,6 +183,28 @@ export function PortfolioOptimizer() {
         </div>
       </div>
 
+      {isLoading ? (
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+          <Card className="lg:col-span-1 animate-pulse">
+            <CardHeader>
+              <div className="h-6 bg-muted rounded w-3/4"></div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="h-10 bg-muted rounded"></div>
+                <div className="h-20 bg-muted rounded"></div>
+              </div>
+            </CardContent>
+          </Card>
+          <div className="lg:col-span-2">
+            <Card className="animate-pulse">
+              <CardContent className="p-8">
+                <div className="h-32 bg-muted rounded"></div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Strategy Selection */}
         <Card className="lg:col-span-1">
@@ -373,7 +422,8 @@ export function PortfolioOptimizer() {
             </Card>
           )}
         </div>
-      </div>
+        </div>
+      )}
     </div>
   )
 }

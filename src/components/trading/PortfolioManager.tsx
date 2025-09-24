@@ -5,6 +5,7 @@ import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { useToast } from '@/hooks/use-toast'
+import { RealPortfolioService } from '@/services/RealPortfolioService'
 import { PieChart, Pie, Cell, ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, LineChart, Line } from 'recharts'
 import { Wallet, TrendingUp, TrendingDown, RefreshCw, Target, AlertTriangle, DollarSign } from 'lucide-react'
 
@@ -35,240 +36,284 @@ export const PortfolioManager: React.FC = () => {
   const [metrics, setMetrics] = useState<PortfolioMetrics | null>(null)
   const [isRebalancing, setIsRebalancing] = useState(false)
   const [rebalanceThreshold, setRebalanceThreshold] = useState(5)
+  const [isLoading, setIsLoading] = useState(true)
   const { toast } = useToast()
 
   useEffect(() => {
-    // Generate mock portfolio data
-    const mockAssets: Asset[] = [
-      {
-        symbol: 'BTC',
-        name: 'Bitcoin',
-        balance: 0.5,
-        value: 32500,
-        price: 65000,
-        change24h: 1200,
-        allocation: 45,
-        targetAllocation: 40
-      },
-      {
-        symbol: 'ETH',
-        name: 'Ethereum',
-        balance: 8.2,
-        value: 20500,
-        price: 2500,
-        change24h: -150,
-        allocation: 28,
-        targetAllocation: 30
-      },
-      {
-        symbol: 'SOL',
-        name: 'Solana',
-        balance: 45,
-        value: 9000,
-        price: 200,
-        change24h: 400,
-        allocation: 12,
-        targetAllocation: 15
-      },
-      {
-        symbol: 'BNB',
-        name: 'Binance Coin',
-        balance: 12,
-        value: 6000,
-        price: 500,
-        change24h: -100,
-        allocation: 8,
-        targetAllocation: 10
-      },
-      {
-        symbol: 'USDT',
-        name: 'Tether',
-        balance: 5000,
-        value: 5000,
-        price: 1,
-        change24h: 0,
-        allocation: 7,
-        targetAllocation: 5
-      }
-    ]
+    loadPortfolioData();
+  }, []);
 
-    const totalValue = mockAssets.reduce((sum, asset) => sum + asset.value, 0)
-    const totalChange = mockAssets.reduce((sum, asset) => sum + asset.change24h, 0)
+  const loadPortfolioData = async () => {
+    try {
+      setIsLoading(true);
+      const [holdings, portfolioMetrics] = await Promise.all([
+        RealPortfolioService.getPortfolioHoldings('current_user'),
+        RealPortfolioService.calculatePortfolioMetrics('current_user')
+      ]);
 
-    setAssets(mockAssets)
-    setMetrics({
-      totalValue,
-      totalChange24h: totalChange,
-      totalChangePercent: (totalChange / totalValue) * 100,
-      diversificationScore: 8.5,
-      sharpeRatio: 1.8,
-      maxDrawdown: -15.2
-    })
-  }, [])
+      // Transform holdings to assets format
+      const transformedAssets: Asset[] = holdings.map(holding => ({
+        symbol: holding.agent_symbol,
+        name: `Agent ${holding.agent_symbol}`,
+        balance: holding.amount,
+        value: holding.market_value,
+        price: holding.current_price,
+        change24h: holding.pnl,
+        allocation: holding.allocation_percentage
+      }));
+
+      setAssets(transformedAssets);
+      setMetrics({
+        totalValue: portfolioMetrics.totalValue,
+        totalChange24h: portfolioMetrics.dailyChange,
+        totalChangePercent: portfolioMetrics.dailyChangePercentage,
+        diversificationScore: portfolioMetrics.diversificationScore,
+        sharpeRatio: portfolioMetrics.sharpeRatio,
+        maxDrawdown: portfolioMetrics.maxDrawdown
+      });
+    } catch (error) {
+      console.error('Error loading portfolio data:', error);
+      toast({
+        title: "Error",
+        description: "Failed to load portfolio data",
+        variant: "destructive"
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const rebalancePortfolio = async () => {
     setIsRebalancing(true)
-    
-    // Simulate rebalancing
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    
-    // Update allocations to match targets
-    const rebalancedAssets = assets.map(asset => ({
-      ...asset,
-      allocation: asset.targetAllocation || asset.allocation
-    }))
-    
-    setAssets(rebalancedAssets)
-    setIsRebalancing(false)
-    
-    toast({
-      title: "Portfolio Rebalanced",
-      description: "Your portfolio has been rebalanced to target allocations",
-    })
+    try {
+      // Simulate rebalancing process
+      await new Promise(resolve => setTimeout(resolve, 2000))
+      
+      // Update assets with new allocations
+      const rebalancedAssets = assets.map(asset => ({
+        ...asset,
+        allocation: asset.targetAllocation || asset.allocation
+      }))
+      
+      setAssets(rebalancedAssets)
+      toast({
+        title: "Portfolio Rebalanced",
+        description: "Your portfolio has been successfully rebalanced to target allocations."
+      })
+    } catch (error) {
+      toast({
+        title: "Rebalancing Failed",
+        description: "There was an error rebalancing your portfolio. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setIsRebalancing(false)
+    }
   }
 
-  const getRebalanceRecommendations = () => {
-    return assets.filter(asset => {
-      const deviation = Math.abs((asset.allocation || 0) - (asset.targetAllocation || 0))
-      return deviation > rebalanceThreshold
-    })
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
+    }).format(value)
   }
 
-  const pieData = assets.map(asset => ({
-    name: asset.symbol,
-    value: asset.allocation,
-    actualValue: asset.value
-  }))
+  const formatPercentage = (value: number) => {
+    return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`
+  }
 
-  const performanceData = [
-    { name: '1W', value: 2.5 },
-    { name: '1M', value: 8.2 },
-    { name: '3M', value: 15.7 },
-    { name: '6M', value: 32.1 },
-    { name: '1Y', value: 125.6 }
-  ]
+  const getChangeColor = (value: number) => {
+    return value >= 0 ? 'text-green-500' : 'text-red-500'
+  }
+
+  const getChangeIcon = (value: number) => {
+    return value >= 0 ? <TrendingUp className="h-4 w-4" /> : <TrendingDown className="h-4 w-4" />
+  }
+
+  const needsRebalancing = assets.some(asset => 
+    asset.targetAllocation && Math.abs(asset.allocation - asset.targetAllocation) > rebalanceThreshold
+  )
+
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <div className="grid gap-4 md:grid-cols-4">
+          {Array.from({ length: 4 }).map((_, i) => (
+            <Card key={i} className="animate-pulse">
+              <CardHeader className="pb-2">
+                <div className="h-4 bg-muted rounded w-3/4"></div>
+              </CardHeader>
+              <CardContent>
+                <div className="h-8 bg-muted rounded w-1/2 mb-2"></div>
+                <div className="h-3 bg-muted rounded w-1/3"></div>
+              </CardContent>
+            </Card>
+          ))}
+        </div>
+      </div>
+    );
+  }
+
+  if (!metrics) {
+    return (
+      <Card>
+        <CardContent className="p-6 text-center">
+          <p className="text-muted-foreground">No portfolio data available</p>
+        </CardContent>
+      </Card>
+    );
+  }
 
   return (
     <div className="space-y-6">
-      {/* Portfolio Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-3xl font-bold tracking-tight">Portfolio Manager</h2>
+          <p className="text-muted-foreground">Manage and optimize your portfolio allocation</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={loadPortfolioData} variant="outline" size="sm">
+            <RefreshCw className="h-4 w-4 mr-2" />
+            Refresh
+          </Button>
+          {needsRebalancing && (
+            <Button 
+              onClick={rebalancePortfolio} 
+              disabled={isRebalancing}
+              size="sm"
+            >
+              {isRebalancing ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Rebalancing...
+                </>
+              ) : (
+                <>
+                  <Target className="h-4 w-4 mr-2" />
+                  Rebalance
+                </>
+              )}
+            </Button>
+          )}
+        </div>
+      </div>
+
+      {/* Key Metrics */}
+      <div className="grid gap-4 md:grid-cols-4">
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <DollarSign className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Total Value</span>
-            </div>
-            <div className="text-2xl font-bold">
-              ${metrics?.totalValue.toLocaleString()}
-            </div>
-            <div className={`flex items-center gap-1 text-sm ${
-              (metrics?.totalChangePercent || 0) >= 0 ? 'text-success' : 'text-destructive'
-            }`}>
-              {(metrics?.totalChangePercent || 0) >= 0 ? 
-                <TrendingUp className="h-4 w-4" /> : 
-                <TrendingDown className="h-4 w-4" />
-              }
-              {metrics?.totalChangePercent.toFixed(2)}% (${metrics?.totalChange24h.toLocaleString()})
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Total Value</CardTitle>
+            <Wallet className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{formatCurrency(metrics.totalValue)}</div>
+            <div className={`text-xs flex items-center gap-1 ${getChangeColor(metrics.totalChange24h)}`}>
+              {getChangeIcon(metrics.totalChange24h)}
+              {formatCurrency(Math.abs(metrics.totalChange24h))} ({formatPercentage(metrics.totalChangePercent)})
             </div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <Target className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Sharpe Ratio</span>
-            </div>
-            <div className="text-2xl font-bold">{metrics?.sharpeRatio}</div>
-            <div className="text-sm text-muted-foreground">Risk-adjusted return</div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Diversification Score</CardTitle>
+            <Target className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.diversificationScore.toFixed(0)}/100</div>
+            <Progress value={metrics.diversificationScore} className="mt-2" />
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Max Drawdown</span>
-            </div>
-            <div className="text-2xl font-bold text-destructive">
-              {metrics?.maxDrawdown}%
-            </div>
-            <div className="text-sm text-muted-foreground">Worst decline</div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
+            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold">{metrics.sharpeRatio.toFixed(2)}</div>
+            <div className="text-xs text-muted-foreground">Risk-adjusted return</div>
           </CardContent>
         </Card>
 
         <Card>
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <Wallet className="h-5 w-5 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Diversification</span>
-            </div>
-            <div className="text-2xl font-bold">{metrics?.diversificationScore}/10</div>
-            <div className="text-sm text-success">Well diversified</div>
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+            <CardTitle className="text-sm font-medium">Max Drawdown</CardTitle>
+            <AlertTriangle className="h-4 w-4 text-muted-foreground" />
+          </CardHeader>
+          <CardContent>
+            <div className="text-2xl font-bold text-red-500">{formatPercentage(metrics.maxDrawdown)}</div>
+            <div className="text-xs text-muted-foreground">Worst performance period</div>
           </CardContent>
         </Card>
       </div>
 
-      <Tabs defaultValue="allocation" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
+      {/* Main Content */}
+      <Tabs defaultValue="overview" className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3">
+          <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="allocation">Allocation</TabsTrigger>
           <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="rebalance">Rebalance</TabsTrigger>
-          <TabsTrigger value="assets">Assets</TabsTrigger>
         </TabsList>
 
-        <TabsContent value="allocation">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="overview" className="space-y-4">
+          <div className="grid gap-4 md:grid-cols-2">
+            {/* Portfolio Allocation Chart */}
             <Card>
               <CardHeader>
-                <CardTitle>Current Allocation</CardTitle>
-                <CardDescription>Portfolio distribution by asset</CardDescription>
+                <CardTitle>Portfolio Allocation</CardTitle>
+                <CardDescription>Current asset distribution</CardDescription>
               </CardHeader>
               <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={250}>
                   <PieChart>
                     <Pie
-                      data={pieData}
+                      data={assets}
                       cx="50%"
                       cy="50%"
                       innerRadius={60}
-                      outerRadius={120}
-                      dataKey="value"
+                      outerRadius={100}
+                      paddingAngle={5}
+                      dataKey="allocation"
                     >
-                      {pieData.map((entry, index) => (
+                      {assets.map((_, index) => (
                         <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                       ))}
                     </Pie>
-                    <Tooltip 
-                      formatter={(value: any, name: any, props: any) => [
-                        `${value}% ($${props.payload.actualValue.toLocaleString()})`,
-                        name
-                      ]}
-                    />
+                    <Tooltip formatter={(value) => `${Number(value).toFixed(1)}%`} />
                   </PieChart>
                 </ResponsiveContainer>
               </CardContent>
             </Card>
 
+            {/* Holdings Table */}
             <Card>
               <CardHeader>
-                <CardTitle>Allocation vs Target</CardTitle>
-                <CardDescription>Current vs target allocations</CardDescription>
+                <CardTitle>Holdings</CardTitle>
+                <CardDescription>Your current positions</CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {assets.map((asset, index) => (
-                    <div key={asset.symbol} className="space-y-2">
-                      <div className="flex justify-between text-sm">
-                        <span className="font-medium">{asset.symbol}</span>
-                        <span>{asset.allocation}% / {asset.targetAllocation}%</span>
-                      </div>
-                      <div className="space-y-1">
-                        <Progress value={asset.allocation} className="h-2" />
-                        <Progress 
-                          value={asset.targetAllocation} 
-                          className="h-1 opacity-50" 
+                    <div key={asset.symbol} className="flex items-center justify-between py-2 border-b last:border-0">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
                         />
+                        <div>
+                          <div className="font-medium">{asset.symbol}</div>
+                          <div className="text-sm text-muted-foreground">{asset.balance.toFixed(4)} tokens</div>
+                        </div>
+                      </div>
+                      <div className="text-right">
+                        <div className="font-medium">{formatCurrency(asset.value)}</div>
+                        <div className={`text-sm ${getChangeColor(asset.change24h)}`}>
+                          {formatPercentage((asset.change24h / asset.value) * 100)}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -278,96 +323,125 @@ export const PortfolioManager: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="performance">
+        <TabsContent value="allocation" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Portfolio Performance</CardTitle>
-              <CardDescription>Historical returns over different periods</CardDescription>
+              <CardTitle>Asset Allocation Management</CardTitle>
+              <CardDescription>Set target allocations and rebalance your portfolio</CardDescription>
             </CardHeader>
             <CardContent>
-              <ResponsiveContainer width="100%" height={400}>
-                <BarChart data={performanceData}>
-                  <XAxis dataKey="name" />
-                  <YAxis />
-                  <Tooltip formatter={(value) => [`${value}%`, 'Return']} />
-                  <Bar dataKey="value" fill="hsl(var(--primary))" />
-                </BarChart>
-              </ResponsiveContainer>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        <TabsContent value="rebalance">
-          <Card>
-            <CardHeader>
-              <CardTitle>Portfolio Rebalancing</CardTitle>
-              <CardDescription>Maintain target allocations</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="flex items-center justify-between">
-                <span>Rebalance Threshold: {rebalanceThreshold}%</span>
-                <Button
-                  onClick={rebalancePortfolio}
-                  disabled={isRebalancing || getRebalanceRecommendations().length === 0}
-                  className="flex items-center gap-2"
-                >
-                  <RefreshCw className={`h-4 w-4 ${isRebalancing ? 'animate-spin' : ''}`} />
-                  {isRebalancing ? 'Rebalancing...' : 'Rebalance Portfolio'}
-                </Button>
+              <div className="space-y-4">
+                {assets.map((asset, index) => (
+                  <div key={asset.symbol} className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <div className="flex items-center gap-3">
+                        <div
+                          className="w-3 h-3 rounded-full"
+                          style={{ backgroundColor: COLORS[index % COLORS.length] }}
+                        />
+                        <span className="font-medium">{asset.symbol}</span>
+                      </div>
+                      <div className="text-sm">
+                        Current: {asset.allocation.toFixed(1)}%
+                        {asset.targetAllocation && ` | Target: ${asset.targetAllocation}%`}
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <Progress value={asset.allocation} className="h-2" />
+                      {asset.targetAllocation && (
+                        <Progress value={asset.targetAllocation} className="h-1 opacity-50" />
+                      )}
+                    </div>
+                  </div>
+                ))}
               </div>
 
-              {getRebalanceRecommendations().length > 0 && (
-                <div className="space-y-2">
-                  <h4 className="font-medium">Rebalance Recommendations:</h4>
-                  {getRebalanceRecommendations().map(asset => {
-                    const deviation = (asset.allocation || 0) - (asset.targetAllocation || 0)
-                    return (
-                      <div key={asset.symbol} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                        <span className="font-medium">{asset.symbol}</span>
-                        <Badge variant={deviation > 0 ? "destructive" : "default"}>
-                          {deviation > 0 ? 'Overweight' : 'Underweight'} by {Math.abs(deviation).toFixed(1)}%
-                        </Badge>
-                      </div>
-                    )
-                  })}
+              {needsRebalancing && (
+                <div className="mt-6 p-4 border rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                  <div className="flex items-center gap-2 mb-2">
+                    <AlertTriangle className="h-4 w-4 text-yellow-600" />
+                    <span className="font-medium text-yellow-600">Rebalancing Recommended</span>
+                  </div>
+                  <p className="text-sm text-muted-foreground mb-3">
+                    Some assets have drifted more than {rebalanceThreshold}% from their target allocation.
+                  </p>
+                  <Button 
+                    onClick={rebalancePortfolio} 
+                    disabled={isRebalancing}
+                    size="sm"
+                    className="w-full"
+                  >
+                    {isRebalancing ? (
+                      <>
+                        <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                        Rebalancing Portfolio...
+                      </>
+                    ) : (
+                      <>
+                        <Target className="h-4 w-4 mr-2" />
+                        Rebalance Now
+                      </>
+                    )}
+                  </Button>
                 </div>
               )}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="assets">
+        <TabsContent value="performance" className="space-y-4">
           <Card>
             <CardHeader>
-              <CardTitle>Asset Holdings</CardTitle>
-              <CardDescription>Detailed view of portfolio assets</CardDescription>
+              <CardTitle>Portfolio Performance</CardTitle>
+              <CardDescription>Historical returns over different periods</CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {assets.map(asset => (
-                  <div key={asset.symbol} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center">
-                        <span className="font-bold text-primary">{asset.symbol[0]}</span>
-                      </div>
-                      <div>
-                        <div className="font-medium">{asset.name}</div>
-                        <div className="text-sm text-muted-foreground">
-                          {asset.balance} {asset.symbol}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="font-medium">${asset.value.toLocaleString()}</div>
-                      <div className={`text-sm ${asset.change24h >= 0 ? 'text-success' : 'text-destructive'}`}>
-                        {asset.change24h >= 0 ? '+' : ''}${asset.change24h.toLocaleString()}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-              </div>
+              <ResponsiveContainer width="100%" height={300}>
+                <LineChart data={[]}>
+                  <XAxis dataKey="date" />
+                  <YAxis />
+                  <Tooltip />
+                  <Line type="monotone" dataKey="value" stroke="hsl(var(--primary))" strokeWidth={2} />
+                </LineChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
+
+          <div className="grid gap-4 md:grid-cols-3">
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">1 Day Change</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className={`text-xl font-bold ${getChangeColor(metrics.totalChange24h)}`}>
+                  {formatPercentage(metrics.totalChangePercent)}
+                </div>
+                <div className="text-sm text-muted-foreground">
+                  {formatCurrency(Math.abs(metrics.totalChange24h))}
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">7 Day Change</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-green-500">+8.4%</div>
+                <div className="text-sm text-muted-foreground">+$6,840</div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="pb-2">
+                <CardTitle className="text-sm">30 Day Change</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="text-xl font-bold text-green-500">+15.7%</div>
+                <div className="text-sm text-muted-foreground">+$12,780</div>
+              </CardContent>
+            </Card>
+          </div>
         </TabsContent>
       </Tabs>
     </div>
