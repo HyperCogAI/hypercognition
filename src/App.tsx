@@ -233,6 +233,7 @@ const AppLayout = () => {
                   <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                   <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
                   <Route path="/analytics" element={<ProtectedRoute><Analytics /></ProtectedRoute>} />
+                  <Route path="/advanced-analytics" element={<ProtectedRoute><AdvancedAnalytics /></ProtectedRoute>} />
                    <Route path="/trading-signals" element={<TradingSignals />} />
                    <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
                   <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
