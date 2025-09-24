@@ -44,6 +44,48 @@ export type Database = {
         }
         Relationships: []
       }
+      admin_actions: {
+        Row: {
+          action_details: Json
+          action_type: string
+          admin_user_id: string
+          approved_at: string | null
+          approved_by: string | null
+          created_at: string
+          id: string
+          justification: string | null
+          requires_approval: boolean | null
+          target_resource: string | null
+          target_user_id: string | null
+        }
+        Insert: {
+          action_details?: Json
+          action_type: string
+          admin_user_id: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          justification?: string | null
+          requires_approval?: boolean | null
+          target_resource?: string | null
+          target_user_id?: string | null
+        }
+        Update: {
+          action_details?: Json
+          action_type?: string
+          admin_user_id?: string
+          approved_at?: string | null
+          approved_by?: string | null
+          created_at?: string
+          id?: string
+          justification?: string | null
+          requires_approval?: boolean | null
+          target_resource?: string | null
+          target_user_id?: string | null
+        }
+        Relationships: []
+      }
       admin_privilege_log: {
         Row: {
           action: string
@@ -557,6 +599,57 @@ export type Database = {
           },
         ]
       }
+      compliance_violations_real: {
+        Row: {
+          assigned_to: string | null
+          auto_detected: boolean | null
+          created_at: string
+          description: string
+          detection_method: string | null
+          id: string
+          related_transaction_id: string | null
+          resolution_notes: string | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          updated_at: string
+          user_id: string | null
+          violation_type: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          auto_detected?: boolean | null
+          created_at?: string
+          description: string
+          detection_method?: string | null
+          id?: string
+          related_transaction_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          violation_type: string
+        }
+        Update: {
+          assigned_to?: string | null
+          auto_detected?: boolean | null
+          created_at?: string
+          description?: string
+          detection_method?: string | null
+          id?: string
+          related_transaction_id?: string | null
+          resolution_notes?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          updated_at?: string
+          user_id?: string | null
+          violation_type?: string
+        }
+        Relationships: []
+      }
       content_moderation: {
         Row: {
           action: string
@@ -761,6 +854,84 @@ export type Database = {
           symbol?: string
           timestamp?: string
           volume_24h?: number | null
+        }
+        Relationships: []
+      }
+      kyc_verifications: {
+        Row: {
+          address_line1: string | null
+          address_line2: string | null
+          city: string | null
+          country: string | null
+          created_at: string
+          date_of_birth: string | null
+          document_expiry: string | null
+          document_number: string | null
+          document_type: string | null
+          full_name: string | null
+          id: string
+          nationality: string | null
+          phone_number: string | null
+          postal_code: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          risk_score: number | null
+          state: string | null
+          status: string
+          updated_at: string
+          user_id: string
+          verification_notes: string | null
+          verification_type: string
+        }
+        Insert: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          document_expiry?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          full_name?: string | null
+          id?: string
+          nationality?: string | null
+          phone_number?: string | null
+          postal_code?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_score?: number | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+          verification_notes?: string | null
+          verification_type: string
+        }
+        Update: {
+          address_line1?: string | null
+          address_line2?: string | null
+          city?: string | null
+          country?: string | null
+          created_at?: string
+          date_of_birth?: string | null
+          document_expiry?: string | null
+          document_number?: string | null
+          document_type?: string | null
+          full_name?: string | null
+          id?: string
+          nationality?: string | null
+          phone_number?: string | null
+          postal_code?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          risk_score?: number | null
+          state?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+          verification_notes?: string | null
+          verification_type?: string
         }
         Relationships: []
       }
@@ -1784,6 +1955,60 @@ export type Database = {
         }
         Relationships: []
       }
+      security_alerts: {
+        Row: {
+          affected_resource: string | null
+          affected_user_id: string | null
+          alert_type: string
+          assigned_to: string | null
+          auto_resolved: boolean | null
+          created_at: string
+          description: string
+          detection_timestamp: string
+          id: string
+          resolution_notes: string | null
+          severity: string
+          source_ip: unknown | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_resource?: string | null
+          affected_user_id?: string | null
+          alert_type: string
+          assigned_to?: string | null
+          auto_resolved?: boolean | null
+          created_at?: string
+          description: string
+          detection_timestamp?: string
+          id?: string
+          resolution_notes?: string | null
+          severity?: string
+          source_ip?: unknown | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_resource?: string | null
+          affected_user_id?: string | null
+          alert_type?: string
+          assigned_to?: string | null
+          auto_resolved?: boolean | null
+          created_at?: string
+          description?: string
+          detection_timestamp?: string
+          id?: string
+          resolution_notes?: string | null
+          severity?: string
+          source_ip?: unknown | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       security_audit_log: {
         Row: {
           action: string
@@ -1812,6 +2037,54 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           resource?: string
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      security_audit_logs: {
+        Row: {
+          action: string
+          additional_data: Json | null
+          created_at: string
+          failure_reason: string | null
+          id: string
+          ip_address: unknown | null
+          resource: string | null
+          resource_id: string | null
+          risk_score: number | null
+          session_id: string | null
+          success: boolean
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          action: string
+          additional_data?: Json | null
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          resource?: string | null
+          resource_id?: string | null
+          risk_score?: number | null
+          session_id?: string | null
+          success?: boolean
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          action?: string
+          additional_data?: Json | null
+          created_at?: string
+          failure_reason?: string | null
+          id?: string
+          ip_address?: unknown | null
+          resource?: string | null
+          resource_id?: string | null
+          risk_score?: number | null
+          session_id?: string | null
+          success?: boolean
           user_agent?: string | null
           user_id?: string | null
         }
@@ -2194,6 +2467,66 @@ export type Database = {
           },
         ]
       }
+      suspicious_transactions: {
+        Row: {
+          amount: number
+          auto_flagged: boolean | null
+          created_at: string
+          currency: string
+          escalated: boolean | null
+          escalated_to: string | null
+          from_account: string | null
+          id: string
+          review_notes: string | null
+          review_status: string
+          reviewed_by: string | null
+          risk_score: number
+          suspicion_reason: string[]
+          to_account: string | null
+          transaction_type: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          auto_flagged?: boolean | null
+          created_at?: string
+          currency?: string
+          escalated?: boolean | null
+          escalated_to?: string | null
+          from_account?: string | null
+          id?: string
+          review_notes?: string | null
+          review_status?: string
+          reviewed_by?: string | null
+          risk_score: number
+          suspicion_reason?: string[]
+          to_account?: string | null
+          transaction_type: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          auto_flagged?: boolean | null
+          created_at?: string
+          currency?: string
+          escalated?: boolean | null
+          escalated_to?: string | null
+          from_account?: string | null
+          id?: string
+          review_notes?: string | null
+          review_status?: string
+          reviewed_by?: string | null
+          risk_score?: number
+          suspicion_reason?: string[]
+          to_account?: string | null
+          transaction_type?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       team_members: {
         Row: {
           created_at: string
@@ -2458,6 +2791,48 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_2fa: {
+        Row: {
+          backup_codes: string[] | null
+          created_at: string
+          id: string
+          is_enabled: boolean
+          last_used_at: string | null
+          phone_number: string | null
+          phone_verified: boolean | null
+          recovery_email: string | null
+          secret_encrypted: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          backup_codes?: string[] | null
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          last_used_at?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean | null
+          recovery_email?: string | null
+          secret_encrypted: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          backup_codes?: string[] | null
+          created_at?: string
+          id?: string
+          is_enabled?: boolean
+          last_used_at?: string | null
+          phone_number?: string | null
+          phone_verified?: boolean | null
+          recovery_email?: string | null
+          secret_encrypted?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_defi_positions: {
         Row: {
