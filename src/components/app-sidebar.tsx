@@ -100,7 +100,7 @@ export function AppSidebar() {
   }
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "transition-all duration-300 text-muted-foreground hover:bg-background/80 hover:text-foreground"
+    isActive ? "text-primary border-r-2 border-primary shadow-lg shadow-primary/20" : "transition-all duration-300 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
 
   return (
     <Sidebar
@@ -299,7 +299,7 @@ export function AppSidebar() {
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground hover:bg-background/80 hover:text-foreground"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       >
                         <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
                         {!isCollapsed && (
