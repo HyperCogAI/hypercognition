@@ -6,7 +6,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { WagmiProvider } from 'wagmi'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
-import { config } from './config/wagmi'
+import { config, WALLETCONNECT_PROJECT_ID } from './config/wagmi'
 import { ConnectionProvider, WalletProvider, WalletModalProvider, wallets, endpoint } from './config/solana'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
@@ -114,7 +114,7 @@ const queryClient = new QueryClient({
 // 3. Create modal
 createWeb3Modal({
   wagmiConfig: config,
-  projectId: import.meta.env.VITE_WALLETCONNECT_PROJECT_ID || '2d6a1b2f8c4e6a7b9d3e5f7g8h9i0j1k',
+  projectId: WALLETCONNECT_PROJECT_ID,
   enableAnalytics: true,
   enableOnramp: true,
   themeMode: 'dark',
