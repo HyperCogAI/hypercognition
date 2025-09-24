@@ -342,15 +342,26 @@
     }
   }
 
-  /* Hide default number input spinners that show as white boxes in dark theme */
+  /* Style number input spinners for dark theme instead of hiding them */
   input[type="number"]::-webkit-outer-spin-button,
   input[type="number"]::-webkit-inner-spin-button {
     -webkit-appearance: none;
-    margin: 0;
+    width: 20px;
+    height: 20px;
+    background: hsl(var(--muted));
+    border-left: 1px solid hsl(var(--border));
+    opacity: 1;
+    cursor: pointer;
+    position: relative;
   }
 
-  /* Firefox number input spinners */
+  input[type="number"]::-webkit-inner-spin-button:hover,
+  input[type="number"]::-webkit-outer-spin-button:hover {
+    background: hsl(var(--muted-foreground) / 0.1);
+  }
+
+  /* For Firefox, we'll keep the default behavior but style the input better */
   input[type="number"] {
-    -moz-appearance: textfield;
+    padding-right: 20px;
   }
 }
