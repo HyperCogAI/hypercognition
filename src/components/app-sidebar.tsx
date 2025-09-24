@@ -116,7 +116,7 @@ export function AppSidebar() {
               alt="HyperCognition Logo" 
               className="h-12 w-auto object-contain"
             />
-            <div className="absolute top-0 bottom-0 right-4 w-px bg-border/50"></div>
+            <div className="absolute top-0 bottom-0 left-20 w-px bg-border/50"></div>
           </div>
         </div>
 
