@@ -143,9 +143,9 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end={item.url === "/"}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -167,9 +167,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -191,9 +191,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -215,9 +215,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -239,9 +239,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                       {!isCollapsed && (
                         <div className="flex items-center justify-between w-full">
                           <span className="font-medium text-foreground">{item.title}</span>
@@ -272,9 +272,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                      <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                     </NavLink>
                   </SidebarMenuButton>
@@ -299,22 +299,22 @@ export function AppSidebar() {
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+                        className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
                       >
-                        <item.icon className="h-4 w-4 text-sidebar-foreground/70 group-hover:text-sidebar-accent-foreground group-hover:scale-110 transition-all duration-300" strokeWidth={2.25} />
+                        <item.icon className="h-4 w-4 text-sidebar-foreground/70 group-hover/menu:text-sidebar-accent-foreground group-hover/menu:scale-110 transition-all duration-300" strokeWidth={2.25} />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium text-foreground">{item.title}</span>
-                            <ExternalLink className="h-3 w-3 text-sidebar-foreground/60 group-hover:text-sidebar-accent-foreground transition-colors" />
+                            <ExternalLink className="h-3 w-3 text-sidebar-foreground/60 group-hover/menu:text-sidebar-accent-foreground transition-colors" />
                           </div>
                         )}
                       </a>
                     ) : (
                       <NavLink 
                         to={item.url}
-                        className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                        className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                       >
-                        <item.icon className="h-4 w-4 group-hover:scale-110 transition-transform duration-300" />
+                        <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                         {!isCollapsed && <span className="font-medium text-foreground">{item.title}</span>}
                       </NavLink>
                     )}
@@ -335,9 +335,9 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild>
                     <NavLink 
                       to="/settings"
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu ${isActive ? 'bg-[hsl(var(--sidebar-active))]' : ''}` }
                     >
-                      <Settings className="h-4 w-4 group-hover:rotate-90 transition-transform duration-300" />
+                      <Settings className="h-4 w-4 group-hover/menu:rotate-90 transition-transform duration-300" />
                       {!isCollapsed && <span className="font-medium text-foreground">Settings</span>}
                     </NavLink>
                   </SidebarMenuButton>
