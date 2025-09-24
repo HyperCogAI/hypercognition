@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -23,6 +23,8 @@ import {
 } from 'lucide-react';
 import { useAdmin } from '@/hooks/useAdmin';
 import { KYCAMLService } from '../../services/KYCAMLService';
+import { useQuery } from '@tanstack/react-query';
+import { supabase } from '@/integrations/supabase/client';
 
 interface KYCRecord {
   id: string;
@@ -86,35 +88,26 @@ interface ComplianceMetrics {
 
 export function KYCAMLDashboard() {
   const { isAdmin } = useAdmin();
-  const [loading, setLoading] = useState(true);
-  const [kycRecords, setKycRecords] = useState<KYCRecord[]>([]);
-  const [amlAlerts, setAmlAlerts] = useState<AMLAlert[]>([]);
-  const [metrics, setMetrics] = useState<ComplianceMetrics | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedRecord, setSelectedRecord] = useState<KYCRecord | null>(null);
 
-  useEffect(() => {
-    if (isAdmin) {
-      loadComplianceData();
-    }
-  }, [isAdmin]);
-
-  const loadComplianceData = async () => {
-    try {
-      setLoading(true);
+  // Real data from Supabase
+  const { data: kycRecords = [], isLoading: kycLoading } = useQuery({
+    queryKey: ['kyc-verifications'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('kyc_verifications')
+        .select('*')
+        .order('created_at', { ascending: false });
       
-      // Load real KYC and AML data
-      const [kycData, amlData] = await Promise.all([
-        KYCAMLService.getKYCVerifications(),
-        KYCAMLService.getAMLAlerts()
-      ]);
+      if (error) throw error;
       
-      // Transform real data to match interface
-      const transformedKYCs = kycData.map(kyc => ({
+      // Transform to match KYCRecord interface
+      return (data || []).map(kyc => ({
         id: kyc.id,
         userId: kyc.user_id,
-        userEmail: `user${kyc.id.slice(-4)}@example.com`, // Fallback
-        status: kyc.status,
+        userEmail: `user${kyc.id.slice(-4)}@example.com`,
+        status: kyc.status as KYCRecord['status'],
         riskLevel: mapRiskScore(kyc.risk_score || 0),
         submittedAt: kyc.created_at,
         reviewedAt: kyc.reviewed_at || undefined,
@@ -139,12 +132,25 @@ export function KYCAMLDashboard() {
           biometricMatch: kyc.status === 'approved'
         }
       }));
+    },
+    enabled: isAdmin
+  });
+
+  const { data: amlAlerts = [] } = useQuery({
+    queryKey: ['compliance-violations'],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('compliance_violations_real')
+        .select('*')
+        .order('created_at', { ascending: false });
       
-      const transformedAlerts = amlData.map(alert => ({
+      if (error) throw error;
+      
+      return (data || []).map(alert => ({
         id: alert.id,
         userId: alert.user_id || 'unknown',
         userEmail: `user${alert.id.slice(-4)}@example.com`,
-        alertType: alert.alert_type as AMLAlert['alertType'],
+        alertType: alert.violation_type as AMLAlert['alertType'],
         severity: alert.severity as AMLAlert['severity'],
         status: alert.status as AMLAlert['status'],
         description: alert.description,
@@ -155,19 +161,14 @@ export function KYCAMLDashboard() {
         investigatedBy: alert.assigned_to || undefined,
         resolutionNotes: alert.resolution_notes || undefined
       }));
-      
-      const metricsData = calculateMetrics(transformedKYCs, transformedAlerts);
-      
-      setKycRecords(transformedKYCs);
-      setAmlAlerts(transformedAlerts);
-      setMetrics(metricsData);
-      
-    } catch (error) {
-      console.error('Error loading compliance data:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
+    },
+    enabled: isAdmin
+  });
+
+  const metrics = React.useMemo(() => {
+    if (!kycRecords.length && !amlAlerts.length) return null;
+    return calculateMetrics(kycRecords, amlAlerts);
+  }, [kycRecords, amlAlerts]);
 
   const mapRiskScore = (score: number): KYCRecord['riskLevel'] => {
     if (score >= 80) return 'critical';
@@ -265,17 +266,19 @@ export function KYCAMLDashboard() {
 
   const updateKYCStatus = async (recordId: string, newStatus: KYCRecord['status']) => {
     try {
-      await KYCAMLService.updateKYCStatus(recordId, newStatus);
-      setKycRecords(prev => prev.map(record => 
-        record.id === recordId 
-          ? { 
-              ...record, 
-              status: newStatus, 
-              reviewedAt: new Date().toISOString(),
-              reviewedBy: 'current_admin'
-            }
-          : record
-      ));
+      const { error } = await supabase
+        .from('kyc_verifications')
+        .update({ 
+          status: newStatus,
+          reviewed_at: new Date().toISOString(),
+          reviewed_by: 'current_admin'
+        })
+        .eq('id', recordId);
+      
+      if (error) throw error;
+      
+      // Refetch data
+      window.location.reload();
     } catch (error) {
       console.error('Error updating KYC status:', error);
     }
@@ -283,17 +286,20 @@ export function KYCAMLDashboard() {
 
   const updateAMLAlert = async (alertId: string, newStatus: AMLAlert['status'], notes?: string) => {
     try {
-      await KYCAMLService.updateAMLAlert(alertId, newStatus, notes);
-      setAmlAlerts(prev => prev.map(alert => 
-        alert.id === alertId 
-          ? { 
-              ...alert, 
-              status: newStatus,
-              investigatedBy: 'current_analyst',
-              resolutionNotes: notes || alert.resolutionNotes
-            }
-          : alert
-      ));
+      const { error } = await supabase
+        .from('compliance_violations_real')
+        .update({ 
+          status: newStatus,
+          assigned_to: 'current_analyst',
+          resolution_notes: notes,
+          resolved_at: newStatus === 'resolved' ? new Date().toISOString() : null
+        })
+        .eq('id', alertId);
+      
+      if (error) throw error;
+      
+      // Refetch data
+      window.location.reload();
     } catch (error) {
       console.error('Error updating AML alert:', error);
     }

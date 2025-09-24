@@ -353,41 +353,79 @@ export function EnvironmentVariablesManager() {
             is_secret: !secretData.isPublic,
             value_encrypted: secretData.isPublic ? null : secretData.value,
             value_plain: secretData.isPublic ? secretData.value : null,
-            is_active: secretData.isActive
+            is_active: secretData.isActive,
+            updated_by: (await supabase.auth.getUser()).data.user?.id
           })
           .eq('id', editingSecret.id);
 
         if (error) throw error;
-      toast({
-        title: "Secret Updated",
-        description: `${secretData.name} has been updated successfully`
-      })
-    } else {
-      // Create new secret
-      const newSecret: Secret = {
-        ...secretData,
-        id: Date.now().toString(),
-        lastUpdated: new Date().toISOString()
+        
+        toast({
+          title: "Secret Updated",
+          description: `${secretData.name} has been updated successfully`
+        });
+      } else {
+        // Create new secret
+        const { data, error } = await supabase
+          .from('environment_variables')
+          .insert({
+            name: secretData.name,
+            description: secretData.description,
+            is_secret: !secretData.isPublic,
+            value_encrypted: secretData.isPublic ? null : secretData.value,
+            value_plain: secretData.isPublic ? secretData.value : null,
+            is_active: secretData.isActive,
+            created_by: (await supabase.auth.getUser()).data.user?.id || 'system'
+          })
+          .select()
+          .single();
+
+        if (error) throw error;
+        
+        toast({
+          title: "Secret Created",
+          description: `${secretData.name} has been created successfully`
+        });
       }
-      setSecrets(prev => [...prev, newSecret])
+      
+      refetch();
+      setShowAddDialog(false);
+      setEditingSecret(null);
+      setSelectedTemplate(null);
+    } catch (error) {
+      console.error('Error saving secret:', error);
       toast({
-        title: "Secret Created",
-        description: `${secretData.name} has been created successfully`
-      })
+        title: "Error",
+        description: "Failed to save secret. Please try again.",
+        variant: "destructive"
+      });
     }
-    
-    setShowAddDialog(false)
-    setEditingSecret(null)
-    setSelectedTemplate(null)
   }
 
-  const handleDeleteSecret = (secretId: string) => {
-    const secret = secrets.find(s => s.id === secretId)
-    setSecrets(prev => prev.filter(s => s.id !== secretId))
-    toast({
-      title: "Secret Deleted",
-      description: `${secret?.name} has been deleted`
-    })
+  const handleDeleteSecret = async (secretId: string) => {
+    try {
+      const secret = secrets.find(s => s.id === secretId);
+      
+      const { error } = await supabase
+        .from('environment_variables')
+        .update({ is_active: false })
+        .eq('id', secretId);
+
+      if (error) throw error;
+      
+      refetch();
+      toast({
+        title: "Secret Deleted",
+        description: `${secret?.name} has been deleted`
+      });
+    } catch (error) {
+      console.error('Error deleting secret:', error);
+      toast({
+        title: "Error",
+        description: "Failed to delete secret. Please try again.",
+        variant: "destructive"
+      });
+    }
   }
 
   const handleCopyValue = async (secret: Secret) => {
