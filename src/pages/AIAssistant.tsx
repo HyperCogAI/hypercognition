@@ -5,7 +5,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+
 import { Brain, TrendingUp, Target, Shield, Zap, BarChart3, Mic } from 'lucide-react';
 import { VoiceAssistantModal } from '@/components/ai/VoiceAssistantModal';
 
@@ -79,75 +79,64 @@ const AIAssistant = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="assistant" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
-              <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
-              <TabsTrigger value="features">Features</TabsTrigger>
-            </TabsList>
+          <div className="space-y-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {features.map((feature, index) => (
+                <Card key={index} className="hover:shadow-lg transition-all duration-300 h-full">
+                  <CardHeader className="pb-4">
+                    <CardTitle className="flex items-center gap-3">
+                      <div className="p-3 rounded-lg bg-primary/10">
+                        <feature.icon className="h-6 w-6 text-primary" />
+                      </div>
+                      {feature.title}
+                    </CardTitle>
+                  </CardHeader>
+                  <CardContent className="pt-0">
+                    <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
 
-            <TabsContent value="assistant" className="space-y-8">
-              {/* AI Trading Assistant removed */}
-            </TabsContent>
-
-            <TabsContent value="features" className="space-y-10">
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {features.map((feature, index) => (
-                  <Card key={index} className="hover:shadow-lg transition-all duration-300 h-full">
-                    <CardHeader className="pb-4">
-                      <CardTitle className="flex items-center gap-3">
-                        <div className="p-3 rounded-lg bg-primary/10">
-                          <feature.icon className="h-6 w-6 text-primary" />
-                        </div>
-                        {feature.title}
-                      </CardTitle>
-                    </CardHeader>
-                    <CardContent className="pt-0">
-                      <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
-                    </CardContent>
-                  </Card>
-                ))}
-              </div>
-
-              <Card 
-                className="border-primary/20 relative overflow-hidden"
-                style={{ 
-                  backgroundImage: `url(${gradientBlurMidBlue})`,
-                  backgroundSize: 'cover',
-                  backgroundPosition: 'center',
-                  backgroundRepeat: 'no-repeat'
-                }}
-              >
-                <CardContent className="p-12 text-center space-y-6">
-                  <Brain className="h-16 w-16 mx-auto text-primary" />
-                  <h3 className="text-3xl font-bold text-white">Ready to Start Trading Smarter?</h3>
-                  <p className="text-white/80 max-w-lg mx-auto text-lg leading-relaxed">
-                    Our AI assistant is trained on vast amounts of market data and uses advanced 
-                    machine learning to provide you with the best possible trading insights.
-                  </p>
-                  <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+            <Card 
+              className="border-primary/20 relative overflow-hidden"
+              style={{ 
+                backgroundImage: `url(${gradientBlurMidBlue})`,
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                backgroundRepeat: 'no-repeat'
+              }}
+            >
+              <CardContent className="p-12 text-center space-y-6">
+                <Brain className="h-16 w-16 mx-auto text-primary" />
+                <h3 className="text-3xl font-bold text-white">Ready to Start Trading Smarter?</h3>
+                <p className="text-white/80 max-w-lg mx-auto text-lg leading-relaxed">
+                  Our AI assistant is trained on vast amounts of market data and uses advanced 
+                  machine learning to provide you with the best possible trading insights.
+                </p>
+                <div className="flex flex-col sm:flex-row gap-4 justify-center pt-4">
+                  <Button 
+                    onClick={() => setSelectedAgent(undefined)} 
+                    size="lg" 
+                    className="gap-2"
+                  >
+                    <Zap className="h-4 w-4" />
+                    Try AI Assistant Now
+                  </Button>
+                  <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
                     <Button 
-                      onClick={() => setSelectedAgent(undefined)} 
+                      variant="outline" 
                       size="lg" 
-                      className="gap-2"
+                      className="gap-2 border-white/30 text-white hover:bg-white/10 px-8 py-3"
                     >
-                      <Zap className="h-4 w-4" />
-                      Try AI Assistant Now
+                      <Mic className="h-5 w-5" />
+                      Voice Mode
                     </Button>
-                    <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
-                      <Button 
-                        variant="outline" 
-                        size="lg" 
-                        className="gap-2 border-white/30 text-white hover:bg-white/10 px-8 py-3"
-                      >
-                        <Mic className="h-5 w-5" />
-                        Voice Mode
-                      </Button>
-                    </VoiceAssistantModal>
-                  </div>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+                  </VoiceAssistantModal>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
         </div>
       </div>
     </>
