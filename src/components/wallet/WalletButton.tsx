@@ -13,14 +13,6 @@ export const WalletButton = () => {
 
   console.log('WalletButton state:', { address, isConnected, isConnecting })
 
-  if (isConnecting) {
-    return (
-      <CyberButton variant="neon" size="sm" disabled>
-        <Wallet className="h-4 w-4 text-white" />
-        <span className="text-white">Connecting...</span>
-      </CyberButton>
-    )
-  }
 
   if (!isConnected) {
     const inIframe = typeof window !== 'undefined' && window.top !== window.self
