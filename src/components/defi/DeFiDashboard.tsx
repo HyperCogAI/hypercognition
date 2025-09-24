@@ -5,12 +5,52 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, Coins, Droplets, Zap } from 'lucide-react';
-import { useDeFi } from '@/hooks/useDeFi';
+import { RealDeFiService } from '../../services/RealDeFiService';
 import { useState } from 'react';
 
 export const DeFiDashboard = () => {
-  const { pools, userPositions, loading, depositToPool, claimRewards } = useDeFi();
-  const [depositAmounts, setDepositAmounts] = useState<Record<string, string>>({});
+  const [pools, setPools] = React.useState<any[]>([]);
+  const [userPositions, setUserPositions] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [depositAmounts, setDepositAmounts] = React.useState<Record<string, string>>({});
+
+  React.useEffect(() => {
+    loadDeFiData();
+  }, []);
+
+  const loadDeFiData = async () => {
+    try {
+      setLoading(true);
+      const [poolsData, positionsData] = await Promise.all([
+        RealDeFiService.getDeFiPools(),
+        RealDeFiService.getUserDeFiPositions('current_user') // Will need auth context
+      ]);
+      setPools(poolsData);
+      setUserPositions(positionsData);
+    } catch (error) {
+      console.error('Error loading DeFi data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const depositToPool = async (poolId: string, amount: number) => {
+    try {
+      await RealDeFiService.depositToPool('current_user', poolId, amount);
+      await loadDeFiData(); // Refresh data
+    } catch (error) {
+      console.error('Error depositing to pool:', error);
+    }
+  };
+
+  const claimRewards = async (positionId: string) => {
+    try {
+      await RealDeFiService.claimRewards('current_user', positionId);
+      await loadDeFiData(); // Refresh data
+    } catch (error) {
+      console.error('Error claiming rewards:', error);
+    }
+  };
 
   const handleDeposit = async (poolId: string) => {
     const amount = parseFloat(depositAmounts[poolId] || '0');

@@ -6,11 +6,64 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { Lock, Unlock, Gift, TrendingUp } from 'lucide-react';
-import { useStaking } from '@/hooks/useStaking';
+import { RealStakingService } from '../../services/RealStakingService';
 
 export const StakingDashboard = () => {
-  const { programs, userStakes, loading, stakeTokens, unstakeTokens, claimRewards, calculateRewards } = useStaking();
-  const [stakeAmounts, setStakeAmounts] = useState<Record<string, string>>({});
+  const [programs, setPrograms] = React.useState<any[]>([]);
+  const [userStakes, setUserStakes] = React.useState<any[]>([]);
+  const [loading, setLoading] = React.useState(true);
+  const [stakeAmounts, setStakeAmounts] = React.useState<Record<string, string>>({});
+
+  React.useEffect(() => {
+    loadStakingData();
+  }, []);
+
+  const loadStakingData = async () => {
+    try {
+      setLoading(true);
+      const [programsData, stakesData] = await Promise.all([
+        RealStakingService.getStakingPrograms(),
+        RealStakingService.getUserStakes('current_user') // Will need auth context
+      ]);
+      setPrograms(programsData);
+      setUserStakes(stakesData);
+    } catch (error) {
+      console.error('Error loading staking data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const stakeTokens = async (programId: string, amount: number) => {
+    try {
+      await RealStakingService.stakeTokens('current_user', programId, amount);
+      await loadStakingData();
+    } catch (error) {
+      console.error('Error staking tokens:', error);
+    }
+  };
+
+  const unstakeTokens = async (stakeId: string) => {
+    try {
+      await RealStakingService.unstakeTokens('current_user', stakeId);
+      await loadStakingData();
+    } catch (error) {
+      console.error('Error unstaking tokens:', error);
+    }
+  };
+
+  const claimRewards = async (stakeId: string) => {
+    try {
+      await RealStakingService.claimRewards('current_user', stakeId);
+      await loadStakingData();
+    } catch (error) {
+      console.error('Error claiming rewards:', error);
+    }
+  };
+
+  const calculateRewards = (stake: any): number => {
+    return RealStakingService.calculateRewards(stake);
+  };
 
   const handleStake = async (programId: string) => {
     const amount = parseFloat(stakeAmounts[programId] || '0');

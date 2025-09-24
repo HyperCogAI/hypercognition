@@ -22,17 +22,45 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Responsi
 const COLORS = ['#8884d8', '#82ca9d', '#ffc658', '#ff7300', '#8dd1e1', '#d084d0', '#ffb347']
 
 export function PortfolioAnalytics() {
-  const {
-    holdings,
-    performanceHistory,
-    portfolioMetrics,
-    assetAllocation,
-    rebalanceRecommendations,
-    isLoading,
-    timeframe,
-    setTimeframe,
-    exportPortfolioData
-  } = usePortfolioAnalytics()
+  const [holdings, setHoldings] = React.useState<any[]>([]);
+  const [performanceHistory, setPerformanceHistory] = React.useState<any[]>([]);
+  const [portfolioMetrics, setPortfolioMetrics] = React.useState<any>(null);
+  const [assetAllocation, setAssetAllocation] = React.useState<any[]>([]);
+  const [rebalanceRecommendations, setRebalanceRecommendations] = React.useState<any[]>([]);
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [timeframe, setTimeframe] = React.useState('1M');
+
+  React.useEffect(() => {
+    loadPortfolioData();
+  }, [timeframe]);
+
+  const loadPortfolioData = async () => {
+    try {
+      setIsLoading(true);
+      const [holdingsData, performanceData, metricsData, allocationData, rebalanceData] = await Promise.all([
+        RealPortfolioService.getPortfolioHoldings('current_user'),
+        RealPortfolioService.getPortfolioPerformance('current_user', timeframe),
+        RealPortfolioService.calculatePortfolioMetrics('current_user'),
+        RealPortfolioService.getAssetAllocation('current_user'),
+        RealPortfolioService.getRebalanceRecommendations('current_user')
+      ]);
+
+      setHoldings(holdingsData);
+      setPerformanceHistory(performanceData);
+      setPortfolioMetrics(metricsData);
+      setAssetAllocation(allocationData);
+      setRebalanceRecommendations(rebalanceData);
+    } catch (error) {
+      console.error('Error loading portfolio data:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const exportPortfolioData = () => {
+    // Export functionality
+    console.log('Exporting portfolio data...');
+  };
 
   if (isLoading) {
     return (

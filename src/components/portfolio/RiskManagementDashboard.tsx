@@ -7,18 +7,45 @@ import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Progress } from '@/components/ui/progress';
 import { AlertTriangle, Shield, TrendingDown, TrendingUp, Calculator, Zap } from 'lucide-react';
-import { useRiskManagement } from '@/hooks/useRiskManagement';
+import { RealRiskService } from '../../services/RealRiskService';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const RiskManagementDashboard: React.FC = () => {
-  const { 
-    loading, 
-    riskMetrics, 
-    positionRisks, 
-    riskLimits, 
-    calculatePositionSize, 
-    optimizePortfolio 
-  } = useRiskManagement();
+  const [loading, setLoading] = React.useState(true);
+  const [riskMetrics, setRiskMetrics] = React.useState<any>(null);
+  const [positionRisks, setPositionRisks] = React.useState<any[]>([]);
+  const [riskLimits, setRiskLimits] = React.useState<any[]>([]);
+
+  React.useEffect(() => {
+    loadRiskData();
+  }, []);
+
+  const loadRiskData = async () => {
+    try {
+      setLoading(true);
+      const [metricsData, positionsData, limitsData] = await Promise.all([
+        RealRiskService.calculateRiskMetrics('current_user'),
+        RealRiskService.calculatePositionRisks('current_user'),
+        RealRiskService.getRiskLimits('current_user')
+      ]);
+
+      setRiskMetrics(metricsData);
+      setPositionRisks(positionsData);
+      setRiskLimits(limitsData);
+    } catch (error) {
+      console.error('Error loading risk data:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const calculatePositionSize = (targetRisk: number, stopLoss: number, portfolioValue: number) => {
+    return RealRiskService.calculatePositionSize(targetRisk, stopLoss, portfolioValue);
+  };
+
+  const optimizePortfolio = () => {
+    return RealRiskService.optimizePortfolio('current_user');
+  };
 
   const [positionSizeInputs, setPositionSizeInputs] = useState({
     targetRisk: '2',
