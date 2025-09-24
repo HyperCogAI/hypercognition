@@ -341,4 +341,16 @@
       border: 2px solid currentColor;
     }
   }
+
+  /* Hide default number input spinners that show as white boxes in dark theme */
+  input[type="number"]::-webkit-outer-spin-button,
+  input[type="number"]::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Firefox number input spinners */
+  input[type="number"] {
+    -moz-appearance: textfield;
+  }
 }
