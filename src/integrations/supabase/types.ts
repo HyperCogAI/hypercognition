@@ -1742,6 +1742,13 @@ export type Database = {
             referencedRelation: "marketplace_developers"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "marketplace_endpoints_developer_id_fkey"
+            columns: ["developer_id"]
+            isOneToOne: false
+            referencedRelation: "marketplace_developers_public"
+            referencedColumns: ["id"]
+          },
         ]
       }
       nft_collections: {
@@ -4096,7 +4103,39 @@ export type Database = {
       }
     }
     Views: {
-      [_ in never]: never
+      marketplace_developers_public: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string | null
+          logo_url: string | null
+          total_apis: number | null
+          total_revenue: number | null
+          verified: boolean | null
+          website_url: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logo_url?: string | null
+          total_apis?: number | null
+          total_revenue?: never
+          verified?: boolean | null
+          website_url?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string | null
+          logo_url?: string | null
+          total_apis?: number | null
+          total_revenue?: never
+          verified?: boolean | null
+          website_url?: string | null
+        }
+        Relationships: []
+      }
     }
     Functions: {
       check_brute_force: {
@@ -4142,6 +4181,10 @@ export type Database = {
       get_current_user_admin_role: {
         Args: Record<PropertyKey, never>
         Returns: string
+      }
+      get_developer_public_stats: {
+        Args: { developer_profile_id: string }
+        Returns: Json
       }
       is_admin: {
         Args: Record<PropertyKey, never>
