@@ -117,7 +117,7 @@ export function AppSidebar() {
               className="h-12 w-auto object-contain"
             />
             <div className="absolute top-0 bottom-0 left-20 w-px bg-border/50"></div>
-            <div className="absolute top-4 right-4">
+            <div className="absolute top-2 right-2">
               <NotificationCenter />
             </div>
           </div>
