@@ -79,10 +79,15 @@ const AIAssistant = () => {
             </p>
           </div>
 
-          <Tabs defaultValue="features" className="w-full">
-            <TabsList className="grid w-full grid-cols-1 max-w-md mx-auto mb-8">
+          <Tabs defaultValue="assistant" className="w-full">
+            <TabsList className="grid w-full grid-cols-2 max-w-md mx-auto mb-8">
+              <TabsTrigger value="assistant">AI Assistant</TabsTrigger>
               <TabsTrigger value="features">Features</TabsTrigger>
             </TabsList>
+
+            <TabsContent value="assistant" className="space-y-8">
+              {/* AI Trading Assistant removed */}
+            </TabsContent>
 
             <TabsContent value="features" className="space-y-10">
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
