@@ -98,11 +98,11 @@ const EnhancedMarketNews = () => {
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
       case 'positive':
-        return <TrendingUp className="h-4 w-4 text-green-600" />
+        return <TrendingUp className="h-4 w-4 text-green-600 dark:text-green-400" />
       case 'negative':
-        return <TrendingDown className="h-4 w-4 text-red-600" />
+        return <TrendingDown className="h-4 w-4 text-red-600 dark:text-red-400" />
       default:
-        return <div className="h-4 w-4 rounded-full bg-gray-400" />
+        return <div className="h-4 w-4 rounded-full bg-muted-foreground/40" />
     }
   }
 
