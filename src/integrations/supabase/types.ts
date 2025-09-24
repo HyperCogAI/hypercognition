@@ -4227,6 +4227,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
+      is_organization_admin: {
+        Args: { org_id: string }
+        Returns: boolean
+      }
+      is_organization_member: {
+        Args: { org_id: string }
+        Returns: boolean
+      }
       is_super_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
