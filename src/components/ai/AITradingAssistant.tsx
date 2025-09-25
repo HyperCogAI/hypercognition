@@ -193,12 +193,13 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
 
   return (
     <Card className="h-[700px] flex flex-col">
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
+      <CardHeader className="px-4 md:px-6 py-3 md:py-4 pb-3">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
             <Bot className="h-5 w-5 text-primary" />
-            AI Trading Assistant
-            <Badge variant="outline" className="ml-2">
+            <span className="hidden sm:inline">AI Trading Assistant</span>
+            <span className="sm:hidden">AI Assistant</span>
+            <Badge variant="outline" className="ml-2 text-xs">
               {loading ? 'Analyzing...' : 'Ready'}
             </Badge>
           </CardTitle>
@@ -207,6 +208,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             size="sm" 
             onClick={clearHistory}
             disabled={loading || chatHistory.length === 0}
+            className="self-start sm:self-auto"
           >
             Clear Chat
           </Button>
@@ -215,57 +217,57 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
       
       <CardContent className="flex-1 flex flex-col p-0">
         {/* Quick Actions */}
-        <div className="px-6 pb-4">
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-2">
+        <div className="px-4 md:px-6 pb-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleQuickAction('market-analysis')}
               disabled={loading}
-              className="flex items-center gap-1"
+              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
-              <TrendingUp className="h-3 w-3" />
-              <span className="hidden sm:inline">Market</span>
+              <TrendingUp className="h-4 w-4" />
+              <span className="text-xs md:text-sm">Market</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleQuickAction('portfolio-advice')}
               disabled={loading}
-              className="flex items-center gap-1"
+              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
-              <Target className="h-3 w-3" />
-              <span className="hidden sm:inline">Portfolio</span>
+              <Target className="h-4 w-4" />
+              <span className="text-xs md:text-sm">Portfolio</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleQuickAction('trading-signals')}
               disabled={loading}
-              className="flex items-center gap-1"
+              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
-              <Zap className="h-3 w-3" />
-              <span className="hidden sm:inline">Signals</span>
+              <Zap className="h-4 w-4" />
+              <span className="text-xs md:text-sm">Signals</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleQuickAction('risk-assessment')}
               disabled={loading}
-              className="flex items-center gap-1"
+              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
-              <Shield className="h-3 w-3" />
-              <span className="hidden sm:inline">Risk</span>
+              <Shield className="h-4 w-4" />
+              <span className="text-xs md:text-sm">Risk</span>
             </Button>
             <Button
               variant="outline"
               size="sm"
               onClick={() => handleQuickAction('market-news')}
               disabled={loading}
-              className="flex items-center gap-1"
+              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row col-span-2 sm:col-span-1"
             >
-              <AlertTriangle className="h-3 w-3" />
-              <span className="hidden sm:inline">News</span>
+              <AlertTriangle className="h-4 w-4" />
+              <span className="text-xs md:text-sm">News</span>
             </Button>
           </div>
         </div>
@@ -273,7 +275,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
         <Separator />
 
         {/* Chat Messages */}
-        <ScrollArea className="flex-1 px-6 py-4">
+        <ScrollArea className="flex-1 px-4 md:px-6 py-4">
           <div className="space-y-4">
             {chatHistory.length === 0 && (
               <div className="text-center text-muted-foreground py-8">
@@ -396,7 +398,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
         <Separator />
 
         {/* Message Input */}
-        <div className="p-4">
+        <div className="p-4 md:p-4">
           <div className="flex gap-2">
             <Input
               value={message}
