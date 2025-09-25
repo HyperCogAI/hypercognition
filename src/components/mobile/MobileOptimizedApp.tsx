@@ -78,11 +78,11 @@ export const MobileOptimizedApp = ({ children }: MobileOptimizedAppProps) => {
               aria-label={tab.label}
               className={cn(
                 "flex flex-col gap-1 h-auto transition-all duration-200",
-                activeTab === tab.id ? "py-1 px-2 text-primary bg-primary/15 rounded-full" : "py-2 px-3"
+                activeTab === tab.id ? "py-1 px-1.5 text-primary bg-primary/10 rounded-full" : "py-1.5 px-2"
               )}
               onClick={() => setActiveTab(tab.id)}
             >
-              <tab.icon className={cn("h-3.5 w-3.5", activeTab === tab.id ? "opacity-100" : "opacity-90")} />
+              <tab.icon className={cn("h-3 w-3", activeTab === tab.id ? "opacity-100" : "opacity-90")} />
               <span className="text-[11px] leading-none">{tab.label}</span>
             </Button>
           ))}

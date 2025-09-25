@@ -120,7 +120,7 @@ export const MobileNavigation = () => {
         "fixed bottom-0 left-0 right-0 z-50",
         "bg-background/95 backdrop-blur-md border-t border-border/50"
       )}>
-        <div className="flex items-center justify-around h-16 px-2">
+        <div className="flex items-center justify-around h-14 px-2">
           {bottomNavItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.path)
@@ -132,12 +132,12 @@ export const MobileNavigation = () => {
                 size="sm"
                 onClick={() => handleNavigation(item.path)}
                 className={cn(
-                  "flex flex-col items-center gap-1 h-14 flex-1 p-1",
+                  "flex flex-col items-center gap-1 h-12 flex-1 px-2 py-1.5",
                   "text-xs font-medium transition-all duration-200",
-                  active ? "text-primary bg-primary/10 scale-105" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                  active ? "text-primary bg-primary/10 rounded-full" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
                 )}
               >
-                <Icon className={cn("h-5 w-5 transition-transform duration-200", active && "scale-110")} />
+                <Icon className="h-4 w-4" />
                 <span className="text-[10px] leading-none font-medium">{item.label}</span>
               </Button>
             )
@@ -150,7 +150,7 @@ export const MobileNavigation = () => {
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  "flex flex-col items-center gap-1 h-14 flex-1 p-1",
+                  "flex flex-col items-center gap-1 h-12 flex-1 px-2 py-1.5",
                   "text-xs font-medium transition-all duration-200",
                   "text-muted-foreground hover:text-foreground hover:bg-accent/5"
                 )}
@@ -188,13 +188,13 @@ export const MobileNavigation = () => {
                               variant={active ? "default" : "outline"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
-                                "h-16 flex flex-col gap-2 transition-all duration-200 text-sm",
+                                "h-14 flex flex-col gap-2 transition-all duration-200 text-sm",
                                 "hover:scale-[1.02] hover:shadow-md border-2",
                                 active && "bg-accent/20 text-foreground shadow-lg shadow-accent/10 scale-[1.02] border-accent/30"
                               )}
                             >
-                              <Icon className="h-5 w-5" />
-                              <span className="text-xs font-semibold text-center leading-tight">{item.label}</span>
+                              <Icon className="h-4 w-4" />
+                              <span className="text-[11px] font-semibold text-center leading-tight">{item.label}</span>
                             </Button>
                           )
                         })}
