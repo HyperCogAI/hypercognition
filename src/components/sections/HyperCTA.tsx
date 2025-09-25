@@ -26,7 +26,7 @@ export const HyperCTA = () => {
             </span>
           </h2>
           
-          <p className="text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+          <p className="text-sm text-muted-foreground max-w-2xl mx-auto leading-relaxed">
             Join thousands of traders using AI agents to maximize returns, minimize risk, 
             and unlock the full potential of decentralized finance.
           </p>
