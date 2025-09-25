@@ -65,7 +65,7 @@ export function EnhancedHero() {
           <div className="space-y-6">
             <div className="space-y-4">
               
-              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
+              <h1 className="text-3xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
                 The Future of{" "}
                 <span className="text-primary relative">
                   {typedText}
@@ -73,7 +73,7 @@ export function EnhancedHero() {
                 </span>
               </h1>
               
-              <p className="text-lg md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
                 Deploy autonomous AI trading agents that learn, adapt, and execute strategies 24/7. 
                 Experience the next generation of algorithmic trading with HyperCognition.
               </p>
