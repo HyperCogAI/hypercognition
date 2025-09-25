@@ -132,12 +132,12 @@ export const MobileNavigation = () => {
                 size="sm"
                 onClick={() => handleNavigation(item.path)}
                 className={cn(
-                  "flex flex-col items-center gap-1 h-14 flex-1 p-1",
+                  "flex flex-col items-center gap-1 h-14 flex-1",
                   "text-xs font-medium transition-all duration-200",
-                  active ? "text-primary bg-primary/10 scale-105" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                  active ? "py-1 px-2 text-primary bg-primary/15 rounded-full" : "py-2 px-3 text-muted-foreground hover:text-foreground hover:bg-accent/5"
                 )}
               >
-                <Icon className={cn("h-5 w-5 transition-transform duration-200", active && "scale-110")} />
+                <Icon className={cn(active ? "h-3.5 w-3.5" : "h-4 w-4")} />
                 <span className="text-[10px] leading-none font-medium">{item.label}</span>
               </Button>
             )
@@ -188,12 +188,11 @@ export const MobileNavigation = () => {
                               variant={active ? "default" : "outline"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
-                                "h-16 flex flex-col gap-2 transition-all duration-200 text-sm",
-                                "hover:scale-[1.02] hover:shadow-md border-2",
-                                active && "bg-accent/20 text-foreground shadow-lg shadow-accent/10 scale-[1.02] border-accent/30"
+                                "h-14 flex flex-col gap-2 transition-all duration-200 text-sm border-2",
+                                active ? "bg-primary/10 text-foreground border-primary/30" : "hover:bg-accent/5"
                               )}
                             >
-                              <Icon className="h-5 w-5" />
+                              <Icon className={cn(active ? "h-4 w-4" : "h-5 w-5")} />
                               <span className="text-xs font-semibold text-center leading-tight">{item.label}</span>
                             </Button>
                           )
