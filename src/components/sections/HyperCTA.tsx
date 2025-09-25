@@ -69,17 +69,17 @@ export const HyperCTA = () => {
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
           <CyberButton 
             variant="neon" 
-            size="xl" 
-            className="group min-w-[200px]"
+            size="lg" 
+            className="group min-w-[180px]"
           >
             <span className="text-white">Launch HyperCognition</span>
-            <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform text-white" />
+            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-white" />
           </CyberButton>
           
           <CyberButton 
             variant="analytics" 
-            size="xl" 
-            className="min-w-[200px]"
+            size="lg" 
+            className="min-w-[180px]"
           >
             <span className="text-white">Explore Marketplace</span>
           </CyberButton>
