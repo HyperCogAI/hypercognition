@@ -20,9 +20,9 @@ export const WalletButton = () => {
       const href = window.location.href
       return (
         <div className="w-full flex flex-col gap-2">
-          <CyberButton variant="outline" size="sm" onClick={connectWallet}>
+          <CyberButton variant="outline" size="sm" onClick={connectWallet} className="text-white">
             <Wallet className="h-4 w-4 text-white" />
-            Connect EVM
+            <span className="text-white">Connect EVM</span>
           </CyberButton>
           <a
             href={href}
@@ -37,9 +37,9 @@ export const WalletButton = () => {
     }
 
     return (
-      <CyberButton variant="outline" size="sm" onClick={connectWallet}>
+      <CyberButton variant="outline" size="sm" onClick={connectWallet} className="text-white">
         <Wallet className="h-4 w-4 text-white" />
-        Connect EVM
+        <span className="text-white">Connect EVM</span>
       </CyberButton>
     )
   }
