@@ -1,7 +1,7 @@
 import { Button } from '@/components/ui/button'
 import { Search, Bell, User } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
-import logoUrl from '@/assets/hypercognition-new-logo.png'
+import logoUrl from '@/assets/HyperCognition2.png'
 
 // Preload the logo to prevent fuzzy loading
 const preloadLogo = new Image()
