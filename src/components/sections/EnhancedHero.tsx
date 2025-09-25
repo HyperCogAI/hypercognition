@@ -9,7 +9,7 @@ export function EnhancedHero() {
     "AI-Powered Trading",
     "Autonomous Agents",
     "Smart Strategies",
-    "Future of Finance"
+    "Finance"
   ]
 
   useEffect(() => {
