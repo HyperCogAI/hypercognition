@@ -1,16 +1,17 @@
 import { Button } from '@/components/ui/button'
 import { Search, Bell, User } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import logoUrl from '@/assets/new-logo.png'
 
 export const MobileToolbar = () => {
   return (
-    <header className="sticky top-0 z-50 bg-black/60 backdrop-blur-sm border-b border-white/10">
+    <header className="sticky top-0 z-50 bg-black backdrop-blur-sm border-b border-white/10 pt-[env(safe-area-inset-top)]">
       <div className="flex h-14 items-center justify-between px-4">
         {/* Logo on the left */}
         <div className="flex items-center">
           <img 
-            src="/src/assets/new-logo.png" 
-            alt="HyperCognition" 
+            src={logoUrl} 
+            alt="HyperCognition logo" 
             className="h-8 w-auto"
           />
         </div>
