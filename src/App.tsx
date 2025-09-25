@@ -15,6 +15,7 @@ import { AuthProvider } from "@/contexts/AuthContext"
 import { ErrorBoundary } from "@/components/error/ErrorBoundary"
 import { CardSkeleton } from "@/components/ui/loading-skeleton"
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
+import { MobileToolbar } from "@/components/mobile/MobileToolbar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Home from "./pages/Home";
@@ -141,6 +142,7 @@ const AppLayout = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen flex flex-col">
+        <MobileToolbar />
         <main className="flex-1 pb-16">
           <ErrorBoundary level="page" name="Mobile App">
             <Suspense fallback={
