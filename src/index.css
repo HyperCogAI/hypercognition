@@ -8,6 +8,7 @@
 
 @layer base {
   :root {
+    color-scheme: dark;
     /* Deep Black Base - Darker by 30% */
     --background: 222 30% 5%;
     --foreground: 210 40% 95%;

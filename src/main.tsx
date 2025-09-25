@@ -19,7 +19,10 @@ overrideConsole();
     })();
     // Force a solid dark theme color to avoid any iOS Safari tinting
     (meta as HTMLMetaElement).content = '#0f0f0f';
-  } catch {}
+    console.info('[ThemeColor] Applied', (meta as HTMLMetaElement).content, { ua: navigator.userAgent });
+  } catch (e) {
+    console.warn('[ThemeColor] Failed to set', e);
+  }
 })();
 
 createRoot(document.getElementById("root")!).render(
