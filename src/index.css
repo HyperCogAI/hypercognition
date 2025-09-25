@@ -131,15 +131,17 @@
     @apply border-border;
   }
 
-  body {
+  body,
+  #root {
     @apply bg-background text-foreground overflow-x-hidden;
     background: linear-gradient(135deg, hsl(var(--background)), hsl(0 0% 4%));
     min-height: 100vh;
+    overscroll-behavior-y: none;
   }
 
   /* iOS Safari: force solid background to avoid system blue tint */
   @supports (-webkit-touch-callout: none) {
-    html, body {
+    html, body, #root {
       background-color: hsl(var(--background)) !important;
       background-image: none !important;
     }
