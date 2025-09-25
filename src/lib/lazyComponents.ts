@@ -166,7 +166,8 @@ export const preloadCriticalComponents = async () => {
 // Initialize preloading on app start
 if (typeof window !== 'undefined') {
   // Preload after initial render
-  requestIdleCallback(() => {
+  const ric = (window as any).requestIdleCallback || ((cb: Function) => setTimeout(() => cb(), 1))
+  ric(() => {
     preloadCriticalComponents()
   })
 }

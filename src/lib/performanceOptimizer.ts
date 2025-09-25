@@ -229,7 +229,8 @@ export const createLazyImage = (src: string, placeholder?: string) => {
     }
     
     // Load actual image
-    requestIdleCallback(() => {
+    const ric = (typeof window !== 'undefined' && (window as any).requestIdleCallback) || ((cb: Function) => setTimeout(() => cb(), 1))
+    ric(() => {
       img.src = src
     })
   })

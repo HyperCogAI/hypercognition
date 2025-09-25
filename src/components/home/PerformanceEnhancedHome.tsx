@@ -42,7 +42,8 @@ export const PerformanceEnhancedHome = memo(function PerformanceEnhancedHome({
   // Initialize preloading on mount for better UX
   useMemo(() => {
     if (typeof window !== 'undefined') {
-      requestIdleCallback(() => {
+      const ric = (window as any).requestIdleCallback || ((cb: Function) => setTimeout(() => cb(), 1))
+      ric(() => {
         preloadCriticalResources()
       })
     }
