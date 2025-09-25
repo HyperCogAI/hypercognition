@@ -118,13 +118,13 @@ export function EnhancedHero() {
           
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4">
-            <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-base md:text-lg justify-center">
+            <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base justify-center">
               <span className="relative z-10 text-white font-semibold text-center">Start Trading Now</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow opacity-0 group-hover:opacity-100 transition-opacity" />
             </CyberButton>
             
-            <CyberButton variant="analytics" size="lg" className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-base md:text-lg">
-              <Play className="h-4 w-4 md:h-5 md:w-5 mr-2 text-white" />
+            <CyberButton variant="analytics" size="lg" className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base">
+              <Play className="h-3 w-3 md:h-4 md:w-4 mr-2 text-white" />
               <span className="text-white font-semibold">Watch Demo</span>
             </CyberButton>
           </div>
