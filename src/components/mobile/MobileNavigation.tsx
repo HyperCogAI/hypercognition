@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils'
 const bottomNavItems = [
   { icon: Home, label: 'Home', path: '/', id: 'home' },
   { icon: Store, label: 'Market', path: '/marketplace', id: 'marketplace' },
-  { icon: Brain, label: 'AI Bot', path: '/ai-assistant', id: 'ai-assistant' },
+  { icon: Plus, label: 'Create', path: '/create-agent', id: 'create-agent' },
   { icon: TrendingUp, label: 'Trading', path: '/enhanced-trading', id: 'trading' },
 ]
 
@@ -159,7 +159,7 @@ export const MobileNavigation = () => {
                 <span className="text-[10px] leading-none font-medium">Menu</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-[85vh] rounded-t-xl bg-background/95 backdrop-blur-md border-t border-border/50">
+            <SheetContent side="bottom" className="h-[100vh] rounded-none bg-background/98 backdrop-blur-md border-none">
               <SheetHeader className="pb-4 border-b border-border/20">
                 <SheetTitle className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
                   Navigation Menu
@@ -167,17 +167,17 @@ export const MobileNavigation = () => {
               </SheetHeader>
               
               <ScrollArea className="h-full pr-4">
-                <div className="space-y-6 py-6">
+                <div className="space-y-8 py-8 px-2">
                   {navigationSections.map((section) => (
-                    <div key={section.title} className="space-y-3">
-                      <div className="flex items-center gap-2">
-                        <h3 className="text-sm font-semibold text-muted-foreground uppercase tracking-wider">
+                    <div key={section.title} className="space-y-4">
+                      <div className="flex items-center gap-3 px-2">
+                        <h3 className="text-base font-bold text-foreground uppercase tracking-wider">
                           {section.title}
                         </h3>
-                        <div className="flex-1 h-px bg-border/30" />
+                        <div className="flex-1 h-px bg-border/50" />
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-4">
                         {section.items.map((item) => {
                           const Icon = item.icon
                           const active = isActive(item.path)
@@ -188,20 +188,20 @@ export const MobileNavigation = () => {
                               variant={active ? "default" : "outline"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
-                                "h-16 flex flex-col gap-2 transition-all duration-200",
-                                "hover:scale-105 hover:shadow-md",
-                                active && "bg-primary text-primary-foreground shadow-lg shadow-primary/20"
+                                "h-20 flex flex-col gap-3 transition-all duration-200 text-sm",
+                                "hover:scale-105 hover:shadow-md border-2",
+                                active && "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
                               )}
                             >
-                              <Icon className="h-5 w-5" />
-                              <span className="text-xs font-medium text-center leading-tight">{item.label}</span>
+                              <Icon className="h-6 w-6" />
+                              <span className="text-xs font-semibold text-center leading-tight">{item.label}</span>
                             </Button>
                           )
                         })}
                       </div>
                       
                       {section.title !== "Support" && (
-                        <Separator className="opacity-30" />
+                        <Separator className="opacity-40 my-6" />
                       )}
                     </div>
                   ))}
