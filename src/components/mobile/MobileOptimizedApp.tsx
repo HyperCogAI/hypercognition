@@ -75,8 +75,8 @@ export const MobileOptimizedApp = ({ children }: MobileOptimizedAppProps) => {
               variant="ghost"
               size="sm"
               className={cn(
-                "flex flex-col gap-1 h-auto py-1.5 px-2 transition-all duration-200",
-                activeTab === tab.id && "text-cyan-400 bg-cyan-400/15 rounded-full scale-90"
+                "flex flex-col gap-1 h-auto py-2 px-3 transition-all duration-200",
+                activeTab === tab.id && "text-cyan-400 bg-cyan-400/15 rounded-full scale-95"
               )}
               onClick={() => setActiveTab(tab.id)}
             >
