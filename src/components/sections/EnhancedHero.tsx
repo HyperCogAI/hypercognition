@@ -50,6 +50,17 @@ export function EnhancedHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       
+      {/* Background Video */}
+      <video
+        autoPlay
+        loop
+        muted
+        playsInline
+        className="absolute inset-0 w-full h-full object-cover z-0"
+      >
+        <source src="/src/assets/hero-bg-animation.webm" type="video/webm" />
+      </video>
+      
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95 z-5" />
       
