@@ -74,7 +74,7 @@ export const HyperFeatures = () => {
               Deploy Your First
               <span className="text-primary"> AI Agent</span>
             </h3>
-            <p className="text-muted-foreground leading-relaxed">
+            <p className="text-sm text-muted-foreground leading-relaxed">
               Create intelligent trading agents with customizable risk parameters, 
               strategy preferences, and learning objectives. Our platform handles 
               the complex AI infrastructure while you focus on results.
