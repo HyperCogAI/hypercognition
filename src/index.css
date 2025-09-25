@@ -146,19 +146,7 @@
       background-color: hsl(var(--background)) !important;
       background-image: none !important;
     }
-
-    /* Force Safari top bar sampling to dark by painting safe-area zone */
-    body::before {
-      content: "";
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: max(env(safe-area-inset-top), 24px);
-      background: hsl(var(--background));
-      pointer-events: none;
-      z-index: 2147483647;
-    }
+    /* Removed top safe-area overlay to prevent header overlap */
   }
 
   /* Custom scrollbar */
