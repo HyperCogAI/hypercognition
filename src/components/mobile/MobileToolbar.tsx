@@ -5,7 +5,7 @@ import logoUrl from '@/assets/hypercognition-new-logo.png'
 
 export const MobileToolbar = () => {
   return (
-    <header className="sticky top-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border/50 pt-[env(safe-area-inset-top)] isolate">
+    <header className="sticky top-0 z-50 bg-background border-b border-border/50 pt-[env(safe-area-inset-top)]">
       <div className="flex h-14 items-center justify-between px-4">
         {/* Logo on the left */}
         <div className="flex items-center">

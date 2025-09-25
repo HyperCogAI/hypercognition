@@ -164,6 +164,7 @@
   html {
     scrollbar-width: thin;
     scrollbar-color: #050608 #050608;
+    background-color: hsl(var(--background));
   }
 }
 

@@ -8,6 +8,23 @@ import { setupGlobalErrorHandling, overrideConsole } from "./lib/errorSuppressio
 setupGlobalErrorHandling();
 overrideConsole();
 
+// Ensure browser UI (iOS Safari) matches app background
+(function ensureThemeColor() {
+  try {
+    const root = document.querySelector('meta[name="theme-color"]') || (() => {
+      const m = document.createElement('meta');
+      m.setAttribute('name', 'theme-color');
+      document.head.appendChild(m);
+      return m;
+    })();
+    const bgVar = getComputedStyle(document.documentElement).getPropertyValue('--background').trim();
+    if (bgVar) {
+      const color = `hsl(${bgVar})`;
+      (root as HTMLMetaElement).content = color;
+    }
+  } catch {}
+})();
+
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
     <App />

@@ -23,7 +23,7 @@ export const MobileOptimizedApp = ({ children }: MobileOptimizedAppProps) => {
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile Header */}
-      <header className="sticky top-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b">
+      <header className="sticky top-0 z-50 bg-background border-b supports-[backdrop-filter]:bg-background/60">
         <div className="flex h-14 items-center justify-between px-4">
           <Sheet open={isMenuOpen} onOpenChange={setIsMenuOpen}>
             <SheetTrigger asChild>

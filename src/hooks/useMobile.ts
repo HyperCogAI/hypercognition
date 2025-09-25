@@ -30,6 +30,7 @@ export const useMobile = () => {
   const initializeNativeFeatures = async () => {
     try {
       // Configure status bar
+      await StatusBar.setOverlaysWebView({ overlay: true })
       await StatusBar.setStyle({ style: Style.Dark })
       await StatusBar.setBackgroundColor({ color: '#0f0f0f' })
 
