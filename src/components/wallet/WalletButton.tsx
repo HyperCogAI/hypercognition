@@ -20,8 +20,11 @@ export const WalletButton = () => {
       const href = window.location.href
       return (
         <div className="w-full flex flex-col gap-2">
-          {/* @ts-ignore */}
-          <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
+          <div className="flex items-center gap-1">
+            <Wallet className="h-4 w-4 text-white" />
+            {/* @ts-ignore */}
+            <w3m-button size="sm" label="Connect EVM" balance="hide" />
+          </div>
           <a
             href={href}
             target="_blank"
@@ -35,7 +38,12 @@ export const WalletButton = () => {
     }
 
     // @ts-ignore - Web3Modal button is dynamically loaded
-    return <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
+    return (
+      <div className="flex items-center gap-1">
+        <Wallet className="h-4 w-4 text-white" />
+        <w3m-button size="sm" label="Connect EVM" balance="hide" />
+      </div>
+    )
   }
 
   const formatAddress = (addr: string) => {
