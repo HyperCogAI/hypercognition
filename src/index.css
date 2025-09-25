@@ -176,6 +176,20 @@
     scrollbar-color: #050608 #050608;
     background-color: hsl(var(--background));
   }
+
+  /* Global iOS tap highlight and accent color */
+  :root {
+    accent-color: hsl(var(--primary));
+  }
+
+  html, body, #root {
+    -webkit-tap-highlight-color: rgba(0,0,0,0);
+  }
+
+  ::selection {
+    background: hsl(var(--primary) / 0.35);
+    color: hsl(var(--foreground));
+  }
 }
 
 @layer components {
