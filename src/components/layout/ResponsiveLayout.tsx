@@ -1,6 +1,6 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom'
-import { useMobile } from '@/hooks/useMobile'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileNavigation } from '@/components/mobile/MobileNavigation'
 import { Navigation } from '@/components/layout/Navigation'
@@ -27,7 +27,7 @@ export function ResponsiveLayout({
   showBreadcrumb = true,
   showPerformanceMonitor = process.env.NODE_ENV === 'development'
 }: ResponsiveLayoutProps) {
-  const { isMobile } = useMobile()
+  const isMobile = useIsMobile()
   const location = useLocation()
 
   const getBreadcrumbFromPath = () => {

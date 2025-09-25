@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Star, TrendingUp, TrendingDown, BarChart3, Users } from 'lucide-react'
-import { useMobile } from '@/hooks/useMobile'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
 import { cn } from '@/lib/utils'
 
@@ -32,7 +32,7 @@ export const MobileAgentDetailSheet = ({
   onClose, 
   onTrade 
 }: MobileAgentDetailSheetProps) => {
-  const { isMobile, isNative } = useMobile()
+  const isMobile = useIsMobile()
   const { lightImpact, mediumImpact } = useHaptics()
 
   if (!agent || !isMobile) return null
@@ -51,10 +51,7 @@ export const MobileAgentDetailSheet = ({
     <Sheet open={isOpen} onOpenChange={onClose}>
       <SheetContent 
         side="bottom" 
-        className={cn(
-          "h-[85vh] rounded-t-xl",
-          isNative && "rounded-t-none"
-        )}
+        className="h-[85vh] rounded-t-xl"
       >
         <SheetHeader className="text-left">
           <div className="flex items-center justify-between">

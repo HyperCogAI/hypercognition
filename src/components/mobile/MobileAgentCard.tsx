@@ -3,7 +3,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Avatar, AvatarImage, AvatarFallback } from '@/components/ui/avatar'
 import { Button } from '@/components/ui/button'
 import { Star, TrendingUp, TrendingDown } from 'lucide-react'
-import { useMobile } from '@/hooks/useMobile'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
 import { useFavorites } from '@/contexts/FavoritesContext'
 import { cn } from '@/lib/utils'
@@ -25,7 +25,7 @@ interface MobileAgentCardProps {
 }
 
 export const MobileAgentCard = ({ agent, onClick }: MobileAgentCardProps) => {
-  const { isMobile } = useMobile()
+  const isMobile = useIsMobile()
   const { lightImpact, selectionChanged } = useHaptics()
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites()
 

@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { Badge } from '@/components/ui/badge'
 import { TrendingUp, TrendingDown, Wallet } from 'lucide-react'
-import { useMobile } from '@/hooks/useMobile'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
 import { useAuth } from '@/contexts/AuthContext'
 import { cn } from '@/lib/utils'
@@ -21,7 +21,7 @@ interface MobileTradingPanelProps {
 }
 
 export const MobileTradingPanel = ({ agentId, agent }: MobileTradingPanelProps) => {
-  const { isMobile, isNative } = useMobile()
+  const isMobile = useIsMobile()
   const { lightImpact, mediumImpact } = useHaptics()
   const { isConnected, address } = useAuth()
   const [buyAmount, setBuyAmount] = React.useState('')
@@ -54,8 +54,7 @@ export const MobileTradingPanel = ({ agentId, agent }: MobileTradingPanelProps) 
   return (
     <Card className={cn(
       "bg-card/30 border-border/50 backdrop-blur-sm",
-      "w-full mx-auto max-w-md", // Mobile-optimized width
-      isNative && "rounded-none border-0" // Native app styling
+      "w-full mx-auto max-w-md" // Mobile-optimized width
     )}>
       <CardHeader className="pb-3">
         <CardTitle className="flex items-center justify-between text-lg">
