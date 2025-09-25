@@ -100,7 +100,7 @@ export function AppSidebar() {
   }
 
   const getNavCls = ({ isActive }: { isActive: boolean }) =>
-    isActive ? "text-primary border-r-2 border-primary bg-slate-900/50" : "transition-all duration-300 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+    isActive ? "text-primary border-r-2 border-primary" : "transition-all duration-300 text-muted-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
 
   return (
     <Sidebar
@@ -139,7 +139,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {coreItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url} 
                       end={item.url === "/"}
@@ -164,7 +164,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {tradingItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
@@ -188,7 +188,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {defiItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
@@ -212,7 +212,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {analyticsItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
@@ -236,7 +236,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {communityItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
@@ -269,7 +269,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {professionalItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
@@ -293,7 +293,7 @@ export function AppSidebar() {
             <SidebarMenu>
               {resourceItems.map((item) => (
                 <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     {item.external ? (
                       <a 
                         href={item.url}
@@ -332,7 +332,7 @@ export function AppSidebar() {
             <SidebarGroupContent>
               <SidebarMenu>
                 <SidebarMenuItem>
-                  <SidebarMenuButton asChild>
+                  <SidebarMenuButton asChild isActive={isActive('/settings')}>
                     <NavLink 
                       to="/settings"
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
