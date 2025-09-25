@@ -1,6 +1,8 @@
 import { Button } from '@/components/ui/button'
-import { Search, Bell, User } from 'lucide-react'
+import { Bell } from 'lucide-react'
 import { Badge } from '@/components/ui/badge'
+import { WalletButton } from '@/components/wallet/WalletButton'
+import { SolanaWalletButton } from '@/components/wallet/SolanaWalletButton'
 import logoUrl from '@/assets/HyperCognition2.png'
 
 // Preload the logo to prevent fuzzy loading
@@ -22,20 +24,24 @@ export const MobileToolbar = () => {
           />
         </div>
 
-        {/* Actions on the right */}
-        <div className="flex items-center gap-3">
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/20">
-            <Search className="h-4 w-4" />
-          </Button>
+        {/* Centered bell notification */}
+        <div className="absolute left-1/2 transform -translate-x-1/2">
           <div className="relative">
             <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/20">
               <Bell className="h-4 w-4" />
             </Button>
             <Badge className="absolute -top-1 -right-1 h-3 w-3 p-0 text-[10px] bg-destructive text-destructive-foreground border-0 flex items-center justify-center">3</Badge>
           </div>
-          <Button variant="ghost" size="sm" className="h-8 w-8 p-0 hover:bg-accent/20">
-            <User className="h-4 w-4" />
-          </Button>
+        </div>
+
+        {/* Wallet buttons on the right */}
+        <div className="flex items-center gap-2">
+          <div className="scale-75">
+            <WalletButton />
+          </div>
+          <div className="scale-75">
+            <SolanaWalletButton />
+          </div>
         </div>
       </div>
     </header>
