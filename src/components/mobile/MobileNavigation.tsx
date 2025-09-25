@@ -188,12 +188,12 @@ export const MobileNavigation = () => {
                               variant={active ? "default" : "outline"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
-                                "h-20 flex flex-col gap-3 transition-all duration-200 text-sm",
-                                "hover:scale-105 hover:shadow-md border-2",
-                                active && "bg-primary text-primary-foreground shadow-lg shadow-primary/20 scale-105"
+                                "h-16 flex flex-col gap-2 transition-all duration-200 text-sm",
+                                "hover:scale-[1.02] hover:shadow-md border-2",
+                                active && "bg-accent/20 text-foreground shadow-lg shadow-accent/10 scale-[1.02] border-accent/30"
                               )}
                             >
-                              <Icon className="h-6 w-6" />
+                              <Icon className="h-5 w-5" />
                               <span className="text-xs font-semibold text-center leading-tight">{item.label}</span>
                             </Button>
                           )
