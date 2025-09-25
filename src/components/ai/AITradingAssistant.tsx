@@ -195,7 +195,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
     <Card className="h-[700px] flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
-          <CardTitle className="flex items-center gap-2">
+          <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
             <Bot className="h-5 w-5 text-primary" />
             AI Trading Assistant
             <Badge variant="outline" className="ml-2">
