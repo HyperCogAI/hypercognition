@@ -63,7 +63,7 @@ export const MobileOptimizedApp = ({ children }: MobileOptimizedAppProps) => {
 
       {/* Mobile Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-t">
-        <div className="flex items-center justify-around py-2">
+        <div className="flex items-center justify-around py-1.5">
           {[
             { id: 'trading', icon: TrendingUp, label: 'Trading' },
             { id: 'portfolio', icon: Wallet, label: 'Portfolio' },
@@ -74,14 +74,16 @@ export const MobileOptimizedApp = ({ children }: MobileOptimizedAppProps) => {
               key={tab.id}
               variant="ghost"
               size="sm"
+              aria-current={activeTab === tab.id ? 'page' : undefined}
+              aria-label={tab.label}
               className={cn(
-                "flex flex-col gap-1 h-auto py-2 px-3 transition-all duration-200",
-                activeTab === tab.id && "text-cyan-400 bg-cyan-400/15 rounded-full scale-95"
+                "flex flex-col gap-1 h-auto transition-all duration-200",
+                activeTab === tab.id ? "py-1 px-2 text-primary bg-primary/15 rounded-full" : "py-2 px-3"
               )}
               onClick={() => setActiveTab(tab.id)}
             >
-              <tab.icon className="h-4 w-4" />
-              <span className="text-xs">{tab.label}</span>
+              <tab.icon className={cn("h-3.5 w-3.5", activeTab === tab.id ? "opacity-100" : "opacity-90")} />
+              <span className="text-[11px] leading-none">{tab.label}</span>
             </Button>
           ))}
         </div>
@@ -112,11 +114,12 @@ const MobileNavigation = ({ onNavigate }: { onNavigate: () => void }) => {
           <Button
             key={item.href}
             variant="ghost"
-            className="w-full justify-start gap-3"
+            size="sm"
+            className="w-full justify-start gap-2 text-sm"
             onClick={onNavigate}
           >
-            <item.icon className="h-4 w-4" />
-            {item.title}
+            <item.icon className="h-3.5 w-3.5" />
+            <span className="leading-none">{item.title}</span>
           </Button>
         ))}
       </div>
