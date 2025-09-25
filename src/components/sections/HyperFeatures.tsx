@@ -61,7 +61,7 @@ export const HyperFeatures = () => {
             <br />
             AI Infrastructure
           </h2>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base text-muted-foreground max-w-3xl mx-auto">
             The most advanced AI-native DeFi platform, enabling autonomous trading agents 
             that evolve through continuous learning and market adaptation.
           </p>
