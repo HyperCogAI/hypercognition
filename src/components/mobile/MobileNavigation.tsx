@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet'
 import { Menu, Home, TrendingUp, Star, User, BarChart3, Brain, Store } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { useMobile } from '@/hooks/useMobile'
+import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
 import { cn } from '@/lib/utils'
 
@@ -20,7 +20,7 @@ const navigationItems = [
 export const MobileNavigation = () => {
   const navigate = useNavigate()
   const location = useLocation()
-  const { isMobile, isNative } = useMobile()
+  const isMobile = useIsMobile()
   const { lightImpact } = useHaptics()
   const [isSheetOpen, setIsSheetOpen] = React.useState(false)
 
@@ -41,9 +41,7 @@ export const MobileNavigation = () => {
       {/* Mobile Navigation Bar */}
       <div className={cn(
         "fixed bottom-0 left-0 right-0 z-50",
-        "bg-background/95 backdrop-blur-md border-t border-border/50",
-        "safe-area-pb", // Respect safe area on mobile devices
-        isNative && "pb-safe" // Native app safe area
+        "bg-background/95 backdrop-blur-md border-t border-border/50"
       )}>
         <div className="flex items-center justify-around h-16 px-4">
           {navigationItems.slice(0, 4).map((item) => {
