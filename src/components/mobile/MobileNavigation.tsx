@@ -134,7 +134,7 @@ export const MobileNavigation = () => {
                 className={cn(
                   "flex flex-col items-center gap-1 h-12 flex-1 px-2 py-1.5",
                   "text-xs font-medium transition-all duration-200",
-                  active ? "text-primary bg-primary/10 rounded-full" : "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                  active ? "text-primary bg-primary/10 rounded-full" : "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/5"
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -152,7 +152,7 @@ export const MobileNavigation = () => {
                 className={cn(
                   "flex flex-col items-center gap-1 h-12 flex-1 px-2 py-1.5",
                   "text-xs font-medium transition-all duration-200",
-                  "text-muted-foreground hover:text-foreground hover:bg-accent/5"
+                  "text-muted-foreground hover:text-foreground hover:bg-sidebar-accent/5"
                 )}
               >
                 <Menu className="h-5 w-5 transition-transform duration-200 hover:scale-110" />
@@ -190,7 +190,7 @@ export const MobileNavigation = () => {
                               className={cn(
                                 "h-14 flex flex-col gap-2 transition-all duration-200 text-sm",
                                 "hover:scale-[1.02] hover:shadow-md border-2",
-                                active && "bg-accent/20 text-foreground shadow-lg shadow-accent/10 scale-[1.02] border-accent/30"
+                                active && "bg-sidebar-accent/20 text-sidebar-accent-foreground shadow-lg shadow-accent/10 scale-[1.02] border-sidebar-accent/30"
                               )}
                             >
                               <Icon className="h-4 w-4" />
