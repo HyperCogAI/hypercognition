@@ -44,43 +44,43 @@ export function Features() {
   ]
 
   return (
-    <section className="py-24 relative">
+    <section className="py-16 md:py-24 relative">
       {/* Background Elements */}
       <div className="absolute inset-0 cyber-grid opacity-5" />
       
-      <div className="container mx-auto px-6">
+      <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
-        <div className="text-center max-w-3xl mx-auto mb-16 animate-fade-up">
-          <h2 className="text-4xl md:text-5xl font-bold mb-6">
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16 animate-fade-up">
+          <h2 className="text-3xl md:text-5xl font-bold mb-4 md:mb-6">
             <span className="bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
               Powered by Advanced AI
             </span>
           </h2>
-          <p className="text-xl text-muted-foreground">
+          <p className="text-base md:text-xl text-muted-foreground px-4 md:px-0">
             Our cutting-edge technology combines DeFi innovation with artificial intelligence 
             to deliver unprecedented trading performance
           </p>
         </div>
 
         {/* AI Bot Showcase */}
-        <div className="grid lg:grid-cols-2 gap-12 items-center mb-20">
-          <div className="space-y-6 animate-fade-up">
-            <div className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-4 py-2 text-sm font-medium text-secondary">
-              <Brain className="h-4 w-4" />
+        <div className="grid lg:grid-cols-2 gap-8 md:gap-12 items-center mb-16 md:mb-20">
+          <div className="space-y-4 md:space-y-6 animate-fade-up px-4 md:px-0">
+            <div className="inline-flex items-center gap-2 rounded-full border border-secondary/20 bg-secondary/10 px-3 md:px-4 py-2 text-xs md:text-sm font-medium text-secondary">
+              <Brain className="h-3 w-3 md:h-4 md:w-4" />
               Neural Network Architecture
             </div>
             
-            <h3 className="text-3xl md:text-4xl font-bold">
+            <h3 className="text-2xl md:text-4xl font-bold">
               Meet Your AI Trading Assistant
             </h3>
             
-            <p className="text-lg text-muted-foreground leading-relaxed">
+            <p className="text-sm md:text-lg text-muted-foreground leading-relaxed">
               Our AI bots use advanced machine learning models trained on millions of trading patterns. 
               They adapt to market conditions, manage risk automatically, and execute trades with 
               superhuman precision and speed.
             </p>
             
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-2 gap-3 md:gap-4">
               <MetricCard
                 title="Success Rate"
                 value="92.4%"
@@ -99,10 +99,10 @@ export function Features() {
               />
             </div>
             
-            <CyberButton variant="ai" size="lg" className="group">
-              <Bot className="h-5 w-5" />
+            <CyberButton variant="ai" size="lg" className="group w-full md:w-auto">
+              <Bot className="h-4 w-4 md:h-5 md:w-5" />
               Deploy Your Bot
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform" />
+              <ArrowRight className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform" />
             </CyberButton>
           </div>
           
@@ -111,7 +111,7 @@ export function Features() {
               <img 
                 src={aiBotIcon} 
                 alt="AI Trading Bot"
-                className="w-80 h-80 object-contain float"
+                className="w-64 h-64 md:w-80 md:h-80 object-contain float"
               />
               
             </div>
@@ -119,24 +119,24 @@ export function Features() {
         </div>
 
         {/* Features Grid */}
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6 animate-fade-up">
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 animate-fade-up">
           {features.map((feature, index) => (
             <div 
               key={index}
-              className="group p-6 rounded-xl border border-border bg-card hover:border-primary/20 transition-all duration-300"
+              className="group p-4 md:p-6 rounded-xl border border-border bg-card hover:border-primary/20 transition-all duration-300"
             >
-              <div className="flex items-start gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
+              <div className="flex items-start gap-3 md:gap-4">
+                <div className="flex h-10 w-10 md:h-12 md:w-12 items-center justify-center rounded-lg bg-primary/10 group-hover:bg-primary/20 transition-colors">
                   {feature.icon}
                 </div>
                 <div className="flex-1 space-y-2">
-                  <h4 className="font-semibold text-lg">{feature.title}</h4>
-                  <p className="text-muted-foreground text-sm leading-relaxed">
+                  <h4 className="font-semibold text-base md:text-lg">{feature.title}</h4>
+                  <p className="text-muted-foreground text-xs md:text-sm leading-relaxed">
                     {feature.description}
                   </p>
-                  <div className="pt-2">
-                    <div className="text-2xl font-bold text-primary">{feature.metrics.value}</div>
-                    <div className="text-xs text-muted-foreground">{feature.metrics.label}</div>
+                  <div className="pt-1 md:pt-2">
+                    <div className="text-xl md:text-2xl font-bold text-primary">{feature.metrics.value}</div>
+                    <div className="text-[10px] md:text-xs text-muted-foreground">{feature.metrics.label}</div>
                   </div>
                 </div>
               </div>

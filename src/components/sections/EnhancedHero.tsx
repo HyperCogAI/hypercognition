@@ -58,74 +58,74 @@ export function EnhancedHero() {
       
       
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-6 text-center">
-        <div className="max-w-6xl mx-auto space-y-12 animate-fade-up">
+      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center">
+        <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 animate-fade-up">
           
           {/* Hero Headline */}
-          <div className="space-y-6">
-            <div className="space-y-4">
+          <div className="space-y-6 md:space-y-8">
+            <div className="space-y-4 md:space-y-6">
               
               <h1 className="text-3xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
-                <div>The Future of</div>
+                <div className="mb-2 md:mb-4">The Future of</div>
                 <span className="text-primary relative">
                   {typedText}
                   <span className="animate-pulse">|</span>
                 </span>
               </h1>
               
-              <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+              <p className="text-sm md:text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2 md:px-0">
                 Deploy autonomous AI trading agents that learn, adapt, and execute strategies 24/7. 
                 Experience the next generation of algorithmic trading with HyperCognition.
               </p>
             </div>
 
             {/* Key Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto py-8">
-              <div className="flex items-center justify-center space-x-3 p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
-                <Zap className="h-6 w-6 text-yellow-500" />
-                <span className="text-sm font-medium">Lightning Fast Execution</span>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-4xl mx-auto py-6 md:py-8">
+              <div className="flex items-center justify-center space-x-2 md:space-x-3 p-3 md:p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
+                <Zap className="h-5 w-5 md:h-6 md:w-6 text-yellow-500" />
+                <span className="text-xs md:text-sm font-medium">Lightning Fast Execution</span>
               </div>
-              <div className="flex items-center justify-center space-x-3 p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
-                <Shield className="h-6 w-6 text-green-500" />
-                <span className="text-sm font-medium">Bank-Grade Security</span>
+              <div className="flex items-center justify-center space-x-2 md:space-x-3 p-3 md:p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
+                <Shield className="h-5 w-5 md:h-6 md:w-6 text-green-500" />
+                <span className="text-xs md:text-sm font-medium">Bank-Grade Security</span>
               </div>
-              <div className="flex items-center justify-center space-x-3 p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
-                <TrendingUp className="h-6 w-6 text-blue-500" />
-                <span className="text-sm font-medium">AI-Driven Insights</span>
+              <div className="flex items-center justify-center space-x-2 md:space-x-3 p-3 md:p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
+                <TrendingUp className="h-5 w-5 md:h-6 md:w-6 text-blue-500" />
+                <span className="text-xs md:text-sm font-medium">AI-Driven Insights</span>
               </div>
             </div>
           </div>
           
           {/* Stats Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 backdrop-blur-sm">
-              <div className="text-3xl md:text-4xl font-bold text-primary mb-2">$2.4B+</div>
-              <div className="text-sm text-muted-foreground">Total Volume Traded</div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto">
+            <div className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 backdrop-blur-sm">
+              <div className="text-2xl md:text-4xl font-bold text-primary mb-1 md:mb-2">$2.4B+</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Total Volume Traded</div>
             </div>
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 backdrop-blur-sm">
-              <div className="text-3xl md:text-4xl font-bold text-accent mb-2">1K+</div>
-              <div className="text-sm text-muted-foreground">AI Agents Deployed</div>
+            <div className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 backdrop-blur-sm">
+              <div className="text-2xl md:text-4xl font-bold text-accent mb-1 md:mb-2">1K+</div>
+              <div className="text-xs md:text-sm text-muted-foreground">AI Agents Deployed</div>
             </div>
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 backdrop-blur-sm">
-              <div className="text-3xl md:text-4xl font-bold text-green-500 mb-2">94.7%</div>
-              <div className="text-sm text-muted-foreground">Success Rate</div>
+            <div className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-green-500/10 to-green-500/5 border border-green-500/20 backdrop-blur-sm">
+              <div className="text-2xl md:text-4xl font-bold text-green-500 mb-1 md:mb-2">94.7%</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Success Rate</div>
             </div>
-            <div className="text-center p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 backdrop-blur-sm">
-              <div className="text-3xl md:text-4xl font-bold text-blue-500 mb-2">24/7</div>
-              <div className="text-sm text-muted-foreground">Automated Trading</div>
+            <div className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-blue-500/10 to-blue-500/5 border border-blue-500/20 backdrop-blur-sm">
+              <div className="text-2xl md:text-4xl font-bold text-blue-500 mb-1 md:mb-2">24/7</div>
+              <div className="text-xs md:text-sm text-muted-foreground">Automated Trading</div>
             </div>
           </div>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <CyberButton variant="neon" size="lg" className="group relative overflow-hidden md:px-8 md:py-4 md:text-lg">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4">
+            <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-base md:text-lg">
               <span className="relative z-10 text-white font-semibold">Start Trading Now</span>
-              <ArrowRight className="h-5 w-5 group-hover:translate-x-1 transition-transform text-white relative z-10" />
+              <ArrowRight className="h-4 w-4 md:h-5 md:w-5 group-hover:translate-x-1 transition-transform text-white relative z-10 ml-2" />
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow opacity-0 group-hover:opacity-100 transition-opacity" />
             </CyberButton>
             
-            <CyberButton variant="analytics" size="lg" className="group md:px-8 md:py-4 md:text-lg">
-              <Play className="h-5 w-5 mr-2 text-white" />
+            <CyberButton variant="analytics" size="lg" className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-base md:text-lg">
+              <Play className="h-4 w-4 md:h-5 md:w-5 mr-2 text-white" />
               <span className="text-white font-semibold">Watch Demo</span>
             </CyberButton>
           </div>
