@@ -56,8 +56,8 @@ export const WalletButton = () => {
           {formatAddress(address!)}
         </CyberButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48">
-        <DropdownMenuItem onClick={disconnectWallet}>
+      <DropdownMenuContent align="end" className="w-48 bg-black/60 border-white/20 backdrop-blur-md">
+        <DropdownMenuItem onClick={disconnectWallet} className="text-white hover:bg-white/10 focus:bg-white/10">
           <LogOut className="h-4 w-4 mr-2" />
           Disconnect
         </DropdownMenuItem>
