@@ -58,7 +58,7 @@ export function EnhancedHero() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0"
       >
-        <source src="/src/assets/hero-bg-animation.webm" type="video/webm" />
+        <source src="src/assets/hero-bg-animation.webm" type="video/webm" />
       </video>
       
       {/* Gradient Overlay */}
