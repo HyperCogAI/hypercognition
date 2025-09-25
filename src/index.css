@@ -137,6 +137,14 @@
     min-height: 100vh;
   }
 
+  /* iOS Safari: force solid background to avoid system blue tint */
+  @supports (-webkit-touch-callout: none) {
+    html, body {
+      background-color: hsl(var(--background)) !important;
+      background-image: none !important;
+    }
+  }
+
   /* Custom scrollbar */
   ::-webkit-scrollbar {
     width: 8px;
