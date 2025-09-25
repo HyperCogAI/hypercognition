@@ -15,7 +15,7 @@ import { AuthProvider } from "@/contexts/AuthContext"
 import { ErrorBoundary } from "@/components/error/ErrorBoundary"
 import { CardSkeleton } from "@/components/ui/loading-skeleton"
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
-import { useMobile } from "@/hooks/useMobile"
+import { useIsMobile } from "@/hooks/use-mobile"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -134,7 +134,7 @@ console.log('Web3Modal created:', web3Modal)
 
 // App Layout Component
 const AppLayout = () => {
-  const { isMobile } = useMobile()
+  const isMobile = useIsMobile()
   const location = window.location
   const isAIAssistantPage = location.pathname === '/ai-assistant'
 
