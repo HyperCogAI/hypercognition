@@ -1,4 +1,5 @@
 import { CyberButton } from "@/components/ui/cyber-button"
+import { Button } from "@/components/ui/button"
 import { useWallet } from "@/hooks/useWallet"
 import { Wallet, LogOut } from "lucide-react"
 import {
@@ -20,11 +21,10 @@ export const WalletButton = () => {
       const href = window.location.href
       return (
         <div className="w-full flex flex-col gap-2">
-          <div className="flex items-center gap-1">
+          <Button variant="outline" size="sm" onClick={connectWallet} className="bg-transparent border-white/20 text-white hover:bg-white/10">
             <Wallet className="h-4 w-4 text-white" />
-            {/* @ts-ignore */}
-            <w3m-button size="sm" label="Connect EVM" balance="hide" />
-          </div>
+            Connect EVM
+          </Button>
           <a
             href={href}
             target="_blank"
@@ -37,12 +37,11 @@ export const WalletButton = () => {
       )
     }
 
-    // @ts-ignore - Web3Modal button is dynamically loaded
     return (
-      <div className="flex items-center gap-1">
+      <Button variant="outline" size="sm" onClick={connectWallet} className="bg-transparent border-white/20 text-white hover:bg-white/10">
         <Wallet className="h-4 w-4 text-white" />
-        <w3m-button size="sm" label="Connect EVM" balance="hide" />
-      </div>
+        Connect EVM
+      </Button>
     )
   }
 
