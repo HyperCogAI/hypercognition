@@ -21,11 +21,11 @@ export const WalletButton = () => {
       return (
         <div className="w-full flex flex-col gap-2">
           <div 
-            className="w-full bg-white/40 border border-white rounded-lg overflow-hidden"
+            className="w-full bg-black/60 border border-white rounded-lg overflow-hidden"
             style={{
-              ['--w3m-color-mix' as any]: 'rgba(255, 255, 255, 0.4)',
-              ['--w3m-accent' as any]: 'rgba(255, 255, 255, 0.4)',
-              ['--w3m-background-color' as any]: 'rgba(255, 255, 255, 0.4)'
+              ['--w3m-color-mix' as any]: 'rgba(0, 0, 0, 0.6)',
+              ['--w3m-accent' as any]: 'rgba(0, 0, 0, 0.6)',
+              ['--w3m-background-color' as any]: 'rgba(0, 0, 0, 0.6)'
             }}
           >
             {/* @ts-ignore */}
@@ -50,11 +50,11 @@ export const WalletButton = () => {
     // @ts-ignore - Web3Modal button is dynamically loaded
     return (
       <div 
-        className="w-full bg-white/40 border border-white rounded-lg overflow-hidden"
+        className="w-full bg-black/60 border border-white rounded-lg overflow-hidden"
         style={{
-          ['--w3m-color-mix' as any]: 'rgba(255, 255, 255, 0.4)',
-          ['--w3m-accent' as any]: 'rgba(255, 255, 255, 0.4)',
-          ['--w3m-background-color' as any]: 'rgba(255, 255, 255, 0.4)'
+          ['--w3m-color-mix' as any]: 'rgba(0, 0, 0, 0.6)',
+          ['--w3m-accent' as any]: 'rgba(0, 0, 0, 0.6)',
+          ['--w3m-background-color' as any]: 'rgba(0, 0, 0, 0.6)'
         }}
       >
         <w3m-button 
