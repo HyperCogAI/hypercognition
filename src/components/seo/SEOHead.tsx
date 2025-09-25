@@ -56,7 +56,7 @@ export const SEOHead = ({
     updateMetaTag('twitter:image', image)
 
     // Update theme color
-    updateMetaTag('theme-color', '#6366f1')
+    updateMetaTag('theme-color', '#0f0f0f')
 
     // Update canonical link
     let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement
