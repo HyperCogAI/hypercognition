@@ -1,7 +1,8 @@
 import { CyberButton } from "@/components/ui/cyber-button"
 import { ArrowRight, Star, Zap, Shield, TrendingUp, Users, Target, Play, ChevronDown } from "lucide-react"
 import { useState, useEffect } from "react"
-
+import heroBgVideo from "@/assets/hero-bg-animation.webm"
+import heroFallbackMp4 from "@/assets/hero-video.mp4"
 export function EnhancedHero() {
   const [typedText, setTypedText] = useState("")
 
@@ -58,11 +59,12 @@ export function EnhancedHero() {
         playsInline
         className="absolute inset-0 w-full h-full object-cover z-0"
       >
-        <source src="src/assets/hero-bg-animation.webm" type="video/webm" />
+        <source src={heroBgVideo} type="video/webm" />
+        <source src={heroFallbackMp4} type="video/mp4" />
       </video>
       
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95 z-5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background/60 via-background/40 to-background/60 z-10" />
       
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 cyber-grid opacity-10 z-10" />
