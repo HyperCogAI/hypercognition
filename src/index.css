@@ -384,4 +384,47 @@
   input[type="number"] {
     -moz-appearance: textfield;
   }
+
+  /* Web3Modal Dark Theme Overrides */
+  w3m-modal {
+    --w3m-z-index: 9999;
+  }
+
+  w3m-modal w3m-router {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(8px) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 12px !important;
+  }
+
+  w3m-modal w3m-header {
+    background: rgba(0, 0, 0, 0.8) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1) !important;
+  }
+
+  w3m-modal w3m-modal-content {
+    background: rgba(0, 0, 0, 0.6) !important;
+    color: white !important;
+  }
+
+  w3m-modal w3m-connect-wallet-view,
+  w3m-modal w3m-account-view,
+  w3m-modal w3m-all-wallets-view {
+    background: rgba(0, 0, 0, 0.6) !important;
+  }
+
+  w3m-modal w3m-wallet-button {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    color: white !important;
+  }
+
+  w3m-modal w3m-wallet-button:hover {
+    background: rgba(255, 255, 255, 0.1) !important;
+  }
+
+  w3m-modal .w3m-overlay {
+    background: rgba(0, 0, 0, 0.6) !important;
+    backdrop-filter: blur(4px) !important;
+  }
 }
