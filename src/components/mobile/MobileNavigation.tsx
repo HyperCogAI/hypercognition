@@ -190,7 +190,7 @@ export const MobileNavigation = () => {
                               className={cn(
                                 "h-14 flex flex-col gap-2 transition-all duration-200 text-sm",
                                 "hover:scale-[1.02] hover:shadow-md border-2 hover:bg-transparent hover:text-foreground",
-                                active && "text-white shadow-lg shadow-accent/10 scale-[1.02]"
+                                active && "text-white shadow-lg scale-[1.02]"
                               )}
                             >
                               <Icon className="h-4 w-4" />
