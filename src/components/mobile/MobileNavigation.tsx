@@ -185,7 +185,7 @@ export const MobileNavigation = () => {
                           return (
                             <Button
                               key={item.id}
-                              variant={active ? "default" : "outline"}
+                              variant={"outline"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
                                 "h-14 flex flex-col gap-2 transition-all duration-200 text-sm",
