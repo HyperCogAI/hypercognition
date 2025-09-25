@@ -143,7 +143,7 @@ const AppLayout = () => {
     return (
       <div className="min-h-screen flex flex-col">
         <MobileToolbar />
-        <main className="flex-1 pb-16">
+        <main className="flex-1 pb-16 pt-[calc(3.5rem+env(safe-area-inset-top))]">
           <ErrorBoundary level="page" name="Mobile App">
             <Suspense fallback={
               <div className="p-4">
