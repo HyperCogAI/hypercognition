@@ -9,7 +9,7 @@ preloadLogo.src = logoUrl
 export const MobileToolbar = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-black/60 border-b border-border/50 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-      <div className="flex h-14 items-center justify-between px-4">
+      <div className="flex h-14 items-center justify-between pl-4 pr-1">
         {/* Logo on the left */}
         <div className="flex items-center">
           <img 
@@ -23,7 +23,7 @@ export const MobileToolbar = () => {
 
 
         {/* Wallet buttons on the right */}
-        <div className="flex items-center gap-0 pr-2">
+        <div className="flex items-center gap-0 -mr-1">
           <div className="scale-90">
             <WalletButton />
           </div>
