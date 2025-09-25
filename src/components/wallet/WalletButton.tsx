@@ -1,5 +1,4 @@
 import { CyberButton } from "@/components/ui/cyber-button"
-import { Button } from "@/components/ui/button"
 import { useWallet } from "@/hooks/useWallet"
 import { Wallet, LogOut } from "lucide-react"
 import {
@@ -21,10 +20,10 @@ export const WalletButton = () => {
       const href = window.location.href
       return (
         <div className="w-full flex flex-col gap-2">
-          <Button variant="outline" size="sm" onClick={connectWallet} className="bg-transparent border-white/20 text-white hover:bg-white/10">
+          <CyberButton variant="outline" size="sm" onClick={connectWallet}>
             <Wallet className="h-4 w-4 text-white" />
             Connect EVM
-          </Button>
+          </CyberButton>
           <a
             href={href}
             target="_blank"
@@ -38,10 +37,10 @@ export const WalletButton = () => {
     }
 
     return (
-      <Button variant="outline" size="sm" onClick={connectWallet} className="bg-transparent border-white/20 text-white hover:bg-white/10">
+      <CyberButton variant="outline" size="sm" onClick={connectWallet}>
         <Wallet className="h-4 w-4 text-white" />
         Connect EVM
-      </Button>
+      </CyberButton>
     )
   }
 
