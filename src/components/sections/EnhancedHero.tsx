@@ -57,7 +57,7 @@ export function EnhancedHero() {
         loop
         muted
         playsInline
-        className="absolute inset-0 w-full h-full object-cover z-0 opacity-50"
+        className="absolute inset-0 w-full h-full object-cover z-0 opacity-30"
       >
         <source src={heroBgVideo} type="video/webm" />
         <source src={heroFallbackMp4} type="video/mp4" />
