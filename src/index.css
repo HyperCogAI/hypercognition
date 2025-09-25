@@ -39,10 +39,10 @@
     --muted: 0 0% 8%;
     --muted-foreground: 215 10% 55%;
 
-    /* Accent - Soft Blue Glow */
-    --accent: 210 100% 65%;
-    --accent-foreground: 0 0% 5%;
-    --accent-glow: 210 100% 80%;
+    /* Accent - Subtle Dark Highlight */
+    --accent: 232 15% 18%;
+    --accent-foreground: 210 15% 85%;
+    --accent-glow: 232 20% 25%;
 
     /* Danger - Subtle Red */
     --destructive: 0 60% 50%;
