@@ -989,6 +989,36 @@ export type Database = {
         }
         Relationships: []
       }
+      developer_data_access_log: {
+        Row: {
+          access_type: string
+          accessed_by: string | null
+          created_at: string | null
+          developer_id: string | null
+          id: string
+          ip_address: unknown | null
+          user_agent: string | null
+        }
+        Insert: {
+          access_type: string
+          accessed_by?: string | null
+          created_at?: string | null
+          developer_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Update: {
+          access_type?: string
+          accessed_by?: string | null
+          created_at?: string | null
+          developer_id?: string | null
+          id?: string
+          ip_address?: unknown | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       enhanced_user_sessions: {
         Row: {
           created_at: string | null
@@ -1735,13 +1765,6 @@ export type Database = {
           version?: string
         }
         Relationships: [
-          {
-            foreignKeyName: "marketplace_endpoints_developer_id_fkey"
-            columns: ["developer_id"]
-            isOneToOne: false
-            referencedRelation: "developer_marketplace_public"
-            referencedColumns: ["id"]
-          },
           {
             foreignKeyName: "marketplace_endpoints_developer_id_fkey"
             columns: ["developer_id"]
@@ -4110,64 +4133,34 @@ export type Database = {
       }
     }
     Views: {
-      developer_marketplace_public: {
-        Row: {
-          created_at: string | null
-          description: string | null
-          id: string | null
-          logo_url: string | null
-          total_apis: number | null
-          total_revenue_estimate: number | null
-          website_url: string | null
-        }
-        Insert: {
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          logo_url?: string | null
-          total_apis?: number | null
-          total_revenue_estimate?: never
-          website_url?: string | null
-        }
-        Update: {
-          created_at?: string | null
-          description?: string | null
-          id?: string | null
-          logo_url?: string | null
-          total_apis?: number | null
-          total_revenue_estimate?: never
-          website_url?: string | null
-        }
-        Relationships: []
-      }
       marketplace_developers_public: {
         Row: {
+          company_name: string | null
           created_at: string | null
           description: string | null
           id: string | null
           logo_url: string | null
           total_apis: number | null
-          total_revenue: number | null
           verified: boolean | null
           website_url: string | null
         }
         Insert: {
+          company_name?: string | null
           created_at?: string | null
           description?: string | null
           id?: string | null
           logo_url?: string | null
-          total_apis?: number | null
-          total_revenue?: never
+          total_apis?: never
           verified?: boolean | null
           website_url?: string | null
         }
         Update: {
+          company_name?: string | null
           created_at?: string | null
           description?: string | null
           id?: string | null
           logo_url?: string | null
-          total_apis?: number | null
-          total_revenue?: never
+          total_apis?: never
           verified?: boolean | null
           website_url?: string | null
         }
