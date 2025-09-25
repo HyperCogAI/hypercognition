@@ -14,12 +14,12 @@ export function APIMarketplace() {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Real data from Supabase
+  // Real data from Supabase - using secure public view
   const { data: developers = [], isLoading: devsLoading } = useQuery({
-    queryKey: ['marketplace-developers'],
+    queryKey: ['marketplace-developers-public'],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('marketplace_developers')
+        .from('marketplace_developers_public')
         .select('*')
         .order('created_at', { ascending: false });
       
@@ -35,7 +35,7 @@ export function APIMarketplace() {
         .from('marketplace_endpoints')
         .select(`
           *,
-          developer:marketplace_developers(*)
+          developer:marketplace_developers_public(*)
         `)
         .eq('is_active', true)
         .order('total_subscribers', { ascending: false });
