@@ -218,7 +218,7 @@ const EnhancedMarketNews = () => {
             <Newspaper className="h-6 w-6 md:h-8 md:w-8 text-primary" />
             Market News & Analysis
           </h1>
-          <p className="text-muted-foreground mt-2">
+          <p className="text-sm text-muted-foreground mt-2">
             Real-time market news with AI-powered sentiment analysis
           </p>
         </div>
