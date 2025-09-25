@@ -20,21 +20,8 @@ export const WalletButton = () => {
       const href = window.location.href
       return (
         <div className="w-full flex flex-col gap-2">
-          <div 
-            className="w-full bg-black/60 border border-white rounded-lg overflow-hidden"
-            style={{
-              ['--w3m-color-mix' as any]: 'rgba(0, 0, 0, 0.6)',
-              ['--w3m-accent' as any]: 'rgba(0, 0, 0, 0.6)',
-              ['--w3m-background-color' as any]: 'rgba(0, 0, 0, 0.6)'
-            }}
-          >
-            {/* @ts-ignore */}
-            <w3m-button 
-              size="sm" 
-              label="Connect EVM" 
-              balance="hide" 
-            />
-          </div>
+          {/* @ts-ignore */}
+          <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
           <a
             href={href}
             target="_blank"
@@ -48,22 +35,7 @@ export const WalletButton = () => {
     }
 
     // @ts-ignore - Web3Modal button is dynamically loaded
-    return (
-      <div 
-        className="w-full bg-black/60 border border-white rounded-lg overflow-hidden"
-        style={{
-          ['--w3m-color-mix' as any]: 'rgba(0, 0, 0, 0.6)',
-          ['--w3m-accent' as any]: 'rgba(0, 0, 0, 0.6)',
-          ['--w3m-background-color' as any]: 'rgba(0, 0, 0, 0.6)'
-        }}
-      >
-        <w3m-button 
-          size="sm" 
-          label="Connect EVM" 
-          balance="hide" 
-        />
-      </div>
-    )
+    return <w3m-button size="sm" label="Connect EVM" balance="hide" className="w-full" />
   }
 
   const formatAddress = (addr: string) => {
