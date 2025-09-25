@@ -398,8 +398,8 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
         <Separator />
 
         {/* Message Input */}
-        <div className="p-4 md:p-4">
-          <div className="flex gap-2 mb-3">
+        <div className="p-4 md:p-6">
+          <div className="flex gap-2 mb-4">
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
@@ -425,8 +425,8 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
           <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={portfolio} marketData={marketData}>
             <Button
               variant="outline"
-              size="sm"
-              className="w-full flex items-center justify-center gap-2 h-9"
+              size="default"
+              className="w-full flex items-center justify-center gap-2 py-3 mt-2"
             >
               <Mic className="h-4 w-4" />
               Switch to Voice Mode
