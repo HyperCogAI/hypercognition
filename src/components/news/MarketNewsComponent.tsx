@@ -17,18 +17,22 @@ import {
   AlertTriangle,
   Zap,
   Brain,
-  Globe
+  Globe,
+  ArrowRight
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
+import { Link } from 'react-router-dom'
 
 interface MarketNewsComponentProps {
   selectedAgents?: string[]
   className?: string
+  maxArticles?: number
 }
 
 export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({ 
   selectedAgents = [],
-  className = ""
+  className = "",
+  maxArticles = 7
 }) => {
   const {
     loading,
@@ -185,25 +189,25 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
         </TabsList>
 
         <TabsContent value="news" className="space-y-4">
-          <ScrollArea className="h-[400px]">
-            <div className="space-y-3 pr-4">
-              {loading && newsArticles.length === 0 ? (
-                <div className="space-y-3">
-                  {[...Array(3)].map((_, i) => (
-                    <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
-                  ))}
-                </div>
-              ) : newsArticles.length === 0 ? (
-                <Card>
-                  <CardContent className="p-6 text-center">
-                    <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                    <p className="text-muted-foreground">
-                      No news articles available. Try refreshing or check your connection.
-                    </p>
-                  </CardContent>
-                </Card>
-              ) : (
-                newsArticles.map((article, index) => (
+          <div className="space-y-3">
+            {loading && newsArticles.length === 0 ? (
+              <div className="space-y-3">
+                {[...Array(3)].map((_, i) => (
+                  <div key={i} className="h-24 bg-muted animate-pulse rounded-lg" />
+                ))}
+              </div>
+            ) : newsArticles.length === 0 ? (
+              <Card>
+                <CardContent className="p-6 text-center">
+                  <Globe className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                  <p className="text-muted-foreground">
+                    No news articles available. Try refreshing or check your connection.
+                  </p>
+                </CardContent>
+              </Card>
+            ) : (
+              <>
+                {newsArticles.slice(0, maxArticles).map((article, index) => (
                   <Card key={index} className="hover:shadow-md transition-shadow">
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between mb-2">
@@ -254,10 +258,21 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
                       )}
                     </CardContent>
                   </Card>
-                ))
-              )}
-            </div>
-          </ScrollArea>
+                ))}
+                
+                {newsArticles.length > maxArticles && (
+                  <div className="text-center pt-4">
+                    <Button asChild variant="outline" className="group">
+                      <Link to="/analytics" className="flex items-center gap-2">
+                        View All News & Analysis
+                        <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
         </TabsContent>
 
         <TabsContent value="trending" className="space-y-4">
