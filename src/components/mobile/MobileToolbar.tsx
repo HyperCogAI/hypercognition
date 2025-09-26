@@ -35,7 +35,7 @@ export const MobileToolbar = () => {
           <div className="scale-90 mr-1">
             <WalletButton />
           </div>
-          <div className="scale-90">
+          <div className="scale-90 -ml-1">
             <SolanaWalletButton />
           </div>
         </div>
