@@ -13,6 +13,7 @@ export function AnimatedParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number>()
   const particlesRef = useRef<Particle[]>([])
+  const worldRef = useRef<{ width: number; height: number }>({ width: 0, height: 0 })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -25,13 +26,19 @@ export function AnimatedParticles() {
       const rect = canvas.getBoundingClientRect()
       const dpr = window.devicePixelRatio || 1
       
+      // Lock world size at first init to avoid jitter on mobile scroll
+      if (worldRef.current.width === 0 || worldRef.current.height === 0) {
+        worldRef.current.width = Math.round(rect.width)
+        worldRef.current.height = Math.round(rect.height)
+      }
+
       // Set actual size in memory (scaled to device pixel ratio)
-      canvas.width = Math.ceil(rect.width * dpr)
-      canvas.height = Math.ceil(rect.height * dpr)
+      canvas.width = Math.ceil(worldRef.current.width * dpr)
+      canvas.height = Math.ceil(worldRef.current.height * dpr)
       
-      // Scale the canvas back down using CSS
-      canvas.style.width = rect.width + 'px'
-      canvas.style.height = rect.height + 'px'
+      // Scale the canvas back down using CSS (match the locked world size)
+      canvas.style.width = worldRef.current.width + 'px'
+      canvas.style.height = worldRef.current.height + 'px'
       
       // Reset transform then scale for DPR to avoid cumulative scaling on resize
       ctx.setTransform(1, 0, 0, 1, 0, 0)
@@ -40,13 +47,11 @@ export function AnimatedParticles() {
 
     const createParticles = () => {
       const particles: Particle[] = []
-      const rect = canvas.getBoundingClientRect()
-      const particleCount = Math.min(150, Math.floor((rect.width * rect.height) / 8000))
+      const displayWidth = Math.round(worldRef.current.width)
+      const displayHeight = Math.round(worldRef.current.height)
+      const particleCount = Math.min(150, Math.floor((displayWidth * displayHeight) / 8000))
       
       for (let i = 0; i < particleCount; i++) {
-        const displayWidth = Math.round(rect.width)
-        const displayHeight = Math.round(rect.height)
-        
         particles.push({
           x: Math.random() * displayWidth,
           y: Math.random() * displayHeight,
@@ -60,9 +65,8 @@ export function AnimatedParticles() {
     }
 
     const animate = () => {
-      const rect = canvas.getBoundingClientRect()
-      const displayWidth = Math.round(rect.width)
-      const displayHeight = Math.round(rect.height)
+      const displayWidth = Math.round(worldRef.current.width)
+      const displayHeight = Math.round(worldRef.current.height)
       
       // Pixel-perfect clear to avoid 1px artifacts at edges
       ctx.save()
@@ -132,41 +136,11 @@ export function AnimatedParticles() {
     createParticles()
     animate()
 
-    // Throttled resize and mobile visual viewport handling
-    let resizeRaf: number | null = null
-    const onResize = () => {
-      if (resizeRaf) cancelAnimationFrame(resizeRaf)
-      resizeRaf = requestAnimationFrame(() => {
-        resizeCanvas()
-        createParticles()
-      })
-    }
-
-    window.addEventListener('resize', onResize)
-
-    // Pause connections while user scrolls/touches to avoid artifacts on mobile
-    window.addEventListener('resize', onResize)
-
-    // Handle mobile browser UI resize jitter
-    const vv = window.visualViewport
-    let vvDebounce: number | undefined
-    const onVVResize = () => {
-      if (vvDebounce) window.clearTimeout(vvDebounce)
-      vvDebounce = window.setTimeout(() => {
-        resizeCanvas()
-        createParticles()
-      }, 120)
-    }
-    vv?.addEventListener('resize', onVVResize)
-
+    // No resize listeners: lock world size on mount to avoid mobile scroll jitter
     return () => {
-      window.removeEventListener('resize', onResize)
-      vv?.removeEventListener('resize', onVVResize)
-      if (resizeRaf) cancelAnimationFrame(resizeRaf)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
-      if (vvDebounce) window.clearTimeout(vvDebounce)
     }
   }, [])
 
