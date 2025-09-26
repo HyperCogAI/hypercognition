@@ -254,7 +254,7 @@ const EnhancedMarketNews = () => {
                           variant={alert.severity === 'high' ? 'destructive' : alert.severity === 'medium' ? 'default' : 'secondary'} 
                           className={cn(
                             "text-xs",
-                            alert.severity === 'medium' && "bg-orange-500 hover:bg-orange-600 text-white"
+                            alert.severity === 'medium' && "bg-orange-500 text-white border-0"
                           )}
                         >
                           {alert.severity.toUpperCase()}
