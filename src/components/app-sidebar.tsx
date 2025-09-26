@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard, Layers } from "lucide-react"
+import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard, Layers, UserCog } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import newLogo from "@/assets/new-logo.png"
 import {
@@ -25,7 +25,7 @@ const coreItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
   { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
-  { title: "Admin", url: "/admin", icon: Shield },
+  { title: "Admin", url: "/admin", icon: UserCog },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
 ]
 
