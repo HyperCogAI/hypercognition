@@ -78,7 +78,7 @@ export function EnhancedHero() {
                 </span>
               </h1>
               
-              <p className="text-sm md:text-base text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2 md:px-0">
+              <p className="text-sm md:text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed px-2 md:px-0">
                 Deploy autonomous AI trading agents that learn, adapt, and execute strategies 24/7. 
                 Experience the next generation of algorithmic trading with HyperCognition.
               </p>
