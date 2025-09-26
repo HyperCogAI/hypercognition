@@ -53,7 +53,9 @@ export function EnhancedHero() {
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pointer-events-none">
       
       {/* Animated Particles Background */}
-      <AnimatedParticles />
+      <div className="absolute inset-0 z-0 transform -translate-y-[30vh] md:translate-y-0 pointer-events-none">
+        <AnimatedParticles />
+      </div>
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/50 to-background/70 z-5" />
