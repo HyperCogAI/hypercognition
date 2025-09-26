@@ -28,8 +28,8 @@ export function AnimatedParticles() {
       const dpr = window.devicePixelRatio || 1
       
       // Set actual size in memory (scaled to device pixel ratio)
-      canvas.width = Math.floor(rect.width * dpr)
-      canvas.height = Math.floor(rect.height * dpr)
+      canvas.width = Math.ceil(rect.width * dpr)
+      canvas.height = Math.ceil(rect.height * dpr)
       
       // Scale the canvas back down using CSS
       canvas.style.width = rect.width + 'px'
@@ -42,11 +42,12 @@ export function AnimatedParticles() {
 
     const createParticles = () => {
       const particles: Particle[] = []
-      const particleCount = Math.min(150, Math.floor((canvas.style.width ? parseInt(canvas.style.width) : canvas.width) * (canvas.style.height ? parseInt(canvas.style.height) : canvas.height) / 8000))
+      const rect = canvas.getBoundingClientRect()
+      const particleCount = Math.min(150, Math.floor((rect.width * rect.height) / 8000))
       
       for (let i = 0; i < particleCount; i++) {
-        const displayWidth = canvas.style.width ? parseInt(canvas.style.width) : canvas.width
-        const displayHeight = canvas.style.height ? parseInt(canvas.style.height) : canvas.height
+        const displayWidth = Math.round(rect.width)
+        const displayHeight = Math.round(rect.height)
         
         particles.push({
           x: Math.random() * displayWidth,
@@ -61,14 +62,21 @@ export function AnimatedParticles() {
     }
 
     const animate = () => {
-      const displayWidth = canvas.style.width ? parseInt(canvas.style.width) : canvas.width
-      const displayHeight = canvas.style.height ? parseInt(canvas.style.height) : canvas.height
+      const rect = canvas.getBoundingClientRect()
+      const displayWidth = Math.round(rect.width)
+      const displayHeight = Math.round(rect.height)
       
       // Pixel-perfect clear to avoid 1px artifacts at edges
       ctx.save()
       ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.restore()
+      
+      // If interacting (touch/scroll), keep canvas cleared and skip drawing to prevent artifacts
+      if (interactingRef.current) {
+        animationRef.current = requestAnimationFrame(animate)
+        return
+      }
       
       const particles = particlesRef.current
       // Improve line rendering to reduce aliasing artifacts
