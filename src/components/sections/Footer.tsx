@@ -1,4 +1,5 @@
 import { Github, Twitter, MessageCircle, ExternalLink, FileText, X } from "lucide-react"
+import { Link } from "react-router-dom"
 import hyperCognitionLogo from "../../assets/hyper-cognition-logo.png"
 
 export const Footer = () => {
@@ -76,6 +77,9 @@ export const Footer = () => {
               <a href="#" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 API Reference
               </a>
+              <Link to="/tutorials" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
+                Learning Hub
+              </Link>
               <a href="https://whitepaper.hypercognition.io/hypercognition/" className="block text-muted-foreground hover:text-accent transition-colors text-sm">
                 Tutorials
               </a>

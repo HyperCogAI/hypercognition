@@ -67,6 +67,7 @@ const Staking = lazy(() => import('./pages/Staking'));
 const SolanaDashboard = lazy(() => import('./pages/SolanaDashboard'));
 const SolanaStaking = lazy(() => import('./pages/SolanaStaking'));
 const SolanaTradingSignalsPage = lazy(() => import('./pages/SolanaTradingSignals'));
+const TutorialsHub = lazy(() => import('./pages/TutorialsHub'));
 
 // Lazy loaded components - Administrative
 const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
@@ -185,6 +186,7 @@ const AppLayout = () => {
                 <Route path="/technical-analysis" element={<ProtectedRoute><TechnicalAnalysis /></ProtectedRoute>} />
                 <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
                 <Route path="/community" element={<Community />} />
+                <Route path="/tutorials" element={<TutorialsHub />} />
                 <Route path="/trading-academy" element={<TradingAcademy />} />
                 <Route path="/institutional" element={<ProtectedRoute><InstitutionalFeatures /></ProtectedRoute>} />
                 <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
@@ -289,7 +291,8 @@ const AppLayout = () => {
                   <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
                   <Route path="/advanced-notifications" element={<ProtectedRoute><AdvancedNotifications /></ProtectedRoute>} />
                   <Route path="/social-trading" element={<SocialTradingPage />} />
-                  <Route path="/trading-academy" element={<TradingAcademy />} />
+                    <Route path="/tutorials" element={<TutorialsHub />} />
+                    <Route path="/trading-academy" element={<TradingAcademy />} />
                   <Route path="/community" element={<Community />} />
                   <Route path="/premium" element={<PremiumTiers />} />
                   <Route path="/multi-language" element={<MultiLanguage />} />

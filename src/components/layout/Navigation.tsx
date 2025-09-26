@@ -15,6 +15,7 @@ export function Navigation() {
   const navItems = [
     { name: "Trade", href: "#trade" },
     { name: "AI Bots", href: "#bots" },
+    { name: "Learn", href: "/tutorials" },
     { name: "Academy", href: "/trading-academy" },
     { name: "Community", href: "/community" },
     { name: "Enterprise", href: "/institutional-apis" },
