@@ -57,7 +57,9 @@ export function EnhancedHero() {
         loop
         muted
         playsInline
+        preload="auto"
         className="absolute inset-0 w-full h-full object-cover z-0 opacity-[0.15]"
+        style={{ willChange: 'transform' }}
       >
         <source src={heroNewVideo} type="video/quicktime" />
         <source src={heroFallbackMp4} type="video/mp4" />
