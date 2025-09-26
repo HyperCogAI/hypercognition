@@ -130,8 +130,8 @@ export function AnimatedParticles() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0 w-full h-full"
-      style={{ pointerEvents: 'none' }}
+      className="absolute inset-0 z-0 w-full h-full block"
+      style={{ pointerEvents: 'none', display: 'block' }}
     />
   )
 }
