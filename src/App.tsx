@@ -21,6 +21,7 @@ import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+import Settings from "./pages/Settings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Footer } from "./components/sections/Footer";
 
@@ -164,6 +165,7 @@ const AppLayout = () => {
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
                 <Route path="/auth" element={<Auth />} />
+                <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -231,6 +233,7 @@ const AppLayout = () => {
                   <Route path="/" element={<Home />} />
                   <Route path="/home" element={<Home />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                   <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                   <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
