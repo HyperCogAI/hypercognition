@@ -305,7 +305,7 @@ const NotificationCenter: React.FC = () => {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">Notification Center</h1>
+          <h1 className="text-3xl font-bold text-white">Notification Center</h1>
           <p className="text-muted-foreground">Manage your alerts and notification preferences</p>
         </div>
         <Button onClick={() => setShowCreateAlert(true)} className="flex items-center gap-2">

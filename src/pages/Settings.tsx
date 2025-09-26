@@ -102,7 +102,7 @@ const Settings = () => {
                 <User className="h-8 w-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                <h1 className="text-4xl font-bold text-white">
                   Settings
                 </h1>
                 <p className="text-muted-foreground">

@@ -128,7 +128,7 @@ export function ACPDashboard() {
     <div className="container mx-auto px-6 py-8 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold bg-gradient-to-r from-primary to-primary-light bg-clip-text text-transparent">
+          <h1 className="text-3xl font-bold text-white">
             Agent Commerce Protocol
           </h1>
           <p className="text-muted-foreground mt-2">

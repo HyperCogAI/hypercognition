@@ -65,7 +65,7 @@ const MultiLanguage = () => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary/70 bg-clip-text text-transparent mb-4">
+          <h1 className="text-4xl font-bold text-white mb-4">
             Global Trading Platform
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">

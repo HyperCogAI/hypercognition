@@ -32,7 +32,7 @@ export function DesignSystemShowcase() {
       <div className="space-y-8">
         {/* Header */}
         <div className="text-center space-y-4">
-          <h1 className="text-responsive-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h1 className="text-responsive-xl font-bold text-white">
             HyperCognition Design System
           </h1>
           <p className="text-responsive text-muted-foreground max-w-2xl mx-auto">

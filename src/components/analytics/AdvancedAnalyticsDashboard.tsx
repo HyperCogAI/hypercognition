@@ -150,7 +150,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold gradient-text">Advanced Analytics Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white">Advanced Analytics Dashboard</h1>
           <p className="text-muted-foreground">Real-time market data and technical analysis</p>
         </div>
         <div className="flex items-center gap-4">
