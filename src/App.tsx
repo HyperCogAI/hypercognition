@@ -163,6 +163,7 @@ const AppLayout = () => {
                 </div>
               </div>
             }>
+              <ScrollToTop />
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
@@ -252,6 +253,7 @@ const AppLayout = () => {
                   </div>
                 </div>
               }>
+                <ScrollToTop />
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/home" element={<Home />} />
