@@ -3820,7 +3820,7 @@ export type Database = {
           difficulty: string
           duration?: string | null
           icon?: string | null
-          id: string
+          id?: string
           is_active?: boolean
           steps?: Json
           title: string
