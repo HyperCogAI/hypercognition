@@ -140,6 +140,20 @@
     overscroll-behavior-y: none;
   }
 
+  /* Big headings use the same styling as "Enter the Future of Autonomous Trading" */
+  h1, h2 {
+    @apply text-white;
+  }
+
+  /* For gradient text spans within headings */
+  .gradient-text {
+    background: linear-gradient(to right, hsl(var(--primary)), hsl(var(--accent)), hsl(var(--primary)));
+    background-clip: text;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+  }
+
   /* iOS Safari: force solid background to avoid system blue tint */
   @supports (-webkit-touch-callout: none) {
     html, body, #root {
