@@ -72,12 +72,6 @@ export function AnimatedParticles() {
       ctx.clearRect(0, 0, canvas.width, canvas.height)
       ctx.restore()
       
-      // If interacting (touch/scroll), keep canvas cleared and skip drawing to prevent artifacts
-      if (interactingRef.current) {
-        animationRef.current = requestAnimationFrame(animate)
-        return
-      }
-      
       const particles = particlesRef.current
       // Improve line rendering to reduce aliasing artifacts
       ctx.lineCap = 'round'
