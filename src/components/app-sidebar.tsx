@@ -302,7 +302,7 @@ export function AppSidebar() {
                         rel="noopener noreferrer"
                         className="flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu text-muted-foreground hover:bg-transparent hover:text-foreground"
                       >
-                        <item.icon className="h-4 w-4 text-foreground group-hover/menu:scale-110 transition-transform duration-300" />
+                        <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium text-foreground">{item.title}</span>
