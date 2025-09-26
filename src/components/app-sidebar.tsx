@@ -25,6 +25,7 @@ const coreItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
   { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
+  { title: "Admin", url: "/admin", icon: Shield },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
 ]
 
@@ -78,7 +79,6 @@ const professionalItems = [
   { title: "Compliance", url: "/compliance", icon: Scale },
   { title: "White Label", url: "/white-label", icon: Package },
   { title: "Multi Language", url: "/multi-language", icon: Globe },
-  { title: "Admin", url: "/admin", icon: Settings },
 ]
 
 const resourceItems = [
