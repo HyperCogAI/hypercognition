@@ -24,6 +24,7 @@ import Auth from "./pages/Auth";
 import Settings from "./pages/Settings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Footer } from "./components/sections/Footer";
+import { ScrollToTop } from "./components/ScrollToTop";
 
 // Lazy loaded components - Core pages
 const Marketplace = lazy(() => import('./pages/Marketplace'));
@@ -306,6 +307,7 @@ const App = () => (
                 <Toaster />
                 <Sonner />
                 <BrowserRouter>
+                  <ScrollToTop />
                   <AppLayout />
                 </BrowserRouter>
                 </TooltipProvider>
