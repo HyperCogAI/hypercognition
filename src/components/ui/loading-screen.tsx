@@ -25,7 +25,10 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
 
     const timer = setTimeout(() => {
       setIsLoading(false)
-      setTimeout(onComplete, 500) // Allow exit animation to complete
+      setTimeout(() => {
+        window.scrollTo(0, 0) // Ensure page starts at top
+        onComplete()
+      }, 500) // Allow exit animation to complete
     }, 2000)
 
     return () => {
