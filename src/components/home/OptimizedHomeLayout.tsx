@@ -18,8 +18,8 @@ const AgentMarketplace = lazy(() => import('@/components/sections/AgentMarketpla
 
 // Enhanced Loading components with animations
 const HeroSkeleton = () => (
-  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-card/50">
-    <div className="container mx-auto px-6 text-center space-y-8">
+  <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-background to-card/50 pt-16 md:pt-0">
+    <div className="container mx-auto px-6 text-center space-y-8 md:space-y-12">
       <div className="animate-fade-in">
         <Skeleton className="h-16 w-3/4 mx-auto skeleton-shimmer" />
       </div>
@@ -182,21 +182,30 @@ export function OptimizedHomeLayout() {
         structuredData={structuredData}
       />
       
-      <main className="space-y-8 md:space-y-16">
+      <main className={cn(
+        "space-y-12 md:space-y-20 lg:space-y-24",
+        isMobile && "pt-20 space-y-16"
+      )}>
         {/* Hero Section with Priority Loading */}
         <Suspense fallback={<HeroSkeleton />}>
           <EnhancedHero />
         </Suspense>
 
         {/* Market News Section */}
-        <section className="container mx-auto px-4 md:px-6">
+        <section className={cn(
+          "container mx-auto px-6 md:px-8 lg:px-12",
+          isMobile && "px-4"
+        )}>
           <Suspense fallback={<MarketNewsSkeleton />}>
             <EnhancedMarketNews />
           </Suspense>
         </section>
 
         {/* Agent Marketplace Section */}
-        <section id="marketplace" className="scroll-mt-16 container mx-auto px-4 md:px-6">
+        <section id="marketplace" className={cn(
+          "scroll-mt-16 container mx-auto px-6 md:px-8 lg:px-12",
+          isMobile && "px-4 scroll-mt-24"
+        )}>
           <Suspense fallback={<MarketplaceSkeleton />}>
             <AgentMarketplace />
           </Suspense>
