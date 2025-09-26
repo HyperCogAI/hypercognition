@@ -22,18 +22,32 @@ export function AnimatedParticles() {
     if (!ctx) return
 
     const resizeCanvas = () => {
-      canvas.width = window.innerWidth
-      canvas.height = window.innerHeight
+      const rect = canvas.getBoundingClientRect()
+      const dpr = window.devicePixelRatio || 1
+      
+      // Set actual size in memory (scaled to device pixel ratio)
+      canvas.width = rect.width * dpr
+      canvas.height = rect.height * dpr
+      
+      // Scale the canvas back down using CSS
+      canvas.style.width = rect.width + 'px'
+      canvas.style.height = rect.height + 'px'
+      
+      // Scale the drawing context so everything draws at the correct size
+      ctx.scale(dpr, dpr)
     }
 
     const createParticles = () => {
       const particles: Particle[] = []
-      const particleCount = Math.min(150, Math.floor((canvas.width * canvas.height) / 8000))
+      const particleCount = Math.min(150, Math.floor((canvas.style.width ? parseInt(canvas.style.width) : canvas.width) * (canvas.style.height ? parseInt(canvas.style.height) : canvas.height) / 8000))
       
       for (let i = 0; i < particleCount; i++) {
+        const displayWidth = canvas.style.width ? parseInt(canvas.style.width) : canvas.width
+        const displayHeight = canvas.style.height ? parseInt(canvas.style.height) : canvas.height
+        
         particles.push({
-          x: Math.random() * canvas.width,
-          y: Math.random() * canvas.height,
+          x: Math.random() * displayWidth,
+          y: Math.random() * displayHeight,
           vx: (Math.random() - 0.5) * 0.5,
           vy: (Math.random() - 0.5) * 0.5,
           opacity: Math.random() * 0.8 + 0.4, // Increased base opacity
@@ -44,7 +58,10 @@ export function AnimatedParticles() {
     }
 
     const animate = () => {
-      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      const displayWidth = canvas.style.width ? parseInt(canvas.style.width) : canvas.width
+      const displayHeight = canvas.style.height ? parseInt(canvas.style.height) : canvas.height
+      
+      ctx.clearRect(0, 0, displayWidth, displayHeight)
       
       const particles = particlesRef.current
       
@@ -55,10 +72,10 @@ export function AnimatedParticles() {
         particle.y += particle.vy
         
         // Wrap around edges
-        if (particle.x < 0) particle.x = canvas.width
-        if (particle.x > canvas.width) particle.x = 0
-        if (particle.y < 0) particle.y = canvas.height
-        if (particle.y > canvas.height) particle.y = 0
+        if (particle.x < 0) particle.x = displayWidth
+        if (particle.x > displayWidth) particle.x = 0
+        if (particle.y < 0) particle.y = displayHeight
+        if (particle.y > displayHeight) particle.y = 0
         
         // Animate opacity
         particle.opacity += (Math.random() - 0.5) * 0.01
@@ -113,7 +130,7 @@ export function AnimatedParticles() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-0"
+      className="absolute inset-0 z-0 w-full h-full"
       style={{ pointerEvents: 'none' }}
     />
   )
