@@ -306,7 +306,7 @@ export function AppSidebar() {
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium text-foreground">{item.title}</span>
-                            <ExternalLink className="h-3 w-3 text-foreground/60 group-hover/menu:text-foreground transition-colors" />
+                            <ExternalLink className="h-3 w-3 transition-transform duration-300 group-hover/menu:scale-110" />
                           </div>
                         )}
                       </a>
