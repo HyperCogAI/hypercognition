@@ -1,4 +1,4 @@
-import { Suspense, lazy } from "react"
+import { Suspense, lazy, useState } from "react"
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -17,6 +17,7 @@ import { CardSkeleton } from "@/components/ui/loading-skeleton"
 import { MobileNavigation } from "@/components/mobile/MobileNavigation"
 import { MobileToolbar } from "@/components/mobile/MobileToolbar"
 import { useIsMobile } from "@/hooks/use-mobile"
+import { LoadingScreen } from "@/components/ui/loading-screen"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
@@ -320,29 +321,41 @@ const AppLayout = () => {
   )
 }
 
-const App = () => (
-  <ConnectionProvider endpoint={endpoint}>
-    <WalletProvider wallets={wallets} autoConnect>
-      <WalletModalProvider>
-        <WagmiProvider config={config}>
-          <QueryClientProvider client={queryClient}>
-            <AuthProvider>
-              <FavoritesProvider>
-                <TooltipProvider>
-                <Toaster />
-                <Sonner />
-                <BrowserRouter>
-                  <ScrollToTop />
-                  <AppLayout />
-                </BrowserRouter>
-                </TooltipProvider>
-              </FavoritesProvider>
-            </AuthProvider>
-          </QueryClientProvider>
-        </WagmiProvider>
-      </WalletModalProvider>
-    </WalletProvider>
-  </ConnectionProvider>
-);
+const App = () => {
+  const [showLoading, setShowLoading] = useState(true);
+
+  const handleLoadingComplete = () => {
+    setShowLoading(false);
+  };
+
+  if (showLoading) {
+    return <LoadingScreen onComplete={handleLoadingComplete} />;
+  }
+
+  return (
+    <ConnectionProvider endpoint={endpoint}>
+      <WalletProvider wallets={wallets} autoConnect>
+        <WalletModalProvider>
+          <WagmiProvider config={config}>
+            <QueryClientProvider client={queryClient}>
+              <AuthProvider>
+                <FavoritesProvider>
+                  <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <ScrollToTop />
+                    <AppLayout />
+                  </BrowserRouter>
+                  </TooltipProvider>
+                </FavoritesProvider>
+              </AuthProvider>
+            </QueryClientProvider>
+          </WagmiProvider>
+        </WalletModalProvider>
+      </WalletProvider>
+    </ConnectionProvider>
+  );
+};
 
 export default App;
