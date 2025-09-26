@@ -2,23 +2,49 @@ import { useWallet } from '@solana/wallet-adapter-react'
 import { useWalletModal } from '@solana/wallet-adapter-react-ui'
 
 export const useSolanaWallet = () => {
-  const { 
-    publicKey, 
-    connected, 
-    connecting, 
+  const {
+    publicKey,
+    connected,
+    connecting,
     disconnecting,
     disconnect,
-    wallet
+    wallet,
+    wallets,
+    select,
+    connect,
   } = useWallet()
-  
+
   const { setVisible } = useWalletModal()
 
-  const connectWallet = () => {
-    console.log('Connect wallet clicked, setVisible:', setVisible)
+  const connectWallet = async () => {
     try {
+      // If a wallet is already selected, try to connect directly
+      if (wallet) {
+        await connect()
+        return
+      }
+
+      // Try preferred wallets automatically if available
+      const preferred = ['Phantom', 'Solflare']
+      for (const name of preferred) {
+        const found = wallets.find((w) => w.adapter.name === name && w.readyState !== 'Unsupported')
+        if (found) {
+          await select(found.adapter.name)
+          try {
+            await connect()
+            return
+          } catch (_) {
+            // fall through to next option / modal
+          }
+        }
+      }
+
+      // Fallback: open the wallet selection modal
       setVisible(true)
     } catch (error) {
-      console.error('Error opening wallet modal:', error)
+      console.error('Error opening or connecting wallet:', error)
+      // Last resort: try opening the modal
+      try { setVisible(true) } catch {}
     }
   }
 
