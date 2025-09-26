@@ -70,6 +70,7 @@ const navigationSections = [
     title: "Community",
     items: [
       { icon: Star, label: 'Favorites', path: '/favorites', id: 'favorites' },
+      { icon: BarChart3, label: 'Compare', path: '/compare', id: 'compare' },
       { icon: Users, label: 'Community', path: '/community', id: 'community' },
       { icon: GraduationCap, label: 'Trading Academy', path: '/trading-academy', id: 'trading-academy' },
     ]
