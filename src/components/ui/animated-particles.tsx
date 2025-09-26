@@ -16,6 +16,8 @@ export function AnimatedParticles() {
   const interactingRef = useRef(false)
   const interactingTimeoutRef = useRef<number | undefined>(undefined)
   const lastScrollTimeRef = useRef(0)
+  const lastScrollPosRef = useRef({ x: 0, y: 0 })
+  const lastVVPosRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -23,6 +25,13 @@ export function AnimatedParticles() {
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
+
+    // Initialize scroll baselines
+    lastScrollPosRef.current = { x: window.scrollX, y: window.scrollY }
+    lastVVPosRef.current = { 
+      x: window.visualViewport?.pageLeft || (window.visualViewport as any)?.offsetLeft || 0,
+      y: window.visualViewport?.pageTop || (window.visualViewport as any)?.offsetTop || 0,
+    }
 
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect()
@@ -154,13 +163,31 @@ export function AnimatedParticles() {
     window.addEventListener('resize', onResize)
 
     // Pause connections while user scrolls/touches to avoid artifacts on mobile
+    // Improved scroll detection - mark interaction on actual movement
     const markInteracting = () => {
-      interactingRef.current = true
-      lastScrollTimeRef.current = performance.now()
-      if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
-      interactingTimeoutRef.current = window.setTimeout(() => {
-        interactingRef.current = false
-      }, 800)
+      const scrollX = window.scrollX
+      const scrollY = window.scrollY
+      const vvX = window.visualViewport?.pageLeft || (window.visualViewport as any)?.offsetLeft || 0
+      const vvY = window.visualViewport?.pageTop || (window.visualViewport as any)?.offsetTop || 0
+      
+      const hasScrollMoved = (
+        Math.abs(scrollX - lastScrollPosRef.current.x) > 0.5 ||
+        Math.abs(scrollY - lastScrollPosRef.current.y) > 0.5 ||
+        Math.abs(vvX - lastVVPosRef.current.x) > 0.5 ||
+        Math.abs(vvY - lastVVPosRef.current.y) > 0.5
+      )
+      
+      if (hasScrollMoved) {
+        interactingRef.current = true
+        lastScrollTimeRef.current = performance.now()
+        lastScrollPosRef.current = { x: scrollX, y: scrollY }
+        lastVVPosRef.current = { x: vvX, y: vvY }
+        
+        if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
+        interactingTimeoutRef.current = window.setTimeout(() => {
+          interactingRef.current = false
+        }, 1000) // Extended to 1 second to cover momentum scrolling
+      }
     }
     const endInteracting = () => {
       if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
@@ -173,6 +200,9 @@ export function AnimatedParticles() {
     window.addEventListener('touchcancel', endInteracting, { passive: true })
     window.addEventListener('scroll', markInteracting, { passive: true })
     document.addEventListener('scroll', markInteracting, { passive: true, capture: true })
+    
+    // Also listen to the entire document body for container scrolling
+    document.body.addEventListener('scroll', markInteracting, { passive: true, capture: true })
 
     // Handle mobile browser UI resize jitter
     const vv = window.visualViewport
@@ -182,9 +212,17 @@ export function AnimatedParticles() {
       markInteracting()
       if (vvDebounce) window.clearTimeout(vvDebounce)
       vvDebounce = window.setTimeout(() => {
-        resizeCanvas()
-        createParticles()
-      }, 120)
+        const stillInteracting = interactingRef.current || (performance.now() - lastScrollTimeRef.current) < 1200
+        if (stillInteracting) {
+          vvDebounce = window.setTimeout(() => {
+            resizeCanvas()
+            createParticles()
+          }, 200)
+        } else {
+          resizeCanvas()
+          createParticles()
+        }
+      }, 240)
     }
     vv?.addEventListener('resize', onVVResize)
 
@@ -197,6 +235,7 @@ export function AnimatedParticles() {
       window.removeEventListener('touchcancel', endInteracting)
       window.removeEventListener('scroll', markInteracting)
       document.removeEventListener('scroll', markInteracting, true)
+      document.body.removeEventListener('scroll', markInteracting, true)
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
