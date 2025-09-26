@@ -14,7 +14,7 @@ export function Hero() {
       <div className="absolute top-0 left-0 right-0 bottom-0 z-0 flex items-start justify-center -mt-96 md:-mt-96 lg:-mt-96">
         <OptimizedVideo
           src={heroVideo}
-          className="w-full h-full max-w-full max-h-full object-contain opacity-90 transform -translate-y-32 md:translate-y-0"
+          className="w-full h-full max-w-full max-h-full object-contain opacity-90 transform -translate-y-96 md:translate-y-0"
           autoPlay
           loop
           muted
