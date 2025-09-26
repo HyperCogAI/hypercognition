@@ -171,6 +171,26 @@ const AppLayout = () => {
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/customer-support" element={<CustomerSupport />} />
+                <Route path="/defi" element={<DeFi />} />
+                <Route path="/solana" element={<SolanaDashboard />} />
+                <Route path="/staking" element={<Staking />} />
+                <Route path="/solana-staking" element={<SolanaStaking />} />
+                <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
+                <Route path="/referrals" element={<Referrals />} />
+                <Route path="/ai-assistant" element={<AIAssistant />} />
+                <Route path="/trading-signals" element={<TradingSignals />} />
+                <Route path="/real-time-market" element={<RealTimeMarketPage />} />
+                <Route path="/social-trading" element={<SocialTradingPage />} />
+                <Route path="/order-management" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
+                <Route path="/technical-analysis" element={<ProtectedRoute><TechnicalAnalysis /></ProtectedRoute>} />
+                <Route path="/risk-management" element={<ProtectedRoute><RiskManagement /></ProtectedRoute>} />
+                <Route path="/community" element={<Community />} />
+                <Route path="/trading-academy" element={<TradingAcademy />} />
+                <Route path="/institutional" element={<ProtectedRoute><InstitutionalFeatures /></ProtectedRoute>} />
+                <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
+                <Route path="/white-label" element={<WhiteLabel />} />
+                <Route path="/multi-language" element={<MultiLanguage />} />
+                <Route path="/premium" element={<PremiumTiers />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
                 <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />
                 <Route path="/portfolio" element={<ProtectedRoute><Portfolio /></ProtectedRoute>} />
