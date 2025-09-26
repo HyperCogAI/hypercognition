@@ -103,7 +103,12 @@ export const SecurityDashboard = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Security Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            Security{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Dashboard
+            </span>
+          </h1>
           <p className="text-muted-foreground">Monitor security events and system activity</p>
         </div>
         <div className="flex items-center gap-2">

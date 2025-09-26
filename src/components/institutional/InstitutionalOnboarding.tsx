@@ -75,7 +75,12 @@ export const InstitutionalOnboarding: React.FC = () => {
         <div className="w-16 h-16 bg-primary/10 rounded-lg flex items-center justify-center mx-auto">
           <Building2 className="h-8 w-8 text-primary" />
         </div>
-        <h1 className="text-4xl font-bold">Institutional Trading Platform</h1>
+        <h1 className="text-4xl font-bold text-white leading-tight">
+          Institutional Trading{" "}
+          <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Platform
+          </span>
+        </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
           Enterprise-grade trading infrastructure designed for hedge funds, banks, and professional trading organizations
         </p>

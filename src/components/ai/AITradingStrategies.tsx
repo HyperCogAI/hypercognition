@@ -121,7 +121,12 @@ export const AITradingStrategies: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">AI Trading Strategies</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight tracking-tight">
+            AI Trading{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Strategies
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Advanced AI-powered trading strategies and backtesting
           </p>

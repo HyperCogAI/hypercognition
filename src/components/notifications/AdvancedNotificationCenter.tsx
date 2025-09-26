@@ -123,7 +123,11 @@ export const AdvancedNotificationCenter: React.FC = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Notifications</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Notifications
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Manage your notifications and stay updated on important events
           </p>

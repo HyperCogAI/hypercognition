@@ -72,7 +72,12 @@ export const MultiExchangeDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Multi-Exchange Trading</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight tracking-tight">
+            Multi-Exchange{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Trading
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Trade across multiple exchanges with unified portfolio management
           </p>

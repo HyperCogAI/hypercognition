@@ -68,7 +68,12 @@ export const SupportAgentDashboard = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Support Agent Dashboard</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight tracking-tight">
+            Support Agent{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Dashboard
+            </span>
+          </h1>
           <p className="text-muted-foreground">Manage customer support tickets and interactions</p>
         </div>
         <div className="flex items-center gap-4">

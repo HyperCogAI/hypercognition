@@ -84,7 +84,12 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold">Technical Analysis</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            Technical{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Analysis
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Advanced charting tools and technical indicators for professional trading analysis
           </p>

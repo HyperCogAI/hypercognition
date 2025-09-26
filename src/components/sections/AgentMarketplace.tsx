@@ -147,7 +147,12 @@ export const AgentMarketplace = () => {
     <div className="min-h-screen bg-background text-foreground p-2 sm:p-4 lg:p-6">
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold">AI Agent Marketplace</h1>
+        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
+          AI Agent{" "}
+          <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Marketplace
+          </span>
+        </h1>
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-4">
           <SearchInput 
             placeholder="Search agents..." 

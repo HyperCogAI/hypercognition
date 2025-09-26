@@ -123,7 +123,11 @@ export default function AgentComparison() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
+                Agent{" "}
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  Comparison
+                </span>
                 <BarChart3 className="h-6 w-6" />
                 Agent Comparison
               </h1>

@@ -164,7 +164,7 @@ export const AgentDetail = () => {
                   </AvatarFallback>
                 </Avatar>
                 <div>
-                  <h1 className="text-2xl font-bold">{agent.name}</h1>
+                  <h1 className="text-2xl font-bold text-white">{agent.name}</h1>
                   <div className="flex items-center gap-2">
                     <Badge variant="secondary">{agent.symbol}</Badge>
                     <Badge variant="outline">AI Agent</Badge>

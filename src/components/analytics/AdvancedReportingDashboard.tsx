@@ -147,7 +147,12 @@ const AdvancedReportingDashboard: React.FC = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Advanced Analytics & Reporting</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            Advanced Analytics &{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Reporting
+            </span>
+          </h1>
           <p className="text-muted-foreground">Comprehensive business intelligence and reporting</p>
         </div>
         <div className="flex gap-2">

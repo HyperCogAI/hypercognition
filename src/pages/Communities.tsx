@@ -110,7 +110,11 @@ export default function Communities() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h1 className="text-xl sm:text-2xl font-bold flex items-center gap-2">
+              <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
+                Trading{" "}
+                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  Communities
+                </span>
                 <Users className="h-6 w-6" />
                 Communities
               </h1>

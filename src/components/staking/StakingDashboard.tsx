@@ -86,7 +86,12 @@ export const StakingDashboard = () => {
     <div className="space-y-6">
       <div className="flex items-center gap-2">
         <Lock className="h-6 w-6 text-primary" />
-        <h1 className="text-3xl font-bold">Staking Dashboard</h1>
+        <h1 className="text-3xl font-bold text-white leading-tight">
+          Staking{" "}
+          <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            Dashboard
+          </span>
+        </h1>
       </div>
 
       <Tabs defaultValue="programs" className="space-y-4">

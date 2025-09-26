@@ -96,7 +96,12 @@ export const CreateAgent = () => {
                 <ArrowLeft className="h-4 w-4" />
               </Button>
               <div>
-                <h1 className="text-2xl font-bold">Create AI Agent</h1>
+                <h1 className="text-2xl font-bold text-white leading-tight">
+                  Create AI{" "}
+                  <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                    Agent
+                  </span>
+                </h1>
                 <p className="text-muted-foreground">Launch your own AI agent in minutes</p>
               </div>
             </div>
