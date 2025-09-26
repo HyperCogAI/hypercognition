@@ -67,7 +67,7 @@ export function EnhancedHero() {
               
               <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
                 <div className="mb-2 md:mb-4">The Future of</div>
-                <span className="text-primary relative">
+                <span className="text-3xl md:text-6xl lg:text-7xl text-primary relative">
                   {typedText}
                   <span className="animate-pulse">|</span>
                 </span>
