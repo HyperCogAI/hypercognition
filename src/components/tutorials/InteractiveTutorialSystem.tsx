@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react"
+import { useNavigate, Link } from "react-router-dom"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
@@ -17,7 +18,9 @@ import {
   Wallet,
   BarChart3,
   Shield,
-  Book
+  Book,
+  ExternalLink,
+  ArrowRight
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useToast } from "@/hooks/use-toast"
@@ -56,6 +59,24 @@ const ICON_MAP: Record<string, any> = {
   Book
 }
 
+// Function to get navigation route for tutorial actions
+const getNavigationRoute = (action: string): string | null => {
+  const actionLower = action.toLowerCase()
+  
+  if (actionLower.includes('dashboard')) return '/'
+  if (actionLower.includes('trading')) return '/advanced-trading'
+  if (actionLower.includes('portfolio')) return '/portfolio'
+  if (actionLower.includes('analytics')) return '/advanced-analytics'
+  if (actionLower.includes('social')) return '/social-trading'
+  if (actionLower.includes('profile') || actionLower.includes('settings')) return '/settings'
+  if (actionLower.includes('ai signals')) return '/trading-signals'
+  if (actionLower.includes('2fa') || actionLower.includes('security')) return '/settings'
+  if (actionLower.includes('notification')) return '/notifications'
+  if (actionLower.includes('risk')) return '/risk-management'
+  
+  return null
+}
+
 interface TutorialPlayerProps {
   tutorial: any
   onComplete: () => void
@@ -68,9 +89,11 @@ function TutorialPlayer({ tutorial, onComplete, onClose, onStepComplete, isStepC
   const [currentStep, setCurrentStep] = useState(0)
   const [isPlaying, setIsPlaying] = useState(false)
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const currentStepData = tutorial.steps[currentStep]
   const progress = ((currentStep + 1) / tutorial.steps.length) * 100
+  const navigationRoute = currentStepData.action ? getNavigationRoute(currentStepData.action) : null
 
   const handleNext = async () => {
     // Mark current step as completed
@@ -126,13 +149,40 @@ function TutorialPlayer({ tutorial, onComplete, onClose, onStepComplete, isStepC
             <p>{currentStepData.content}</p>
           </div>
           {currentStepData.action && (
-            <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
-              {isStepCompleted(currentStepData.id) ? (
-                <CheckCircle className="h-4 w-4 text-green-500" />
-              ) : (
-                <Circle className="h-4 w-4 text-primary" />
+            <div className="space-y-3">
+              <div className="flex items-center gap-2 p-3 bg-primary/10 rounded-lg border border-primary/20">
+                {isStepCompleted(currentStepData.id) ? (
+                  <CheckCircle className="h-4 w-4 text-green-500" />
+                ) : (
+                  <Circle className="h-4 w-4 text-primary" />
+                )}
+                <span className="text-sm font-medium">{currentStepData.action}</span>
+              </div>
+              {navigationRoute && (
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => navigate(navigationRoute)}
+                    className="flex items-center gap-2"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                    Go to Page
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      navigate(navigationRoute)
+                      onClose()
+                    }}
+                    className="flex items-center gap-2"
+                  >
+                    <ArrowRight className="h-4 w-4" />
+                    Go & Close Tutorial
+                  </Button>
+                </div>
               )}
-              <span className="text-sm font-medium">{currentStepData.action}</span>
             </div>
           )}
         </CardContent>
@@ -185,6 +235,7 @@ export function InteractiveTutorialSystem() {
     isTutorialCompleted, 
     isStepCompleted 
   } = useTutorialProgress()
+  const navigate = useNavigate()
   const [selectedCategory, setSelectedCategory] = useState<string>('all')
   const [selectedDifficulty, setSelectedDifficulty] = useState<string>('all')
   const [activeTutorial, setActiveTutorial] = useState<any>(null)
@@ -329,37 +380,83 @@ export function InteractiveTutorialSystem() {
                 <CardContent className="space-y-4">
                   <p className="text-sm text-muted-foreground">{tutorial.description}</p>
                   
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-muted-foreground">
-                      {tutorial.steps.length} steps
-                    </span>
+                  <div className="space-y-3">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-muted-foreground">
+                        {tutorial.steps.length} steps
+                      </span>
+                    </div>
                     
-                    <Dialog>
-                      <DialogTrigger asChild>
-                        <Button 
-                          size="sm"
-                          onClick={() => setActiveTutorial(tutorial)}
-                          disabled={completed}
-                          variant={progress.percentage > 0 && !completed ? "outline" : "default"}
-                        >
-                          {completed ? 'Completed' : progress.percentage > 0 ? 'Continue' : 'Start Tutorial'}
+                    <div className="flex gap-2">
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button 
+                            size="sm"
+                            onClick={() => setActiveTutorial(tutorial)}
+                            disabled={completed}
+                            variant={progress.percentage > 0 && !completed ? "outline" : "default"}
+                          >
+                            {completed ? 'Completed' : progress.percentage > 0 ? 'Continue' : 'Start Tutorial'}
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
+                          <DialogHeader>
+                            <DialogTitle>Interactive Tutorial</DialogTitle>
+                          </DialogHeader>
+                          {activeTutorial && (
+                            <TutorialPlayer
+                              tutorial={activeTutorial}
+                              onComplete={completeTutorial}
+                              onClose={() => setActiveTutorial(null)}
+                              onStepComplete={(stepId) => markStepCompleted(activeTutorial.id, stepId)}
+                              isStepCompleted={(stepId) => isStepCompleted(activeTutorial.id, stepId)}
+                            />
+                          )}
+                        </DialogContent>
+                      </Dialog>
+                      
+                      {/* Quick navigation for specific tutorials */}
+                      {tutorial.category === 'Getting Started' && tutorial.title === 'Welcome to HyperCognition' && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to="/" className="flex items-center gap-1">
+                            <ExternalLink className="h-3 w-3" />
+                            Dashboard
+                          </Link>
                         </Button>
-                      </DialogTrigger>
-                      <DialogContent className="max-w-4xl max-h-[80vh] overflow-y-auto">
-                        <DialogHeader>
-                          <DialogTitle>Interactive Tutorial</DialogTitle>
-                        </DialogHeader>
-                        {activeTutorial && (
-                          <TutorialPlayer
-                            tutorial={activeTutorial}
-                            onComplete={completeTutorial}
-                            onClose={() => setActiveTutorial(null)}
-                            onStepComplete={(stepId) => markStepCompleted(activeTutorial.id, stepId)}
-                            isStepCompleted={(stepId) => isStepCompleted(activeTutorial.id, stepId)}
-                          />
-                        )}
-                      </DialogContent>
-                    </Dialog>
+                      )}
+                      {tutorial.category === 'Trading Basics' && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to="/advanced-trading" className="flex items-center gap-1">
+                            <ExternalLink className="h-3 w-3" />
+                            Trading
+                          </Link>
+                        </Button>
+                      )}
+                      {tutorial.category === 'Portfolio Management' && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to="/portfolio" className="flex items-center gap-1">
+                            <ExternalLink className="h-3 w-3" />
+                            Portfolio
+                          </Link>
+                        </Button>
+                      )}
+                      {tutorial.category === 'Social Trading' && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to="/social-trading" className="flex items-center gap-1">
+                            <ExternalLink className="h-3 w-3" />
+                            Social
+                          </Link>
+                        </Button>
+                      )}
+                      {tutorial.category === 'Advanced Features' && (
+                        <Button variant="outline" size="sm" asChild>
+                          <Link to="/advanced-analytics" className="flex items-center gap-1">
+                            <ExternalLink className="h-3 w-3" />
+                            Analytics
+                          </Link>
+                        </Button>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>
