@@ -264,16 +264,6 @@ export function InteractiveTutorialSystem() {
 
   return (
     <div className="space-y-6">
-      {/* Header */}
-      <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold text-white">
-          Interactive Tutorials
-        </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto">
-          Master trading features with step-by-step interactive guides designed to enhance your trading skills
-        </p>
-      </div>
-
       {/* Filters */}
       <div className="flex flex-wrap gap-4">
         <div className="space-y-2">
