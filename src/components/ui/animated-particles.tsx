@@ -78,21 +78,25 @@ export function AnimatedParticles() {
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       
+      const isInteracting = interactingRef.current || (performance.now() - lastScrollTimeRef.current) < 800
+      
       // Update and draw particles
       particles.forEach((particle, i) => {
-        // Update position
-        particle.x += particle.vx
-        particle.y += particle.vy
-        
-        // Wrap around edges without landing exactly on bounds to avoid edge artifacts
-        if (particle.x < 0) particle.x += displayWidth
-        if (particle.x >= displayWidth) particle.x -= displayWidth
-        if (particle.y < 0) particle.y += displayHeight
-        if (particle.y >= displayHeight) particle.y -= displayHeight
-        
-        // Animate opacity
-        particle.opacity += (Math.random() - 0.5) * 0.01
-        particle.opacity = Math.max(0.3, Math.min(1.0, particle.opacity))
+        if (!isInteracting) {
+          // Update position
+          particle.x += particle.vx
+          particle.y += particle.vy
+          
+          // Wrap around edges without landing exactly on bounds to avoid edge artifacts
+          if (particle.x < 0) particle.x += displayWidth
+          if (particle.x >= displayWidth) particle.x -= displayWidth
+          if (particle.y < 0) particle.y += displayHeight
+          if (particle.y >= displayHeight) particle.y -= displayHeight
+          
+          // Animate opacity
+          particle.opacity += (Math.random() - 0.5) * 0.01
+          particle.opacity = Math.max(0.3, Math.min(1.0, particle.opacity))
+        }
         
         // Draw particle
         ctx.beginPath()
@@ -101,7 +105,6 @@ export function AnimatedParticles() {
         ctx.fill()
         
         // Draw connections to nearby particles (disabled during touch/scroll)
-        const isInteracting = interactingRef.current || (performance.now() - lastScrollTimeRef.current) < 450
         if (!isInteracting) {
           particles.slice(i + 1).forEach(otherParticle => {
             const dx = particle.x - otherParticle.x
@@ -157,7 +160,7 @@ export function AnimatedParticles() {
       if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
       interactingTimeoutRef.current = window.setTimeout(() => {
         interactingRef.current = false
-      }, 450)
+      }, 800)
     }
     const endInteracting = () => {
       if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
