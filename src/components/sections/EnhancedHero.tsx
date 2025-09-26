@@ -65,7 +65,7 @@ export function EnhancedHero() {
           <div className="space-y-6 md:space-y-8">
             <div className="space-y-4 md:space-y-6">
               
-              <h1 className="text-3xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
+              <h1 className="text-4xl md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
                 <div className="mb-2 md:mb-4">The Future of</div>
                 <span className="text-primary relative">
                   {typedText}
