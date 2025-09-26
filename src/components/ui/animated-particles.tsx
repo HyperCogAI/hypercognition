@@ -26,14 +26,15 @@ export function AnimatedParticles() {
       const dpr = window.devicePixelRatio || 1
       
       // Set actual size in memory (scaled to device pixel ratio)
-      canvas.width = rect.width * dpr
-      canvas.height = rect.height * dpr
+      canvas.width = Math.floor(rect.width * dpr)
+      canvas.height = Math.floor(rect.height * dpr)
       
       // Scale the canvas back down using CSS
       canvas.style.width = rect.width + 'px'
       canvas.style.height = rect.height + 'px'
       
-      // Scale the drawing context so everything draws at the correct size
+      // Reset transform then scale for DPR to avoid cumulative scaling on resize
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
       ctx.scale(dpr, dpr)
     }
 
@@ -61,9 +62,16 @@ export function AnimatedParticles() {
       const displayWidth = canvas.style.width ? parseInt(canvas.style.width) : canvas.width
       const displayHeight = canvas.style.height ? parseInt(canvas.style.height) : canvas.height
       
-      ctx.clearRect(0, 0, displayWidth, displayHeight)
+      // Pixel-perfect clear to avoid 1px artifacts at edges
+      ctx.save()
+      ctx.setTransform(1, 0, 0, 1, 0, 0)
+      ctx.clearRect(0, 0, canvas.width, canvas.height)
+      ctx.restore()
       
       const particles = particlesRef.current
+      // Improve line rendering to reduce aliasing artifacts
+      ctx.lineCap = 'round'
+      ctx.lineJoin = 'round'
       
       // Update and draw particles
       particles.forEach((particle, i) => {
@@ -71,11 +79,11 @@ export function AnimatedParticles() {
         particle.x += particle.vx
         particle.y += particle.vy
         
-        // Wrap around edges
-        if (particle.x < 0) particle.x = displayWidth
-        if (particle.x > displayWidth) particle.x = 0
-        if (particle.y < 0) particle.y = displayHeight
-        if (particle.y > displayHeight) particle.y = 0
+        // Wrap around edges without landing exactly on bounds to avoid edge artifacts
+        if (particle.x < 0) particle.x += displayWidth
+        if (particle.x >= displayWidth) particle.x -= displayWidth
+        if (particle.y < 0) particle.y += displayHeight
+        if (particle.y >= displayHeight) particle.y -= displayHeight
         
         // Animate opacity
         particle.opacity += (Math.random() - 0.5) * 0.01
@@ -93,8 +101,17 @@ export function AnimatedParticles() {
           const dy = particle.y - otherParticle.y
           const distance = Math.sqrt(dx * dx + dy * dy)
           
-          // Only draw lines if particles are close AND not wrapping around edges
-          if (distance < 100 && Math.abs(dx) < displayWidth * 0.8 && Math.abs(dy) < displayHeight * 0.8) {
+          // Only draw lines if particles are close AND not wrapping around edges or edges proximity
+          const nearEdge = (p: Particle) => (
+            p.x < 1 || p.x > displayWidth - 1 || p.y < 1 || p.y > displayHeight - 1
+          )
+          if (
+            distance < 100 &&
+            Math.abs(dx) < displayWidth * 0.8 &&
+            Math.abs(dy) < displayHeight * 0.8 &&
+            !nearEdge(particle) &&
+            !nearEdge(otherParticle)
+          ) {
             ctx.beginPath()
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(otherParticle.x, otherParticle.y)
