@@ -7,6 +7,7 @@ export const HyperCTA = () => {
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-primary/5 to-background" />
       <div className="absolute inset-0 cyber-grid opacity-10" />
+      <div className="absolute inset-0 grain-texture" />
       
       {/* Animated Orbs */}
 

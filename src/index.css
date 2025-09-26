@@ -260,6 +260,14 @@
     background-size: 50px 50px;
   }
 
+  /* Grain texture */
+  .grain-texture {
+    background-image: 
+      radial-gradient(circle at 1px 1px, rgba(255,255,255,0.1) 1px, transparent 0);
+    background-size: 16px 16px;
+    opacity: 0.3;
+  }
+
   /* Enhanced Floating Animation */
   .float {
     animation: float 6s ease-in-out infinite;
