@@ -8,7 +8,7 @@ preloadLogo.src = logoUrl
 
 export const MobileToolbar = () => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 border-b border-border/30 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/60 border-b border-border/30 pt-[env(safe-area-inset-top)] backdrop-blur-md">
       <div className="flex h-14 items-center justify-between pl-4 pr-1">
         {/* Logo on the left */}
         <div className="flex items-center relative">
