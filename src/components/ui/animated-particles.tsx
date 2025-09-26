@@ -93,7 +93,8 @@ export function AnimatedParticles() {
           const dy = particle.y - otherParticle.y
           const distance = Math.sqrt(dx * dx + dy * dy)
           
-          if (distance < 100) {
+          // Only draw lines if particles are close AND not wrapping around edges
+          if (distance < 100 && Math.abs(dx) < displayWidth * 0.8 && Math.abs(dy) < displayHeight * 0.8) {
             ctx.beginPath()
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(otherParticle.x, otherParticle.y)
