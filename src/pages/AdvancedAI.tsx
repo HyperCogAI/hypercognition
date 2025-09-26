@@ -234,7 +234,7 @@ const AdvancedAI = () => {
         <div className="text-center mb-8">
           <h1 className="text-4xl font-bold text-white leading-tight mb-4">
             Advanced{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <span className="text-white">
               AI Insights
             </span>
           </h1>

@@ -70,7 +70,7 @@ const AIAssistant = () => {
               <Brain className="h-8 w-8 text-primary" />
               <h1 className="text-4xl font-bold text-white leading-tight">
                 AI{" "}
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                <span className="text-white">
                   Trading Assistant
                 </span>
               </h1>

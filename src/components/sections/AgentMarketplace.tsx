@@ -149,7 +149,7 @@ export const AgentMarketplace = () => {
       <div className="flex flex-col gap-4 mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
           AI Agent{" "}
-          <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+          <span className="text-white">
             Marketplace
           </span>
         </h1>

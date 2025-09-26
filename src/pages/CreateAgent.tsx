@@ -98,7 +98,7 @@ export const CreateAgent = () => {
               <div>
                 <h1 className="text-2xl font-bold text-white leading-tight">
                   Create AI{" "}
-                  <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                  <span className="text-white">
                     Agent
                   </span>
                 </h1>

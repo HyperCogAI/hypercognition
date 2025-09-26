@@ -112,7 +112,7 @@ export default function Communities() {
               </Button>
               <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
                 Trading{" "}
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                <span className="text-white">
                   Communities
                 </span>
                 <Users className="h-6 w-6" />

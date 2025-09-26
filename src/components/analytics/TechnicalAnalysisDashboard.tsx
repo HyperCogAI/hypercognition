@@ -86,7 +86,7 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-white leading-tight">
             Technical{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <span className="text-white">
               Analysis
             </span>
           </h1>

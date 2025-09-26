@@ -110,7 +110,7 @@ export default function Favorites() {
               </Button>
               <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
                 My{" "}
-                <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                <span className="text-white">
                   Favorites
                 </span>
                 <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />

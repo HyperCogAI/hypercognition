@@ -134,7 +134,7 @@ const PaymentIntegrations: React.FC = () => {
         <div>
           <h1 className="text-3xl font-bold text-white leading-tight">
             Payment{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <span className="text-white">
               Integrations
             </span>
           </h1>

@@ -19,7 +19,7 @@ const Analytics = () => {
         <div>
           <h1 className="text-4xl font-bold text-white leading-tight mb-2">
             Analytics{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <span className="text-white">
               Dashboard
             </span>
           </h1>

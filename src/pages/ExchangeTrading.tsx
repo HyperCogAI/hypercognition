@@ -27,7 +27,7 @@ const ExchangeTrading = () => {
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-white leading-tight mb-2">
             Exchange{" "}
-            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+            <span className="text-white">
               Trading
             </span>
           </h1>
