@@ -214,7 +214,11 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
                           {getSentimentIcon(article.sentiment)}
                           <Badge 
                             variant="outline"
-                            className={`text-xs ${getSentimentColor(article.sentiment)}`}
+                            className={`text-xs ${
+                              article.impact === 'medium' 
+                                ? 'bg-orange-500 text-white border-0' 
+                                : getSentimentColor(article.sentiment)
+                            }`}
                           >
                             {article.impact} impact
                           </Badge>
