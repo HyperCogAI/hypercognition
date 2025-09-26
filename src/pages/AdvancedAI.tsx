@@ -232,8 +232,11 @@ const AdvancedAI = () => {
       
       <div className="container mx-auto px-4 py-8">
         <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
-            Advanced AI Insights
+          <h1 className="text-4xl font-bold text-white leading-tight mb-4">
+            Advanced{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              AI Insights
+            </span>
           </h1>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Harness the power of machine learning for intelligent trading decisions and market predictions
