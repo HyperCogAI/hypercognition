@@ -379,7 +379,14 @@ const EnhancedMarketNews = () => {
                         {article.sentiment}
                       </Badge>
                       
-                      <Badge variant={article.impact === 'high' ? 'destructive' : article.impact === 'medium' ? 'default' : 'secondary'} className="text-xs">
+                      <Badge variant={
+                        article.impact === 'high' ? 'destructive' : 
+                        article.impact === 'medium' ? 'default' : 
+                        'secondary'
+                      } className={cn(
+                        "text-xs",
+                        article.impact === 'medium' && "bg-orange-500 text-white border-0"
+                      )}>
                         {article.impact} impact
                       </Badge>
                     </div>
