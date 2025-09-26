@@ -15,6 +15,7 @@ export function AnimatedParticles() {
   const particlesRef = useRef<Particle[]>([])
   const interactingRef = useRef(false)
   const interactingTimeoutRef = useRef<number | undefined>(undefined)
+  const lastScrollTimeRef = useRef(0)
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -100,7 +101,8 @@ export function AnimatedParticles() {
         ctx.fill()
         
         // Draw connections to nearby particles (disabled during touch/scroll)
-        if (!interactingRef.current) {
+        const isInteracting = interactingRef.current || (performance.now() - lastScrollTimeRef.current) < 450
+        if (!isInteracting) {
           particles.slice(i + 1).forEach(otherParticle => {
             const dx = particle.x - otherParticle.x
             const dy = particle.y - otherParticle.y
@@ -121,7 +123,7 @@ export function AnimatedParticles() {
               ctx.moveTo(particle.x, particle.y)
               ctx.lineTo(otherParticle.x, otherParticle.y)
               const lineOpacity = (1 - distance / 100) * Math.min(particle.opacity, otherParticle.opacity) * 0.6
-              ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})` // Blue primary color
+              ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})`
               ctx.lineWidth = 0.5
               ctx.stroke()
             }
@@ -151,10 +153,11 @@ export function AnimatedParticles() {
     // Pause connections while user scrolls/touches to avoid artifacts on mobile
     const markInteracting = () => {
       interactingRef.current = true
+      lastScrollTimeRef.current = performance.now()
       if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
       interactingTimeoutRef.current = window.setTimeout(() => {
         interactingRef.current = false
-      }, 200)
+      }, 450)
     }
     const endInteracting = () => {
       if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
@@ -166,6 +169,7 @@ export function AnimatedParticles() {
     window.addEventListener('touchend', endInteracting, { passive: true })
     window.addEventListener('touchcancel', endInteracting, { passive: true })
     window.addEventListener('scroll', markInteracting, { passive: true })
+    document.addEventListener('scroll', markInteracting, { passive: true, capture: true })
 
     // Handle mobile browser UI resize jitter
     const vv = window.visualViewport
@@ -189,6 +193,7 @@ export function AnimatedParticles() {
       window.removeEventListener('touchend', endInteracting)
       window.removeEventListener('touchcancel', endInteracting)
       window.removeEventListener('scroll', markInteracting)
+      document.removeEventListener('scroll', markInteracting, true)
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
@@ -209,7 +214,6 @@ export function AnimatedParticles() {
         overflow: 'hidden',
         border: 'none',
         outline: 'none',
-        touchAction: 'none',
         userSelect: 'none',
         WebkitTouchCallout: 'none'
       }}
