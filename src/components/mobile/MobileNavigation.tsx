@@ -7,7 +7,8 @@ import {
   Menu, Home, TrendingUp, Star, User, BarChart3, Brain, Store, Plus, Wallet, 
   Target, Coins, Sparkles, Lock, Layers, Bell, Users, GraduationCap, 
   ArrowLeftRight, Activity, Share2, ListOrdered, Shield, LineChart, 
-  Building2, Scale, Package, Globe, Settings, HelpCircle, Crown, FileText
+  Building2, Scale, Package, Globe, Settings, HelpCircle, Crown, FileText,
+  Bot, UserCog, Zap, Briefcase, BookOpen
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -22,15 +23,17 @@ const bottomNavItems = [
   { icon: TrendingUp, label: 'Trading', path: '/enhanced-trading', id: 'trading' },
 ]
 
-// All navigation items organized by category
+// All navigation items organized by category (matching desktop sidebar exactly)
 const navigationSections = [
   {
     title: "Core",
     items: [
       { icon: Home, label: 'Home', path: '/', id: 'home' },
       { icon: Store, label: 'Marketplace', path: '/marketplace', id: 'marketplace' },
-      { icon: Brain, label: 'AI Assistant', path: '/ai-assistant', id: 'ai-assistant' },
+      { icon: Zap, label: 'AI Assistant', path: '/ai-assistant', id: 'ai-assistant' },
       { icon: Plus, label: 'Create Agent', path: '/create-agent', id: 'create-agent' },
+      { icon: Bot, label: 'ACP', path: '/acp', id: 'acp' },
+      { icon: UserCog, label: 'Admin', path: '/admin', id: 'admin' },
     ]
   },
   {
@@ -38,11 +41,6 @@ const navigationSections = [
     items: [
       { icon: Wallet, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
       { icon: Target, label: 'Trading Signals', path: '/trading-signals', id: 'trading-signals' },
-      { icon: TrendingUp, label: 'Enhanced Trading', path: '/enhanced-trading', id: 'enhanced-trading' },
-      { icon: Activity, label: 'Live Trading', path: '/real-time-market', id: 'live-trading' },
-      { icon: Share2, label: 'Social Trading', path: '/social-trading', id: 'social-trading' },
-      { icon: ListOrdered, label: 'Order Management', path: '/order-management', id: 'order-management' },
-      { icon: ArrowLeftRight, label: 'Multi-Exchange', path: '/multi-exchange', id: 'multi-exchange' },
     ]
   },
   {
@@ -51,7 +49,6 @@ const navigationSections = [
       { icon: Coins, label: 'DeFi', path: '/defi', id: 'defi' },
       { icon: Sparkles, label: 'Solana', path: '/solana', id: 'solana' },
       { icon: Lock, label: 'Solana Staking', path: '/solana-staking', id: 'solana-staking' },
-      { icon: Target, label: 'Solana Signals', path: '/solana-signals', id: 'solana-signals' },
       { icon: Layers, label: 'Staking', path: '/staking', id: 'staking' },
       { icon: Star, label: 'Referrals', path: '/referrals', id: 'referrals' },
     ]
@@ -60,9 +57,6 @@ const navigationSections = [
     title: "Analytics",
     items: [
       { icon: BarChart3, label: 'Analytics', path: '/analytics', id: 'analytics' },
-      { icon: BarChart3, label: 'Advanced Analytics', path: '/advanced-analytics', id: 'advanced-analytics' },
-      { icon: LineChart, label: 'Technical Analysis', path: '/technical-analysis', id: 'technical-analysis' },
-      { icon: Shield, label: 'Risk Management', path: '/risk-management', id: 'risk-management' },
       { icon: Bell, label: 'Notifications', path: '/notifications', id: 'notifications' },
     ]
   },
@@ -78,7 +72,21 @@ const navigationSections = [
   {
     title: "Professional",
     items: [
+      { icon: ArrowLeftRight, label: 'Multi-Exchange', path: '/multi-exchange', id: 'multi-exchange' },
+      { icon: TrendingUp, label: 'Enhanced Trading', path: '/enhanced-trading', id: 'enhanced-trading' },
+      { icon: Target, label: 'Advanced Trading', path: '/advanced-trading', id: 'advanced-trading' },
+      { icon: Activity, label: 'Live Trading', path: '/real-time-market', id: 'live-trading' },
+      { icon: Share2, label: 'Social Trading', path: '/social-trading', id: 'social-trading' },
+      { icon: ListOrdered, label: 'Order Management', path: '/order-management', id: 'order-management' },
+      { icon: Sparkles, label: 'Solana Signals', path: '/solana-signals', id: 'solana-signals' },
+      { icon: BarChart3, label: 'Advanced Analytics', path: '/advanced-analytics', id: 'advanced-analytics' },
+      { icon: Shield, label: 'Risk Management', path: '/risk-management', id: 'risk-management' },
+      { icon: LineChart, label: 'Technical Analysis', path: '/technical-analysis', id: 'technical-analysis' },
+      { icon: Bell, label: 'Advanced Notifications', path: '/advanced-notifications', id: 'advanced-notifications' },
+      { icon: Bot, label: 'Advanced AI', path: '/advanced-ai', id: 'advanced-ai' },
+      { icon: Sparkles, label: 'Enhanced Features', path: '/enhanced-features', id: 'enhanced-features' },
       { icon: Building2, label: 'Institutional', path: '/institutional', id: 'institutional' },
+      { icon: Briefcase, label: 'Institutional APIs', path: '/institutional-apis', id: 'institutional-apis' },
       { icon: Scale, label: 'Compliance', path: '/compliance', id: 'compliance' },
       { icon: Package, label: 'White Label', path: '/white-label', id: 'white-label' },
       { icon: Globe, label: 'Multi Language', path: '/multi-language', id: 'multi-language' },
@@ -87,11 +95,10 @@ const navigationSections = [
   {
     title: "Resources",
     items: [
-      { icon: FileText, label: 'Tutorials', path: '/tutorials', id: 'tutorials' },
+      { icon: BookOpen, label: 'Tutorials', path: '/tutorials', id: 'tutorials' },
       { icon: HelpCircle, label: 'Customer Support', path: '/customer-support', id: 'customer-support' },
       { icon: Crown, label: 'Premium', path: '/premium', id: 'premium' },
       { icon: HelpCircle, label: 'Contact', path: '/contact', id: 'contact' },
-      { icon: Settings, label: 'Settings', path: '/settings', id: 'settings' },
     ]
   }
 ]
@@ -202,7 +209,7 @@ export const MobileNavigation = () => {
                         })}
                       </div>
                       
-                      {section.title !== "Support" && (
+                      {section.title !== "Resources" && (
                         <Separator className="opacity-40 my-6" />
                       )}
                     </div>
@@ -216,6 +223,22 @@ export const MobileNavigation = () => {
 
       {/* Bottom padding to account for fixed navigation */}
       <div className="h-16" />
+      
+      {/* Settings as separate item at bottom */}
+      <div className="fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/30 px-4 py-2">
+        <Button
+          variant="ghost"
+          onClick={() => handleNavigation('/settings')}
+          className={cn(
+            "w-full h-12 flex items-center justify-center gap-3 text-sm font-medium",
+            "transition-all duration-200 hover:bg-transparent hover:text-foreground",
+            isActive('/settings') ? "text-white" : "text-muted-foreground"
+          )}
+        >
+          <Settings className="h-4 w-4" />
+          <span>Settings</span>
+        </Button>
+      </div>
     </>
   )
 }
