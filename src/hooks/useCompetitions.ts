@@ -77,7 +77,7 @@ export const useCompetitions = () => {
         entry_fee: comp.entry_fee || 0,
         current_participants: 0, // Will be calculated separately
         max_participants: comp.max_participants || 0,
-        is_active: comp.status === 'active',
+        is_active: false,
         rules: comp.rules || {},
         created_at: comp.created_at
       }));
