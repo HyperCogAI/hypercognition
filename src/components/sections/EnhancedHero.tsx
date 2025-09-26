@@ -1,6 +1,8 @@
 import { CyberButton } from "@/components/ui/cyber-button"
+import { InteractiveVideo } from "@/components/ui/interactive-video"
 import { ArrowRight, Star, Zap, Shield, TrendingUp, Users, Target, Play, ChevronDown } from "lucide-react"
 import { useState, useEffect } from "react"
+import heroVideo from "@/assets/hero-video.mp4"
 
 export function EnhancedHero() {
   const [typedText, setTypedText] = useState("")
@@ -116,6 +118,18 @@ export function EnhancedHero() {
             </div>
           </div>
           
+          {/* Interactive Video */}
+          <div className="flex justify-center py-6 md:py-8">
+            <InteractiveVideo 
+              src={heroVideo}
+              className="w-full max-w-2xl h-64 md:h-80 lg:h-96"
+              autoPlay={true}
+              loop={true}
+              muted={true}
+              showControls={true}
+            />
+          </div>
+
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4">
             <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base justify-center">
