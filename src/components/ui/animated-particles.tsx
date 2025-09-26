@@ -36,7 +36,7 @@ export function AnimatedParticles() {
           y: Math.random() * canvas.height,
           vx: (Math.random() - 0.5) * 0.5,
           vy: (Math.random() - 0.5) * 0.5,
-          opacity: Math.random() * 0.5 + 0.1,
+          opacity: Math.random() * 0.8 + 0.4, // Increased base opacity
           size: Math.random() * 2 + 1
         })
       }
@@ -62,7 +62,7 @@ export function AnimatedParticles() {
         
         // Animate opacity
         particle.opacity += (Math.random() - 0.5) * 0.01
-        particle.opacity = Math.max(0.1, Math.min(0.6, particle.opacity))
+        particle.opacity = Math.max(0.3, Math.min(1.0, particle.opacity))
         
         // Draw particle
         ctx.beginPath()
@@ -80,7 +80,7 @@ export function AnimatedParticles() {
             ctx.beginPath()
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(otherParticle.x, otherParticle.y)
-            const lineOpacity = (1 - distance / 100) * Math.min(particle.opacity, otherParticle.opacity) * 0.3
+            const lineOpacity = (1 - distance / 100) * Math.min(particle.opacity, otherParticle.opacity) * 0.6
             ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})` // Blue primary color
             ctx.lineWidth = 0.5
             ctx.stroke()
