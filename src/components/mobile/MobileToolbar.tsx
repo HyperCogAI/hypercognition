@@ -8,19 +8,27 @@ preloadLogo.src = logoUrl
 
 export const MobileToolbar = () => {
   return (
-    <header className="fixed top-0 left-0 right-0 z-50 bg-black/60 border-b border-border/50 pt-[env(safe-area-inset-top)] backdrop-blur-md">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-background/95 border-b border-border/30 pt-[env(safe-area-inset-top)] backdrop-blur-md">
       <div className="flex h-14 items-center justify-between pl-4 pr-1">
         {/* Logo on the left */}
-        <div className="flex items-center">
+        <div className="flex items-center relative">
           <img 
             src={logoUrl} 
             alt="HyperCognition logo" 
-            className="h-8 w-auto"
-            style={{ imageRendering: 'crisp-edges' }}
+            className="h-8 w-auto object-contain will-change-auto"
+            style={{ 
+              imageRendering: 'crisp-edges',
+              WebkitBackfaceVisibility: 'hidden',
+              backfaceVisibility: 'hidden',
+              WebkitTransform: 'translateZ(0)',
+              transform: 'translateZ(0)',
+              WebkitFontSmoothing: 'antialiased'
+            }}
             loading="eager"
+            decoding="sync"
+            draggable={false}
           />
         </div>
-
 
         {/* Wallet buttons on the right */}
         <div className="flex items-center gap-0 -mr-1">
