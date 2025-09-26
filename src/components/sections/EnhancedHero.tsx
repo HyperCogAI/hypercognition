@@ -5,7 +5,6 @@ import { useState, useEffect } from "react"
 
 export function EnhancedHero() {
   const [typedText, setTypedText] = useState("")
-  const [showScrollIndicator, setShowScrollIndicator] = useState(true)
 
   const heroTexts = [
     "AI-Powered Trading",
@@ -49,17 +48,6 @@ export function EnhancedHero() {
     return () => clearTimeout(timeout)
   }, [])
 
-  // Hide scroll indicator when user starts scrolling
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > 50) {
-        setShowScrollIndicator(false)
-      }
-    }
-
-    window.addEventListener('scroll', handleScroll)
-    return () => window.removeEventListener('scroll', handleScroll)
-  }, [])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
@@ -148,15 +136,6 @@ export function EnhancedHero() {
         </div>
       </div>
 
-      {/* Scroll Indicator - Hidden on mobile and when scrolling */}
-      {showScrollIndicator && (
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 -ml-12 z-20 hidden md:flex transition-opacity duration-300 animate-[bounce_3s_ease-in-out_infinite]">
-          <div className="flex flex-col items-center space-y-2 text-muted-foreground">
-            <span className="text-xs uppercase tracking-wider">Scroll to explore</span>
-            <ChevronDown className="h-5 w-5" />
-          </div>
-        </div>
-      )}
     </section>
   )
 }
