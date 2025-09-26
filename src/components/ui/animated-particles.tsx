@@ -131,7 +131,14 @@ export function AnimatedParticles() {
     <canvas
       ref={canvasRef}
       className="absolute inset-0 z-0 w-full h-full block"
-      style={{ pointerEvents: 'none', display: 'block' }}
+      style={{ 
+        pointerEvents: 'none', 
+        display: 'block',
+        verticalAlign: 'top',
+        overflow: 'hidden',
+        border: 'none',
+        outline: 'none'
+      }}
     />
   )
 }
