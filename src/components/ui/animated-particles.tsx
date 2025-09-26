@@ -155,7 +155,10 @@ export function AnimatedParticles() {
         verticalAlign: 'top',
         overflow: 'hidden',
         border: 'none',
-        outline: 'none'
+        outline: 'none',
+        touchAction: 'none',
+        userSelect: 'none',
+        WebkitTouchCallout: 'none'
       }}
     />
   )
