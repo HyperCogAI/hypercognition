@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { TrendingUp, TrendingDown, Clock, Search, Filter, Globe, Newspaper, AlertTriangle } from "lucide-react"
+import { TrendingUp, TrendingDown, Clock, Search, Filter, Globe, Newspaper, AlertTriangle, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { RealMarketSentimentService } from '@/services/RealMarketSentimentService'
+import { Link } from "react-router-dom"
 
 interface NewsArticle {
   id: string
@@ -177,6 +178,8 @@ const EnhancedMarketNews = () => {
     
     return matchesSearch && matchesCategory && matchesSentiment
   })
+  
+  const MAX_NEWS = 7
 
   const getSentimentIcon = (sentiment: string) => {
     switch (sentiment) {
@@ -340,84 +343,95 @@ const EnhancedMarketNews = () => {
               ))}
             </div>
           ) : (
-            <div className="grid gap-6">
-              {filteredNews.map((article) => (
-                <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardHeader>
-                    <div className="flex items-start justify-between gap-4">
-                      <div className="flex-1">
-                        <CardTitle className="text-lg leading-tight mb-2">
-                          {article.title}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          {article.summary}
-                        </CardDescription>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        {getSentimentIcon(article.sentiment)}
-                      </div>
-                    </div>
-                  </CardHeader>
-                  
-                  <CardContent className="pt-0">
-                    <div className="flex flex-wrap items-center gap-3 text-sm">
-                      <div className="flex items-center gap-2 text-muted-foreground">
-                        <Globe className="h-4 w-4" />
-                        <span className="font-medium">{article.source}</span>
-                      </div>
-                      
-                      <div className="flex items-center gap-1 text-muted-foreground">
-                        <Clock className="h-4 w-4" />
-                        <span>{formatTimeAgo(article.publishedAt)}</span>
-                      </div>
-                      
-                      <Badge variant="outline" className="text-xs">
-                        {article.category}
-                      </Badge>
-                      
-                      <Badge className={cn("text-xs border", getSentimentColor(article.sentiment))}>
-                        {article.sentiment}
-                      </Badge>
-                      
-                      <Badge variant={
-                        article.impact === 'high' ? 'destructive' : 
-                        article.impact === 'medium' ? 'default' : 
-                        'secondary'
-                      } className={cn(
-                        "text-xs",
-                        article.impact === 'medium' && "bg-orange-500 text-white border-0"
-                      )}>
-                        {article.impact} impact
-                      </Badge>
-                    </div>
-                    
-                    {article.relatedAgents.length > 0 && (
-                      <div className="flex items-center gap-2 mt-3">
-                        <span className="text-xs text-muted-foreground">Related:</span>
-                        <div className="flex gap-1">
-                          {article.relatedAgents.map((agent) => (
-                            <Badge key={agent} variant="outline" className="text-xs">
-                              {agent}
-                            </Badge>
-                          ))}
+              <div className="grid gap-6">
+                {filteredNews.slice(0, MAX_NEWS).map((article) => (
+                  <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                    <CardHeader>
+                      <div className="flex items-start justify-between gap-4">
+                        <div className="flex-1">
+                          <CardTitle className="text-lg leading-tight mb-2">
+                            {article.title}
+                          </CardTitle>
+                          <CardDescription className="text-sm">
+                            {article.summary}
+                          </CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          {getSentimentIcon(article.sentiment)}
                         </div>
                       </div>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-              
-              {filteredNews.length === 0 && !loading && (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Newspaper className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
-                    <p className="text-muted-foreground">
-                      No news articles found matching your criteria.
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
+                    </CardHeader>
+                    
+                    <CardContent className="pt-0">
+                      <div className="flex flex-wrap items-center gap-3 text-sm">
+                        <div className="flex items-center gap-2 text-muted-foreground">
+                          <Globe className="h-4 w-4" />
+                          <span className="font-medium">{article.source}</span>
+                        </div>
+                        
+                        <div className="flex items-center gap-1 text-muted-foreground">
+                          <Clock className="h-4 w-4" />
+                          <span>{formatTimeAgo(article.publishedAt)}</span>
+                        </div>
+                        
+                        <Badge variant="outline" className="text-xs">
+                          {article.category}
+                        </Badge>
+                        
+                        <Badge className={cn("text-xs border", getSentimentColor(article.sentiment))}>
+                          {article.sentiment}
+                        </Badge>
+                        
+                        <Badge variant={
+                          article.impact === 'high' ? 'destructive' : 
+                          article.impact === 'medium' ? 'default' : 
+                          'secondary'
+                        } className={cn(
+                          "text-xs",
+                          article.impact === 'medium' && "bg-orange-500 text-white border-0"
+                        )}>
+                          {article.impact} impact
+                        </Badge>
+                      </div>
+                      
+                      {article.relatedAgents.length > 0 && (
+                        <div className="flex items-center gap-2 mt-3">
+                          <span className="text-xs text-muted-foreground">Related:</span>
+                          <div className="flex gap-1">
+                            {article.relatedAgents.map((agent) => (
+                              <Badge key={agent} variant="outline" className="text-xs">
+                                {agent}
+                              </Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+
+                {filteredNews.length > MAX_NEWS && (
+                  <div className="text-center">
+                    <Button asChild variant="outline" className="group inline-flex items-center gap-2">
+                      <Link to="/analytics">
+                        View More News & Analysis
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
+                      </Link>
+                    </Button>
+                  </div>
+                )}
+                
+                {filteredNews.length === 0 && !loading && (
+                  <Card>
+                    <CardContent className="p-8 text-center">
+                      <Newspaper className="h-12 w-12 mx-auto mb-4 text-muted-foreground/50" />
+                      <p className="text-muted-foreground">
+                        No news articles found matching your criteria.
+                      </p>
+                    </CardContent>
+                  </Card>
+                )}
+              </div>
           )}
         </TabsContent>
 
