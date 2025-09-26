@@ -182,21 +182,21 @@ export function OptimizedHomeLayout() {
         structuredData={structuredData}
       />
       
-      <main className="space-y-16">
+      <main className="space-y-8 md:space-y-16">
         {/* Hero Section with Priority Loading */}
         <Suspense fallback={<HeroSkeleton />}>
           <EnhancedHero />
         </Suspense>
 
         {/* Market News Section */}
-        <section className="container mx-auto px-4">
+        <section className="container mx-auto px-4 md:px-6">
           <Suspense fallback={<MarketNewsSkeleton />}>
             <EnhancedMarketNews />
           </Suspense>
         </section>
 
         {/* Agent Marketplace Section */}
-        <section id="marketplace" className="scroll-mt-16 container mx-auto px-4">
+        <section id="marketplace" className="scroll-mt-16 container mx-auto px-4 md:px-6">
           <Suspense fallback={<MarketplaceSkeleton />}>
             <AgentMarketplace />
           </Suspense>

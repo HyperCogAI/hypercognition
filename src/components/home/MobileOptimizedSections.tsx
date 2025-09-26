@@ -21,9 +21,9 @@ export function MobileStats({ className }: MobileStatsProps) {
 
   if (isMobile) {
     return (
-      <div className={cn("grid grid-cols-2 gap-3", className)}>
+      <div className={cn("grid grid-cols-2 gap-4", className)}>
         {stats.map((stat, index) => (
-          <EnhancedCard key={index} className="p-4 text-center">
+          <EnhancedCard key={index} className="p-5 text-center">
             <div className={cn("text-2xl font-bold", stat.color)}>{stat.value}</div>
             <div className="text-xs text-muted-foreground">{stat.label}</div>
           </EnhancedCard>
@@ -80,9 +80,9 @@ export function MobileFeatures({ className }: MobileFeaturesProps) {
 
   if (isMobile) {
     return (
-      <div className={cn("space-y-4", className)}>
+      <div className={cn("space-y-5", className)}>
         {features.map((feature, index) => (
-          <EnhancedCard key={index} className="p-4">
+          <EnhancedCard key={index} className="p-5">
             <div className="flex items-start gap-3">
               <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-primary/10">
                 {feature.icon}
@@ -133,7 +133,7 @@ export function MobileCTA({ className }: MobileCTAProps) {
   
   if (isMobile) {
     return (
-      <div className={cn("space-y-4", className)}>
+      <div className={cn("space-y-5", className)}>
         <CyberButton variant="neon" size="lg" className="w-full group">
           <span>Launch Platform</span>
           <ArrowRight className="h-4 w-4 group-hover:translate-x-1 transition-transform" />
@@ -178,7 +178,7 @@ export function MobileMetrics({ className }: MobileMetricsProps) {
 
   if (isMobile) {
     return (
-      <div className={cn("grid grid-cols-2 gap-3", className)}>
+      <div className={cn("grid grid-cols-2 gap-4", className)}>
         {metrics.map((metric, index) => (
           <MetricCard
             key={index}
