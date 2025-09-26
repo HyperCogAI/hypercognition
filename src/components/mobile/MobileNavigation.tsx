@@ -180,7 +180,8 @@ export const MobileNavigation = () => {
                 <div className="space-y-8 py-8 px-2">
                   {navigationSections.map((section) => (
                     <div key={section.title} className="space-y-4">
-                      <div className="flex items-center gap-3 px-2">
+                      <div className="flex items-center justify-center gap-3 px-2">
+                        <div className="flex-1 h-px bg-border/50" />
                         <h3 className="text-sm font-semibold text-muted-foreground tracking-wider uppercase">
                           {section.title}
                         </h3>
