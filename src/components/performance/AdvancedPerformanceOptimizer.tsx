@@ -267,7 +267,7 @@ export const AdvancedPerformanceOptimizer = () => {
   const getImpactBadge = (impact: string) => {
     switch (impact) {
       case 'high': return <Badge className="bg-green-500">High Impact</Badge>
-      case 'medium': return <Badge className="bg-yellow-500">Medium Impact</Badge>
+      case 'medium': return <Badge className="bg-orange-500 text-white border-0">Medium Impact</Badge>
       case 'low': return <Badge variant="outline">Low Impact</Badge>
       default: return <Badge variant="secondary">Unknown</Badge>
     }
