@@ -99,6 +99,7 @@ const navigationSections = [
       { icon: HelpCircle, label: 'Customer Support', path: '/customer-support', id: 'customer-support' },
       { icon: Crown, label: 'Premium', path: '/premium', id: 'premium' },
       { icon: HelpCircle, label: 'Contact', path: '/contact', id: 'contact' },
+      { icon: Settings, label: 'Settings', path: '/settings', id: 'settings' },
     ]
   }
 ]
@@ -223,22 +224,6 @@ export const MobileNavigation = () => {
 
       {/* Bottom padding to account for fixed navigation */}
       <div className="h-16" />
-      
-      {/* Settings as separate item at bottom */}
-      <div className="fixed bottom-16 left-0 right-0 z-50 bg-background/95 backdrop-blur-md border-t border-border/30 px-4 py-2">
-        <Button
-          variant="ghost"
-          onClick={() => handleNavigation('/settings')}
-          className={cn(
-            "w-full h-12 flex items-center justify-center gap-3 text-sm font-medium",
-            "transition-all duration-200 hover:bg-transparent hover:text-foreground",
-            isActive('/settings') ? "text-white" : "text-muted-foreground"
-          )}
-        >
-          <Settings className="h-4 w-4" />
-          <span>Settings</span>
-        </Button>
-      </div>
     </>
   )
 }
