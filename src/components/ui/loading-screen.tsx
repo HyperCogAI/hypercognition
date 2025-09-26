@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import hyperLogo from '@/assets/hyper-logo-loading.png'
+import { Progress } from '@/components/ui/progress'
 
 interface LoadingScreenProps {
   onComplete: () => void
@@ -8,14 +9,29 @@ interface LoadingScreenProps {
 
 export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [isLoading, setIsLoading] = useState(true)
+  const [progress, setProgress] = useState(0)
 
   useEffect(() => {
+    // Animate progress from 0 to 100 over 2 seconds
+    const progressInterval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(progressInterval)
+          return 100
+        }
+        return prev + 2
+      })
+    }, 40)
+
     const timer = setTimeout(() => {
       setIsLoading(false)
       setTimeout(onComplete, 500) // Allow exit animation to complete
     }, 2000)
 
-    return () => clearTimeout(timer)
+    return () => {
+      clearTimeout(timer)
+      clearInterval(progressInterval)
+    }
   }, [onComplete])
 
   return (
@@ -37,35 +53,24 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               <img 
                 src={hyperLogo} 
                 alt="HyperCognition" 
-                className="w-64 h-auto md:w-80"
+                className="w-40 h-auto md:w-48"
               />
               
               {/* Subtle glow effect */}
               <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl rounded-lg" />
             </motion.div>
 
-            {/* Loading animation */}
+            {/* Sleek loading bar */}
             <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.3, duration: 0.4 }}
-              className="flex space-x-1"
+              className="w-64 md:w-80"
             >
-              {[0, 1, 2].map((i) => (
-                <motion.div
-                  key={i}
-                  animate={{
-                    scale: [1, 1.2, 1],
-                    opacity: [0.5, 1, 0.5],
-                  }}
-                  transition={{
-                    duration: 1,
-                    repeat: Infinity,
-                    delay: i * 0.2,
-                  }}
-                  className="w-2 h-2 bg-primary rounded-full"
-                />
-              ))}
+              <Progress 
+                value={progress} 
+                className="h-1 bg-muted/20"
+              />
             </motion.div>
 
             {/* Loading text */}
