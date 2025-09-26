@@ -139,7 +139,12 @@ export const CustomerSupportDashboard = () => {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Customer Support</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight tracking-tight">
+            Customer{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Support
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Get help from our support team or find answers in our knowledge base
           </p>
