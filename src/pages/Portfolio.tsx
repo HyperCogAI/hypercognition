@@ -90,7 +90,12 @@ export default function Portfolio() {
       <div className="container mx-auto px-4 py-8">
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-3xl font-bold mb-2">Portfolio Dashboard</h1>
+            <h1 className="text-3xl font-bold text-white leading-tight mb-2">
+              Portfolio{" "}
+              <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+                Dashboard
+              </span>
+            </h1>
             <p className="text-muted-foreground">
               Track performance, analyze holdings, and optimize your AI agent investments
             </p>

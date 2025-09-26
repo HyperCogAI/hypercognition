@@ -13,7 +13,12 @@ const RiskManagement: React.FC = () => {
       
       <div className="container mx-auto p-6">
         <div className="mb-6">
-          <h1 className="text-3xl font-bold">Risk Management</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            Risk{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Management
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Monitor portfolio risk, optimize allocations, and calculate optimal position sizes
           </p>

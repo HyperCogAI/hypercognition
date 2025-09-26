@@ -85,7 +85,12 @@ const AgentLogoShowcase = () => {
     <div className="space-y-6 p-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold">Agent Logo Showcase</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight">
+            Agent Logo{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Showcase
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             AI-generated logos for trading agents via Edge Function
           </p>

@@ -17,7 +17,12 @@ const Analytics = () => {
       
       <div className="container mx-auto px-4 py-8 space-y-8">
         <div>
-          <h1 className="text-4xl font-bold mb-2">Analytics Dashboard</h1>
+          <h1 className="text-4xl font-bold text-white leading-tight mb-2">
+            Analytics{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Dashboard
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Comprehensive market analysis, trading signals, and performance insights
           </p>

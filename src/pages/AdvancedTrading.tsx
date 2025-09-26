@@ -36,7 +36,12 @@ export function AdvancedTradingPage() {
       
       <div className="container mx-auto px-4 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold mb-2">Advanced Trading</h1>
+          <h1 className="text-3xl font-bold text-white leading-tight mb-2">
+            Advanced{" "}
+            <span className="bg-gradient-to-r from-primary via-accent to-primary bg-clip-text text-transparent">
+              Trading
+            </span>
+          </h1>
           <p className="text-muted-foreground">
             Professional trading tools with advanced order types and comprehensive order management
           </p>
