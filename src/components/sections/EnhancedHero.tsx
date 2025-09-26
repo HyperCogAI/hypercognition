@@ -1,4 +1,5 @@
 import { CyberButton } from "@/components/ui/cyber-button"
+import { AnimatedParticles } from "@/components/ui/animated-particles"
 import { ArrowRight, Star, Zap, Shield, TrendingUp, Users, Target, Play, ChevronDown } from "lucide-react"
 import { useState, useEffect } from "react"
 
@@ -50,11 +51,14 @@ export function EnhancedHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
       
+      {/* Animated Particles Background */}
+      <AnimatedParticles />
+      
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95 z-5" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95 z-10" />
       
       {/* Animated Grid Overlay */}
-      <div className="absolute inset-0 cyber-grid opacity-10 z-10" />
+      <div className="absolute inset-0 cyber-grid opacity-5 z-15" />
       
       
       {/* Content */}
