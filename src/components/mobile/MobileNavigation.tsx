@@ -85,8 +85,9 @@ const navigationSections = [
     ]
   },
   {
-    title: "Support",
+    title: "Resources",
     items: [
+      { icon: FileText, label: 'Tutorials', path: '/tutorials', id: 'tutorials' },
       { icon: HelpCircle, label: 'Customer Support', path: '/customer-support', id: 'customer-support' },
       { icon: Crown, label: 'Premium', path: '/premium', id: 'premium' },
       { icon: HelpCircle, label: 'Contact', path: '/contact', id: 'contact' },
