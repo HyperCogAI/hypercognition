@@ -24,7 +24,8 @@ import { WalletSection } from "@/components/wallet/WalletSection"
 const coreItems = [
   { title: "Home", url: "/", icon: Home },
   { title: "Marketplace", url: "/marketplace", icon: Store },
-  { title: "AI Assistant", url: "/ai-assistant", icon: Bot },
+  { title: "ACP", url: "/acp", icon: Bot },
+  { title: "AI Assistant", url: "/ai-assistant", icon: Zap },
   { title: "Admin", url: "/admin", icon: UserCog },
   { title: "Create Agent", url: "/create-agent", icon: Plus },
 ]
