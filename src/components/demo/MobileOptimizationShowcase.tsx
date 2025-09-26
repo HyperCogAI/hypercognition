@@ -18,7 +18,7 @@ export function MobileOptimizationShowcase() {
     <ResponsiveContainer variant="wide" padding="lg">
       <div className="space-y-6">
         <div className="text-center space-y-2">
-          <h1 className="text-responsive-xl font-bold">Mobile-First Responsive Design</h1>
+          <h1 className="text-responsive-xl font-bold text-white">Mobile-First Responsive Design</h1>
           <p className="text-responsive text-muted-foreground">
             Experience seamless interaction across all devices
           </p>

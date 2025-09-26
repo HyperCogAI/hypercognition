@@ -214,7 +214,7 @@ const EnhancedMarketNews = () => {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-lg md:text-xl font-bold flex items-center gap-3">
+          <h1 className="text-lg md:text-xl font-bold text-white flex items-center gap-3">
             <Newspaper className="h-6 w-6 md:h-8 md:w-8 text-primary" />
             Market News & Analysis
           </h1>

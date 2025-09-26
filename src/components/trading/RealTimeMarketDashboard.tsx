@@ -229,7 +229,7 @@ export const RealTimeMarketDashboard: React.FC<RealTimeMarketDashboardProps> = (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-3xl font-bold flex items-center gap-2">
+          <h1 className="text-3xl font-bold text-white flex items-center gap-2">
             <Activity className="w-8 h-8" />
             Real-Time Market Data
           </h1>

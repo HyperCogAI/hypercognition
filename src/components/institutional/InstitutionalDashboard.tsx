@@ -125,7 +125,7 @@ export const InstitutionalDashboard: React.FC = () => {
             <Building2 className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold">{organization.name}</h1>
+            <h1 className="text-2xl font-bold text-white">{organization.name}</h1>
             <div className="flex items-center gap-2">
               <Badge variant="outline" className="capitalize">
                 {organization.type.replace('_', ' ')}

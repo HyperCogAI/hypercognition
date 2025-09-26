@@ -419,7 +419,7 @@ export function CustomizableDashboard() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+          <h2 className="text-3xl font-bold text-white">
             Customizable Dashboard
           </h2>
           <p className="text-muted-foreground mt-1">

@@ -209,7 +209,7 @@ export const MultiExchangeConnector = () => {
   return (
     <div className="space-y-6">
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold text-white">
           Exchange Connector
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">

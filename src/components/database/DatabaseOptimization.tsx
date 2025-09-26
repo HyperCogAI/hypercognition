@@ -278,7 +278,7 @@ export function DatabaseOptimizationDashboard({ className }: DatabaseOptimizatio
       <div className={`space-y-6 ${className}`}>
         <div className="flex items-center gap-2">
           <Database className="w-6 h-6 text-primary animate-pulse" />
-          <h1 className="text-2xl font-bold">Loading Database Dashboard...</h1>
+          <h1 className="text-2xl font-bold text-white">Loading Database Dashboard...</h1>
         </div>
       </div>
     )
@@ -289,7 +289,7 @@ export function DatabaseOptimizationDashboard({ className }: DatabaseOptimizatio
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
           <Database className="w-6 h-6 text-primary" />
-          <h1 className="text-2xl font-bold">Database Optimization</h1>
+          <h1 className="text-2xl font-bold text-white">Database Optimization</h1>
         </div>
         <div className="flex gap-2">
           <Button variant="outline" onClick={handleRefresh} disabled={isLoading}>

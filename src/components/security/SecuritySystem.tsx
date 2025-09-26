@@ -132,7 +132,7 @@ export function SecurityDashboard({ className }: SecurityDashboardProps) {
     <div className={`space-y-6 ${className}`}>
       <div className="flex items-center gap-2">
         <Shield className="w-6 h-6 text-primary" />
-        <h1 className="text-2xl font-bold">Security Dashboard</h1>
+        <h1 className="text-2xl font-bold text-white">Security Dashboard</h1>
       </div>
 
       {/* Security Status */}

@@ -85,7 +85,7 @@ export function LiveTradingDashboard() {
       <div className="border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 sticky top-0 z-50">
         <div className="flex items-center justify-between p-4">
           <div className="flex items-center gap-4">
-            <h1 className="text-2xl font-bold">Live Trading</h1>
+            <h1 className="text-2xl font-bold text-white">Live Trading</h1>
             <Badge variant={isConnected ? "default" : "secondary"}>
               <Activity className="w-3 h-3 mr-1" />
               {isConnected ? 'Live' : 'Disconnected'}

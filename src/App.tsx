@@ -238,7 +238,7 @@ const AppLayout = () => {
                         <div className="animate-spin rounded-full h-8 w-8 border-2 border-primary border-t-transparent" />
                       </div>
                       <div className="space-y-2">
-                        <h2 className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+                        <h2 className="text-2xl font-bold text-white">
                           Loading HyperCognition
                         </h2>
                         <p className="text-muted-foreground">Initializing AI trading platform...</p>

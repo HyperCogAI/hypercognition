@@ -250,7 +250,7 @@ function ComponentPreview() {
             <CardTitle className="text-sm">Typography</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <h1 className="text-2xl font-bold">Heading 1</h1>
+            <h1 className="text-2xl font-bold text-white">Heading 1</h1>
             <h2 className="text-xl font-semibold">Heading 2</h2>
             <h3 className="text-lg font-medium">Heading 3</h3>
             <p className="text-base">Regular paragraph text</p>
@@ -316,7 +316,7 @@ export function ThemeConsistencyChecker() {
     <div className="space-y-6">
       {/* Header */}
       <div className="text-center space-y-4">
-        <h2 className="text-3xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+        <h2 className="text-3xl font-bold text-white">
           Theme Consistency Checker
         </h2>
         <p className="text-muted-foreground max-w-2xl mx-auto">
