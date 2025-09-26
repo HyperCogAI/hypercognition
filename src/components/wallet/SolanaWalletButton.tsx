@@ -30,7 +30,15 @@ export const SolanaWalletButton = () => {
 
   if (!isConnected) {
     return (
-      <CyberButton variant="outline" size="sm" onClick={connectWallet} className="w-[130px] justify-center">
+      <CyberButton 
+        variant="outline" 
+        size="sm" 
+        onClick={() => {
+          console.log('Solana Connect button clicked')
+          connectWallet()
+        }} 
+        className="w-[130px] justify-center"
+      >
         <Wallet className="h-4 w-4 text-white" />
         <span className="text-white">Connect SOL</span>
       </CyberButton>

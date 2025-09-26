@@ -14,7 +14,12 @@ export const useSolanaWallet = () => {
   const { setVisible } = useWalletModal()
 
   const connectWallet = () => {
-    setVisible(true)
+    console.log('Connect wallet clicked, setVisible:', setVisible)
+    try {
+      setVisible(true)
+    } catch (error) {
+      console.error('Error opening wallet modal:', error)
+    }
   }
 
   const disconnectWallet = () => {
