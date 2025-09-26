@@ -13,10 +13,10 @@ export default function TutorialsHub() {
       
       <div className="container mx-auto p-6">
         <div className="text-center space-y-4 mb-8">
-          <h1 className="text-4xl font-bold text-white">
+          <h1 className="text-3xl font-bold text-white">
             Learning Hub
           </h1>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
             Master the art of trading with our comprehensive learning center. From basics to advanced strategies, 
             we've got everything you need to succeed.
           </p>
