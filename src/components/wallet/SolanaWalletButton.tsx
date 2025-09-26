@@ -7,7 +7,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { WalletMultiButton } from "@solana/wallet-adapter-react-ui"
+
 export const SolanaWalletButton = () => {
   const { 
     address, 
@@ -30,7 +30,18 @@ export const SolanaWalletButton = () => {
 
   if (!isConnected) {
     return (
-      <WalletMultiButton className="!h-8 !rounded-full !px-3 !text-xs !bg-transparent !border !border-primary/30 hover:!bg-primary/5 !text-primary" />
+      <CyberButton 
+        variant="outline" 
+        size="sm" 
+        onClick={() => {
+          console.log('Solana Connect button clicked')
+          connectWallet()
+        }} 
+        className="w-[130px] justify-center"
+      >
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connect SOL</span>
+      </CyberButton>
     )
   }
 
