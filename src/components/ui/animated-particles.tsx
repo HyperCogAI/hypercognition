@@ -13,11 +13,6 @@ export function AnimatedParticles() {
   const canvasRef = useRef<HTMLCanvasElement>(null)
   const animationRef = useRef<number>()
   const particlesRef = useRef<Particle[]>([])
-  const interactingRef = useRef(false)
-  const interactingTimeoutRef = useRef<number | undefined>(undefined)
-  const lastScrollTimeRef = useRef(0)
-  const lastScrollPosRef = useRef({ x: 0, y: 0 })
-  const lastVVPosRef = useRef({ x: 0, y: 0 })
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -25,13 +20,6 @@ export function AnimatedParticles() {
 
     const ctx = canvas.getContext('2d')
     if (!ctx) return
-
-    // Initialize scroll baselines
-    lastScrollPosRef.current = { x: window.scrollX, y: window.scrollY }
-    lastVVPosRef.current = { 
-      x: window.visualViewport?.pageLeft || (window.visualViewport as any)?.offsetLeft || 0,
-      y: window.visualViewport?.pageTop || (window.visualViewport as any)?.offsetTop || 0,
-    }
 
     const resizeCanvas = () => {
       const rect = canvas.getBoundingClientRect()
@@ -87,25 +75,21 @@ export function AnimatedParticles() {
       ctx.lineCap = 'round'
       ctx.lineJoin = 'round'
       
-      const isInteracting = interactingRef.current || (performance.now() - lastScrollTimeRef.current) < 800
-      
       // Update and draw particles
       particles.forEach((particle, i) => {
-        if (!isInteracting) {
-          // Update position
-          particle.x += particle.vx
-          particle.y += particle.vy
-          
-          // Wrap around edges without landing exactly on bounds to avoid edge artifacts
-          if (particle.x < 0) particle.x += displayWidth
-          if (particle.x >= displayWidth) particle.x -= displayWidth
-          if (particle.y < 0) particle.y += displayHeight
-          if (particle.y >= displayHeight) particle.y -= displayHeight
-          
-          // Animate opacity
-          particle.opacity += (Math.random() - 0.5) * 0.01
-          particle.opacity = Math.max(0.3, Math.min(1.0, particle.opacity))
-        }
+        // Update position
+        particle.x += particle.vx
+        particle.y += particle.vy
+        
+        // Wrap around edges without landing exactly on bounds to avoid edge artifacts
+        if (particle.x < 0) particle.x += displayWidth
+        if (particle.x >= displayWidth) particle.x -= displayWidth
+        if (particle.y < 0) particle.y += displayHeight
+        if (particle.y >= displayHeight) particle.y -= displayHeight
+        
+        // Animate opacity
+        particle.opacity += (Math.random() - 0.5) * 0.01
+        particle.opacity = Math.max(0.3, Math.min(1.0, particle.opacity))
         
         // Draw particle
         ctx.beginPath()
@@ -113,34 +97,32 @@ export function AnimatedParticles() {
         ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})` // Blue primary color
         ctx.fill()
         
-        // Draw connections to nearby particles (disabled during touch/scroll)
-        if (!isInteracting) {
-          particles.slice(i + 1).forEach(otherParticle => {
-            const dx = particle.x - otherParticle.x
-            const dy = particle.y - otherParticle.y
-            const distance = Math.sqrt(dx * dx + dy * dy)
-            
-            // Only draw lines if particles are close AND not wrapping around edges or edges proximity
-            const nearEdge = (p: Particle) => (
-              p.x < 1 || p.x > displayWidth - 1 || p.y < 1 || p.y > displayHeight - 1
-            )
-            if (
-              distance < 100 &&
-              Math.abs(dx) < displayWidth * 0.8 &&
-              Math.abs(dy) < displayHeight * 0.8 &&
-              !nearEdge(particle) &&
-              !nearEdge(otherParticle)
-            ) {
-              ctx.beginPath()
-              ctx.moveTo(particle.x, particle.y)
-              ctx.lineTo(otherParticle.x, otherParticle.y)
-              const lineOpacity = (1 - distance / 100) * Math.min(particle.opacity, otherParticle.opacity) * 0.6
-              ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})`
-              ctx.lineWidth = 0.5
-              ctx.stroke()
-            }
-          })
-        }
+        // Draw connections to nearby particles
+        particles.slice(i + 1).forEach(otherParticle => {
+          const dx = particle.x - otherParticle.x
+          const dy = particle.y - otherParticle.y
+          const distance = Math.sqrt(dx * dx + dy * dy)
+          
+          // Only draw lines if particles are close AND not wrapping around edges or edges proximity
+          const nearEdge = (p: Particle) => (
+            p.x < 1 || p.x > displayWidth - 1 || p.y < 1 || p.y > displayHeight - 1
+          )
+          if (
+            distance < 100 &&
+            Math.abs(dx) < displayWidth * 0.8 &&
+            Math.abs(dy) < displayHeight * 0.8 &&
+            !nearEdge(particle) &&
+            !nearEdge(otherParticle)
+          ) {
+            ctx.beginPath()
+            ctx.moveTo(particle.x, particle.y)
+            ctx.lineTo(otherParticle.x, otherParticle.y)
+            const lineOpacity = (1 - distance / 100) * Math.min(particle.opacity, otherParticle.opacity) * 0.6
+            ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})`
+            ctx.lineWidth = 0.5
+            ctx.stroke()
+          }
+        })
       })
       
       animationRef.current = requestAnimationFrame(animate)
@@ -163,84 +145,27 @@ export function AnimatedParticles() {
     window.addEventListener('resize', onResize)
 
     // Pause connections while user scrolls/touches to avoid artifacts on mobile
-    // Improved scroll detection - mark interaction on actual movement
-    const markInteracting = () => {
-      const scrollX = window.scrollX
-      const scrollY = window.scrollY
-      const vvX = window.visualViewport?.pageLeft || (window.visualViewport as any)?.offsetLeft || 0
-      const vvY = window.visualViewport?.pageTop || (window.visualViewport as any)?.offsetTop || 0
-      
-      const hasScrollMoved = (
-        Math.abs(scrollX - lastScrollPosRef.current.x) > 0.5 ||
-        Math.abs(scrollY - lastScrollPosRef.current.y) > 0.5 ||
-        Math.abs(vvX - lastVVPosRef.current.x) > 0.5 ||
-        Math.abs(vvY - lastVVPosRef.current.y) > 0.5
-      )
-      
-      if (hasScrollMoved) {
-        interactingRef.current = true
-        lastScrollTimeRef.current = performance.now()
-        lastScrollPosRef.current = { x: scrollX, y: scrollY }
-        lastVVPosRef.current = { x: vvX, y: vvY }
-        
-        if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
-        interactingTimeoutRef.current = window.setTimeout(() => {
-          interactingRef.current = false
-        }, 1000) // Extended to 1 second to cover momentum scrolling
-      }
-    }
-    const endInteracting = () => {
-      if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
-      interactingRef.current = false
-    }
-
-    window.addEventListener('touchstart', markInteracting, { passive: true })
-    window.addEventListener('touchmove', markInteracting, { passive: true })
-    window.addEventListener('touchend', endInteracting, { passive: true })
-    window.addEventListener('touchcancel', endInteracting, { passive: true })
-    window.addEventListener('scroll', markInteracting, { passive: true })
-    document.addEventListener('scroll', markInteracting, { passive: true, capture: true })
-    
-    // Also listen to the entire document body for container scrolling
-    document.body.addEventListener('scroll', markInteracting, { passive: true, capture: true })
+    window.addEventListener('resize', onResize)
 
     // Handle mobile browser UI resize jitter
     const vv = window.visualViewport
     let vvDebounce: number | undefined
     const onVVResize = () => {
-      // briefly mark interacting to disable line drawing and avoid edge artifacts
-      markInteracting()
       if (vvDebounce) window.clearTimeout(vvDebounce)
       vvDebounce = window.setTimeout(() => {
-        const stillInteracting = interactingRef.current || (performance.now() - lastScrollTimeRef.current) < 1200
-        if (stillInteracting) {
-          vvDebounce = window.setTimeout(() => {
-            resizeCanvas()
-            createParticles()
-          }, 200)
-        } else {
-          resizeCanvas()
-          createParticles()
-        }
-      }, 240)
+        resizeCanvas()
+        createParticles()
+      }, 120)
     }
     vv?.addEventListener('resize', onVVResize)
 
     return () => {
       window.removeEventListener('resize', onResize)
       vv?.removeEventListener('resize', onVVResize)
-      window.removeEventListener('touchstart', markInteracting)
-      window.removeEventListener('touchmove', markInteracting)
-      window.removeEventListener('touchend', endInteracting)
-      window.removeEventListener('touchcancel', endInteracting)
-      window.removeEventListener('scroll', markInteracting)
-      document.removeEventListener('scroll', markInteracting, true)
-      document.body.removeEventListener('scroll', markInteracting, true)
       if (resizeRaf) cancelAnimationFrame(resizeRaf)
       if (animationRef.current) {
         cancelAnimationFrame(animationRef.current)
       }
-      if (interactingTimeoutRef.current) window.clearTimeout(interactingTimeoutRef.current)
       if (vvDebounce) window.clearTimeout(vvDebounce)
     }
   }, [])
