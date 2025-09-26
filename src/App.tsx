@@ -326,6 +326,10 @@ const App = () => {
 
   const handleLoadingComplete = () => {
     setShowLoading(false);
+    // Ensure page starts at top after loading screen
+    setTimeout(() => {
+      window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
+    }, 100);
   };
 
   if (showLoading) {
