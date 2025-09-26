@@ -31,11 +31,11 @@ export const MobileToolbar = () => {
         </div>
 
         {/* Wallet buttons on the right */}
-        <div className="flex items-center gap-0 -mr-3">
-          <div className="scale-90 mr-1">
+        <div className="flex items-center -space-x-2 -mr-3">
+          <div className="scale-90">
             <WalletButton />
           </div>
-          <div className="scale-90 -ml-5">
+          <div className="scale-90">
             <SolanaWalletButton />
           </div>
         </div>
