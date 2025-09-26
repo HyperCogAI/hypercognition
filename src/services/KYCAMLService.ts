@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { SecurityEnhancementsService } from '@/components/security/SecurityEnhancementsService';
 
 export interface KYCVerification {
   id: string;
@@ -43,6 +44,11 @@ export interface AMLAlert {
 
 export const KYCAMLService = {
   async getKYCVerifications(): Promise<KYCVerification[]> {
+    // Log sensitive data access
+    await SecurityEnhancementsService.logSensitiveOperation('kyc_verifications_query', {
+      operation: 'get_kyc_verifications'
+    });
+
     const { data, error } = await supabase
       .from('kyc_verifications')
       .select('*')
@@ -80,6 +86,12 @@ export const KYCAMLService = {
   },
 
   async updateKYCStatus(id: string, status: string): Promise<void> {
+    // Log sensitive data modification
+    await SecurityEnhancementsService.logSensitiveOperation('kyc_status_update', {
+      kyc_id: id,
+      new_status: status
+    });
+
     const { error } = await supabase
       .from('kyc_verifications')
       .update({ 

@@ -713,6 +713,57 @@ export type Database = {
         }
         Relationships: []
       }
+      compliance_alerts: {
+        Row: {
+          affected_user_id: string | null
+          alert_type: string
+          assigned_to: string | null
+          created_at: string
+          description: string
+          id: string
+          metadata: Json | null
+          related_record_id: string | null
+          related_table: string | null
+          resolved_at: string | null
+          severity: string
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          affected_user_id?: string | null
+          alert_type: string
+          assigned_to?: string | null
+          created_at?: string
+          description: string
+          id?: string
+          metadata?: Json | null
+          related_record_id?: string | null
+          related_table?: string | null
+          resolved_at?: string | null
+          severity: string
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          affected_user_id?: string | null
+          alert_type?: string
+          assigned_to?: string | null
+          created_at?: string
+          description?: string
+          id?: string
+          metadata?: Json | null
+          related_record_id?: string | null
+          related_table?: string | null
+          resolved_at?: string | null
+          severity?: string
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       compliance_frameworks: {
         Row: {
           created_at: string
@@ -2761,6 +2812,36 @@ export type Database = {
         }
         Relationships: []
       }
+      security_settings: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          setting_name: string
+          setting_value: Json
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          setting_name: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          setting_name?: string
+          setting_value?: Json
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       showcase_interactions: {
         Row: {
           component_type: string
@@ -4227,6 +4308,14 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
+      detect_unusual_access_pattern: {
+        Args: {
+          table_name_param: string
+          time_window_minutes?: number
+          user_id_param: string
+        }
+        Returns: boolean
+      }
       enhanced_rate_limit_check: {
         Args: {
           burst_protection?: boolean
@@ -4238,6 +4327,15 @@ export type Database = {
         }
         Returns: Json
       }
+      enhanced_sensitive_rate_limit: {
+        Args: {
+          max_ops?: number
+          operation_type: string
+          user_id_param?: string
+          window_minutes?: number
+        }
+        Returns: boolean
+      }
       get_current_user_admin_role: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -4247,6 +4345,10 @@ export type Database = {
         Returns: Json
       }
       is_admin: {
+        Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_compliance_officer: {
         Args: Record<PropertyKey, never>
         Returns: boolean
       }
@@ -4270,6 +4372,15 @@ export type Database = {
           ip_param?: unknown
           success_param: boolean
           user_agent_param?: string
+        }
+        Returns: undefined
+      }
+      log_sensitive_data_access: {
+        Args: {
+          additional_context?: Json
+          operation: string
+          record_id?: string
+          table_name: string
         }
         Returns: undefined
       }
