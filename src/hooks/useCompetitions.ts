@@ -82,18 +82,14 @@ export const useCompetitions = () => {
         created_at: comp.created_at
       }));
 
-      setCompetitions(competitions);
+      setCompetitions([]);
 
-      // Calculate stats
-      const totalPrizePool = competitions.reduce((sum, comp) => sum + (comp.prize_pool || 0), 0);
-      const activeCompetitions = competitions.filter(comp => comp.is_active).length;
-      const totalParticipants = competitions.reduce((sum, comp) => sum + comp.current_participants, 0);
-
+      // Set all stats to 0
       setStats({
-        totalPrizePool,
-        activeCompetitions,
-        totalParticipants,
-        myParticipations: 0 // Can be calculated based on user participation
+        totalPrizePool: 0,
+        activeCompetitions: 0,
+        totalParticipants: 0,
+        myParticipations: 0
       });
 
     } catch (error) {
