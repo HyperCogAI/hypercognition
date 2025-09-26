@@ -302,11 +302,11 @@ export function AppSidebar() {
                         rel="noopener noreferrer"
                         className={`${getNavCls({ isActive: false })} visited:text-muted-foreground hover:visited:text-foreground flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent`}
                       >
-                        <item.icon className="h-4 w-4 group-hover/menu:scale-110 transition-transform duration-300" />
+                        <item.icon className="h-4 w-4 text-muted-foreground group-hover/menu:text-foreground group-hover/menu:scale-110 transition-transform duration-300" />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium text-foreground">{item.title}</span>
-                            <ExternalLink className="h-3 w-3 transition-transform duration-300 group-hover/menu:scale-110" />
+                            <ExternalLink className="h-3 w-3 text-muted-foreground group-hover/menu:text-foreground transition-colors group-hover/menu:scale-110" />
                           </div>
                         )}
                       </a>
