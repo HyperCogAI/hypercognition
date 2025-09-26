@@ -9,7 +9,7 @@ export function Hero() {
   const [videoError, setVideoError] = useState(false)
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden grain-overlay">
       {/* Background Video */}
       <div className="absolute top-0 left-0 right-0 bottom-0 z-0 flex items-start justify-center -mt-96">
         <OptimizedVideo
