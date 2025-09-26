@@ -16,7 +16,7 @@ export default function TutorialsHub() {
           <h1 className="text-3xl font-bold text-white">
             Learning Hub
           </h1>
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-base text-muted-foreground max-w-3xl mx-auto">
             Master the art of trading with our comprehensive learning center. From basics to advanced strategies, 
             we've got everything you need to succeed.
           </p>
