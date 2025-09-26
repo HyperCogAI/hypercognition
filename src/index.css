@@ -140,23 +140,6 @@
     overscroll-behavior-y: none;
   }
 
-  /* Heading styles - Restore cyan color throughout platform */
-  h1, h2, h3, h4, h5, h6 {
-    color: hsl(var(--primary));
-  }
-  
-  /* Utility classes for consistent heading colors */
-  .heading-primary {
-    color: hsl(var(--primary));
-  }
-  
-  .heading-gradient {
-    background: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-  }
-
   /* iOS Safari: force solid background to avoid system blue tint */
   @supports (-webkit-touch-callout: none) {
     html, body, #root {
