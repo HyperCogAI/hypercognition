@@ -67,7 +67,7 @@ export function AnimatedParticles() {
         // Draw particle
         ctx.beginPath()
         ctx.arc(particle.x, particle.y, particle.size, 0, Math.PI * 2)
-        ctx.fillStyle = `hsla(var(--primary) / ${particle.opacity})`
+        ctx.fillStyle = `rgba(59, 130, 246, ${particle.opacity})` // Blue primary color
         ctx.fill()
         
         // Draw connections to nearby particles
@@ -81,7 +81,7 @@ export function AnimatedParticles() {
             ctx.moveTo(particle.x, particle.y)
             ctx.lineTo(otherParticle.x, otherParticle.y)
             const lineOpacity = (1 - distance / 100) * Math.min(particle.opacity, otherParticle.opacity) * 0.3
-            ctx.strokeStyle = `hsla(var(--primary) / ${lineOpacity})`
+            ctx.strokeStyle = `rgba(59, 130, 246, ${lineOpacity})` // Blue primary color
             ctx.lineWidth = 0.5
             ctx.stroke()
           }
@@ -113,7 +113,7 @@ export function AnimatedParticles() {
   return (
     <canvas
       ref={canvasRef}
-      className="absolute inset-0 z-5"
+      className="absolute inset-0 z-0"
       style={{ pointerEvents: 'none' }}
     />
   )

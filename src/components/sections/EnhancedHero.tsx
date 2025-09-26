@@ -55,7 +55,7 @@ export function EnhancedHero() {
       <AnimatedParticles />
       
       {/* Gradient Overlay */}
-      <div className="absolute inset-0 bg-gradient-to-br from-background/95 via-background/80 to-background/95 z-10" />
+      <div className="absolute inset-0 bg-gradient-to-br from-background/90 via-background/70 to-background/90 z-5" />
       
       {/* Animated Grid Overlay */}
       <div className="absolute inset-0 cyber-grid opacity-5 z-15" />
