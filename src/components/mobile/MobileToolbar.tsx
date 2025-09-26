@@ -31,7 +31,7 @@ export const MobileToolbar = () => {
         </div>
 
         {/* Wallet buttons on the right */}
-        <div className="flex items-center -space-x-2">
+        <div className="flex items-center -space-x-2 -mr-[1.6px]">
           <div className="scale-90">
             <WalletButton />
           </div>
