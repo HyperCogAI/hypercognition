@@ -40,11 +40,8 @@ export default function SocialTrading() {
           </div>
           
           <div className="inline-flex items-center justify-center gap-3 mb-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow rounded-xl blur opacity-50"></div>
-              <div className="relative p-2 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
-                <Share2 className="h-6 w-6 text-primary" />
-              </div>
+            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+              <Share2 className="h-6 w-6 text-primary" />
             </div>
             <h1 className="text-3xl font-bold text-white">
               Social Trading
@@ -156,18 +153,15 @@ export default function SocialTrading() {
 
             <TabsContent value="traders" className="space-y-10 animate-fade-in">
               <div className="text-center space-y-6">
-                <div className="inline-flex items-center gap-4">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary-glow/20 rounded-xl blur"></div>
-                    <div className="relative p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
-                      <Users className="h-6 w-6 text-primary" />
-                    </div>
+                <div className="inline-flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                    <Users className="h-5 w-5 text-primary" />
                   </div>
                   <div>
-                    <h2 className="text-4xl font-black bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                    <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                       Top Performing Traders
                     </h2>
-                    <p className="text-muted-foreground font-medium">Follow and copy the best in the business</p>
+                    <p className="text-muted-foreground">Follow and copy the best in the business</p>
                   </div>
                 </div>
                 <Badge variant="secondary" className="px-4 py-2 text-base font-bold bg-gradient-to-r from-background/90 to-muted/30 border border-border/50 shadow-lg">
@@ -195,11 +189,8 @@ export default function SocialTrading() {
             <TabsContent value="signals" className="space-y-8 animate-fade-in">
               <div className="text-center space-y-4">
                 <div className="inline-flex items-center gap-3">
-                  <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-lg blur"></div>
-                    <div className="relative p-2 rounded-lg bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20">
-                      <TrendingUp className="h-5 w-5 text-accent" />
-                    </div>
+                  <div className="p-2 rounded-lg bg-accent/10 border border-accent/20">
+                    <TrendingUp className="h-5 w-5 text-accent" />
                   </div>
                   <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
                     Latest Trading Signals
