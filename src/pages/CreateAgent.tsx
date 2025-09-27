@@ -83,44 +83,54 @@ export const CreateAgent = () => {
   return (
     <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
-      <div className="border-b border-border/50 bg-card/20 backdrop-blur-sm sticky top-0 z-10">
+      <div className="border-b border-border/20 bg-gradient-to-r from-card/30 to-card/10 backdrop-blur-md sticky top-0 z-10">
         <div className="container mx-auto px-6 py-4">
-          <div className="flex items-center justify-between">
+          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
             <div className="flex items-center gap-4">
               <Button 
                 variant="ghost" 
                 size="sm" 
                 onClick={() => navigate("/")}
-                className="hover:bg-card/50"
+                className="hover:bg-card/50 border border-primary/20"
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <div>
-                <h1 className="text-2xl font-bold text-white leading-tight">
-                  Create AI{" "}
-                  <span className="text-white">
-                    Agent
-                  </span>
-                </h1>
-                <p className="text-muted-foreground">Launch your own AI agent in minutes</p>
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/20">
+                  <Bot className="h-6 w-6 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                    Create AI Agent
+                  </h1>
+                  <p className="text-muted-foreground">Launch your own AI agent in minutes</p>
+                </div>
               </div>
             </div>
-            <div className="flex items-center gap-2">
-              <Badge variant={step >= 1 ? "default" : "outline"}>1. Basic Info</Badge>
-              <Badge variant={step >= 2 ? "default" : "outline"}>2. Configuration</Badge>
-              <Badge variant={step >= 3 ? "default" : "outline"}>3. Launch</Badge>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Badge variant={step >= 1 ? "default" : "outline"} className="bg-gradient-to-r from-primary/20 to-accent/20 border-primary/20">
+                1. Basic Info
+              </Badge>
+              <Badge variant={step >= 2 ? "default" : "outline"} className="bg-gradient-to-r from-primary/20 to-accent/20 border-primary/20">
+                2. Configuration
+              </Badge>
+              <Badge variant={step >= 3 ? "default" : "outline"} className="bg-gradient-to-r from-primary/20 to-accent/20 border-primary/20">
+                3. Launch
+              </Badge>
             </div>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8 max-w-4xl">
+      <div className="container mx-auto px-6 py-8 max-w-4xl animate-fade-in">
         {/* Step 1: Basic Information */}
         {step === 1 && (
-          <Card className="bg-card/30 border-border/50 backdrop-blur-sm animate-fade-in">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bot className="h-5 w-5 text-primary" />
+          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-lg shadow-primary/10">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                  <Bot className="h-5 w-5 text-primary" />
+                </div>
                 Basic Information
               </CardTitle>
             </CardHeader>
@@ -197,10 +207,11 @@ export const CreateAgent = () => {
                 </div>
               </div>
 
-              <div className="flex justify-end">
+              <div className="flex justify-end pt-4">
                 <Button 
                   onClick={handleNext}
                   disabled={!agentData.name || !agentData.symbol || !agentData.description || !agentData.category}
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                 >
                   Next: Configuration
                 </Button>
@@ -211,33 +222,35 @@ export const CreateAgent = () => {
 
         {/* Step 2: Configuration */}
         {step === 2 && (
-          <Card className="bg-card/30 border-border/50 backdrop-blur-sm animate-fade-in">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5 text-primary" />
+          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-lg shadow-primary/10 animate-fade-in">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                  <Settings className="h-5 w-5 text-primary" />
+                </div>
                 Agent Configuration
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="space-y-4">
                 <Label>Features & Capabilities</Label>
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {features.map((feature) => (
                     <div
                       key={feature}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all hover:scale-105 ${
+                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${
                         agentData.features.includes(feature)
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border/50 bg-card/20'
+                          ? 'border-primary bg-gradient-to-r from-primary/20 to-accent/10 shadow-md shadow-primary/20'
+                          : 'border-border/20 bg-gradient-to-r from-muted/30 to-muted/10 hover:border-primary/50'
                       }`}
                       onClick={() => handleFeatureToggle(feature)}
                     >
-                      <div className="text-sm font-medium">{feature}</div>
+                      <div className="text-sm font-medium text-foreground">{feature}</div>
                     </div>
                   ))}
                 </div>
-                <p className="text-xs text-muted-foreground">
-                  Select the features your agent will have. More features may require higher development costs.
+                <p className="text-sm text-muted-foreground bg-muted/20 p-3 rounded-lg border border-border/20">
+                  💡 Select the features your agent will have. More features may require higher development costs.
                 </p>
               </div>
 
@@ -281,13 +294,14 @@ export const CreateAgent = () => {
                 </Select>
               </div>
 
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={handlePrev}>
+              <div className="flex justify-between pt-4">
+                <Button variant="outline" onClick={handlePrev} className="border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10">
                   Previous
                 </Button>
                 <Button 
                   onClick={handleNext}
                   disabled={agentData.features.length === 0}
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                 >
                   Next: Launch
                 </Button>
@@ -298,87 +312,96 @@ export const CreateAgent = () => {
 
         {/* Step 3: Launch */}
         {step === 3 && (
-          <Card className="bg-card/30 border-border/50 backdrop-blur-sm animate-fade-in">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Zap className="h-5 w-5 text-primary" />
+          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-lg shadow-primary/10 animate-fade-in">
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                  <Zap className="h-5 w-5 text-primary" />
+                </div>
                 Launch Your Agent
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/30 rounded-xl p-6">
-                <h3 className="text-xl font-bold mb-4">Agent Summary</h3>
+              <div className="bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30 rounded-xl p-6 shadow-lg">
+                <h3 className="text-xl font-bold mb-4 flex items-center gap-2">
+                  <Bot className="h-5 w-5" />
+                  Agent Summary
+                </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-                  <div>
+                  <div className="flex justify-between p-2 rounded-lg bg-background/50">
                     <span className="text-muted-foreground">Name:</span>
-                    <span className="ml-2 font-medium">{agentData.name}</span>
+                    <span className="font-semibold text-foreground">{agentData.name}</span>
                   </div>
-                  <div>
+                  <div className="flex justify-between p-2 rounded-lg bg-background/50">
                     <span className="text-muted-foreground">Symbol:</span>
-                    <span className="ml-2 font-medium">{agentData.symbol}</span>
+                    <span className="font-semibold text-foreground">{agentData.symbol}</span>
                   </div>
-                  <div>
+                  <div className="flex justify-between p-2 rounded-lg bg-background/50">
                     <span className="text-muted-foreground">Category:</span>
-                    <span className="ml-2 font-medium">{agentData.category}</span>
+                    <span className="font-semibold text-foreground">{agentData.category}</span>
                   </div>
-                  <div>
+                  <div className="flex justify-between p-2 rounded-lg bg-background/50">
                     <span className="text-muted-foreground">Chain:</span>
-                    <span className="ml-2 font-medium capitalize">{agentData.chain}</span>
+                    <span className="font-semibold text-foreground capitalize">{agentData.chain}</span>
                   </div>
-                  <div>
+                  <div className="flex justify-between p-2 rounded-lg bg-background/50">
                     <span className="text-muted-foreground">Supply:</span>
-                    <span className="ml-2 font-medium">{agentData.initialSupply || "Not set"}</span>
+                    <span className="font-semibold text-foreground">{agentData.initialSupply || "Not set"}</span>
                   </div>
-                  <div>
+                  <div className="flex justify-between p-2 rounded-lg bg-background/50">
                     <span className="text-muted-foreground">Initial Price:</span>
-                    <span className="ml-2 font-medium">{agentData.initialPrice ? `${agentData.initialPrice} ETH` : "Not set"}</span>
+                    <span className="font-semibold text-foreground">{agentData.initialPrice ? `${agentData.initialPrice} ETH` : "Not set"}</span>
                   </div>
                 </div>
-                <div className="mt-4">
-                  <span className="text-muted-foreground">Features:</span>
-                  <div className="flex flex-wrap gap-2 mt-2">
+                <div className="mt-6">
+                  <span className="text-muted-foreground font-medium">Features:</span>
+                  <div className="flex flex-wrap gap-2 mt-3">
                     {agentData.features.map((feature) => (
-                      <Badge key={feature} variant="secondary">{feature}</Badge>
+                      <Badge key={feature} variant="secondary" className="bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+                        {feature}
+                      </Badge>
                     ))}
                   </div>
                 </div>
               </div>
 
-              <div className="bg-card/50 rounded-lg p-4 space-y-3">
-                <h4 className="font-semibold flex items-center gap-2">
-                  <Brain className="h-4 w-4" />
+              <div className="bg-gradient-to-r from-muted/30 to-muted/10 rounded-xl p-6 border border-border/20">
+                <h4 className="font-semibold flex items-center gap-2 mb-4">
+                  <div className="p-2 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20">
+                    <Brain className="h-4 w-4 text-green-400" />
+                  </div>
                   Launch Costs
                 </h4>
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span>Base Creation Fee:</span>
-                    <span>0.1 ETH</span>
+                <div className="space-y-3 text-sm">
+                  <div className="flex justify-between items-center p-2 rounded-lg bg-background/50">
+                    <span className="text-muted-foreground">Base Creation Fee:</span>
+                    <span className="font-semibold">0.1 ETH</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Feature Development:</span>
-                    <span>{agentData.features.length * 0.05} ETH</span>
+                  <div className="flex justify-between items-center p-2 rounded-lg bg-background/50">
+                    <span className="text-muted-foreground">Feature Development:</span>
+                    <span className="font-semibold">{agentData.features.length * 0.05} ETH</span>
                   </div>
-                  <div className="flex justify-between">
-                    <span>Gas Fees (est.):</span>
-                    <span>0.02 ETH</span>
+                  <div className="flex justify-between items-center p-2 rounded-lg bg-background/50">
+                    <span className="text-muted-foreground">Gas Fees (est.):</span>
+                    <span className="font-semibold">0.02 ETH</span>
                   </div>
-                  <Separator />
-                  <div className="flex justify-between font-semibold">
-                    <span>Total:</span>
-                    <span>{(0.1 + agentData.features.length * 0.05 + 0.02).toFixed(3)} ETH</span>
+                  <Separator className="my-3" />
+                  <div className="flex justify-between items-center p-3 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/30">
+                    <span className="font-bold text-foreground">Total:</span>
+                    <span className="font-bold text-lg text-foreground">{(0.1 + agentData.features.length * 0.05 + 0.02).toFixed(3)} ETH</span>
                   </div>
                 </div>
               </div>
 
-              <div className="flex justify-between">
-                <Button variant="outline" onClick={handlePrev}>
+              <div className="flex justify-between pt-4">
+                <Button variant="outline" onClick={handlePrev} className="border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10">
                   Previous
                 </Button>
                 <Button 
                   onClick={handleSubmit}
-                  className="bg-primary/60 border border-white hover:bg-primary/70 text-white"
+                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30"
                 >
-                  Launch Agent
+                  🚀 Launch Agent
                 </Button>
               </div>
             </CardContent>
