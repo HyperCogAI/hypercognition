@@ -227,7 +227,7 @@ export const RealTimeMarketDashboard: React.FC<RealTimeMarketDashboardProps> = (
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <h1 className="text-3xl font-bold text-white flex items-center gap-2">
             <Activity className="w-8 h-8" />
@@ -238,7 +238,7 @@ export const RealTimeMarketDashboard: React.FC<RealTimeMarketDashboardProps> = (
           </p>
         </div>
         
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 flex-wrap">
           <div className="flex items-center gap-2">
             {isConnected ? (
               <Wifi className="w-5 h-5 text-green-500" />
@@ -274,11 +274,11 @@ export const RealTimeMarketDashboard: React.FC<RealTimeMarketDashboardProps> = (
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Market Overview</TabsTrigger>
-          <TabsTrigger value="watchlist">Watchlist ({watchlist.size})</TabsTrigger>
-          <TabsTrigger value="orderbook">Order Book</TabsTrigger>
-          <TabsTrigger value="trades">Live Trades</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2">
+          <TabsTrigger value="overview" className="truncate">Market Overview</TabsTrigger>
+          <TabsTrigger value="watchlist" className="truncate">Watchlist ({watchlist.size})</TabsTrigger>
+          <TabsTrigger value="orderbook" className="truncate">Order Book</TabsTrigger>
+          <TabsTrigger value="trades" className="truncate">Live Trades</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
