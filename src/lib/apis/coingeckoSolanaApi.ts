@@ -124,10 +124,21 @@ class CoinGeckoSolanaAPI {
     ]
   }
 
-  // Get Solana ecosystem tokens
+  // Get Solana ecosystem tokens from general market data
   async getSolanaTokens(): Promise<CoinGeckoTokenInfo[]> {
-    const url = `${this.baseUrl}/coins/markets?vs_currency=usd&category=solana-ecosystem&order=market_cap_desc&per_page=50&page=1&sparkline=false`
-    return this.fetchWithErrorHandling<CoinGeckoTokenInfo[]>(url)
+    // Use general market endpoint and filter for known Solana tokens
+    const url = `${this.baseUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`
+    const allTokens = await this.fetchWithErrorHandling<CoinGeckoTokenInfo[]>(url)
+    
+    // Filter for known Solana tokens
+    const solanaTokenIds = Object.values(CoinGeckoSolanaAPI.POPULAR_TOKENS) as string[]
+    const solanaTokens = (allTokens as CoinGeckoTokenInfo[]).filter(token => 
+      solanaTokenIds.includes(token.id) || 
+      token.id === 'solana' ||
+      token.symbol.toLowerCase() === 'sol'
+    )
+    
+    return solanaTokens.length > 0 ? solanaTokens : this.getFallbackData()
   }
 
   // Get specific token data
