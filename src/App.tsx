@@ -273,7 +273,7 @@ const AppLayout = () => {
                   <Route path="/marketplace" element={<Marketplace />} />
             <Route path="/customer-support" element={<CustomerSupport />} />
             <Route path="/defi" element={<DeFi />} />
-            <Route path="/solana" element={<SolanaDashboard />} />
+            <Route path="/solana" element={<ProtectedRoute><SolanaDashboard /></ProtectedRoute>} />
             
             <Route path="/staking" element={<Staking />} />
             <Route path="/solana-staking" element={<SolanaStaking />} />
