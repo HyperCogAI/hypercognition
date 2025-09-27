@@ -33,28 +33,66 @@ export default function SocialTrading() {
       
       <div className="container mx-auto px-4 py-8 space-y-12">
         {/* Header */}
-        <header className="text-center space-y-6">
-          <div className="inline-flex items-center justify-center gap-3 mb-6">
-            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
-              <Share2 className="h-8 w-8 text-primary" />
-            </div>
-            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
-              Social Trading Platform
-            </h1>
+        <header className="text-center space-y-8 relative">
+          {/* Background decoration */}
+          <div className="absolute inset-0 -z-10">
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-primary/20 via-primary-glow/10 to-transparent rounded-full blur-3xl"></div>
           </div>
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
-            Connect with top traders, copy successful strategies, and share your trading insights with the community
+          
+          <div className="inline-flex items-center justify-center gap-4 mb-8">
+            <div className="relative">
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow rounded-2xl blur opacity-50"></div>
+              <div className="relative p-4 rounded-2xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
+                <Share2 className="h-10 w-10 text-primary" />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <h1 className="text-6xl font-black bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent leading-tight">
+                Social Trading
+              </h1>
+              <div className="text-2xl font-semibold text-muted-foreground">
+                Platform
+              </div>
+            </div>
+          </div>
+          
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium">
+            Connect with <span className="text-primary font-semibold">top traders</span>, copy successful strategies, and share your trading insights with the <span className="text-accent font-semibold">community</span>
           </p>
+          
+          {/* Stats preview */}
+          <div className="flex items-center justify-center gap-8 pt-4">
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary">2.5K+</div>
+              <div className="text-sm text-muted-foreground">Active Traders</div>
+            </div>
+            <div className="w-px h-8 bg-border/50"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-accent">95%</div>
+              <div className="text-sm text-muted-foreground">Success Rate</div>
+            </div>
+            <div className="w-px h-8 bg-border/50"></div>
+            <div className="text-center">
+              <div className="text-2xl font-bold text-primary-glow">$50M+</div>
+              <div className="text-sm text-muted-foreground">Volume Traded</div>
+            </div>
+          </div>
         </header>
 
         {/* Main Content */}
-        <main>
+        <main className="relative">
+          {/* Background patterns */}
+          <div className="absolute inset-0 -z-10 overflow-hidden">
+            <div className="absolute top-20 right-0 w-72 h-72 bg-gradient-to-l from-accent/10 to-transparent rounded-full blur-3xl"></div>
+            <div className="absolute bottom-20 left-0 w-72 h-72 bg-gradient-to-r from-primary/10 to-transparent rounded-full blur-3xl"></div>
+          </div>
+          
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <div className="relative mb-8">
-              <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 bg-background/80 backdrop-blur-md border border-border/50 p-1.5 h-auto rounded-xl shadow-lg">
+            <div className="relative mb-12">
+              <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-2xl shadow-2xl shadow-primary/5">
                 <TabsTrigger 
                   value="feed" 
-                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                  className="flex items-center gap-2 px-5 py-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 hover:bg-muted/70 rounded-xl font-medium"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span className="hidden sm:inline font-medium">Social Feed</span>
@@ -62,49 +100,49 @@ export default function SocialTrading() {
                 </TabsTrigger>
                 <TabsTrigger 
                   value="network" 
-                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                  className="flex items-center gap-2 px-5 py-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 hover:bg-muted/70 rounded-xl font-medium"
                 >
                   <Network className="w-4 h-4" />
-                  <span className="hidden sm:inline font-medium">Network</span>
-                  <span className="sm:hidden font-medium">Net</span>
+                  <span className="hidden sm:inline">Network</span>
+                  <span className="sm:hidden">Net</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="engine" 
-                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                  className="flex items-center gap-2 px-5 py-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 hover:bg-muted/70 rounded-xl font-medium"
                 >
                   <Copy className="w-4 h-4" />
-                  <span className="hidden sm:inline font-medium">Copy Engine</span>
-                  <span className="sm:hidden font-medium">Copy</span>
+                  <span className="hidden sm:inline">Copy Engine</span>
+                  <span className="sm:hidden">Copy</span>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="traders" 
-                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                  className="flex items-center gap-2 px-5 py-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 hover:bg-muted/70 rounded-xl font-medium"
                 >
                   <Users className="w-4 h-4" />
-                  <span className="hidden sm:inline font-medium">Top Traders</span>
-                  <span className="sm:hidden font-medium">Traders</span>
-                  <Badge variant="secondary" className="ml-2 h-5 min-w-5 text-xs px-2 bg-background/50">
+                  <span className="hidden sm:inline">Top Traders</span>
+                  <span className="sm:hidden">Traders</span>
+                  <Badge variant="secondary" className="ml-2 h-6 min-w-6 text-xs px-2 bg-background/80 border-border/50 font-semibold">
                     {topTraders.length}
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="signals" 
-                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                  className="flex items-center gap-2 px-5 py-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 hover:bg-muted/70 rounded-xl font-medium"
                 >
                   <TrendingUp className="w-4 h-4" />
-                  <span className="hidden sm:inline font-medium">Trading Signals</span>
-                  <span className="sm:hidden font-medium">Signals</span>
-                  <Badge variant="secondary" className="ml-2 h-5 min-w-5 text-xs px-2 bg-background/50">
+                  <span className="hidden sm:inline">Trading Signals</span>
+                  <span className="sm:hidden">Signals</span>
+                  <Badge variant="secondary" className="ml-2 h-6 min-w-6 text-xs px-2 bg-background/80 border-border/50 font-semibold">
                     {tradingSignals.length}
                   </Badge>
                 </TabsTrigger>
                 <TabsTrigger 
                   value="competitions" 
-                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                  className="flex items-center gap-2 px-5 py-4 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground data-[state=active]:shadow-lg transition-all duration-300 hover:bg-muted/70 rounded-xl font-medium"
                 >
                   <Trophy className="w-4 h-4" />
-                  <span className="hidden sm:inline font-medium">Competitions</span>
-                  <span className="sm:hidden font-medium">Comp</span>
+                  <span className="hidden sm:inline">Competitions</span>
+                  <span className="sm:hidden">Comp</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -121,14 +159,24 @@ export default function SocialTrading() {
               <CopyTradingEngine />
             </TabsContent>
 
-            <TabsContent value="traders" className="space-y-8 animate-fade-in">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                  <Users className="h-5 w-5 text-primary" />
+            <TabsContent value="traders" className="space-y-10 animate-fade-in">
+              <div className="text-center space-y-6">
+                <div className="inline-flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary-glow/20 rounded-xl blur"></div>
+                    <div className="relative p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
+                      <Users className="h-6 w-6 text-primary" />
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="text-4xl font-black bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                      Top Performing Traders
+                    </h2>
+                    <p className="text-muted-foreground font-medium">Follow and copy the best in the business</p>
+                  </div>
                 </div>
-                <h2 className="text-3xl font-bold">Top Performing Traders</h2>
-                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium bg-background/50 border border-border/50">
-                  {topTraders.length}
+                <Badge variant="secondary" className="px-4 py-2 text-base font-bold bg-gradient-to-r from-background/90 to-muted/30 border border-border/50 shadow-lg">
+                  {topTraders.length} Active Traders
                 </Badge>
               </div>
               
@@ -149,14 +197,24 @@ export default function SocialTrading() {
               )}
             </TabsContent>
 
-            <TabsContent value="signals" className="space-y-8 animate-fade-in">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-                  <TrendingUp className="h-5 w-5 text-primary" />
+            <TabsContent value="signals" className="space-y-10 animate-fade-in">
+              <div className="text-center space-y-6">
+                <div className="inline-flex items-center gap-4">
+                  <div className="relative">
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-xl blur"></div>
+                    <div className="relative p-3 rounded-xl bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20">
+                      <TrendingUp className="h-6 w-6 text-accent" />
+                    </div>
+                  </div>
+                  <div>
+                    <h2 className="text-4xl font-black bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                      Latest Trading Signals
+                    </h2>
+                    <p className="text-muted-foreground font-medium">Real-time insights from market experts</p>
+                  </div>
                 </div>
-                <h2 className="text-3xl font-bold">Latest Trading Signals</h2>
-                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium bg-background/50 border border-border/50">
-                  {tradingSignals.length}
+                <Badge variant="secondary" className="px-4 py-2 text-base font-bold bg-gradient-to-r from-background/90 to-muted/30 border border-border/50 shadow-lg">
+                  {tradingSignals.length} Live Signals
                 </Badge>
               </div>
               
