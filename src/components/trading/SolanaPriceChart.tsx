@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
+import { pythApi } from '@/lib/apis/pythApi'
 import { binanceApi } from '@/lib/apis/binanceApi'
 
 interface SolanaPriceChartProps {
@@ -17,6 +18,7 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
 }) => {
   const [timeframe, setTimeframe] = useState<'1h' | '24h' | '7d' | '30d'>('24h')
   const [chartData, setChartData] = useState<any[]>([])
+  const [currentPrice, setCurrentPrice] = useState<number | null>(null)
 
   // Fetch real price history from CoinGecko
   useEffect(() => {
@@ -115,6 +117,23 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
     fetchRealData()
   }, [token?.id, token?.symbol, token?.price, timeframe])
 
+  useEffect(() => {
+    let mounted = true
+    const load = async () => {
+      if (!token?.symbol) return
+      const price = await pythApi.getLatestPrice(token.symbol)
+      if (mounted && price != null && !Number.isNaN(price)) {
+        setCurrentPrice(price)
+      }
+    }
+    load()
+    const id = setInterval(load, 15000)
+    return () => {
+      mounted = false
+      clearInterval(id)
+    }
+  }, [token?.symbol])
+
   const isPositive = token?.change_24h >= 0
   const priceColor = isPositive ? '#10b981' : '#ef4444'
 
@@ -142,7 +161,7 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
               {token?.name} Price Chart
             </CardTitle>
             <div className="text-muted-foreground flex items-center gap-2 mt-1">
-              <span>${token?.price?.toFixed(4)}</span>
+              <span>${(currentPrice ?? token?.price ?? 0).toFixed(4)}</span>
               <span className="inline-flex">
                 <Badge variant={isPositive ? "default" : "destructive"} className="flex items-center gap-1">
                   {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
