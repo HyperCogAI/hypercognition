@@ -11,7 +11,15 @@ const OrderManagement: React.FC = () => {
         keywords="order management, trading dashboard, order tracking, execution analytics, advanced orders"
       />
       
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto p-6 space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">
+            Order Management
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Advanced order tracking, management, and execution analytics for professional trading
+          </p>
+        </div>
         <OrderManagementDashboard />
       </div>
     </>
