@@ -182,7 +182,7 @@ export function OptimizedHomeLayout() {
         structuredData={structuredData}
       />
       
-      <main className="space-y-8 md:space-y-12 lg:space-y-16">
+      <main className="space-y-4 md:space-y-6 lg:space-y-8">
         {/* Hero Section with Priority Loading */}
         <Suspense fallback={<HeroSkeleton />}>
           <EnhancedHero />
