@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -17,7 +18,7 @@ const Community = () => {
       id: 1,
       title: "Best AI agents for current market conditions?",
       author: "TradingPro2024",
-      avatar: "/placeholder.svg",
+      avatar: generateDefaultAvatar("TradingPro2024", "initials"),
       category: "Strategy Discussion",
       replies: 23,
       likes: 45,
@@ -29,7 +30,7 @@ const Community = () => {
       id: 2,
       title: "Risk Management Tips for New Traders",
       author: "SafeTrader",
-      avatar: "/placeholder.svg",
+      avatar: generateDefaultAvatar("SafeTrader", "initials"),
       category: "Education",
       replies: 18,
       likes: 32,
@@ -41,7 +42,7 @@ const Community = () => {
       id: 3,
       title: "Monthly Portfolio Review - December 2024",
       author: "PortfolioMaster",
-      avatar: "/placeholder.svg",
+      avatar: generateDefaultAvatar("PortfolioMaster", "initials"),
       category: "Portfolio Review",
       replies: 12,
       likes: 28,
@@ -55,7 +56,7 @@ const Community = () => {
     {
       id: 1,
       user: "AlexCrypto",
-      avatar: "/placeholder.svg",
+      avatar: generateDefaultAvatar("AlexCrypto", "initials"),
       message: "Just saw THETA agent hit new highs! Anyone else tracking this?",
       time: "2 min ago",
       isOnline: true
@@ -63,7 +64,7 @@ const Community = () => {
     {
       id: 2,
       user: "MarketWatcher",
-      avatar: "/placeholder.svg",
+      avatar: generateDefaultAvatar("MarketWatcher", "initials"),
       message: "The market sentiment analysis tool is incredibly accurate today",
       time: "5 min ago",
       isOnline: true
@@ -71,7 +72,7 @@ const Community = () => {
     {
       id: 3,
       user: "TradingGuru",
-      avatar: "/placeholder.svg",
+      avatar: generateDefaultAvatar("TradingGuru", "initials"),
       message: "Remember to set stop losses, especially with the volatility we're seeing",
       time: "8 min ago",
       isOnline: false
@@ -238,7 +239,7 @@ const Community = () => {
                     <div key={rank} className="flex items-center gap-4 p-4 bg-muted/30 rounded-lg">
                       <div className="w-8 text-center font-bold text-primary">#{rank}</div>
                       <Avatar>
-                        <AvatarImage src="/placeholder.svg" />
+                        <AvatarImage src={generateDefaultAvatar(`User ${rank}`, "initials")} />
                         <AvatarFallback>U{rank}</AvatarFallback>
                       </Avatar>
                       <div className="flex-1">
