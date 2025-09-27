@@ -302,40 +302,48 @@ const NotificationCenter: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Notification Center</h1>
-          <p className="text-muted-foreground">Manage your alerts and notification preferences</p>
-        </div>
-        <Button onClick={() => setShowCreateAlert(true)} className="flex items-center gap-2">
+    <div className="space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <Button onClick={() => setShowCreateAlert(true)} className="gap-2 w-fit">
           <Plus className="h-4 w-4" />
           Create Alert
         </Button>
       </div>
 
-      <Tabs defaultValue="alerts" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="alerts">Price Alerts</TabsTrigger>
-          <TabsTrigger value="preferences">Preferences</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="alerts" className="space-y-6">
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-2 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl">
+            <TabsTrigger 
+              value="alerts" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Price Alerts
+            </TabsTrigger>
+            <TabsTrigger 
+              value="preferences" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Preferences
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="alerts" className="space-y-4">
+        <TabsContent value="alerts" className="space-y-6 animate-fade-in">
           {/* Create Alert Form */}
           {showCreateAlert && (
-            <Card>
+            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardHeader>
-                <CardTitle>Create Price Alert</CardTitle>
+                <CardTitle className="text-lg font-semibold">Create Price Alert</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
-                    <Label>AI Agent</Label>
+                    <Label className="text-sm font-medium">AI Agent</Label>
                     <Select 
                       value={newAlert.agent_id} 
                       onValueChange={(value) => setNewAlert(prev => ({ ...prev, agent_id: value }))}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background/50 border-border/50">
                         <SelectValue placeholder="Select agent" />
                       </SelectTrigger>
                       <SelectContent>
@@ -349,12 +357,12 @@ const NotificationCenter: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label>Alert Type</Label>
+                    <Label className="text-sm font-medium">Alert Type</Label>
                     <Select 
                       value={newAlert.alert_type} 
                       onValueChange={(value: any) => setNewAlert(prev => ({ ...prev, alert_type: value }))}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger className="bg-background/50 border-border/50">
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
@@ -367,13 +375,14 @@ const NotificationCenter: React.FC = () => {
                   </div>
                   
                   <div>
-                    <Label>Target Value</Label>
+                    <Label className="text-sm font-medium">Target Value</Label>
                     <Input
                       type="number"
                       step="0.0001"
                       placeholder="Enter target value"
                       value={newAlert.target_value}
                       onChange={(e) => setNewAlert(prev => ({ ...prev, target_value: e.target.value }))}
+                      className="bg-background/50 border-border/50"
                     />
                   </div>
                 </div>
@@ -397,9 +406,9 @@ const NotificationCenter: React.FC = () => {
           )}
 
           {/* Alerts List */}
-          <Card>
+          <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
+              <CardTitle className="flex items-center gap-2 text-lg font-semibold">
                 <Bell className="h-5 w-5" />
                 Your Price Alerts ({alerts.length})
               </CardTitle>
@@ -407,22 +416,24 @@ const NotificationCenter: React.FC = () => {
             <CardContent>
               <ScrollArea className="h-[400px]">
                 {alerts.length === 0 ? (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <Target className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <h3 className="text-lg font-semibold mb-2">No Price Alerts</h3>
-                    <p>Create your first price alert to get notified when AI agents hit your target prices.</p>
+                  <div className="text-center py-12 text-muted-foreground">
+                    <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 w-fit mx-auto mb-6">
+                      <Target className="h-12 w-12 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-semibold mb-3">No Price Alerts</h3>
+                    <p className="leading-relaxed">Create your first price alert to get notified when AI agents hit your target prices.</p>
                   </div>
                 ) : (
                   <div className="space-y-3">
                     {alerts.map((alert) => (
                       <div
                         key={alert.id}
-                        className={`p-4 border rounded-lg transition-all ${
+                        className={`p-4 rounded-lg transition-all border ${
                           alert.is_triggered 
-                            ? 'border-green-500 bg-green-500/5' 
+                            ? 'border-green-500/50 bg-green-500/10' 
                             : alert.is_active 
-                            ? 'border-border' 
-                            : 'border-muted bg-muted/20'
+                            ? 'border-border/50 bg-background/50' 
+                            : 'border-muted/50 bg-muted/10'
                         }`}
                       >
                         <div className="flex items-center justify-between">
@@ -431,9 +442,9 @@ const NotificationCenter: React.FC = () => {
                             <div>
                               <div className="flex items-center gap-2">
                                 <span className="font-semibold">{alert.agent_symbol}</span>
-                                <Badge variant="outline">{formatAlertType(alert.alert_type)}</Badge>
+                                <Badge variant="outline" className="text-xs">{formatAlertType(alert.alert_type)}</Badge>
                                 {alert.is_triggered && (
-                                  <Badge className="bg-green-500 text-white">
+                                  <Badge className="bg-green-500 text-white text-xs">
                                     <CheckCircle2 className="h-3 w-3 mr-1" />
                                     Triggered
                                   </Badge>
@@ -443,7 +454,7 @@ const NotificationCenter: React.FC = () => {
                                 {alert.agent_name} • Target: {alert.alert_type.includes('percent') ? `${alert.target_value}%` : `$${alert.target_value}`}
                               </p>
                               {alert.triggered_at && (
-                                <p className="text-xs text-green-600">
+                                <p className="text-xs text-green-600 mt-1">
                                   Triggered: {new Date(alert.triggered_at).toLocaleString()}
                                 </p>
                               )}
@@ -460,7 +471,7 @@ const NotificationCenter: React.FC = () => {
                               variant="ghost"
                               size="sm"
                               onClick={() => deleteAlert(alert.id)}
-                              className="text-red-500 hover:text-red-700"
+                              className="text-red-500 hover:text-red-700 h-8 w-8 p-0"
                             >
                               <Trash2 className="h-4 w-4" />
                             </Button>
