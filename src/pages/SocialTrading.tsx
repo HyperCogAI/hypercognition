@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
-import { Share2, Users, TrendingUp, Trophy } from 'lucide-react';
+import { Share2, Users, TrendingUp, Trophy, MessageCircle, Network, Copy } from 'lucide-react';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { useSocialTrading } from '@/hooks/useSocialTrading';
 import { TraderCard } from '@/components/social/TraderCard';
@@ -47,14 +47,64 @@ export default function SocialTrading() {
 
         {/* Main Content */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-6">
-            <TabsTrigger value="feed">Social Feed</TabsTrigger>
-            <TabsTrigger value="network">Network</TabsTrigger>
-            <TabsTrigger value="engine">Copy Engine</TabsTrigger>
-            <TabsTrigger value="traders">Top Traders</TabsTrigger>
-            <TabsTrigger value="signals">Trading Signals</TabsTrigger>
-            <TabsTrigger value="competitions">Competitions</TabsTrigger>
-          </TabsList>
+          <div className="relative">
+            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+              <TabsTrigger 
+                value="feed" 
+                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span className="hidden sm:inline">Social Feed</span>
+                <span className="sm:hidden">Feed</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="network" 
+                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <Network className="w-4 h-4" />
+                <span className="hidden sm:inline">Network</span>
+                <span className="sm:hidden">Net</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="engine" 
+                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <Copy className="w-4 h-4" />
+                <span className="hidden sm:inline">Copy Engine</span>
+                <span className="sm:hidden">Copy</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="traders" 
+                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <Users className="w-4 h-4" />
+                <span className="hidden sm:inline">Top Traders</span>
+                <span className="sm:hidden">Traders</span>
+                <Badge variant="secondary" className="ml-1 h-5 min-w-5 text-xs px-1.5">
+                  {topTraders.length}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="signals" 
+                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <TrendingUp className="w-4 h-4" />
+                <span className="hidden sm:inline">Trading Signals</span>
+                <span className="sm:hidden">Signals</span>
+                <Badge variant="secondary" className="ml-1 h-5 min-w-5 text-xs px-1.5">
+                  {tradingSignals.length}
+                </Badge>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="competitions" 
+                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <Trophy className="w-4 h-4" />
+                <span className="hidden sm:inline">Competitions</span>
+                <span className="sm:hidden">Comp</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="feed" className="space-y-6">
             <SocialFeed />
