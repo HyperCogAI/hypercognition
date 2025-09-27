@@ -135,33 +135,31 @@ export const CustomerSupportDashboard = () => {
   const ticketMessages = selectedTicket ? getTicketMessages(selectedTicket) : [];
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white leading-tight tracking-tight">
-            Customer{" "}
-            <span className="text-white">
-              Support
-            </span>
+      <div className="text-center md:text-left">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+            Customer Support
           </h1>
-          <p className="text-muted-foreground">
-            Get help from our support team or find answers in our knowledge base
+          <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto md:mx-0">
+            Get help from our 24/7 support team or find answers in our knowledge base
           </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Badge variant="outline" className="gap-2">
+        
+        <div className="flex flex-col sm:flex-row items-center justify-center md:justify-start gap-4">
+          <Badge variant="outline" className="gap-2 px-4 py-2">
             <Ticket className="h-4 w-4" />
             {openTickets.length} Open Tickets
           </Badge>
           <Dialog open={newTicketDialog} onOpenChange={setNewTicketDialog}>
             <DialogTrigger asChild>
-              <Button className="gap-2">
+              <Button className="gap-2 w-full sm:w-auto">
                 <Plus className="h-4 w-4" />
                 New Ticket
               </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-lg">
+            <DialogContent className="sm:max-w-lg mx-4">
               <DialogHeader>
                 <DialogTitle>Create Support Ticket</DialogTitle>
               </DialogHeader>
@@ -240,19 +238,43 @@ export const CustomerSupportDashboard = () => {
       </div>
 
       <Tabs defaultValue="tickets" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="tickets">My Tickets</TabsTrigger>
-          <TabsTrigger value="knowledge">Knowledge Base</TabsTrigger>
-          <TabsTrigger value="live-chat">Live Chat</TabsTrigger>
-          <TabsTrigger value="contact">Contact</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+            <TabsTrigger 
+              value="tickets"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              My Tickets
+            </TabsTrigger>
+            <TabsTrigger 
+              value="knowledge"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Knowledge Base</span>
+              <span className="sm:hidden">KB</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="live-chat"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Live Chat</span>
+              <span className="sm:hidden">Chat</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="contact"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              Contact
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Tickets Tab */}
         <TabsContent value="tickets" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-6 lg:grid-cols-3">
             {/* Tickets List */}
-            <div className="md:col-span-1 space-y-4">
-              <Card>
+            <div className="lg:col-span-1 space-y-4 order-2 lg:order-1">
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
                 <CardHeader>
                   <CardTitle className="text-lg">Open Tickets</CardTitle>
                 </CardHeader>
@@ -292,9 +314,9 @@ export const CustomerSupportDashboard = () => {
                 </CardContent>
               </Card>
 
-              <Card>
-                <CardHeader>
-                  <CardTitle className="text-lg">Recent Resolved</CardTitle>
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-lg">Recently Resolved</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-3">
                   {resolvedTickets.slice(0, 3).map((ticket) => (
@@ -329,9 +351,9 @@ export const CustomerSupportDashboard = () => {
             </div>
 
             {/* Ticket Details */}
-            <div className="md:col-span-2">
+            <div className="lg:col-span-2 order-1 lg:order-2">
               {selectedTicketData ? (
-                <Card className="h-[600px] flex flex-col">
+                <Card className="h-[600px] flex flex-col bg-card/50 backdrop-blur-sm border-border/50">
                   <CardHeader className="flex-shrink-0 border-b">
                     <div className="flex items-start justify-between">
                       <div>
@@ -456,7 +478,7 @@ export const CustomerSupportDashboard = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <Card className="h-[600px] flex items-center justify-center">
+                <Card className="h-[600px] flex items-center justify-center bg-card/50 backdrop-blur-sm border-border/50">
                   <div className="text-center text-muted-foreground">
                     <MessageCircle className="h-12 w-12 mx-auto mb-4 opacity-50" />
                     <p>Select a ticket to view details</p>
@@ -470,7 +492,7 @@ export const CustomerSupportDashboard = () => {
 
         {/* Knowledge Base Tab */}
         <TabsContent value="knowledge" className="space-y-6">
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <BookOpen className="h-5 w-5" />
@@ -486,10 +508,10 @@ export const CustomerSupportDashboard = () => {
                 />
               </div>
             </CardHeader>
-            <CardContent>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <CardContent className="space-y-6">
+              <div className="grid gap-4 md:gap-6 sm:grid-cols-2 lg:grid-cols-3">
                 {searchResults.slice(0, 9).map((article) => (
-                  <Card key={article.id} className="cursor-pointer hover:shadow-md transition-shadow">
+                  <Card key={article.id} className="cursor-pointer hover:shadow-md transition-all duration-200 bg-background/50 border-border/50 hover:border-primary/20">
                     <CardHeader className="pb-3">
                       <CardTitle className="text-base line-clamp-2">{article.title}</CardTitle>
                       <Badge variant="outline" className="w-fit">
@@ -520,7 +542,7 @@ export const CustomerSupportDashboard = () => {
 
         {/* Live Chat Tab */}
         <TabsContent value="live-chat" className="space-y-6">
-          <Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <MessageCircle className="h-5 w-5" />
@@ -577,8 +599,8 @@ export const CustomerSupportDashboard = () => {
         {/* Contact Tab */}
         <TabsContent value="contact" className="space-y-6">
           <div className="grid gap-6 md:grid-cols-2">
-            <Card>
-              <CardHeader>
+            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+              <CardHeader className="pb-4">
                 <CardTitle>Contact Information</CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -612,8 +634,8 @@ export const CustomerSupportDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
-              <CardHeader>
+            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+              <CardHeader className="pb-4">
                 <CardTitle>Support Team</CardTitle>
               </CardHeader>
               <CardContent>
