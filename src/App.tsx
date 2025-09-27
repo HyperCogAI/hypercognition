@@ -194,6 +194,9 @@ const AppLayout = () => {
                 <Route path="/institutional" element={<ProtectedRoute><InstitutionalFeatures /></ProtectedRoute>} />
                 <Route path="/compliance" element={<ProtectedRoute><ComplianceRegulatory /></ProtectedRoute>} />
                 <Route path="/white-label" element={<WhiteLabel />} />
+                <Route path="/advanced-ai" element={<AdvancedAI />} />
+                <Route path="/enhanced-features" element={<EnhancedFeatures />} />
+                <Route path="/institutional-apis" element={<InstitutionalAPIs />} />
                 <Route path="/multi-language" element={<MultiLanguage />} />
                 <Route path="/premium" element={<PremiumTiers />} />
                 <Route path="/agent/:id" element={<AgentDetail />} />
