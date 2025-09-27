@@ -117,23 +117,23 @@ export const InstitutionalDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       {/* Organization Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="flex items-center gap-4">
-          <div className="w-12 h-12 bg-primary/10 rounded-lg flex items-center justify-center">
+          <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center">
             <Building2 className="h-6 w-6 text-primary" />
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-white">{organization.name}</h1>
-            <div className="flex items-center gap-2">
-              <Badge variant="outline" className="capitalize">
+            <h1 className="text-xl md:text-2xl font-bold text-white">{organization.name}</h1>
+            <div className="flex items-center gap-2 mt-1">
+              <Badge variant="outline" className="capitalize text-xs">
                 {organization.type.replace('_', ' ')}
               </Badge>
-              <Badge variant="outline" className="capitalize">
+              <Badge variant="outline" className="capitalize text-xs">
                 {organization.tier}
               </Badge>
-              <span className={`text-sm ${getStatusColor(organization.status)}`}>
+              <span className={`text-xs ${getStatusColor(organization.status)}`}>
                 {organization.status}
               </span>
             </div>
@@ -141,48 +141,49 @@ export const InstitutionalDashboard: React.FC = () => {
         </div>
         
         {hasPermission('admin') && (
-          <Button variant="outline">
+          <Button variant="outline" size="sm">
             <Settings className="h-4 w-4 mr-2" />
-            Organization Settings
+            <span className="hidden sm:inline">Organization Settings</span>
+            <span className="sm:hidden">Settings</span>
           </Button>
         )}
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Team Members</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{teamMembers.length}</div>
+            <div className="text-xl md:text-2xl font-bold">{teamMembers.length}</div>
             <p className="text-xs text-muted-foreground">
               {teamMembers.filter(m => m.status === 'active').length} active
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">API Keys</CardTitle>
             <Key className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{apiKeys.length}</div>
+            <div className="text-xl md:text-2xl font-bold">{apiKeys.length}</div>
             <p className="text-xs text-muted-foreground">
               {apiKeys.filter(k => k.status === 'active').length} active
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Compliance Items</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {complianceRecords.filter(r => r.status === 'pending').length}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -191,13 +192,13 @@ export const InstitutionalDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Daily Volume Limit</CardTitle>
             <BarChart3 className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {formatCurrency(organization.settings.trading_limits.daily_volume)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -209,13 +210,43 @@ export const InstitutionalDashboard: React.FC = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="team">Team Management</TabsTrigger>
-          <TabsTrigger value="compliance">Compliance</TabsTrigger>
-          <TabsTrigger value="api">API Management</TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+            <TabsTrigger 
+              value="overview"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Overview</span>
+              <span className="sm:hidden">Home</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="team"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              Team
+            </TabsTrigger>
+            <TabsTrigger 
+              value="compliance"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Compliance</span>
+              <span className="sm:hidden">Comp</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="api"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              API
+            </TabsTrigger>
+            <TabsTrigger 
+              value="settings"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Settings</span>
+              <span className="sm:hidden">Set</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
