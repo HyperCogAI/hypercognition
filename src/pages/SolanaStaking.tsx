@@ -149,7 +149,7 @@ const SolanaStaking = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background p-6 space-y-6">
+    <div className="container mx-auto px-4 py-8 space-y-8">
       <SEOHead 
         title="Solana Staking - HyperCognition"
         description="Stake your SOL and SPL tokens to earn rewards. Access native staking, liquid staking, and DeFi yield farming opportunities."
@@ -157,27 +157,30 @@ const SolanaStaking = () => {
       />
 
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
+      <header className="text-center space-y-4">
+        <div className="inline-flex items-center justify-center gap-3 mb-4">
+          <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+            <Coins className="h-6 w-6 text-primary" />
+          </div>
           <h1 className="text-3xl font-bold text-white">
             Solana Staking
           </h1>
-          <p className="text-muted-foreground mt-2">
-            Stake your SOL and SPL tokens to earn rewards
-          </p>
         </div>
-        <div className="flex items-center gap-4">
-          <Badge variant="outline" className="text-sm">
-            <TrendingUp className="h-3 w-3 mr-1" />
-            Network APY: 5.2%
-          </Badge>
-        </div>
-      </div>
+        
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Stake your <span className="text-primary font-medium">SOL and SPL tokens</span> to earn rewards
+        </p>
+        
+        <Badge variant="outline" className="text-sm bg-background/50 border-border/50">
+          <TrendingUp className="h-3 w-3 mr-1" />
+          Network APY: 5.2%
+        </Badge>
+      </header>
 
       {/* Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+          <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-green-500" />
               Your Staked SOL
@@ -189,8 +192,8 @@ const SolanaStaking = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
+        <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+          <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <Coins className="h-4 w-4 text-blue-500" />
               Pending Rewards
@@ -202,8 +205,8 @@ const SolanaStaking = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
+        <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+          <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <BarChart3 className="h-4 w-4 text-purple-500" />
               Total Earned
@@ -215,8 +218,8 @@ const SolanaStaking = () => {
           </CardContent>
         </Card>
 
-        <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
+        <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+          <CardHeader className="pb-3">
             <CardTitle className="text-sm font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-yellow-500" />
               Current APY
@@ -230,20 +233,37 @@ const SolanaStaking = () => {
       </div>
 
       {/* Main Content */}
-      <Tabs defaultValue="pools" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="pools">Staking Pools</TabsTrigger>
-          <TabsTrigger value="validators">Validators</TabsTrigger>
-          <TabsTrigger value="portfolio">My Stakes</TabsTrigger>
-        </TabsList>
+      <Tabs defaultValue="pools" className="space-y-8">
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-3 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl">
+            <TabsTrigger 
+              value="pools" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Staking Pools
+            </TabsTrigger>
+            <TabsTrigger 
+              value="validators" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Validators
+            </TabsTrigger>
+            <TabsTrigger 
+              value="portfolio" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              My Stakes
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
-        <TabsContent value="pools" className="space-y-6">
+        <TabsContent value="pools" className="space-y-6 animate-fade-in">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {stakingPools.map((pool) => (
-              <Card key={pool.id} className="border-border/40 bg-card/60 backdrop-blur-sm">
+              <Card key={pool.id} className="border border-border/50 bg-gradient-to-br from-background to-muted/20 hover-scale">
                 <CardHeader>
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg">{pool.name}</CardTitle>
+                    <CardTitle className="text-lg font-semibold">{pool.name}</CardTitle>
                     <Badge 
                       variant={pool.status === "active" ? "default" : "secondary"}
                       className="text-xs"
@@ -269,18 +289,18 @@ const SolanaStaking = () => {
                     </div>
                   </div>
 
-                  <div className="space-y-2">
+                  <div className="space-y-2 p-3 bg-muted/10 rounded-lg border border-border/30">
                     <div className="flex justify-between text-sm">
                       <span>Minimum stake:</span>
-                      <span>{pool.minStake} SOL</span>
+                      <span className="font-medium">{pool.minStake} SOL</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Lock period:</span>
-                      <span>{pool.lockPeriod}</span>
+                      <span className="font-medium">{pool.lockPeriod}</span>
                     </div>
                     <div className="flex justify-between text-sm">
                       <span>Risk level:</span>
-                      <span className={getRiskColor(pool.risk)}>{pool.risk}</span>
+                      <span className={`font-medium ${getRiskColor(pool.risk)}`}>{pool.risk}</span>
                     </div>
                   </div>
 
@@ -306,10 +326,10 @@ const SolanaStaking = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="validators" className="space-y-6">
-          <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
+        <TabsContent value="validators" className="space-y-6 animate-fade-in">
+          <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
             <CardHeader>
-              <CardTitle>Choose a Validator</CardTitle>
+              <CardTitle className="text-lg font-semibold">Choose a Validator</CardTitle>
               <CardDescription>
                 Select a validator to delegate your SOL stake
               </CardDescription>
@@ -319,10 +339,10 @@ const SolanaStaking = () => {
                 {validators.map((validator) => (
                   <div 
                     key={validator.id}
-                    className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 ${
+                    className={`p-4 rounded-lg cursor-pointer transition-all duration-200 border ${
                       selectedValidator === validator.id 
-                        ? 'border-primary bg-primary/5' 
-                        : 'border-border hover:border-primary/50'
+                        ? 'border-primary/50 bg-primary/10' 
+                        : 'border-border/50 bg-background/50 hover:border-primary/30 hover:bg-muted/30'
                     }`}
                     onClick={() => setSelectedValidator(validator.id)}
                   >
@@ -358,7 +378,7 @@ const SolanaStaking = () => {
                 ))}
               </div>
               
-              <div className="mt-6 pt-6 border-t">
+              <div className="mt-6 pt-6 border-t border-border/50">
                 <Button 
                   className="w-full" 
                   disabled={!selectedValidator}
@@ -371,24 +391,24 @@ const SolanaStaking = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="portfolio" className="space-y-6">
-          <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
+        <TabsContent value="portfolio" className="space-y-6 animate-fade-in">
+          <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
             <CardHeader>
-              <CardTitle>My Staking Portfolio</CardTitle>
+              <CardTitle className="text-lg font-semibold">My Staking Portfolio</CardTitle>
               <CardDescription>
                 View and manage your active stakes
               </CardDescription>
             </CardHeader>
             <CardContent className="text-center py-12">
-              <div className="mx-auto mb-4 h-12 w-12 rounded-full bg-muted flex items-center justify-center">
-                <Coins className="h-6 w-6 text-muted-foreground" />
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 w-fit mx-auto mb-6">
+                <Coins className="h-12 w-12 text-primary" />
               </div>
-              <h3 className="text-lg font-semibold mb-2">No Active Stakes</h3>
-              <p className="text-muted-foreground mb-4">
+              <h3 className="text-xl font-semibold mb-3">No Active Stakes</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed max-w-md mx-auto">
                 You haven't staked any SOL yet. Start earning rewards by choosing a staking pool or validator.
               </p>
-              <Button>
-                <Zap className="h-4 w-4 mr-2" />
+              <Button className="gap-2">
+                <Zap className="h-4 w-4" />
                 Start Staking
               </Button>
             </CardContent>
