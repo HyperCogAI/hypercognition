@@ -70,7 +70,7 @@ export const HyperCTA = () => {
           <CyberButton 
             variant="neon" 
             size="xl" 
-            className="group min-w-[240px]"
+            className="group min-w-[320px] text-sm"
           >
             <span className="text-white">Launch HyperCognition</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-white" />
@@ -79,7 +79,7 @@ export const HyperCTA = () => {
           <CyberButton 
             variant="analytics" 
             size="xl" 
-            className="min-w-[240px]"
+            className="min-w-[320px] text-sm"
           >
             <span className="text-white">Explore Marketplace</span>
           </CyberButton>
