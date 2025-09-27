@@ -50,7 +50,7 @@ export function EnhancedHero() {
 
 
   return (
-    <section className="relative py-16 md:py-24 flex items-center justify-center overflow-hidden pointer-events-none">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pointer-events-none">
       
       {/* Animated Particles Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -65,12 +65,12 @@ export function EnhancedHero() {
       
       
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center">
-        <div className="max-w-6xl mx-auto space-y-4 md:space-y-6 animate-fade-up">
+      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center pt-20 md:pt-0">
+        <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 animate-fade-up">
           
           {/* Hero Headline */}
-          <div className="space-y-4 md:space-y-6">
-            <div className="space-y-3 md:space-y-4">
+          <div className="space-y-6 md:space-y-8">
+            <div className="space-y-4 md:space-y-6">
               
               <h1 className="text-[2.625rem] md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
                 <div className="mb-2 md:mb-4">The Future of</div>
@@ -87,7 +87,7 @@ export function EnhancedHero() {
             </div>
 
             {/* Key Features */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-4xl mx-auto py-4 md:py-6">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 md:gap-6 max-w-4xl mx-auto py-6 md:py-8">
               <div className="flex items-center justify-center space-x-2 md:space-x-3 p-3 md:p-4 rounded-lg bg-card/30 border border-border/50 backdrop-blur-sm hover:bg-card/50 transition-colors">
                 <Zap className="h-5 w-5 md:h-6 md:w-6 text-yellow-500" />
                 <span className="text-xs md:text-sm font-medium">Lightning Fast Execution</span>
@@ -124,7 +124,7 @@ export function EnhancedHero() {
           </div>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-2 pointer-events-none">
+          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4 pointer-events-none">
             <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base justify-center pointer-events-none">
               <span className="relative z-10 text-white font-semibold text-center">Start Trading Now</span>
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow opacity-0 group-hover:opacity-100 group-hover:brightness-75 transition-all" />
