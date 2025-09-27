@@ -3964,6 +3964,30 @@ export type Database = {
         }
         Relationships: []
       }
+      user_community_memberships: {
+        Row: {
+          community_id: string
+          id: string
+          joined_at: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          community_id: string
+          id?: string
+          joined_at?: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          community_id?: string
+          id?: string
+          joined_at?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_defi_positions: {
         Row: {
           amount_deposited: number

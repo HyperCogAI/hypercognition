@@ -83,6 +83,18 @@ export default function Communities() {
 
         setTopTraders(tradersData)
 
+        // Load user's joined communities (if authenticated)
+        if (user) {
+          const { data: userCommunities } = await supabase
+            .from('user_community_memberships')
+            .select('community_id')
+            .eq('user_id', user.id)
+
+          if (userCommunities) {
+            setJoinedCommunities(userCommunities.map(uc => uc.community_id))
+          }
+        }
+
       } catch (error) {
         console.error('Error loading communities data:', error)
       } finally {
@@ -96,15 +108,35 @@ export default function Communities() {
   const joinCommunity = async (communityId: string) => {
     if (!user) return
 
-    // For now, just update local state since we don't have the table structure
-    setJoinedCommunities(prev => [...prev, communityId])
+    try {
+      const { error } = await supabase
+        .from('user_community_memberships')
+        .insert({ user_id: user.id, community_id: communityId })
+
+      if (!error) {
+        setJoinedCommunities(prev => [...prev, communityId])
+      }
+    } catch (error) {
+      console.error('Error joining community:', error)
+    }
   }
 
   const leaveCommunity = async (communityId: string) => {
     if (!user) return
 
-    // For now, just update local state since we don't have the table structure
-    setJoinedCommunities(prev => prev.filter(id => id !== communityId))
+    try {
+      const { error } = await supabase
+        .from('user_community_memberships')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('community_id', communityId)
+
+      if (!error) {
+        setJoinedCommunities(prev => prev.filter(id => id !== communityId))
+      }
+    } catch (error) {
+      console.error('Error leaving community:', error)
+    }
   }
 
   const formatCurrency = (value: number) => {
