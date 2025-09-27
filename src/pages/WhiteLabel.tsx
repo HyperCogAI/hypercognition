@@ -426,110 +426,157 @@ const WhiteLabel = () => {
           </TabsContent>
 
           <TabsContent value="integration" className="space-y-6">
-            <div className="grid gap-6">
-              {integrationOptions.map((option, index) => (
-                <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardContent className="p-6">
-                    <div className="flex justify-between items-start">
-                      <div className="space-y-2">
+            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl md:text-2xl">API Documentation & SDKs</CardTitle>
+                <CardDescription className="text-base">
+                  Complete integration tools and documentation for developers
+                </CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <div className="grid gap-4 md:gap-6">
+                  {integrationOptions.map((option, index) => (
+                    <div key={index} className="p-4 md:p-6 border border-border/50 rounded-xl bg-background/30 hover:bg-background/40 transition-all duration-200">
+                      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 mb-4">
                         <div className="flex items-center gap-3">
-                          <h3 className="font-semibold text-lg">{option.name}</h3>
-                          <Badge variant={option.status === 'Available' ? 'default' : 'secondary'}>
-                            {option.status}
-                          </Badge>
+                          <div className="p-2 bg-primary/10 rounded-lg">
+                            <Code className="h-5 w-5 text-primary" />
+                          </div>
+                          <div>
+                            <h4 className="font-semibold text-lg">{option.name}</h4>
+                            <Badge 
+                              variant={option.status === "Available" ? "default" : "secondary"}
+                              className="mt-1"
+                            >
+                              {option.status}
+                            </Badge>
+                          </div>
                         </div>
-                        <p className="text-muted-foreground">{option.description}</p>
                       </div>
-                      <div className="flex gap-2">
-                        <Button variant="outline" size="sm">
+                      <p className="text-muted-foreground mb-4 leading-relaxed">{option.description}</p>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="hover:bg-primary/5 hover:border-primary/30"
+                          disabled={option.status !== "Available"}
+                        >
                           Documentation
                         </Button>
-                        {option.status === 'Available' && (
-                          <Button size="sm">
-                            <Download className="h-4 w-4 mr-2" />
-                            Download
-                          </Button>
-                        )}
+                        <Button 
+                          size="sm" 
+                          disabled={option.status !== "Available"}
+                          className="w-full sm:w-auto"
+                        >
+                          <Download className="h-4 w-4 mr-2" />
+                          {option.status === "Available" ? "Download SDK" : "Coming Soon"}
+                        </Button>
                       </div>
                     </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
 
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardHeader>
-                <CardTitle>Integration Support</CardTitle>
-                <CardDescription>
-                  Our team will help you integrate our platform
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl md:text-2xl">Integration Support</CardTitle>
+                <CardDescription className="text-base">
+                  Our team will help you integrate our platform seamlessly
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="grid gap-4 md:grid-cols-3">
-                  <div className="text-center p-4">
-                    <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
-                    <h4 className="font-medium">Dedicated Team</h4>
-                    <p className="text-sm text-muted-foreground">Assigned integration specialists</p>
+                <div className="grid gap-6 md:grid-cols-3">
+                  <div className="text-center p-6 bg-background/30 rounded-xl border border-border/30">
+                    <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                      <Users className="h-6 w-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold text-lg mb-2">Dedicated Team</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Assigned integration specialists to guide you through the process</p>
                   </div>
-                  <div className="text-center p-4">
-                    <Settings className="h-8 w-8 mx-auto mb-2 text-primary" />
-                    <h4 className="font-medium">Custom Setup</h4>
-                    <p className="text-sm text-muted-foreground">Tailored configuration assistance</p>
+                  <div className="text-center p-6 bg-background/30 rounded-xl border border-border/30">
+                    <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                      <Settings className="h-6 w-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold text-lg mb-2">Custom Setup</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Tailored configuration assistance for your specific needs</p>
                   </div>
-                  <div className="text-center p-4">
-                    <Briefcase className="h-8 w-8 mx-auto mb-2 text-primary" />
-                    <h4 className="font-medium">Training</h4>
-                    <p className="text-sm text-muted-foreground">Comprehensive team training</p>
+                  <div className="text-center p-6 bg-background/30 rounded-xl border border-border/30">
+                    <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                      <Briefcase className="h-6 w-6 text-primary" />
+                    </div>
+                    <h4 className="font-semibold text-lg mb-2">Training</h4>
+                    <p className="text-sm text-muted-foreground leading-relaxed">Comprehensive team training and ongoing support</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="pricing" className="space-y-6">
-            <div className="grid gap-8 lg:grid-cols-3">
+          <TabsContent value="pricing" className="space-y-8">
+            <div className="text-center mb-8">
+              <h2 className="text-2xl md:text-3xl font-bold mb-4">Choose Your Partnership Tier</h2>
+              <p className="text-muted-foreground text-lg max-w-3xl mx-auto">
+                Flexible pricing options designed to scale with your business needs
+              </p>
+            </div>
+
+            <div className="grid gap-6 lg:gap-8 md:grid-cols-2 lg:grid-cols-3">
               {partnerTiers.map((tier, index) => (
                 <Card 
                   key={index} 
-                  className={`bg-card/50 backdrop-blur-sm border-border/50 relative ${
-                    tier.popular ? 'ring-2 ring-primary' : ''
+                  className={`bg-card/50 backdrop-blur-sm border-border/50 relative transition-all duration-300 hover:scale-105 hover:shadow-lg ${
+                    tier.popular ? 'ring-2 ring-primary shadow-primary/20' : 'hover:border-primary/30'
                   }`}
                 >
                   {tier.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-primary/60 border border-white text-white">Most Popular</Badge>
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2 z-10">
+                      <Badge className="bg-primary text-primary-foreground px-4 py-1 shadow-lg">
+                        Most Popular
+                      </Badge>
                     </div>
                   )}
                   
-                  <CardHeader className="text-center">
-                    <CardTitle className="text-2xl">{tier.name}</CardTitle>
-                    <div className="text-3xl font-bold">{tier.price}</div>
+                  <CardHeader className="text-center pb-4 pt-8">
+                    <CardTitle className="text-2xl md:text-3xl font-bold">{tier.name}</CardTitle>
+                    <div className="text-3xl md:text-4xl font-bold text-primary mt-2">{tier.price}</div>
+                    {tier.name !== "Enterprise" && (
+                      <p className="text-sm text-muted-foreground">per month</p>
+                    )}
                   </CardHeader>
                   
-                  <CardContent className="space-y-6">
-                    <div className="space-y-3">
-                      <h4 className="font-medium">Features Included:</h4>
-                      {tier.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-green-500 rounded-full" />
-                          <span className="text-sm">{feature}</span>
-                        </div>
-                      ))}
-                    </div>
-                    
-                    {tier.limitations.length > 0 && (
+                  <CardContent className="space-y-6 px-6 pb-8">
+                    <div className="space-y-4">
+                      <h4 className="font-semibold text-lg border-b border-border/30 pb-2">Features Included</h4>
                       <div className="space-y-3">
-                        <h4 className="font-medium">Limitations:</h4>
-                        {tier.limitations.map((limitation, idx) => (
-                          <div key={idx} className="flex items-center gap-2">
-                            <div className="w-2 h-2 bg-orange-500 rounded-full" />
-                            <span className="text-sm text-muted-foreground">{limitation}</span>
+                        {tier.features.map((feature, idx) => (
+                          <div key={idx} className="flex items-start gap-3">
+                            <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0" />
+                            <span className="text-sm leading-relaxed">{feature}</span>
                           </div>
                         ))}
                       </div>
+                    </div>
+                    
+                    {tier.limitations.length > 0 && (
+                      <div className="space-y-4">
+                        <h4 className="font-semibold text-lg border-b border-border/30 pb-2">Limitations</h4>
+                        <div className="space-y-3">
+                          {tier.limitations.map((limitation, idx) => (
+                            <div key={idx} className="flex items-start gap-3">
+                              <div className="w-2 h-2 bg-orange-400 rounded-full mt-2 shrink-0" />
+                              <span className="text-sm text-muted-foreground leading-relaxed">{limitation}</span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
                     )}
                     
-                    <Button className="w-full" variant={tier.popular ? "default" : "outline"}>
+                    <Button 
+                      className="w-full mt-6 h-12 text-base font-semibold" 
+                      variant={tier.popular ? "default" : "outline"}
+                      size="lg"
+                    >
                       {tier.name === "Enterprise" ? "Contact Sales" : "Get Started"}
                     </Button>
                   </CardContent>
