@@ -14,6 +14,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
 import { cn } from '@/lib/utils'
+import hyperLogo from '@/assets/hypercognition-mobile-logo.png'
 
 // Core navigation items for bottom bar
 const bottomNavItems = [
@@ -171,7 +172,8 @@ export const MobileNavigation = () => {
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[100vh] rounded-none bg-background/98 backdrop-blur-md border-none">
               <SheetHeader className="pb-6 border-b border-border/20">
-                <SheetTitle className="text-2xl font-bold text-white text-center">
+                <SheetTitle className="text-2xl font-bold text-white text-center flex items-center justify-center gap-3">
+                  <img src={hyperLogo} alt="HyperCognition" className="h-6 w-6" />
                   Navigation Menu
                 </SheetTitle>
               </SheetHeader>
