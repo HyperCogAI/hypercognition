@@ -324,12 +324,12 @@ export const TradingSignalsPanel: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Trading Signals & Alerts</h2>
-          <p className="text-muted-foreground">Real-time market insights and notifications</p>
+          <h2 className="text-2xl sm:text-3xl font-bold tracking-tight">Trading Signals & Alerts</h2>
+          <p className="text-sm sm:text-base text-muted-foreground">Real-time market insights and notifications</p>
         </div>
-        <Button onClick={refreshData} variant="outline" size="sm">
+        <Button onClick={refreshData} variant="outline" size="sm" className="self-start sm:self-auto">
           <RefreshCw className="h-4 w-4 mr-2" />
           Refresh
         </Button>
@@ -390,7 +390,7 @@ export const TradingSignalsPanel: React.FC = () => {
 
       {/* Main Content */}
       <Tabs defaultValue="signals" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 h-10 sm:h-12 text-xs sm:text-sm">
           <TabsTrigger value="signals">Trading Signals</TabsTrigger>
           <TabsTrigger value="alerts">Price Alerts</TabsTrigger>
           <TabsTrigger value="create">Create</TabsTrigger>
@@ -532,7 +532,7 @@ export const TradingSignalsPanel: React.FC = () => {
 
             {alerts.length === 0 && (
               <Card>
-                <CardContent className="p-8 text-center">
+                <CardContent className="p-6 md:p-8 text-center">
                   <AlertTriangle className="h-12 w-12 mx-auto mb-4 text-muted-foreground" />
                   <h3 className="text-lg font-medium mb-2">No Price Alerts</h3>
                   <p className="text-muted-foreground mb-4">

@@ -11,7 +11,7 @@ const TradingSignals = () => {
         keywords="trading signals, price alerts, buy sell signals, market analysis, trading notifications, crypto signals"
       />
       
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
         <TradingSignalsPanel />
       </div>
     </>
