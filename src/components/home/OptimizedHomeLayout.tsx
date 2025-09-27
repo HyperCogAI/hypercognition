@@ -200,7 +200,7 @@ export function OptimizedHomeLayout() {
 
         {/* Agent Marketplace Section */}
         <section id="marketplace" className={cn(
-          "scroll-mt-16 w-full mt-6",
+          "scroll-mt-16 w-full mt-8 md:mt-12",
           isMobile && "scroll-mt-24"
         )}>
           <Suspense fallback={<MarketplaceSkeleton />}>
