@@ -410,6 +410,7 @@ const EnhancedMarketNews = () => {
                   </Card>
                 ))}
 
+                {(() => { console.log('[EnhancedMarketNews] counts', { filtered: filteredNews.length, MAX_NEWS, showMore: filteredNews.length > MAX_NEWS }); return null; })()}
                 {filteredNews.length > MAX_NEWS && (
                   <div className="text-center">
                     <Button asChild variant="outline" className="group inline-flex items-center gap-2 !border-border/15 hover:!border-border/25">
