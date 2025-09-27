@@ -172,6 +172,7 @@ const AppLayout = () => {
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+                <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/customer-support" element={<CustomerSupport />} />
                 <Route path="/defi" element={<DeFi />} />
