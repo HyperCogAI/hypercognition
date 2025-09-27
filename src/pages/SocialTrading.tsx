@@ -31,141 +31,157 @@ export default function SocialTrading() {
         keywords="social trading, copy trading, trading signals, trading community, follow traders"
       />
       
-      <div className="container mx-auto p-6 space-y-8">
+      <div className="container mx-auto px-4 py-8 space-y-12">
         {/* Header */}
-        <div className="text-center space-y-4">
-          <div className="flex items-center justify-center gap-2 mb-4">
-            <Share2 className="h-8 w-8 text-primary" />
-            <h1 className="text-4xl font-bold text-white">
+        <header className="text-center space-y-6">
+          <div className="inline-flex items-center justify-center gap-3 mb-6">
+            <div className="p-3 rounded-xl bg-primary/10 border border-primary/20">
+              <Share2 className="h-8 w-8 text-primary" />
+            </div>
+            <h1 className="text-5xl font-bold bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent">
               Social Trading Platform
             </h1>
           </div>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed">
             Connect with top traders, copy successful strategies, and share your trading insights with the community
           </p>
-        </div>
+        </header>
 
         {/* Main Content */}
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <div className="relative">
-            <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
-              <TabsTrigger 
-                value="feed" 
-                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
-              >
-                <MessageCircle className="w-4 h-4" />
-                <span className="hidden sm:inline">Social Feed</span>
-                <span className="sm:hidden">Feed</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="network" 
-                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
-              >
-                <Network className="w-4 h-4" />
-                <span className="hidden sm:inline">Network</span>
-                <span className="sm:hidden">Net</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="engine" 
-                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
-              >
-                <Copy className="w-4 h-4" />
-                <span className="hidden sm:inline">Copy Engine</span>
-                <span className="sm:hidden">Copy</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="traders" 
-                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
-              >
-                <Users className="w-4 h-4" />
-                <span className="hidden sm:inline">Top Traders</span>
-                <span className="sm:hidden">Traders</span>
-                <Badge variant="secondary" className="ml-1 h-5 min-w-5 text-xs px-1.5">
+        <main>
+          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+            <div className="relative mb-8">
+              <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 gap-1 bg-background/80 backdrop-blur-md border border-border/50 p-1.5 h-auto rounded-xl shadow-lg">
+                <TabsTrigger 
+                  value="feed" 
+                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">Social Feed</span>
+                  <span className="sm:hidden font-medium">Feed</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="network" 
+                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                >
+                  <Network className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">Network</span>
+                  <span className="sm:hidden font-medium">Net</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="engine" 
+                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                >
+                  <Copy className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">Copy Engine</span>
+                  <span className="sm:hidden font-medium">Copy</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="traders" 
+                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                >
+                  <Users className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">Top Traders</span>
+                  <span className="sm:hidden font-medium">Traders</span>
+                  <Badge variant="secondary" className="ml-2 h-5 min-w-5 text-xs px-2 bg-background/50">
+                    {topTraders.length}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="signals" 
+                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">Trading Signals</span>
+                  <span className="sm:hidden font-medium">Signals</span>
+                  <Badge variant="secondary" className="ml-2 h-5 min-w-5 text-xs px-2 bg-background/50">
+                    {tradingSignals.length}
+                  </Badge>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="competitions" 
+                  className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground data-[state=active]:shadow-md transition-all duration-300 hover:bg-muted/70 rounded-lg"
+                >
+                  <Trophy className="w-4 h-4" />
+                  <span className="hidden sm:inline font-medium">Competitions</span>
+                  <span className="sm:hidden font-medium">Comp</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
+
+            <TabsContent value="feed" className="space-y-8 animate-fade-in">
+              <SocialFeed />
+            </TabsContent>
+
+            <TabsContent value="network" className="space-y-8 animate-fade-in">
+              <SocialNetwork />
+            </TabsContent>
+
+            <TabsContent value="engine" className="space-y-8 animate-fade-in">
+              <CopyTradingEngine />
+            </TabsContent>
+
+            <TabsContent value="traders" className="space-y-8 animate-fade-in">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                  <Users className="h-5 w-5 text-primary" />
+                </div>
+                <h2 className="text-3xl font-bold">Top Performing Traders</h2>
+                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium bg-background/50 border border-border/50">
                   {topTraders.length}
                 </Badge>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="signals" 
-                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
-              >
-                <TrendingUp className="w-4 h-4" />
-                <span className="hidden sm:inline">Trading Signals</span>
-                <span className="sm:hidden">Signals</span>
-                <Badge variant="secondary" className="ml-1 h-5 min-w-5 text-xs px-1.5">
+              </div>
+              
+              {loadingTraders ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {[...Array(6)].map((_, i) => (
+                    <div key={i} className="h-80 bg-muted/50 animate-pulse rounded-xl border border-border/50" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                  {topTraders.map((trader) => (
+                    <div key={trader.id} className="hover-scale">
+                      <TraderCard trader={trader} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
+
+            <TabsContent value="signals" className="space-y-8 animate-fade-in">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+                  <TrendingUp className="h-5 w-5 text-primary" />
+                </div>
+                <h2 className="text-3xl font-bold">Latest Trading Signals</h2>
+                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium bg-background/50 border border-border/50">
                   {tradingSignals.length}
                 </Badge>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="competitions" 
-                className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
-              >
-                <Trophy className="w-4 h-4" />
-                <span className="hidden sm:inline">Competitions</span>
-                <span className="sm:hidden">Comp</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
-
-          <TabsContent value="feed" className="space-y-6">
-            <SocialFeed />
-          </TabsContent>
-
-          <TabsContent value="network" className="space-y-6">
-            <SocialNetwork />
-          </TabsContent>
-
-          <TabsContent value="engine" className="space-y-6">
-            <CopyTradingEngine />
-          </TabsContent>
-
-          <TabsContent value="traders" className="space-y-6">
-            <div className="flex items-center gap-2 mb-6">
-              <Users className="h-5 w-5" />
-              <h2 className="text-2xl font-bold">Top Performing Traders</h2>
-              <Badge variant="secondary">{topTraders.length}</Badge>
-            </div>
-            
-            {loadingTraders ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {[...Array(6)].map((_, i) => (
-                  <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-                ))}
               </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                {topTraders.map((trader) => (
-                  <TraderCard key={trader.id} trader={trader} />
-                ))}
-              </div>
-            )}
-          </TabsContent>
+              
+              {loadingSignals ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {[...Array(4)].map((_, i) => (
+                    <div key={i} className="h-80 bg-muted/50 animate-pulse rounded-xl border border-border/50" />
+                  ))}
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {tradingSignals.map((signal) => (
+                    <div key={signal.id} className="hover-scale">
+                      <TradingSignalCard signal={signal} />
+                    </div>
+                  ))}
+                </div>
+              )}
+            </TabsContent>
 
-          <TabsContent value="signals" className="space-y-6">
-            <div className="flex items-center gap-2 mb-6">
-              <TrendingUp className="h-5 w-5" />
-              <h2 className="text-2xl font-bold">Latest Trading Signals</h2>
-              <Badge variant="secondary">{tradingSignals.length}</Badge>
-            </div>
-            
-            {loadingSignals ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {[...Array(4)].map((_, i) => (
-                  <div key={i} className="h-64 bg-muted animate-pulse rounded-lg" />
-                ))}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {tradingSignals.map((signal) => (
-                  <TradingSignalCard key={signal.id} signal={signal} />
-                ))}
-              </div>
-            )}
-          </TabsContent>
-
-          <TabsContent value="competitions" className="space-y-6">
-            <CompetitionsManager />
-          </TabsContent>
-        </Tabs>
+            <TabsContent value="competitions" className="space-y-8 animate-fade-in">
+              <CompetitionsManager />
+            </TabsContent>
+          </Tabs>
+        </main>
       </div>
     </>
   );

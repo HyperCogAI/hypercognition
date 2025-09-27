@@ -77,7 +77,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike, onFollow, onUnfollow,
   };
 
   return (
-    <Card className="mb-4">
+    <Card className="mb-6 border border-border/50 bg-background/80 backdrop-blur-sm hover:border-border/80 transition-all duration-300">
       <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
@@ -227,38 +227,40 @@ export const SocialFeed = () => {
   return (
     <div className="space-y-6">
       {/* Social Stats */}
-      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.totalPosts}</p>
-            <p className="text-sm text-muted-foreground">Posts</p>
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+        <Card className="border border-border/50 bg-background/80 backdrop-blur-sm hover:border-border/80 transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-primary">{stats.totalPosts}</p>
+            <p className="text-sm text-muted-foreground font-medium">Posts</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.totalFollowing}</p>
-            <p className="text-sm text-muted-foreground">Following</p>
+        <Card className="border border-border/50 bg-background/80 backdrop-blur-sm hover:border-border/80 transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-primary">{stats.totalFollowing}</p>
+            <p className="text-sm text-muted-foreground font-medium">Following</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.totalFollowers}</p>
-            <p className="text-sm text-muted-foreground">Followers</p>
+        <Card className="border border-border/50 bg-background/80 backdrop-blur-sm hover:border-border/80 transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-primary">{stats.totalFollowers}</p>
+            <p className="text-sm text-muted-foreground font-medium">Followers</p>
           </CardContent>
         </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <p className="text-2xl font-bold text-primary">{stats.totalLikes}</p>
-            <p className="text-sm text-muted-foreground">Likes</p>
+        <Card className="border border-border/50 bg-background/80 backdrop-blur-sm hover:border-border/80 transition-all duration-300">
+          <CardContent className="p-6 text-center">
+            <p className="text-3xl font-bold text-primary">{stats.totalLikes}</p>
+            <p className="text-sm text-muted-foreground font-medium">Likes</p>
           </CardContent>
         </Card>
       </div>
 
       {/* Create Post */}
-      <Card>
+      <Card className="border border-border/50 bg-background/80 backdrop-blur-sm">
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Send className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
+              <Send className="h-5 w-5 text-primary" />
+            </div>
             Share Your Insights
           </CardTitle>
           <CardDescription>
