@@ -95,42 +95,43 @@ export default function Favorites() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <div className="border-b border-border/50 bg-card/20 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigate("/")}
-                className="h-8 w-8 p-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
-                My{" "}
-                <span className="text-white">
-                  Favorites
-                </span>
-                <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />
-                My Favorites
-              </h1>
+      <div className="container mx-auto px-4 py-8 space-y-8">
+        {/* Header */}
+        <header className="text-center space-y-4">
+          <div className="inline-flex items-center justify-center gap-3 mb-4">
+            <div className="p-2 rounded-lg bg-yellow-400/10 border border-yellow-400/20">
+              <Star className="h-6 w-6 text-yellow-400 fill-yellow-400" />
             </div>
+            <h1 className="text-3xl font-bold text-white">
+              My Favorites
+            </h1>
           </div>
-        </div>
-      </div>
+          
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Your <span className="text-yellow-400 font-medium">favorite AI agents</span> in one convenient place
+          </p>
+          
+          {/* Back Button */}
+          <Button 
+            variant="outline" 
+            onClick={() => navigate("/")}
+            className="gap-2"
+            size="sm"
+          >
+            <ArrowLeft className="h-4 w-4" />
+            Back to Marketplace
+          </Button>
+        </header>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
         {/* Search */}
-        <div className="mb-6">
+        <div className="max-w-md mx-auto">
           <div className="relative">
             <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search your favorites..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="pl-10"
+              className="pl-10 bg-background/50 border-border/50"
             />
           </div>
         </div>
@@ -145,14 +146,17 @@ export default function Favorites() {
 
         {/* Empty State */}
         {!loading && favorites.length === 0 && (
-          <Card className="bg-card/30 border-border/50">
-            <CardContent className="pt-12 pb-12 text-center">
-              <Star className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No Favorites Yet</h3>
-              <p className="text-muted-foreground mb-6">
+          <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20 max-w-md mx-auto">
+            <CardContent className="p-12 text-center">
+              <div className="p-4 rounded-lg bg-yellow-400/10 border border-yellow-400/20 w-fit mx-auto mb-6">
+                <Star className="h-12 w-12 text-yellow-400" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">No Favorites Yet</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed">
                 Start adding AI agents to your favorites by clicking the star icon on agent cards
               </p>
-              <Button onClick={() => navigate("/")} variant="outline">
+              <Button onClick={() => navigate("/")} variant="outline" className="gap-2">
+                <ArrowLeft className="h-4 w-4" />
                 Browse Marketplace
               </Button>
             </CardContent>
@@ -163,9 +167,9 @@ export default function Favorites() {
         {!loading && filteredFavorites.length > 0 && (
           <div className="space-y-6">
             {/* Stats */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Card className="bg-card/30 border-border/50">
-                <CardHeader className="pb-2">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+                <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">Total Favorites</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -173,8 +177,8 @@ export default function Favorites() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/30 border-border/50">
-                <CardHeader className="pb-2">
+              <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+                <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">Best Performer</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -195,8 +199,8 @@ export default function Favorites() {
                 </CardContent>
               </Card>
 
-              <Card className="bg-card/30 border-border/50">
-                <CardHeader className="pb-2">
+              <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+                <CardHeader className="pb-3">
                   <CardTitle className="text-sm font-medium text-muted-foreground">Total Market Cap</CardTitle>
                 </CardHeader>
                 <CardContent>
@@ -208,14 +212,14 @@ export default function Favorites() {
             </div>
 
             {/* Favorites List */}
-            <Card className="bg-card/30 border-border/50">
+            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardHeader>
-                <CardTitle>Your Favorite Agents</CardTitle>
+                <CardTitle className="text-lg font-semibold">Your Favorite Agents</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                   {filteredFavorites.map((agent) => (
-                    <div key={agent.id} className="p-3 rounded-lg bg-card/20 hover:bg-card/30 transition-colors">
+                    <div key={agent.id} className="hover-scale">
                       <AgentCard 
                         agent={{
                           id: agent.id,
@@ -239,10 +243,12 @@ export default function Favorites() {
 
         {/* No Search Results */}
         {!loading && favorites.length > 0 && filteredFavorites.length === 0 && (
-          <Card className="bg-card/30 border-border/50">
-            <CardContent className="pt-12 pb-12 text-center">
-              <Search className="h-16 w-16 mx-auto mb-4 text-muted-foreground" />
-              <h3 className="text-lg font-semibold mb-2">No Results Found</h3>
+          <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20 max-w-md mx-auto">
+            <CardContent className="p-12 text-center">
+              <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 w-fit mx-auto mb-6">
+                <Search className="h-12 w-12 text-primary" />
+              </div>
+              <h3 className="text-xl font-semibold mb-3">No Results Found</h3>
               <p className="text-muted-foreground">
                 No favorites match your search for "{searchTerm}"
               </p>
