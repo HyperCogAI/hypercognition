@@ -148,7 +148,7 @@ export const AgentMarketplace = () => {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:mb-8">
-        <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
           AI Agent{" "}
           <span className="text-white">
             Marketplace
