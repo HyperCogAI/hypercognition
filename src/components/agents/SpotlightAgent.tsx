@@ -7,6 +7,7 @@ import { ExternalLink, TrendingUp, Sparkles } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useAgentLogo } from "@/hooks/useAgentLogo"
 import { toast } from "sonner"
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 
 interface Agent {
   id: string
@@ -205,7 +206,7 @@ export const SpotlightAgent = () => {
       <div className="flex items-center gap-4">
         <div className="relative">
           <Avatar className="h-16 w-16">
-            <AvatarImage src={spotlightAgent.avatar_url || "/placeholder.svg"} alt={spotlightAgent.name} />
+            <AvatarImage src={spotlightAgent.avatar_url || generateDefaultAvatar(spotlightAgent.name)} alt={spotlightAgent.name} />
             <AvatarFallback className="bg-primary/20 text-primary text-xl font-bold">
               {spotlightAgent.symbol.slice(0, 2)}
             </AvatarFallback>
@@ -270,7 +271,7 @@ export const SpotlightAgent = () => {
             recentUsers.map((user) => (
               <div key={user.id} className="relative group">
                 <Avatar className="h-8 w-8 border-2 border-background cursor-pointer transition-transform hover:scale-110">
-                  <AvatarImage src={user.avatar_url || "/placeholder.svg"} alt={user.display_name || 'User'} />
+                  <AvatarImage src={user.avatar_url || generateDefaultAvatar(user.display_name || 'User')} alt={user.display_name || 'User'} />
                   <AvatarFallback className="bg-primary/20 text-xs">
                     {user.display_name ? user.display_name.slice(0, 2).toUpperCase() : 'U'}
                   </AvatarFallback>
@@ -296,7 +297,7 @@ export const SpotlightAgent = () => {
             // Fallback to placeholder avatars if no users
             Array.from({ length: 6 }, (_, i) => (
               <Avatar key={i} className="h-8 w-8 border-2 border-background">
-                <AvatarImage src="/placeholder.svg" alt={`User ${i + 1}`} />
+                <AvatarImage src={generateDefaultAvatar(`User ${i + 1}`)} alt={`User ${i + 1}`} />
                 <AvatarFallback className="bg-primary/20 text-xs">U{i + 1}</AvatarFallback>
               </Avatar>
             ))

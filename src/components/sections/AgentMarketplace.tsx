@@ -13,6 +13,7 @@ import gradientBlurBg from "@/assets/gradient_blur_top_blue.png"
 import { supabase } from "@/integrations/supabase/client"
 import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
 import { useIsMobile, useIsTablet } from "@/hooks/useMediaQuery"
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 
 interface Agent {
   id: string
@@ -103,7 +104,7 @@ export const AgentMarketplace = () => {
       id: agent.id,
       name: agent.name,
       symbol: agent.symbol,
-      avatar: agent.avatar_url || "/placeholder.svg",
+      avatar: agent.avatar_url || generateDefaultAvatar(agent.name),
       fdv: `$${(agent.market_cap / 1000000).toFixed(2)}m`,
       change: `${agent.change_24h >= 0 ? '+' : ''}${agent.change_24h.toFixed(2)}%`,
       chain: agent.chain,
@@ -115,7 +116,7 @@ export const AgentMarketplace = () => {
       id: agent.id,
       name: agent.name,
       symbol: agent.symbol,
-      avatar: agent.avatar_url || "/placeholder.svg",
+      avatar: agent.avatar_url || generateDefaultAvatar(agent.name),
       buyback: `$${(agent.market_cap / 1000).toFixed(0)}k`,
       revenue: `$${(agent.volume_24h / 1000).toFixed(0)}k`,
       chain: agent.chain

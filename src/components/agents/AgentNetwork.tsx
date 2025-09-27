@@ -6,6 +6,7 @@ import { cn } from "@/lib/utils"
 import { supabase } from "@/integrations/supabase/client"
 import { useAgentLogo } from "@/hooks/useAgentLogo"
 import { toast } from "sonner"
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 
 interface Agent {
   id: string
@@ -178,7 +179,7 @@ export const AgentNetwork = () => {
               node.size === "medium" && "h-10 w-10", 
               node.size === "small" && "h-8 w-8"
             )}>
-              <AvatarImage src={node.avatar || "/placeholder.svg"} alt={node.name} />
+              <AvatarImage src={node.avatar || generateDefaultAvatar(node.name)} alt={node.name} />
               <AvatarFallback className="bg-primary/20 text-primary font-semibold text-xs">
                 {node.symbol.slice(0, 2)}
               </AvatarFallback>

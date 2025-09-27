@@ -1,11 +1,12 @@
 import { Star, Quote } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 
 const testimonials = [
   {
     name: "Alex Chen",
     role: "DeFi Trader",
-    avatar: "/placeholder.svg",
+    avatar: generateDefaultAvatar("Alex Chen", "initials"),
     rating: 5,
     content: "HyperCognition's AI agents have completely transformed my trading strategy. The autonomous learning capabilities are incredible - my portfolio has grown 340% in just 6 months.",
     highlight: "340% portfolio growth"
@@ -13,7 +14,7 @@ const testimonials = [
   {
     name: "Sarah Martinez",
     role: "Crypto Fund Manager",
-    avatar: "/placeholder.svg", 
+    avatar: generateDefaultAvatar("Sarah Martinez", "initials"), 
     rating: 5,
     content: "Managing multiple strategies used to be overwhelming. Now our AI agents handle everything automatically while I focus on high-level decisions. The risk management is phenomenal.",
     highlight: "Phenomenal risk management"
@@ -21,7 +22,7 @@ const testimonials = [
   {
     name: "David Kim",
     role: "Quantitative Analyst",
-    avatar: "/placeholder.svg",
+    avatar: generateDefaultAvatar("David Kim", "initials"),
     rating: 5,
     content: "The reinforcement learning algorithms are state-of-the-art. I've deployed 12 different agents, each optimized for specific market conditions. The results speak for themselves.",
     highlight: "12 optimized agents"

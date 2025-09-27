@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom"
 import { useWallet } from "@/hooks/useWallet"
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 
 interface Community {
   id: string
@@ -64,7 +65,7 @@ export default function Communities() {
           agent: {
             name: agent.name,
             symbol: agent.symbol,
-            avatar: agent.avatar_url || "/placeholder.svg"
+            avatar: agent.avatar_url || generateDefaultAvatar(agent.name)
           },
           trending: index < 3 // First 3 are trending
         })) || []
@@ -75,7 +76,7 @@ export default function Communities() {
         const tradersData: TopTrader[] = Array.from({ length: 10 }, (_, index) => ({
           id: `trader-${index + 1}`,
           username: `Trader${index + 1}`,
-          avatar: "/placeholder.svg",
+          avatar: generateDefaultAvatar(`Trader${index + 1}`, "initials"),
           pnl: Math.floor(Math.random() * 50000) + 1000,
           winRate: Math.floor(Math.random() * 40) + 60, // Random win rate 60-100%
           rank: index + 1

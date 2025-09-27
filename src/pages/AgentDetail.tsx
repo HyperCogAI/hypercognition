@@ -15,6 +15,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { useFavorites } from "@/contexts/FavoritesContext"
 import { useAuth } from "@/contexts/AuthContext"
 import { cn } from "@/lib/utils"
+import { generateDefaultAvatar } from "@/utils/avatarUtils"
 
 interface Agent {
   id: string
@@ -158,7 +159,7 @@ export const AgentDetail = () => {
               </Button>
               <div className="flex items-center gap-3">
                 <Avatar className="h-12 w-12">
-                  <AvatarImage src={agent.avatar_url || "/placeholder.svg"} alt={agent.name} />
+                  <AvatarImage src={agent.avatar_url || generateDefaultAvatar(agent.name)} alt={agent.name} />
                   <AvatarFallback className="bg-primary/20 text-primary font-semibold">
                     {agent.name.substring(0, 2).toUpperCase()}
                   </AvatarFallback>
