@@ -117,47 +117,51 @@ const AdminDashboard = () => {
   }
 
   return (
-    <div className="space-y-4 md:space-y-6 p-3 md:p-6">
+    <div className="space-y-4 md:space-y-6 p-3 md:p-6 animate-fade-in">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
-            Admin{" "}
-            <span className="text-white">
-              Dashboard
-            </span>
-          </h1>
-          <p className="text-sm sm:text-base text-muted-foreground">
-            Welcome back, manage your HyperCognition platform
-          </p>
+      <div className="text-center mb-8">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/20">
+            <Shield className="h-8 w-8 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Admin Dashboard
+            </h1>
+          </div>
         </div>
-        <div className="flex items-center gap-2">
-          <Badge variant="secondary" className="flex items-center gap-2">
-            <Shield className="h-4 w-4" />
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-4">
+          Welcome back, manage your HyperCognition platform with powerful administrative tools
+        </p>
+        <div className="flex justify-center">
+          <Badge variant="secondary" className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-primary/10 to-accent/10 border border-primary/20">
+            <Shield className="h-4 w-4 text-primary" />
             {adminRole?.replace('_', ' ').toUpperCase()}
           </Badge>
         </div>
       </div>
 
       {/* Metrics Grid */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         {metrics.map((metric, index) => {
           const Icon = metric.icon
           return (
-            <Card key={index}>
+            <Card key={index} className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                <CardTitle className="text-sm font-medium">
+                <CardTitle className="text-sm font-medium text-muted-foreground">
                   {metric.title}
                 </CardTitle>
-                <Icon className="h-4 w-4 text-muted-foreground" />
+                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                  <Icon className="h-4 w-4 text-primary" />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-2xl font-bold">{metric.value}</div>
-                <p className="text-xs text-muted-foreground">
-                  <span className={metric.trend === 'up' ? 'text-green-600' : 'text-red-600'}>
+                <div className="text-2xl font-bold text-foreground mb-2">{metric.value}</div>
+                <p className="text-xs text-muted-foreground flex items-center gap-1">
+                  <span className={`font-medium ${metric.trend === 'up' ? 'text-green-400' : 'text-red-400'}`}>
                     {metric.change}
                   </span>
-                  {' '}from last month
+                  from last month
                 </p>
               </CardContent>
             </Card>
@@ -166,20 +170,20 @@ const AdminDashboard = () => {
       </div>
 
       {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Button className="h-20 flex flex-col gap-2">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Button className="h-20 flex flex-col gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-200">
           <Users className="h-6 w-6" />
           <span>Manage Users</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2">
+        <Button variant="outline" className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200">
           <MessageSquare className="h-6 w-6" />
           <span>Content Moderation</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2">
+        <Button variant="outline" className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200">
           <TrendingUp className="h-6 w-6" />
           <span>Agent Management</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2">
+        <Button variant="outline" className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200">
           <Activity className="h-6 w-6" />
           <span>System Health</span>
         </Button>
@@ -188,65 +192,78 @@ const AdminDashboard = () => {
       {/* Alerts and Recent Activity */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Alerts */}
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <AlertTriangle className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-red-500/20 to-orange-500/20">
+                <AlertTriangle className="h-5 w-5 text-red-400" />
+              </div>
               System Alerts
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            {alerts.map((alert, index) => (
-              <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-card/50">
-                <div className={`w-2 h-2 rounded-full mt-2 ${
-                  alert.type === 'error' ? 'bg-red-500' : 
-                  alert.type === 'warning' ? 'bg-yellow-500' : 'bg-blue-500'
-                }`} />
-                <div className="flex-1">
-                  <p className="text-sm">{alert.message}</p>
-                  <p className="text-xs text-muted-foreground">{alert.time}</p>
+            {alerts.length > 0 ? (
+              alerts.map((alert, index) => (
+                <div key={index} className="flex items-start gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10">
+                  <div className={`w-2 h-2 rounded-full mt-2 ${
+                    alert.type === 'error' ? 'bg-red-400' : 
+                    alert.type === 'warning' ? 'bg-yellow-400' : 'bg-blue-400'
+                  }`} />
+                  <div className="flex-1">
+                    <p className="text-sm text-foreground">{alert.message}</p>
+                    <p className="text-xs text-muted-foreground">{alert.time}</p>
+                  </div>
                 </div>
+              ))
+            ) : (
+              <div className="text-center py-6">
+                <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20 inline-block mb-3">
+                  <Shield className="h-6 w-6 text-green-400" />
+                </div>
+                <p className="text-muted-foreground">All systems operational</p>
               </div>
-            ))}
+            )}
           </CardContent>
         </Card>
 
         {/* Recent Activity */}
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Activity className="h-5 w-5" />
+            <CardTitle className="flex items-center gap-2 text-foreground">
+              <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                <Activity className="h-5 w-5 text-primary" />
+              </div>
               Recent Activity
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-3">
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
-                <div className="w-8 h-8 rounded-full bg-green-500/20 flex items-center justify-center">
-                  <TrendingUp className="h-4 w-4 text-green-500" />
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-green-500/20 to-emerald-500/20 flex items-center justify-center">
+                  <TrendingUp className="h-4 w-4 text-green-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm">New agent "AI-PROPHET" listed</p>
+                  <p className="text-sm text-foreground">New agent "AI-PROPHET" listed</p>
                   <p className="text-xs text-muted-foreground">5 minutes ago</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
-                <div className="w-8 h-8 rounded-full bg-blue-500/20 flex items-center justify-center">
-                  <Users className="h-4 w-4 text-blue-500" />
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-blue-500/20 to-cyan-500/20 flex items-center justify-center">
+                  <Users className="h-4 w-4 text-blue-400" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm">127 new user registrations</p>
+                  <p className="text-sm text-foreground">127 new user registrations</p>
                   <p className="text-xs text-muted-foreground">1 hour ago</p>
                 </div>
               </div>
               
-              <div className="flex items-center gap-3 p-3 rounded-lg bg-card/50">
-                <div className="w-8 h-8 rounded-full bg-secondary/20 flex items-center justify-center">
-                  <DollarSign className="h-4 w-4 text-secondary" />
+              <div className="flex items-center gap-3 p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10">
+                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-accent/20 flex items-center justify-center">
+                  <DollarSign className="h-4 w-4 text-primary" />
                 </div>
                 <div className="flex-1">
-                  <p className="text-sm">$50K trading volume milestone reached</p>
+                  <p className="text-sm text-foreground">$50K trading volume milestone reached</p>
                   <p className="text-xs text-muted-foreground">2 hours ago</p>
                 </div>
               </div>
