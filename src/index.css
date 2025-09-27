@@ -206,6 +206,16 @@
     background: hsl(var(--primary) / 0.35);
     color: hsl(var(--foreground));
   }
+
+  /* Global responsive typography scale (applies to all pages) */
+  @media (max-width: 640px) {
+    html {
+      font-size: 14px; /* ~12.5% smaller type across the board */
+      line-height: 1.4;
+      -webkit-text-size-adjust: 100%;
+      text-size-adjust: 100%;
+    }
+  }
 }
 
 @layer components {
