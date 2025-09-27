@@ -84,26 +84,26 @@ const TradingAcademy = () => {
         keywords="trading education, AI trading courses, technical analysis, risk management, trading academy"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
+      <div className="container mx-auto px-3 py-4 sm:px-4 sm:py-8">
+        <div className="text-center mb-6 sm:mb-8">
+          <h1 className="text-2xl sm:text-4xl font-bold text-white mb-3 sm:mb-4">
             Trading Academy
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base sm:text-xl text-muted-foreground max-w-2xl mx-auto">
             Master AI trading with expert-led courses, real-time market analysis, and proven strategies
           </p>
         </div>
 
-        <Tabs defaultValue="courses" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="courses">Courses</TabsTrigger>
-            <TabsTrigger value="articles">Articles</TabsTrigger>
-            <TabsTrigger value="webinars">Webinars</TabsTrigger>
-            <TabsTrigger value="certification">Certification</TabsTrigger>
+        <Tabs defaultValue="courses" className="space-y-4 sm:space-y-6">
+          <TabsList className="grid w-full grid-cols-2 sm:grid-cols-4 h-auto">
+            <TabsTrigger value="courses" className="text-xs sm:text-sm">Courses</TabsTrigger>
+            <TabsTrigger value="articles" className="text-xs sm:text-sm">Articles</TabsTrigger>
+            <TabsTrigger value="webinars" className="text-xs sm:text-sm">Webinars</TabsTrigger>
+            <TabsTrigger value="certification" className="text-xs sm:text-sm">Certification</TabsTrigger>
           </TabsList>
 
-          <TabsContent value="courses" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <TabsContent value="courses" className="space-y-4 sm:space-y-6">
+            <div className="grid gap-4 sm:gap-6 md:grid-cols-2 lg:grid-cols-3">
               {courses.map((course) => (
                 <Card key={course.id} className="bg-card/50 backdrop-blur-sm border-border/50">
                   <CardHeader>
@@ -201,15 +201,15 @@ const TradingAcademy = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="certification" className="space-y-6">
+          <TabsContent value="certification" className="space-y-4 sm:space-y-6">
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="p-8 text-center">
-                <Trophy className="h-16 w-16 mx-auto mb-4 text-primary" />
-                <h3 className="text-2xl font-bold mb-4">HyperCognition Trading Certification</h3>
-                <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+              <CardContent className="p-4 sm:p-8 text-center">
+                <Trophy className="h-12 w-12 sm:h-16 sm:w-16 mx-auto mb-3 sm:mb-4 text-primary" />
+                <h3 className="text-xl sm:text-2xl font-bold mb-3 sm:mb-4">HyperCognition Trading Certification</h3>
+                <p className="text-sm sm:text-base text-muted-foreground mb-4 sm:mb-6 max-w-2xl mx-auto">
                   Earn official certification in AI trading strategies. Demonstrate your expertise and join an elite community of certified traders.
                 </p>
-                <div className="grid gap-4 md:grid-cols-3 mb-6">
+                <div className="grid gap-3 sm:gap-4 grid-cols-3 sm:md:grid-cols-3 mb-4 sm:mb-6">
                   <div className="text-center">
                     <div className="text-2xl font-bold text-primary">3</div>
                     <div className="text-sm text-muted-foreground">Certification Levels</div>
