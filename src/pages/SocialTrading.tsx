@@ -39,21 +39,16 @@ export default function SocialTrading() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-primary/20 via-primary-glow/10 to-transparent rounded-full blur-3xl"></div>
           </div>
           
-          <div className="inline-flex items-center justify-center gap-4 mb-8">
+          <div className="inline-flex items-center justify-center gap-3 mb-6">
             <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow rounded-2xl blur opacity-50"></div>
-              <div className="relative p-4 rounded-2xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
-                <Share2 className="h-10 w-10 text-primary" />
+              <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow rounded-xl blur opacity-50"></div>
+              <div className="relative p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
+                <Share2 className="h-8 w-8 text-primary" />
               </div>
             </div>
-            <div className="space-y-2">
-              <h1 className="text-6xl font-black bg-gradient-to-r from-primary via-primary-glow to-accent bg-clip-text text-transparent leading-tight">
-                Social Trading
-              </h1>
-              <div className="text-2xl font-semibold text-muted-foreground">
-                Platform
-              </div>
-            </div>
+            <h1 className="text-4xl font-black text-white leading-tight">
+              Social Trading
+            </h1>
           </div>
           
           <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium">
