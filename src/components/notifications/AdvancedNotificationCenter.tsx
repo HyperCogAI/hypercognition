@@ -119,156 +119,167 @@ export const AdvancedNotificationCenter: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 md:space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white leading-tight">
-            <span className="text-white">
-              Notifications
-            </span>
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="space-y-2">
+          <h1 className="text-2xl md:text-3xl font-bold text-foreground">
+            Notifications
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground">
             Manage your notifications and stay updated on important events
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
-          <Button variant="outline" onClick={markAllAsRead} disabled={stats.unread === 0}>
-            <CheckCheck className="h-4 w-4 mr-2" />
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
+          <Button 
+            variant="outline" 
+            onClick={markAllAsRead} 
+            disabled={stats.unread === 0}
+            className="w-full sm:w-auto text-sm"
+          >
+            <CheckCheck className="w-4 h-4 mr-2" />
             Mark All Read
           </Button>
-          <Button variant="outline" onClick={() => setActiveTab('settings')}>
-            <Settings className="h-4 w-4 mr-2" />
+          <Button 
+            variant="outline" 
+            onClick={() => setActiveTab('settings')}
+            className="w-full sm:w-auto text-sm"
+          >
+            <Settings className="w-4 h-4 mr-2" />
             Settings
           </Button>
         </div>
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-4">
+        <Card className="bg-card/90 border backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Total</p>
-                <p className="text-2xl font-bold">{stats.total}</p>
+              <div className="space-y-1">
+                <p className="text-xs md:text-sm text-muted-foreground">Total</p>
+                <p className="text-xl md:text-2xl font-bold text-foreground">{stats.total}</p>
               </div>
-              <Bell className="h-8 w-8 text-muted-foreground" />
+              <Bell className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/90 border backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Unread</p>
-                <p className="text-2xl font-bold text-orange-500">{stats.unread}</p>
+              <div className="space-y-1">
+                <p className="text-xs md:text-sm text-muted-foreground">Unread</p>
+                <p className="text-xl md:text-2xl font-bold text-orange-500">{stats.unread}</p>
               </div>
-              <BellOff className="h-8 w-8 text-orange-500" />
+              <BellOff className="w-6 h-6 md:w-8 md:h-8 text-orange-500" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/90 border backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">Today</p>
-                <p className="text-2xl font-bold">{stats.today}</p>
+              <div className="space-y-1">
+                <p className="text-xs md:text-sm text-muted-foreground">Today</p>
+                <p className="text-xl md:text-2xl font-bold text-foreground">{stats.today}</p>
               </div>
-              <Clock className="h-8 w-8 text-muted-foreground" />
+              <Clock className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/90 border backdrop-blur-sm">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-muted-foreground">This Week</p>
-                <p className="text-2xl font-bold">{stats.this_week}</p>
+              <div className="space-y-1">
+                <p className="text-xs md:text-sm text-muted-foreground">This Week</p>
+                <p className="text-xl md:text-2xl font-bold text-foreground">{stats.this_week}</p>
               </div>
-              <Zap className="h-8 w-8 text-muted-foreground" />
+              <Zap className="w-6 h-6 md:w-8 md:h-8 text-muted-foreground" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       {/* Main Content */}
-      <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="all">All Notifications</TabsTrigger>
-          <TabsTrigger value="unread">
+      <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4">
+        <TabsList className="grid w-full grid-cols-3 bg-card/80 border backdrop-blur-sm">
+          <TabsTrigger value="all" className="text-sm">All Notifications</TabsTrigger>
+          <TabsTrigger value="unread" className="text-sm">
             Unread ({stats.unread})
           </TabsTrigger>
-          <TabsTrigger value="settings">Settings</TabsTrigger>
+          <TabsTrigger value="settings" className="text-sm">Settings</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all" className="space-y-4">
           {/* Filters */}
-          <Card>
+          <Card className="bg-card/90 border backdrop-blur-sm">
             <CardContent className="p-4">
-              <div className="flex flex-wrap items-center gap-4">
+              <div className="space-y-4">
+                {/* Search Bar */}
                 <div className="flex items-center gap-2">
-                  <Search className="h-4 w-4 text-muted-foreground" />
+                  <Search className="w-4 h-4 text-muted-foreground flex-shrink-0" />
                   <Input
                     placeholder="Search notifications..."
                     value={searchFilter}
                     onChange={(e) => setSearchFilter(e.target.value)}
-                    className="w-64"
+                    className="bg-background/60 border-border/60 focus:border-primary/50"
                   />
                 </div>
                 
-                <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Categories</SelectItem>
-                    <SelectItem value="trading">Trading</SelectItem>
-                    <SelectItem value="market">Market</SelectItem>
-                    <SelectItem value="account">Account</SelectItem>
-                    <SelectItem value="compliance">Compliance</SelectItem>
-                    <SelectItem value="system">System</SelectItem>
-                  </SelectContent>
-                </Select>
+                {/* Filter Controls */}
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+                  <Select value={categoryFilter} onValueChange={setCategoryFilter}>
+                    <SelectTrigger className="bg-background/60 border-border/60">
+                      <SelectValue placeholder="All Categories" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border-border/50">
+                      <SelectItem value="all">All Categories</SelectItem>
+                      <SelectItem value="trading">Trading</SelectItem>
+                      <SelectItem value="market">Market</SelectItem>
+                      <SelectItem value="account">Account</SelectItem>
+                      <SelectItem value="compliance">Compliance</SelectItem>
+                      <SelectItem value="system">System</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                <Select value={priorityFilter} onValueChange={setPriorityFilter}>
-                  <SelectTrigger className="w-40">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="all">All Priorities</SelectItem>
-                    <SelectItem value="critical">Critical</SelectItem>
-                    <SelectItem value="high">High</SelectItem>
-                    <SelectItem value="medium">Medium</SelectItem>
-                    <SelectItem value="low">Low</SelectItem>
-                  </SelectContent>
-                </Select>
+                  <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+                    <SelectTrigger className="bg-background/60 border-border/60">
+                      <SelectValue placeholder="All Priorities" />
+                    </SelectTrigger>
+                    <SelectContent className="bg-card border-border/50">
+                      <SelectItem value="all">All Priorities</SelectItem>
+                      <SelectItem value="critical">Critical</SelectItem>
+                      <SelectItem value="high">High</SelectItem>
+                      <SelectItem value="medium">Medium</SelectItem>
+                      <SelectItem value="low">Low</SelectItem>
+                    </SelectContent>
+                  </Select>
 
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id="unread-only"
-                    checked={showOnlyUnread}
-                    onCheckedChange={(checked) => setShowOnlyUnread(checked === true)}
-                  />
-                  <Label htmlFor="unread-only">Unread only</Label>
+                  <div className="flex items-center space-x-2 px-3 py-2 border border-border/60 rounded-md bg-background/60">
+                    <Checkbox
+                      id="unread-only"
+                      checked={showOnlyUnread}
+                      onCheckedChange={(checked) => setShowOnlyUnread(checked === true)}
+                    />
+                    <Label htmlFor="unread-only" className="text-sm">Unread only</Label>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
 
           {/* Notifications List */}
-          <ScrollArea className="h-[600px]">
-            <div className="space-y-2">
+          <ScrollArea className="h-[500px] md:h-[600px]">
+            <div className="space-y-3">
               {filteredNotifications.length === 0 ? (
-                <Card>
-                  <CardContent className="p-8 text-center">
-                    <Bell className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                    <h3 className="text-lg font-medium">No notifications found</h3>
-                    <p className="text-muted-foreground">
+                <Card className="bg-card/90 border backdrop-blur-sm">
+                  <CardContent className="p-6 md:p-8 text-center">
+                    <Bell className="w-10 h-10 md:w-12 md:h-12 text-muted-foreground mx-auto mb-4" />
+                    <h3 className="text-base md:text-lg font-medium text-foreground mb-2">No notifications found</h3>
+                    <p className="text-sm text-muted-foreground">
                       {searchFilter || categoryFilter !== 'all' || priorityFilter !== 'all' || showOnlyUnread 
                         ? 'Try adjusting your filters'
                         : 'You\'re all caught up!'
@@ -281,8 +292,8 @@ export const AdvancedNotificationCenter: React.FC = () => {
                   <Card 
                     key={notification.id} 
                     className={`border-l-4 ${getPriorityColor(notification.priority)} ${
-                      !notification.read ? 'bg-muted/30' : ''
-                    }`}
+                      !notification.read ? 'bg-muted/20' : 'bg-card/90'
+                    } border backdrop-blur-sm hover:shadow-md transition-shadow`}
                   >
                     <CardContent className="p-4">
                       <div className="flex items-start justify-between">

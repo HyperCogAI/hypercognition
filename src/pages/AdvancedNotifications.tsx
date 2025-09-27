@@ -11,7 +11,7 @@ const AdvancedNotifications: React.FC = () => {
         keywords="notifications, alerts, push notifications, email alerts, trading notifications, real-time updates"
       />
       
-      <div className="container mx-auto p-6">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-6">
         <AdvancedNotificationCenter />
       </div>
     </>
