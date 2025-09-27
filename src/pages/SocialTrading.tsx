@@ -192,35 +192,33 @@ export default function SocialTrading() {
               )}
             </TabsContent>
 
-            <TabsContent value="signals" className="space-y-10 animate-fade-in">
-              <div className="text-center space-y-6">
-                <div className="inline-flex items-center gap-4">
+            <TabsContent value="signals" className="space-y-8 animate-fade-in">
+              <div className="text-center space-y-4">
+                <div className="inline-flex items-center gap-3">
                   <div className="relative">
-                    <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-xl blur"></div>
-                    <div className="relative p-3 rounded-xl bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20">
-                      <TrendingUp className="h-6 w-6 text-accent" />
+                    <div className="absolute inset-0 bg-gradient-to-r from-accent/20 to-primary/20 rounded-lg blur"></div>
+                    <div className="relative p-2 rounded-lg bg-gradient-to-r from-accent/10 to-primary/10 border border-accent/20">
+                      <TrendingUp className="h-5 w-5 text-accent" />
                     </div>
                   </div>
-                  <div>
-                    <h2 className="text-4xl font-black bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
-                      Latest Trading Signals
-                    </h2>
-                    <p className="text-muted-foreground font-medium">Real-time insights from market experts</p>
-                  </div>
+                  <h2 className="text-2xl font-bold bg-gradient-to-r from-foreground to-muted-foreground bg-clip-text text-transparent">
+                    Latest Trading Signals
+                  </h2>
                 </div>
-                <Badge variant="secondary" className="px-4 py-2 text-base font-bold bg-gradient-to-r from-background/90 to-muted/30 border border-border/50 shadow-lg">
+                <p className="text-muted-foreground">Real-time insights from market experts</p>
+                <Badge variant="secondary" className="px-3 py-1 text-sm font-medium bg-background/90 border border-border/50">
                   {tradingSignals.length} Live Signals
                 </Badge>
               </div>
               
               {loadingSignals ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {[...Array(4)].map((_, i) => (
-                    <div key={i} className="h-80 bg-muted/50 animate-pulse rounded-xl border border-border/50" />
+                    <div key={i} className="h-80 bg-muted/30 animate-pulse rounded-xl border border-border/30" />
                   ))}
                 </div>
               ) : (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   {tradingSignals.map((signal) => (
                     <div key={signal.id} className="hover-scale">
                       <TradingSignalCard signal={signal} />
