@@ -4,6 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
+import { coinGeckoSolanaApi } from '@/lib/apis/coingeckoSolanaApi'
 
 interface SolanaPriceChartProps {
   token: any
@@ -17,15 +18,85 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
   const [timeframe, setTimeframe] = useState<'1h' | '24h' | '7d' | '30d'>('24h')
   const [chartData, setChartData] = useState<any[]>([])
 
-  // Generate sample chart data based on current price
+  // Fetch real price history from CoinGecko
   useEffect(() => {
-    if (!token?.price) return
+    if (!token?.id && !token?.symbol) return
 
-    const generateData = () => {
+    const fetchRealData = async () => {
+      try {
+        // Map timeframe to days
+        const days = timeframe === '1h' ? 1 : timeframe === '24h' ? 1 : timeframe === '7d' ? 7 : 30
+        
+        // Try to get token ID from symbol or use provided ID
+        let tokenId = token.id
+        if (!tokenId && token.symbol) {
+          // Map common symbols to CoinGecko IDs
+          const symbolMap: Record<string, string> = {
+            'SOL': 'solana',
+            'RAY': 'raydium',
+            'SRM': 'serum',
+            'USDC': 'usd-coin',
+            'COPE': 'cope',
+            'FIDA': 'bonfida'
+          }
+          tokenId = symbolMap[token.symbol.toUpperCase()] || 'solana'
+        }
+
+        const priceHistory = await coinGeckoSolanaApi.getPriceHistory(tokenId, days)
+        
+        if (priceHistory?.prices) {
+          const chartPoints = priceHistory.prices.map((point, index) => {
+            const [timestamp, price] = point
+            const volume = priceHistory.total_volumes[index]?.[1] || 0
+            
+            // Format time based on timeframe
+            const date = new Date(timestamp)
+            let time = ''
+            
+            if (timeframe === '1h' || timeframe === '24h') {
+              time = date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: false 
+              })
+            } else if (timeframe === '7d') {
+              time = date.toLocaleDateString('en-US', { 
+                weekday: 'short' 
+              })
+            } else {
+              time = date.toLocaleDateString('en-US', { 
+                month: 'short', 
+                day: 'numeric' 
+              })
+            }
+            
+            return {
+              time,
+              price,
+              volume,
+              timestamp
+            }
+          })
+          
+          // For 1h timeframe, show only last hour if we have hourly data
+          const finalData = timeframe === '1h' && chartPoints.length > 60 
+            ? chartPoints.slice(-60) 
+            : chartPoints
+          
+          setChartData(finalData)
+        }
+      } catch (error) {
+        console.error('Error fetching price data:', error)
+        // Fallback to sample data
+        setChartData(generateSampleData())
+      }
+    }
+
+    const generateSampleData = () => {
       const points = timeframe === '1h' ? 60 : timeframe === '24h' ? 24 : timeframe === '7d' ? 7 : 30
       const data = []
-      const basePrice = token.price
-      const volatility = 0.05 // 5% volatility
+      const basePrice = token.price || 95.42
+      const volatility = 0.05
       
       for (let i = 0; i < points; i++) {
         const randomChange = (Math.random() - 0.5) * volatility
@@ -45,8 +116,8 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
         
         data.push({
           time,
-          price: price,
-          volume: volume,
+          price,
+          volume,
           timestamp: Date.now() - (points - i) * (timeframe === '1h' ? 60000 : timeframe === '24h' ? 3600000 : 86400000)
         })
       }
@@ -54,8 +125,8 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
       return data
     }
 
-    setChartData(generateData())
-  }, [token?.price, timeframe])
+    fetchRealData()
+  }, [token?.id, token?.symbol, token?.price, timeframe])
 
   const isPositive = token?.change_24h >= 0
   const priceColor = isPositive ? '#10b981' : '#ef4444'

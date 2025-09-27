@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { coinGeckoApi, type CoinGeckoPrice } from '@/lib/apis/coinGeckoApi'
-import { jupiterApi } from '@/lib/apis/jupiterApi'
+import { coinGeckoSolanaApi } from '@/lib/apis/coingeckoSolanaApi'
 import { alternativeMarketDataApi } from '@/lib/apis/alternativeMarketData'
 import { useSolanaRealtime } from './useSolanaRealtime'
 import { cache, CACHE_KEYS, CACHE_TTL } from '@/lib/cache'
@@ -90,7 +90,8 @@ export const useRealMarketData = () => {
     if (cached) return cached
 
     try {
-      const data = await jupiterApi.getPopularTokensWithPrices(50)
+      const rawData = await coinGeckoSolanaApi.getSolanaTokens()
+      const data = rawData.map(token => coinGeckoSolanaApi.mapToSolanaToken(token))
       
       // Validate and enhance data
       const validatedData = data.filter(token => 
