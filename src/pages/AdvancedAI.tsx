@@ -310,45 +310,52 @@ const AdvancedAI = () => {
 
             <div className="space-y-4">
               {insights.map((insight) => (
-                <Card key={insight.id} className="bg-card/50 backdrop-blur-sm border-border/50">
+                <Card key={insight.id} className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200">
                   <CardContent className="p-6">
                     <div className="flex items-start gap-4">
-                      <div className="p-2 bg-primary/10 rounded-lg">
+                      <div className="p-3 bg-primary/10 rounded-xl shrink-0">
                         {getInsightIcon(insight.type)}
                       </div>
                       
-                      <div className="flex-1 space-y-3">
-                        <div className="flex justify-between items-start">
-                          <div>
-                            <h3 className="font-semibold text-lg">{insight.title}</h3>
-                            <p className="text-muted-foreground mt-1">{insight.description}</p>
+                      <div className="flex-1 min-w-0">
+                        {/* Header Row */}
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-semibold text-lg text-foreground mb-2">{insight.title}</h3>
+                            <p className="text-muted-foreground text-sm leading-relaxed">{insight.description}</p>
                           </div>
-                          <div className="flex items-center gap-2">
-                            <Badge variant={getImpactVariant(insight.impact)}>
-                              {insight.impact} impact
+                          <div className="flex items-center gap-2 shrink-0">
+                            <Badge variant={getImpactVariant(insight.impact)} className="capitalize">
+                              {insight.impact}
                             </Badge>
-                            <span className="text-sm text-muted-foreground">
+                            <span className="text-xs text-muted-foreground whitespace-nowrap">
                               {formatTimeAgo(insight.timestamp)}
                             </span>
                           </div>
                         </div>
                         
-                        <div className="flex items-center justify-between">
+                        {/* Metrics Row */}
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                           <div className="flex items-center gap-4">
-                            <Badge variant="outline">{insight.category}</Badge>
+                            <Badge variant="outline" className="text-xs">
+                              {insight.category}
+                            </Badge>
                             <div className="flex items-center gap-2">
-                              <span className="text-sm text-muted-foreground">Confidence:</span>
-                              <span className={`font-medium ${getConfidenceColor(insight.confidence)}`}>
+                              <span className="text-xs text-muted-foreground">Confidence:</span>
+                              <span className={`text-sm font-semibold ${getConfidenceColor(insight.confidence)}`}>
                                 {insight.confidence}%
                               </span>
                             </div>
                           </div>
-                          <Button variant="ghost" size="sm">
+                          <Button variant="ghost" size="sm" className="self-start sm:self-auto">
                             View Details
                           </Button>
                         </div>
                         
-                        <Progress value={insight.confidence} className="h-2" />
+                        {/* Progress Bar */}
+                        <div className="mt-4">
+                          <Progress value={insight.confidence} className="h-2" />
+                        </div>
                       </div>
                     </div>
                   </CardContent>
