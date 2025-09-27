@@ -42,14 +42,14 @@ export class CoinbaseExchange extends BaseExchange {
       .filter(symbol => this.symbols.includes(symbol.replace('USDT', 'USD')))
       .map(symbol => {
         const basePrice = this.getBasePrice(symbol)
-        const variation = (Math.random() - 0.5) * 0.02 // ±1% variation from Binance
+        const variation = (crypto.getRandomValues(new Uint32Array(1))[0] % 400) / 20000 - 0.01 // ±1% variation from Binance
         const price = basePrice * (1 + variation)
         
         return {
           symbol: symbol.replace('USDT', 'USD'),
           price,
-          volume24h: Math.random() * 50000000, // Lower volume than Binance
-          change24h: (Math.random() - 0.5) * 1000,
+          volume24h: basePrice * 25000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 25000000), // Lower volume than Binance
+          change24h: (crypto.getRandomValues(new Uint32Array(1))[0] % 2000) / 100 - 10,
           high24h: price * 1.05,
           low24h: price * 0.95,
           timestamp: Date.now()
@@ -129,12 +129,12 @@ export class CoinbaseExchange extends BaseExchange {
     this.validateOrder(order)
 
     // Coinbase-specific order processing
-    const orderId = `cb_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const orderId = `cb_${Date.now()}_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`
     
     // Simulate order execution delay
     await new Promise(resolve => setTimeout(resolve, 500))
     
-    const executed = Math.random() > 0.1 // 90% execution rate
+    const executed = crypto.getRandomValues(new Uint32Array(1))[0] % 10 < 9 // 90% execution rate
     
     return {
       id: orderId,
@@ -155,7 +155,7 @@ export class CoinbaseExchange extends BaseExchange {
     await this.checkRateLimit('cancel_order')
 
     // Mock cancellation - 95% success rate
-    return Math.random() > 0.05
+    return crypto.getRandomValues(new Uint32Array(1))[0] % 20 < 19
   }
 
   async getOrderStatus(orderId: string): Promise<TradeOrder> {

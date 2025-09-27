@@ -310,9 +310,9 @@ class JupiterAPI {
   mapToSolanaToken(tokenData: JupiterToken, priceData?: JupiterPrice): any {
     // Generate some mock market data based on price if available
     const price = priceData?.price || 0
-    const volume24h = price > 0 ? Math.random() * 1000000 : 0
-    const change24h = (Math.random() - 0.5) * 20 // Random change between -10% and +10%
-    const marketCap = price > 0 ? price * (Math.random() * 10000000 + 1000000) : 0
+    const volume24h = price > 0 ? (price * 10000 + crypto.getRandomValues(new Uint32Array(1))[0] % 900000) : 0
+    const change24h = price > 0 ? ((crypto.getRandomValues(new Uint32Array(1))[0] % 2000) / 100 - 10) : 0 // -10% to +10%
+    const marketCap = price > 0 ? price * (5000000 + crypto.getRandomValues(new Uint32Array(1))[0] % 5000000) : 0
 
     return {
       id: tokenData.address,

@@ -161,7 +161,7 @@ export function GDPRCompliance() {
 
       // Simulate request submission
       const newRequest: GDPRRequest = {
-        id: Math.random().toString(36).substr(2, 9),
+        id: crypto.getRandomValues(new Uint32Array(1))[0].toString(36),
         type: newRequestType,
         status: 'pending',
         requestedAt: new Date().toISOString(),

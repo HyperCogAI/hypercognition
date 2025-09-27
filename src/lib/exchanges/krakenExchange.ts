@@ -53,14 +53,14 @@ export class KrakenExchange extends BaseExchange {
       .filter(symbol => this.symbols.includes(symbol))
       .map(symbol => {
         const basePrice = this.getBasePrice(symbol)
-        const variation = (Math.random() - 0.5) * 0.015 // ±0.75% variation
+        const variation = (crypto.getRandomValues(new Uint32Array(1))[0] % 300) / 20000 - 0.0075 // ±0.75% variation
         const price = basePrice * (1 + variation)
         
         return {
           symbol,
           price,
-          volume24h: Math.random() * 30000000, // Lower volume than Binance/Coinbase
-          change24h: (Math.random() - 0.5) * 800,
+          volume24h: basePrice * 15000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 15000000), // Lower volume than Binance/Coinbase
+          change24h: (crypto.getRandomValues(new Uint32Array(1))[0] % 1600) / 100 - 8,
           high24h: price * 1.04,
           low24h: price * 0.96,
           timestamp: Date.now()
@@ -78,13 +78,13 @@ export class KrakenExchange extends BaseExchange {
 
     const bids = Array.from({ length: limit }, (_, i) => ({
       price: price * (1 - (i + 1) * 0.00015), // Slightly wider spreads
-      quantity: Math.random() * 8,
+      quantity: (crypto.getRandomValues(new Uint32Array(1))[0] % 8000) / 1000,
       total: 0
     }))
 
     const asks = Array.from({ length: limit }, (_, i) => ({
       price: price * (1 + (i + 1) * 0.00015),
-      quantity: Math.random() * 8,
+      quantity: (crypto.getRandomValues(new Uint32Array(1))[0] % 8000) / 1000,
       total: 0
     }))
 
@@ -113,26 +113,26 @@ export class KrakenExchange extends BaseExchange {
     return [
       {
         asset: 'ZUSD',
-        free: Math.random() * 8000,
-        locked: Math.random() * 800,
+        free: 4000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 4000),
+        locked: 400 + (crypto.getRandomValues(new Uint32Array(1))[0] % 400),
         total: 0
       },
       {
         asset: 'XXBT',
-        free: Math.random() * 3,
-        locked: Math.random() * 0.3,
+        free: 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 200) / 100,
+        locked: 0.1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 20) / 100,
         total: 0
       },
       {
         asset: 'XETH',
-        free: Math.random() * 30,
-        locked: Math.random() * 3,
+        free: 15 + (crypto.getRandomValues(new Uint32Array(1))[0] % 1500) / 100,
+        locked: 1.5 + (crypto.getRandomValues(new Uint32Array(1))[0] % 150) / 100,
         total: 0
       },
       {
         asset: 'ADA',
-        free: Math.random() * 10000,
-        locked: Math.random() * 1000,
+        free: 5000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 5000),
+        locked: 500 + (crypto.getRandomValues(new Uint32Array(1))[0] % 500),
         total: 0
       }
     ].map(balance => ({
@@ -147,12 +147,12 @@ export class KrakenExchange extends BaseExchange {
     this.validateOrder(order)
 
     // Kraken-specific order processing
-    const orderId = `kraken_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const orderId = `kraken_${Date.now()}_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`
     
     // Simulate longer order processing time
     await new Promise(resolve => setTimeout(resolve, 800))
     
-    const executed = Math.random() > 0.05 // 95% execution rate (higher than others)
+    const executed = crypto.getRandomValues(new Uint32Array(1))[0] % 20 < 19 // 95% execution rate
     
     return {
       id: orderId,
@@ -173,7 +173,7 @@ export class KrakenExchange extends BaseExchange {
     await this.checkRateLimit('cancel_order')
 
     // Mock cancellation - 98% success rate (highest)
-    return Math.random() > 0.02
+    return crypto.getRandomValues(new Uint32Array(1))[0] % 50 < 49
   }
 
   async getOrderStatus(orderId: string): Promise<TradeOrder> {
@@ -205,12 +205,12 @@ export class KrakenExchange extends BaseExchange {
     return Array.from({ length: Math.min(limit, 15) }, (_, i) => ({
       id: `kraken_${Date.now() - i * 90000}_trade`,
       symbol: krakenSymbol,
-      side: Math.random() > 0.5 ? 'buy' : 'sell',
+      side: crypto.getRandomValues(new Uint32Array(1))[0] % 2 === 0 ? 'buy' : 'sell',
       type: 'limit',
-      amount: Math.random() * 3,
-      price: this.getBasePrice(krakenSymbol) * (1 + (Math.random() - 0.5) * 0.08),
+      amount: 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 200) / 100,
+      price: this.getBasePrice(krakenSymbol) * (1 + (crypto.getRandomValues(new Int32Array(1))[0] % 1600 - 800) / 10000),
       status: 'filled',
-      filled: Math.random() * 3,
+      filled: 1 + (crypto.getRandomValues(new Uint32Array(1))[0] % 200) / 100,
       remaining: 0,
       timestamp: Date.now() - i * 90000
     }))

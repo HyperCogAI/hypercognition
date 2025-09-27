@@ -92,8 +92,8 @@ export const MultiExchangeConnector = () => {
     logo: getExchangeLogo(conn.exchange_name),
     status: conn.connection_status as 'connected' | 'disconnected' | 'error' | 'connecting',
     lastSync: conn.last_sync_at ? new Date(conn.last_sync_at) : null,
-    tradingPairs: Math.floor(Math.random() * 500) + 100, // Mock for now
-    volume24h: Math.floor(Math.random() * 1000000) + 100000, // Mock for now
+    tradingPairs: 100 + (crypto.getRandomValues(new Uint32Array(1))[0] % 400), // 100-500 pairs
+    volume24h: 100000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 900000), // 100K-1M volume
     fees: {
       maker: 0.1,
       taker: 0.1

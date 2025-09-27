@@ -98,10 +98,10 @@ export const usePortfolioPerformance = (userId?: string) => {
       const mockAllocation: AssetAllocation[] = holdings?.map((holding, index) => ({
         symbol: holding.agents?.symbol || `AGENT${index + 1}`,
         name: holding.agents?.name || `Agent ${index + 1}`,
-        value: holding.total_amount || Math.random() * 10000,
-        percentage: ((holding.total_amount || Math.random() * 10000) / totalValue) * 100,
-        change24h: (Math.random() - 0.5) * 20, // Mock 24h change
-        quantity: Math.floor(holding.total_amount / 100) || Math.floor(Math.random() * 1000)
+        value: holding.total_amount || 0,
+        percentage: totalValue > 0 ? ((holding.total_amount || 0) / totalValue) * 100 : 0,
+        change24h: 0, // Real change data would come from market data API
+        quantity: Math.floor((holding.total_amount || 0) / (holding.average_cost || 1))
       })) || [
         { symbol: 'BTC-AGENT', name: 'Bitcoin Trading Agent', value: 15000, percentage: 30, change24h: 5.2, quantity: 150 },
         { symbol: 'ETH-AGENT', name: 'Ethereum Trading Agent', value: 12500, percentage: 25, change24h: -2.1, quantity: 125 },
@@ -114,14 +114,15 @@ export const usePortfolioPerformance = (userId?: string) => {
       const mockHistory: PerformanceHistory[] = Array.from({ length: 30 }, (_, i) => {
         const date = new Date();
         date.setDate(date.getDate() - (29 - i));
-        const randomChange = (Math.random() - 0.5) * 0.1; // ±5% daily variation
-        const baseValue = totalValue * (1 + (i - 15) * 0.02); // Trending upward
+        const dailyChange = (i % 7 === 0) ? 0.02 : (Math.sin(i * 0.2) * 0.01); // More realistic daily changes
+        const previousValue = i === 0 ? totalValue * 0.8 : mockHistory[i - 1]?.value || totalValue * 0.8;
+        const newValue = previousValue * (1 + dailyChange);
         
         return {
           date: date.toISOString().split('T')[0],
-          value: baseValue + baseValue * randomChange,
-          return: randomChange * 100,
-          benchmark: (Math.random() - 0.5) * 0.08 * 100 // Random benchmark performance
+          value: newValue,
+          return: dailyChange * 100,
+          benchmark: dailyChange * 0.7 * 100 // Benchmark typically lower than portfolio
         };
       });
 

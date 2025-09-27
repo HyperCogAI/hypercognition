@@ -337,7 +337,7 @@ export const useTechnicalAnalysis = (agentId: string, timeframe: string = '1h') 
   const addDrawingTool = (tool: Omit<DrawingTool, 'id'>) => {
     const newTool: DrawingTool = {
       ...tool,
-      id: Math.random().toString(36).substr(2, 9)
+      id: crypto.getRandomValues(new Uint32Array(1))[0].toString(36)
     };
     setDrawingTools(prev => [...prev, newTool]);
     return newTool.id;

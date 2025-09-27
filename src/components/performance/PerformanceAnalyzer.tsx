@@ -74,8 +74,8 @@ const usePerformanceAnalysis = () => {
       return {
         coreWebVitals: {
           lcp: lcp || 2500,
-          fid: Math.random() * 100,
-          cls: Math.random() * 0.1,
+          fid: crypto.getRandomValues(new Uint32Array(1))[0] % 100,
+          cls: (crypto.getRandomValues(new Uint32Array(1))[0] % 100) / 1000,
           fcp: fcp || 1800,
           ttfb: navigation?.responseStart - navigation?.requestStart || 150
         },

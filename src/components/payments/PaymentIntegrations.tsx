@@ -278,7 +278,7 @@ const PaymentIntegrations: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-medium">${(Math.random() * 100 + 10).toFixed(2)}</p>
+                      <p className="font-medium">${(10 + (crypto.getRandomValues(new Uint32Array(1))[0] % 9000) / 100).toFixed(2)}</p>
                       <Badge variant="default" className="bg-green-500">Success</Badge>
                     </div>
                   </div>

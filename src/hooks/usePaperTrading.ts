@@ -61,7 +61,7 @@ export const usePaperTrading = () => {
 
   const executePaperTrade = async (type: 'buy' | 'sell', symbol: string, amount: number, price: number) => {
     const cost = amount * price
-    const tradeId = `paper_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const tradeId = `paper_${Date.now()}_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`
 
     if (type === 'buy') {
       if (balance.USD < cost) {

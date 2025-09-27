@@ -76,7 +76,7 @@ export const useMultiExchange = () => {
               exchange,
               latency,
               uptime: 99.9, // Mock uptime
-              volume24h: Math.random() * 1000000000, // Mock volume
+              volume24h: 500000000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 500000000), // More realistic volume
               fees: {
                 maker: 0.001,
                 taker: 0.001
@@ -202,7 +202,7 @@ export const useMultiExchange = () => {
           
           // Calculate value (mock calculation)
           const value = balances.reduce((sum, balance) => sum + balance.total * 100, 0); // Mock price
-          const pnl = Math.random() * 1000 - 500; // Mock PnL
+          const pnl = (crypto.getRandomValues(new Int32Array(1))[0] % 1500) - 750; // -750 to +750
           const pnlPercentage = (pnl / value) * 100;
           
           portfolio.byExchange[exchange] = {

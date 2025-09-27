@@ -21,7 +21,7 @@ class ABTestingEngine {
   private userVariants: Map<string, UserVariant> = new Map()
   
   createTest(test: Omit<ABTest, 'id'>): string {
-    const id = `test_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    const id = `test_${Date.now()}_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`
     const fullTest: ABTest = {
       id,
       ...test

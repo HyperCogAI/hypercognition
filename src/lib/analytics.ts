@@ -48,7 +48,7 @@ class AnalyticsEngine {
   }
   
   private generateSessionId(): string {
-    return `session_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `session_${Date.now()}_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`
   }
   
   private detectDevice(): 'mobile' | 'tablet' | 'desktop' {
@@ -172,7 +172,7 @@ class AnalyticsEngine {
   }
   
   private generateEventId(): string {
-    return `event_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`
+    return `event_${Date.now()}_${crypto.getRandomValues(new Uint32Array(1))[0].toString(36)}`
   }
   
   private endSession() {

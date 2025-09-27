@@ -175,7 +175,7 @@ export const AdvancedPerformanceOptimizer = () => {
     metricsIntervalRef.current = setInterval(() => {
       setMetrics(prev => prev.map(metric => ({
         ...metric,
-        value: metric.value + (Math.random() - 0.5) * 0.1,
+        value: metric.value + (crypto.getRandomValues(new Int32Array(1))[0] % 200 - 100) / 1000,
         status: metric.value > metric.target * 0.9 ? 'critical' :
                 metric.value > metric.target * 0.7 ? 'warning' : 'good'
       })))

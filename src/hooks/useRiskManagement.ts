@@ -95,7 +95,7 @@ export const useRiskManagement = () => {
 
       // Mock volatility and beta calculations (in real app, use historical data)
       const volatility = Math.abs(agent.change_24h || 0) * 0.1;
-      const beta = 0.8 + Math.random() * 0.4; // Mock beta between 0.8-1.2
+      const beta = 1.0; // Default market correlation, could be calculated from historical data
 
       positions.push({
         agentId: holding.agent_id,
@@ -167,7 +167,7 @@ export const useRiskManagement = () => {
 
       const positionValue = holding.amount * agent.price;
       const volatility = Math.abs(agent.change_24h || 0) * 0.1;
-      const beta = 0.8 + Math.random() * 0.4;
+      const beta = 1.0; // Default market correlation
 
       risks.push({
         agentId: holding.agent_id,

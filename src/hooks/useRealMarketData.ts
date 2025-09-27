@@ -189,14 +189,14 @@ function generateSampleHistory(currentPrice: number, days: number): PriceHistory
 
   for (let i = totalPoints; i >= 0; i--) {
     const timestamp = new Date(now.getTime() - i * 60 * 60 * 1000)
-    const variation = (Math.random() - 0.5) * 0.1 // ±5% variation
+    const variation = (crypto.getRandomValues(new Uint32Array(1))[0] % 200) / 2000 - 0.05 // ±5% variation
     const price = currentPrice * (1 + variation * (i / totalPoints))
     
     data.push({
       timestamp: timestamp.toISOString(),
       price,
-      volume: Math.random() * 100000,
-      market_cap: price * (Math.random() * 1000000 + 100000)
+      volume: price * 50000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 50000),
+      market_cap: price * (500000 + crypto.getRandomValues(new Uint32Array(1))[0] % 500000)
     })
   }
 

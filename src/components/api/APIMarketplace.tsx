@@ -86,7 +86,7 @@ export function APIMarketplace() {
 
   const handleGenerateKey = async () => {
     try {
-      const newKey = 'ak_' + Math.random().toString(36).substring(2, 15);
+      const newKey = 'ak_' + crypto.getRandomValues(new Uint32Array(4)).join('').substring(0, 13);
       
       const { error } = await supabase
         .from('api_keys')

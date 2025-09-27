@@ -61,7 +61,7 @@ export default function Communities() {
           id: agent.id,
           name: `${agent.name} Community`,
           description: `Trading community focused on ${agent.name} (${agent.symbol}) strategies and insights`,
-          members: Math.floor(Math.random() * 2000) + 100, // Random member count for demo
+          members: 100 + (crypto.getRandomValues(new Uint32Array(1))[0] % 1900), // 100-2000 members
           agent: {
             name: agent.name,
             symbol: agent.symbol,
@@ -77,8 +77,8 @@ export default function Communities() {
           id: `trader-${index + 1}`,
           username: `Trader${index + 1}`,
           avatar: generateDefaultAvatar(`Trader${index + 1}`, "initials"),
-          pnl: Math.floor(Math.random() * 50000) + 1000,
-          winRate: Math.floor(Math.random() * 40) + 60, // Random win rate 60-100%
+          pnl: 1000 + (crypto.getRandomValues(new Uint32Array(1))[0] % 49000),
+          winRate: 60 + (crypto.getRandomValues(new Uint32Array(1))[0] % 40), // 60-100% win rate
           rank: index + 1
         }))
 
