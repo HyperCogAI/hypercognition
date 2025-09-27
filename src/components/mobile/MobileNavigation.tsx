@@ -182,7 +182,7 @@ export const MobileNavigation = () => {
                   {navigationSections.map((section) => (
                     <div key={section.title} className="space-y-6">
                       <div className="flex items-center justify-center px-4 mb-4">
-                        <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border border-border/50 rounded-full px-4 py-1.5 shadow-sm">
+                        <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
                           <h3 className="text-sm font-bold text-gray-400 tracking-wide">
                             {section.title}
                           </h3>
