@@ -77,24 +77,24 @@ export function EnhancedTrading() {
         keywords="trading platform, advanced orders, stop loss, take profit, trading dashboard, risk management"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white leading-tight mb-2">
+      <div className="container mx-auto px-4 py-4 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-white leading-tight mb-2">
             Enhanced Trading{" "}
             <span className="text-white">
               Platform
             </span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-sm md:text-base">
             Advanced trading with sophisticated order types and risk management tools
           </p>
         </div>
 
-        <Tabs defaultValue="trade" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3">
-            <TabsTrigger value="trade">Trade</TabsTrigger>
-            <TabsTrigger value="orders">Order Management</TabsTrigger>
-            <TabsTrigger value="analysis">Market Analysis</TabsTrigger>
+        <Tabs defaultValue="trade" className="space-y-4 md:space-y-6">
+          <TabsList className="grid w-full grid-cols-3 h-12 p-1">
+            <TabsTrigger value="trade" className="text-xs sm:text-sm">Trade</TabsTrigger>
+            <TabsTrigger value="orders" className="text-xs sm:text-sm">Order Management</TabsTrigger>
+            <TabsTrigger value="analysis" className="text-xs sm:text-sm">Market Analysis</TabsTrigger>
           </TabsList>
 
           <TabsContent value="trade">
