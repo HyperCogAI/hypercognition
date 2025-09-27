@@ -7,6 +7,8 @@ import { Badge } from "@/components/ui/badge"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom"
 import { useWallet } from "@/hooks/useWallet"
+import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface Community {
   id: string
@@ -30,62 +32,79 @@ interface TopTrader {
   rank: number
 }
 
-const mockCommunities: Community[] = [
-  {
-    id: "1",
-    name: "NeuralFlow Traders",
-    description: "Advanced trading strategies for NFLW holders",
-    members: 1247,
-    agent: { name: "NeuralFlow", symbol: "NFLW", avatar: "/placeholder.svg" },
-    trending: true
-  },
-  {
-    id: "2", 
-    name: "CogniCore Analytics",
-    description: "Deep market analysis and insights for COGN",
-    members: 892,
-    agent: { name: "CogniCore", symbol: "COGN", avatar: "/placeholder.svg" },
-    trending: false
-  },
-  {
-    id: "3",
-    name: "SynthMind Community",
-    description: "AI-powered synthetic intelligence discussions",
-    members: 756,
-    agent: { name: "SynthMind", symbol: "SYNT", avatar: "/placeholder.svg" },
-    trending: true
-  },
-  {
-    id: "4",
-    name: "QuantBot Quants",
-    description: "Quantitative analysis and algorithmic trading",
-    members: 543,
-    agent: { name: "QuantBot", symbol: "QBOT", avatar: "/placeholder.svg" },
-    trending: false
-  }
-]
-
-const mockTopTraders: TopTrader[] = [
-  { id: "1", username: "AlphaTrader", avatar: "/placeholder.svg", pnl: 45632, winRate: 78.5, rank: 1 },
-  { id: "2", username: "CryptoSage", avatar: "/placeholder.svg", pnl: 32840, winRate: 72.3, rank: 2 },
-  { id: "3", username: "QuantMaster", avatar: "/placeholder.svg", pnl: 28950, winRate: 69.8, rank: 3 },
-  { id: "4", username: "AIWhisperer", avatar: "/placeholder.svg", pnl: 21750, winRate: 65.2, rank: 4 },
-  { id: "5", username: "NeuralNet", avatar: "/placeholder.svg", pnl: 18900, winRate: 63.7, rank: 5 }
-]
-
 export default function Communities() {
   const navigate = useNavigate()
   const { isConnected } = useWallet()
-  const [joinedCommunities, setJoinedCommunities] = useState<string[]>(["1", "3"])
+  const { user } = useAuth()
+  const [communities, setCommunities] = useState<Community[]>([])
+  const [topTraders, setTopTraders] = useState<TopTrader[]>([])
+  const [joinedCommunities, setJoinedCommunities] = useState<string[]>([])
+  const [loading, setLoading] = useState(true)
 
-  const joinCommunity = (communityId: string) => {
-    if (!joinedCommunities.includes(communityId)) {
-      setJoinedCommunities([...joinedCommunities, communityId])
+  useEffect(() => {
+    const loadData = async () => {
+      try {
+        // Load agents data to create communities
+        const { data: agents, error: agentsError } = await supabase
+          .from('agents')
+          .select('*')
+          .limit(10)
+
+        if (agentsError) {
+          console.error('Error loading agents:', agentsError)
+          return
+        }
+
+        // Create communities from agents data
+        const communitiesData: Community[] = agents?.map((agent, index) => ({
+          id: agent.id,
+          name: `${agent.name} Community`,
+          description: `Trading community focused on ${agent.name} (${agent.symbol}) strategies and insights`,
+          members: Math.floor(Math.random() * 2000) + 100, // Random member count for demo
+          agent: {
+            name: agent.name,
+            symbol: agent.symbol,
+            avatar: agent.avatar_url || "/placeholder.svg"
+          },
+          trending: index < 3 // First 3 are trending
+        })) || []
+
+        setCommunities(communitiesData)
+
+        // Create mock trader data since real portfolio data structure is complex
+        const tradersData: TopTrader[] = Array.from({ length: 10 }, (_, index) => ({
+          id: `trader-${index + 1}`,
+          username: `Trader${index + 1}`,
+          avatar: "/placeholder.svg",
+          pnl: Math.floor(Math.random() * 50000) + 1000,
+          winRate: Math.floor(Math.random() * 40) + 60, // Random win rate 60-100%
+          rank: index + 1
+        }))
+
+        setTopTraders(tradersData)
+
+      } catch (error) {
+        console.error('Error loading communities data:', error)
+      } finally {
+        setLoading(false)
+      }
     }
+
+    loadData()
+  }, [user])
+
+  const joinCommunity = async (communityId: string) => {
+    if (!user) return
+
+    // For now, just update local state since we don't have the table structure
+    setJoinedCommunities(prev => [...prev, communityId])
   }
 
-  const leaveCommunity = (communityId: string) => {
-    setJoinedCommunities(joinedCommunities.filter(id => id !== communityId))
+  const leaveCommunity = async (communityId: string) => {
+    if (!user) return
+
+    // For now, just update local state since we don't have the table structure
+    setJoinedCommunities(prev => prev.filter(id => id !== communityId))
   }
 
   const formatCurrency = (value: number) => {
@@ -93,6 +112,17 @@ export default function Communities() {
       return `$${(value / 1000).toFixed(1)}K`
     }
     return `$${value.toFixed(0)}`
+  }
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+          <p>Loading communities...</p>
+        </div>
+      </div>
+    )
   }
 
   return (
@@ -110,13 +140,9 @@ export default function Communities() {
               >
                 <ArrowLeft className="h-4 w-4" />
               </Button>
-              <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
-                Trading{" "}
-                <span className="text-white">
-                  Communities
-                </span>
+              <h1 className="text-xl sm:text-2xl font-bold text-foreground leading-tight flex items-center gap-2">
+                Trading Communities
                 <Users className="h-6 w-6" />
-                Communities
               </h1>
             </div>
           </div>
@@ -131,7 +157,7 @@ export default function Communities() {
               <CardTitle className="text-sm font-medium text-muted-foreground">Active Communities</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-2xl font-bold">{mockCommunities.length}</div>
+              <div className="text-2xl font-bold">{communities.length}</div>
               <div className="text-sm text-muted-foreground">Agent-focused groups</div>
             </CardContent>
           </Card>
@@ -142,7 +168,7 @@ export default function Communities() {
             </CardHeader>
             <CardContent>
               <div className="text-2xl font-bold">
-                {mockCommunities.reduce((sum, community) => sum + community.members, 0).toLocaleString()}
+                {communities.reduce((sum, community) => sum + community.members, 0).toLocaleString()}
               </div>
               <div className="text-sm text-muted-foreground">Community members</div>
             </CardContent>
@@ -178,7 +204,7 @@ export default function Communities() {
                 </CardHeader>
                 <CardContent>
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
-                    {mockCommunities
+                    {communities
                       .filter(community => community.trending)
                       .map(community => (
                         <div key={community.id} className="p-4 rounded-lg bg-card/20 border border-border/30">
@@ -195,7 +221,7 @@ export default function Communities() {
                                 </div>
                               </div>
                             </div>
-                            <Badge variant="secondary" className="bg-primary/60 border border-white text-white">
+                            <Badge variant="secondary" className="bg-primary/60 border border-primary text-primary-foreground">
                               Trending
                             </Badge>
                           </div>
@@ -214,6 +240,7 @@ export default function Communities() {
                                   joinCommunity(community.id)
                                 }
                               }}
+                              disabled={!user}
                             >
                               {joinedCommunities.includes(community.id) ? "Leave" : "Join"}
                             </Button>
@@ -231,7 +258,7 @@ export default function Communities() {
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {mockCommunities.map(community => (
+                    {communities.map(community => (
                       <div key={community.id} className="flex items-center justify-between p-4 rounded-lg bg-card/20 hover:bg-card/30 transition-colors">
                         <div className="flex items-center gap-4">
                           <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">
@@ -241,7 +268,7 @@ export default function Communities() {
                             <div className="font-medium flex items-center gap-2">
                               {community.name}
                               {community.trending && (
-                                <Badge variant="secondary" className="text-xs bg-primary/60 border border-white text-white">
+                                <Badge variant="secondary" className="text-xs bg-primary/60 border border-primary text-primary-foreground">
                                   Trending
                                 </Badge>
                               )}
@@ -263,6 +290,7 @@ export default function Communities() {
                               joinCommunity(community.id)
                             }
                           }}
+                          disabled={!user}
                         >
                           {joinedCommunities.includes(community.id) ? "Leave" : "Join"}
                         </Button>
@@ -284,7 +312,7 @@ export default function Communities() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {mockTopTraders.map((trader, index) => (
+                  {topTraders.map((trader, index) => (
                     <div key={trader.id} className="flex items-center justify-between p-4 rounded-lg bg-card/20">
                       <div className="flex items-center gap-4">
                         <div className={`w-8 h-8 rounded-full flex items-center justify-center font-bold ${

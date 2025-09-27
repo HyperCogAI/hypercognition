@@ -41,24 +41,29 @@ export const usePriceSimulation = (tokenId?: string, initialPrice: number = 7.41
       }
     }
 
-    // Fallback to simulation for tokens without real data
-    const interval = setInterval(() => {
-      setPriceData(prev => {
-        // Generate small random price movements (-2% to +2%)
-        const changePercent = (Math.random() - 0.5) * 4
-        const newPrice = prev.current * (1 + changePercent / 100)
-        const change = newPrice - initialPrice
-        const totalChangePercent = (change / initialPrice) * 100
+    // Return current price data if no real data available
+    // Only simulate if explicitly requested (for demo purposes)
+    if (tokenId && tokenId.includes('demo')) {
+      const interval = setInterval(() => {
+        setPriceData(prev => {
+          // Generate small random price movements (-1% to +1%)
+          const changePercent = (Math.random() - 0.5) * 2
+          const newPrice = prev.current * (1 + changePercent / 100)
+          const change = newPrice - initialPrice
+          const totalChangePercent = (change / initialPrice) * 100
 
-        return {
-          current: newPrice,
-          change,
-          changePercent: totalChangePercent
-        }
-      })
-    }, 3000) // Update every 3 seconds
+          return {
+            current: newPrice,
+            change,
+            changePercent: totalChangePercent
+          }
+        })
+      }, 5000) // Update every 5 seconds
 
-    return () => clearInterval(interval)
+      return () => clearInterval(interval)
+    }
+
+    return undefined
   }, [tokenId, initialPrice, getCryptoById, getSolanaByMint])
 
   return priceData

@@ -1,4 +1,6 @@
-import { useState, createContext, useContext } from 'react'
+import { useState, createContext, useContext, useEffect } from 'react'
+import { supabase } from '@/integrations/supabase/client'
+import { useAuth } from './AuthContext'
 
 interface FavoritesContextType {
   favorites: string[]
@@ -18,14 +20,67 @@ export const useFavorites = () => {
 }
 
 export const FavoritesProvider = ({ children }: { children: React.ReactNode }) => {
-  const [favorites, setFavorites] = useState<string[]>(['1', '3', '7']) // Mock initial favorites
+  const [favorites, setFavorites] = useState<string[]>([])
+  const { user } = useAuth()
 
-  const addToFavorites = (agentId: string) => {
-    setFavorites(prev => [...prev, agentId])
+  // Load favorites from Supabase on component mount
+  useEffect(() => {
+    const loadFavorites = async () => {
+      if (!user) return
+
+      try {
+        const { data, error } = await supabase
+          .from('user_favorites')
+          .select('agent_id')
+          .eq('user_id', user.id)
+
+        if (error) {
+          console.error('Error loading favorites:', error)
+          return
+        }
+
+        const favoriteIds = data?.map(fav => fav.agent_id) || []
+        setFavorites(favoriteIds)
+      } catch (error) {
+        console.error('Error loading favorites:', error)
+      }
+    }
+
+    loadFavorites()
+  }, [user])
+
+  const addToFavorites = async (agentId: string) => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from('user_favorites')
+        .insert({ user_id: user.id, agent_id: agentId })
+
+      if (!error) {
+        setFavorites(prev => [...prev, agentId])
+      }
+    } catch (error) {
+      console.error('Error adding favorite:', error)
+    }
   }
 
-  const removeFromFavorites = (agentId: string) => {
-    setFavorites(prev => prev.filter(id => id !== agentId))
+  const removeFromFavorites = async (agentId: string) => {
+    if (!user) return
+
+    try {
+      const { error } = await supabase
+        .from('user_favorites')
+        .delete()
+        .eq('user_id', user.id)
+        .eq('agent_id', agentId)
+
+      if (!error) {
+        setFavorites(prev => prev.filter(id => id !== agentId))
+      }
+    } catch (error) {
+      console.error('Error removing favorite:', error)
+    }
   }
 
   const isFavorite = (agentId: string) => {
