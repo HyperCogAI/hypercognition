@@ -52,16 +52,14 @@ export function EnhancedHero() {
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pointer-events-none">
       
-      {/* Animated Particles Background */}
-      <div className="absolute inset-0 z-0 transform -translate-y-[30vh] md:translate-y-0 pointer-events-none">
+      {/* Animated Background Group (mobile shifted to toolbar) */}
+      <div className="absolute inset-0 z-0 pointer-events-none transform -translate-y-[60vh] md:translate-y-0">
         <AnimatedParticles />
+        <div className="absolute inset-0 cyber-grid opacity-5" />
       </div>
       
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/50 to-background/70 z-5" />
-      
-      {/* Animated Grid Overlay */}
-      <div className="absolute inset-0 cyber-grid opacity-5 z-15" />
       
       
       {/* Content */}
