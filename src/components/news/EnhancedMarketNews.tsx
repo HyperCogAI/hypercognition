@@ -412,7 +412,7 @@ const EnhancedMarketNews = () => {
 
                 {filteredNews.length > MAX_NEWS && (
                   <div className="text-center">
-                    <Button asChild variant="outline" className="group inline-flex items-center gap-2 border-border/20 hover:border-border/30">
+                    <Button asChild variant="outline" className="group inline-flex items-center gap-2 border-border/30 hover:border-border/50">
                       <Link to="/analytics">
                         View More News & Analysis
                         <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-1" />
