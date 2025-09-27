@@ -39,20 +39,20 @@ export default function SocialTrading() {
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-96 h-96 bg-gradient-to-br from-primary/20 via-primary-glow/10 to-transparent rounded-full blur-3xl"></div>
           </div>
           
-          <div className="inline-flex items-center justify-center gap-3 mb-6">
+          <div className="inline-flex items-center justify-center gap-3 mb-4">
             <div className="relative">
               <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow rounded-xl blur opacity-50"></div>
-              <div className="relative p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
-                <Share2 className="h-8 w-8 text-primary" />
+              <div className="relative p-2 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
+                <Share2 className="h-6 w-6 text-primary" />
               </div>
             </div>
-            <h1 className="text-4xl font-black text-white leading-tight">
+            <h1 className="text-3xl font-bold text-white">
               Social Trading
             </h1>
           </div>
           
-          <p className="text-xl text-muted-foreground max-w-4xl mx-auto leading-relaxed font-medium">
-            Connect with <span className="text-primary font-semibold">top traders</span>, copy successful strategies, and share your trading insights with the <span className="text-accent font-semibold">community</span>
+          <p className="text-lg text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Connect with <span className="text-primary font-medium">top traders</span>, copy successful strategies, and share your trading insights with the <span className="text-accent font-medium">community</span>
           </p>
           
           {/* Stats preview */}
