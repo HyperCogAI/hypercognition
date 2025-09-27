@@ -122,52 +122,88 @@ const WhiteLabel = () => {
         keywords="white-label trading, partner solutions, custom branding, trading platform API, enterprise solutions"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             White-Label Solutions
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-base md:text-xl text-muted-foreground max-w-3xl mx-auto px-4">
             Launch your own AI trading platform with our comprehensive white-label solution
           </p>
         </div>
 
         <Tabs defaultValue="overview" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="overview">Overview</TabsTrigger>
-            <TabsTrigger value="branding">Branding</TabsTrigger>
-            <TabsTrigger value="features">Features</TabsTrigger>
-            <TabsTrigger value="integration">Integration</TabsTrigger>
-            <TabsTrigger value="pricing">Pricing</TabsTrigger>
-          </TabsList>
+          <div className="relative">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+              <TabsTrigger 
+                value="overview"
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">Overview</span>
+                <span className="sm:hidden">Home</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="branding"
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">Branding</span>
+                <span className="sm:hidden">Brand</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="features"
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                Features
+              </TabsTrigger>
+              <TabsTrigger 
+                value="integration"
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">Integration</span>
+                <span className="sm:hidden">API</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="pricing"
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                Pricing
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
           <TabsContent value="overview" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-3">
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+            <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200">
                 <CardContent className="p-6 text-center">
-                  <Palette className="h-12 w-12 mx-auto mb-4 text-primary" />
+                  <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                    <Palette className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="font-semibold text-lg mb-2">Complete Customization</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Brand the entire platform with your colors, logo, and custom domain
                   </p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200">
                 <CardContent className="p-6 text-center">
-                  <Code className="h-12 w-12 mx-auto mb-4 text-primary" />
+                  <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                    <Code className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="font-semibold text-lg mb-2">Full API Access</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Complete REST and WebSocket APIs for seamless integration
                   </p>
                 </CardContent>
               </Card>
               
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+              <Card className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200 sm:col-span-2 lg:col-span-1">
                 <CardContent className="p-6 text-center">
-                  <Crown className="h-12 w-12 mx-auto mb-4 text-primary" />
+                  <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                    <Crown className="h-6 w-6 text-primary" />
+                  </div>
                   <h3 className="font-semibold text-lg mb-2">Enterprise Support</h3>
-                  <p className="text-sm text-muted-foreground">
+                  <p className="text-sm text-muted-foreground leading-relaxed">
                     Dedicated support team and custom SLA agreements
                   </p>
                 </CardContent>
@@ -176,7 +212,7 @@ const WhiteLabel = () => {
 
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
-                <CardTitle>Why Choose Our White-Label Solution?</CardTitle>
+                <CardTitle className="text-lg md:text-xl">Why Choose Our White-Label Solution?</CardTitle>
                 <CardDescription>
                   Everything you need to launch your own AI trading platform
                 </CardDescription>
@@ -184,21 +220,21 @@ const WhiteLabel = () => {
               <CardContent className="grid gap-6 md:grid-cols-2">
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0"></div>
                     <div>
                       <h4 className="font-medium">Rapid Deployment</h4>
                       <p className="text-sm text-muted-foreground">Launch in 30 days with our proven platform</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0"></div>
                     <div>
                       <h4 className="font-medium">Regulatory Compliance</h4>
                       <p className="text-sm text-muted-foreground">Built-in compliance tools for global markets</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0"></div>
                     <div>
                       <h4 className="font-medium">Scalable Infrastructure</h4>
                       <p className="text-sm text-muted-foreground">Handle millions of users with enterprise-grade architecture</p>
@@ -207,21 +243,21 @@ const WhiteLabel = () => {
                 </div>
                 <div className="space-y-4">
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0"></div>
                     <div>
                       <h4 className="font-medium">Revenue Sharing</h4>
                       <p className="text-sm text-muted-foreground">Flexible revenue models to maximize your profits</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0"></div>
                     <div>
                       <h4 className="font-medium">Continuous Updates</h4>
                       <p className="text-sm text-muted-foreground">Regular feature updates and security patches</p>
                     </div>
                   </div>
                   <div className="flex items-start gap-3">
-                    <div className="w-2 h-2 bg-primary rounded-full mt-2"></div>
+                    <div className="w-2 h-2 bg-primary rounded-full mt-2 shrink-0"></div>
                     <div>
                       <h4 className="font-medium">Training & Support</h4>
                       <p className="text-sm text-muted-foreground">Comprehensive training for your team</p>
