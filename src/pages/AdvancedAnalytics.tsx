@@ -10,7 +10,15 @@ const AdvancedAnalytics = () => {
         description="Advanced trading analytics dashboard with real-time market data, technical indicators, sentiment analysis, and comprehensive market insights for AI agent trading."
         keywords="AI trading analytics, market data, technical analysis, trading indicators, sentiment analysis, portfolio analytics"
       />
-      <div className="min-h-screen bg-gradient-to-b from-background to-background/80">
+      <div className="container mx-auto p-6 space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">
+            Advanced Analytics
+          </h1>
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Real-time market data, technical analysis, and comprehensive insights for AI agent trading
+          </p>
+        </div>
         <AdvancedAnalyticsDashboard />
       </div>
     </>

@@ -146,19 +146,22 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6 p-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">Advanced Analytics Dashboard</h1>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="space-y-2">
+          <div className="flex items-center gap-3">
+            <BarChart3 className="h-8 w-8 text-primary" />
+            <h2 className="text-2xl font-bold">Market Dashboard</h2>
+          </div>
           <p className="text-muted-foreground">Real-time market data and technical analysis</p>
         </div>
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3">
           <Button
             variant="outline"
             size="sm"
             onClick={() => setAutoRefresh(!autoRefresh)}
-            className={autoRefresh ? 'bg-green-500/10 text-green-500' : ''}
+            className={`h-10 ${autoRefresh ? 'bg-green-500/10 text-green-500 border-green-500/30' : ''}`}
           >
             <Activity className="h-4 w-4 mr-2" />
             Auto Refresh {autoRefresh ? 'ON' : 'OFF'}
@@ -168,6 +171,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
             size="sm"
             onClick={fetchMarketData}
             disabled={isLoading}
+            className="h-10"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
             Refresh
@@ -177,57 +181,57 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
 
       {/* Market Overview */}
       {marketOverview && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <PieChart className="h-5 w-5 text-primary" />
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <PieChart className="h-6 w-6 text-primary" />
                 <span className="text-sm font-medium">Total Market Cap</span>
               </div>
-              <p className="text-2xl font-bold mt-2">{formatCurrency(marketOverview.total_market_cap)}</p>
-              <p className={`text-sm ${marketOverview.average_change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              <p className="text-3xl font-bold mb-2">{formatCurrency(marketOverview.total_market_cap)}</p>
+              <p className={`text-sm font-medium ${marketOverview.average_change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                 {formatPercentage(marketOverview.average_change_24h)} 24h
               </p>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <TrendingUp className="h-5 w-5 text-green-500" />
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <TrendingUp className="h-6 w-6 text-green-500" />
                 <span className="text-sm font-medium">Market Sentiment</span>
               </div>
-              <p className="text-2xl font-bold mt-2">
+              <p className="text-3xl font-bold mb-3">
                 {(marketOverview.bullish_sentiment_ratio * 100).toFixed(0)}% Bullish
               </p>
               <Progress 
                 value={marketOverview.bullish_sentiment_ratio * 100} 
-                className="mt-2 h-2"
+                className="h-3"
               />
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <Activity className="h-5 w-5 text-blue-500" />
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <Activity className="h-6 w-6 text-blue-500" />
                 <span className="text-sm font-medium">Volatility Index</span>
               </div>
-              <p className="text-2xl font-bold mt-2">{marketOverview.volatility_index.toFixed(1)}</p>
-              <Badge variant={marketOverview.volatility_index > 50 ? 'destructive' : 'secondary'} className="mt-2">
+              <p className="text-3xl font-bold mb-3">{marketOverview.volatility_index.toFixed(1)}</p>
+              <Badge variant={marketOverview.volatility_index > 50 ? 'destructive' : 'secondary'} className="text-xs">
                 {marketOverview.volatility_index > 50 ? 'High' : 'Moderate'}
               </Badge>
             </CardContent>
           </Card>
 
-          <Card>
-            <CardContent className="p-4">
-              <div className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5 text-purple-500" />
+          <Card className="hover:shadow-lg transition-shadow">
+            <CardContent className="p-6">
+              <div className="flex items-center gap-3 mb-4">
+                <BarChart3 className="h-6 w-6 text-purple-500" />
                 <span className="text-sm font-medium">Active Pairs</span>
               </div>
-              <p className="text-2xl font-bold mt-2">{marketOverview.active_trading_pairs}</p>
-              <Badge variant="outline" className="mt-2">
+              <p className="text-3xl font-bold mb-3">{marketOverview.active_trading_pairs}</p>
+              <Badge variant="outline" className="text-xs">
                 {marketOverview.market_trend}
               </Badge>
             </CardContent>
@@ -235,46 +239,58 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
         </div>
       )}
 
-      <Tabs defaultValue="overview" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="overview">Market Overview</TabsTrigger>
-          <TabsTrigger value="technical">Technical Analysis</TabsTrigger>
-          <TabsTrigger value="sentiment">Sentiment Analysis</TabsTrigger>
-          <TabsTrigger value="alerts">Price Alerts</TabsTrigger>
+      <Tabs defaultValue="overview" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-12">
+          <TabsTrigger value="overview" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Market Overview
+          </TabsTrigger>
+          <TabsTrigger value="technical" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Technical Analysis
+          </TabsTrigger>
+          <TabsTrigger value="sentiment" className="flex items-center gap-2">
+            <TrendingUp className="h-4 w-4" />
+            Sentiment Analysis
+          </TabsTrigger>
+          <TabsTrigger value="alerts" className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Price Alerts
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="overview" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="overview" className="space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8">
             {/* Agent List */}
             <Card>
-              <CardHeader>
-                <CardTitle>Top AI Agents</CardTitle>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">Top AI Agents</CardTitle>
               </CardHeader>
               <CardContent>
-                <div className="space-y-3">
+                <div className="space-y-4">
                   {marketData.map((agent) => (
                     <div
                       key={agent.symbol}
-                      className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                      className={`p-4 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
                         selectedAgent?.symbol === agent.symbol 
-                          ? 'border-primary bg-primary/5' 
+                          ? 'border-primary bg-primary/5 shadow-sm' 
                           : 'border-border hover:border-primary/50'
                       }`}
                       onClick={() => setSelectedAgent(agent)}
                     >
                       <div className="flex items-center justify-between">
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-semibold">{agent.symbol}</span>
-                            <Badge className={getSentimentColor(agent.sentiment.sentiment)}>
+                        <div className="space-y-1">
+                          <div className="flex items-center gap-3">
+                            <span className="font-semibold text-lg">{agent.symbol}</span>
+                            <Badge className={`${getSentimentColor(agent.sentiment.sentiment)} font-medium`}>
                               {agent.sentiment.sentiment}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">{agent.name}</p>
                         </div>
-                        <div className="text-right">
-                          <p className="font-semibold">${agent.price.toFixed(4)}</p>
-                          <p className={`text-sm ${agent.change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        <div className="text-right space-y-1">
+                          <p className="font-bold text-lg">${agent.price.toFixed(4)}</p>
+                          <p className={`text-sm font-medium ${agent.change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                             {formatPercentage(agent.change_24h)}
                           </p>
                         </div>
@@ -287,14 +303,14 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
 
             {/* Price Chart */}
             <Card>
-              <CardHeader>
-                <CardTitle>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">
                   {selectedAgent ? `${selectedAgent.name} (${selectedAgent.symbol})` : 'Select an Agent'}
                 </CardTitle>
               </CardHeader>
               <CardContent>
-                {selectedAgent && (
-                  <div className="h-[300px]">
+                {selectedAgent ? (
+                  <div className="h-[400px]">
                     <PriceChart 
                       agentId={selectedAgent.symbol}
                       symbol={selectedAgent.symbol}
@@ -302,30 +318,40 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                       change24h={selectedAgent.change_24h}
                     />
                   </div>
+                ) : (
+                  <div className="h-[400px] flex items-center justify-center border-2 border-dashed border-muted-foreground/25 rounded-lg">
+                    <div className="text-center space-y-3">
+                      <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                      <div className="space-y-1">
+                        <h3 className="text-lg font-semibold text-muted-foreground">No Agent Selected</h3>
+                        <p className="text-sm text-muted-foreground">Select an agent to view price chart</p>
+                      </div>
+                    </div>
+                  </div>
                 )}
               </CardContent>
             </Card>
           </div>
         </TabsContent>
 
-        <TabsContent value="technical" className="space-y-4">
-          {selectedAgent && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <TabsContent value="technical" className="space-y-6">
+          {selectedAgent ? (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               <Card>
-                <CardHeader>
-                  <CardTitle>Technical Indicators</CardTitle>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl">Technical Indicators</CardTitle>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
                     {selectedAgent.sentiment.indicators.map((indicator, index) => (
-                      <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
-                        <div className="flex items-center gap-2">
+                      <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
+                        <div className="flex items-center gap-3">
                           {getSignalIcon(indicator.signal)}
                           <span className="font-medium">{indicator.name}</span>
                         </div>
-                        <div className="text-right">
+                        <div className="text-right space-y-1">
                           <p className="font-semibold">{indicator.value.toFixed(2)}</p>
-                          <p className="text-sm text-muted-foreground">
+                          <p className="text-xs text-muted-foreground">
                             {(indicator.confidence * 100).toFixed(0)}% confidence
                           </p>
                         </div>
@@ -336,80 +362,97 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
               </Card>
 
               <Card>
-                <CardHeader>
-                  <CardTitle>Moving Averages</CardTitle>
+                <CardHeader className="pb-4">
+                  <CardTitle className="text-xl">Moving Averages</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    <div className="flex justify-between items-center">
-                      <span>Current Price</span>
-                      <span className="font-semibold">${selectedAgent.price.toFixed(4)}</span>
+                  <div className="space-y-6">
+                    <div className="flex justify-between items-center p-3 border rounded-lg">
+                      <span className="font-medium">Current Price</span>
+                      <span className="font-bold text-lg">${selectedAgent.price.toFixed(4)}</span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span>SMA 20</span>
-                      <span className={selectedAgent.price > selectedAgent.technical_analysis.sma_20 ? 'text-green-500' : 'text-red-500'}>
+                    <div className="flex justify-between items-center p-3 border rounded-lg">
+                      <span className="font-medium">SMA 20</span>
+                      <span className={`font-semibold ${selectedAgent.price > selectedAgent.technical_analysis.sma_20 ? 'text-green-500' : 'text-red-500'}`}>
                         ${selectedAgent.technical_analysis.sma_20.toFixed(4)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span>SMA 50</span>
-                      <span className={selectedAgent.price > selectedAgent.technical_analysis.sma_50 ? 'text-green-500' : 'text-red-500'}>
+                    <div className="flex justify-between items-center p-3 border rounded-lg">
+                      <span className="font-medium">SMA 50</span>
+                      <span className={`font-semibold ${selectedAgent.price > selectedAgent.technical_analysis.sma_50 ? 'text-green-500' : 'text-red-500'}`}>
                         ${selectedAgent.technical_analysis.sma_50.toFixed(4)}
                       </span>
                     </div>
-                    <div className="flex justify-between items-center">
-                      <span>RSI</span>
-                      <span className={selectedAgent.technical_analysis.rsi > 70 ? 'text-red-500' : selectedAgent.technical_analysis.rsi < 30 ? 'text-green-500' : 'text-yellow-500'}>
-                        {selectedAgent.technical_analysis.rsi.toFixed(1)}
-                      </span>
+                    <div className="flex justify-between items-center p-3 border rounded-lg">
+                      <span className="font-medium">RSI</span>
+                      <div className="text-right">
+                        <span className={`font-semibold ${selectedAgent.technical_analysis.rsi > 70 ? 'text-red-500' : selectedAgent.technical_analysis.rsi < 30 ? 'text-green-500' : 'text-yellow-500'}`}>
+                          {selectedAgent.technical_analysis.rsi.toFixed(1)}
+                        </span>
+                        <div className="text-xs text-muted-foreground mt-1">
+                          {selectedAgent.technical_analysis.rsi > 70 ? 'Overbought' : selectedAgent.technical_analysis.rsi < 30 ? 'Oversold' : 'Neutral'}
+                        </div>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             </div>
+          ) : (
+            <Card>
+              <CardContent className="py-16">
+                <div className="text-center space-y-4">
+                  <Activity className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                  <div className="space-y-2">
+                    <h3 className="text-xl font-semibold text-muted-foreground">No Agent Selected</h3>
+                    <p className="text-muted-foreground">Select an agent from the Market Overview tab to view technical analysis</p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
           )}
         </TabsContent>
 
-        <TabsContent value="sentiment" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <TabsContent value="sentiment" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
             {marketData.map((agent) => (
-              <Card key={agent.symbol}>
-                <CardHeader>
+              <Card key={agent.symbol} className="hover:shadow-lg transition-shadow">
+                <CardHeader className="pb-4">
                   <CardTitle className="flex items-center justify-between">
-                    <span>{agent.symbol}</span>
-                    <Badge className={getSentimentColor(agent.sentiment.sentiment)}>
+                    <span className="text-lg">{agent.symbol}</span>
+                    <Badge className={`${getSentimentColor(agent.sentiment.sentiment)} font-medium px-3 py-1`}>
                       {agent.sentiment.sentiment}
                     </Badge>
                   </CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-3">
+                  <div className="space-y-5">
                     <div>
-                      <div className="flex justify-between text-sm mb-1">
-                        <span>Sentiment Score</span>
-                        <span>{agent.sentiment.score.toFixed(0)}%</span>
+                      <div className="flex justify-between text-sm mb-2">
+                        <span className="font-medium">Sentiment Score</span>
+                        <span className="font-semibold">{agent.sentiment.score.toFixed(0)}%</span>
                       </div>
-                      <Progress value={agent.sentiment.score} className="h-2" />
+                      <Progress value={agent.sentiment.score} className="h-3" />
                     </div>
                     
                     {agent.sentiment.social_sentiment && (
                       <div>
-                        <div className="flex justify-between text-sm mb-1">
-                          <span>Social Sentiment</span>
-                          <span>{agent.sentiment.social_sentiment.toFixed(0)}%</span>
+                        <div className="flex justify-between text-sm mb-2">
+                          <span className="font-medium">Social Sentiment</span>
+                          <span className="font-semibold">{agent.sentiment.social_sentiment.toFixed(0)}%</span>
                         </div>
-                        <Progress value={agent.sentiment.social_sentiment} className="h-2" />
+                        <Progress value={agent.sentiment.social_sentiment} className="h-3" />
                       </div>
                     )}
                     
-                    <div className="text-sm space-y-1">
-                      <div className="flex justify-between">
-                        <span>Volume Trend:</span>
-                        <Badge variant="outline">{agent.sentiment.volume_trend}</Badge>
+                    <div className="space-y-3 pt-2">
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Volume Trend:</span>
+                        <Badge variant="outline" className="font-medium">{agent.sentiment.volume_trend}</Badge>
                       </div>
-                      <div className="flex justify-between">
-                        <span>Price Momentum:</span>
-                        <Badge variant="outline">{agent.sentiment.price_momentum}</Badge>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm font-medium">Price Momentum:</span>
+                        <Badge variant="outline" className="font-medium">{agent.sentiment.price_momentum}</Badge>
                       </div>
                     </div>
                   </div>
@@ -419,21 +462,23 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="alerts" className="space-y-4">
+        <TabsContent value="alerts" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <AlertTriangle className="h-5 w-5" />
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <AlertTriangle className="h-6 w-6" />
                 Price Alerts & Notifications
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="text-center py-8">
-                <AlertTriangle className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                <h3 className="text-lg font-semibold mb-2">Price Alerts Coming Soon</h3>
-                <p className="text-muted-foreground">
-                  Set custom price alerts and get notified when your favorite AI agents hit target prices.
-                </p>
+              <div className="text-center py-16">
+                <AlertTriangle className="h-20 w-20 text-muted-foreground/50 mx-auto mb-6" />
+                <div className="space-y-3">
+                  <h3 className="text-2xl font-semibold">Price Alerts Coming Soon</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    Set custom price alerts and get notified when your favorite AI agents hit target prices.
+                  </p>
+                </div>
               </div>
             </CardContent>
           </Card>
