@@ -230,15 +230,15 @@ const AdvancedAI = () => {
         keywords="AI trading insights, machine learning predictions, algorithmic analysis, AI recommendations, advanced trading AI"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white leading-tight mb-4">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight mb-2 md:mb-4">
             Advanced{" "}
             <span className="text-white">
               AI Insights
             </span>
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Harness the power of machine learning for intelligent trading decisions and market predictions
           </p>
         </div>

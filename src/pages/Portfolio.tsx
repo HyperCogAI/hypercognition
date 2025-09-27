@@ -87,16 +87,16 @@ export default function Portfolio() {
         keywords="portfolio tracking, investment analytics, AI agents, trading performance, portfolio optimization"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="flex justify-between items-center mb-8">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
           <div>
-            <h1 className="text-3xl font-bold text-white leading-tight mb-2">
+            <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-2">
               Portfolio{" "}
               <span className="text-white">
                 Dashboard
               </span>
             </h1>
-            <p className="text-muted-foreground">
+            <p className="text-sm sm:text-base text-muted-foreground">
               Track performance, analyze holdings, and optimize your AI agent investments
             </p>
           </div>

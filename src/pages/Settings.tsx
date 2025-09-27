@@ -93,19 +93,19 @@ const Settings = () => {
         keywords="settings, preferences, security, trading configuration, notifications"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 p-6">
-        <div className="max-w-6xl mx-auto space-y-8">
+      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 p-3 md:p-6">
+        <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
           {/* Header */}
-          <div className="space-y-4">
-            <div className="flex items-center space-x-4">
-              <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/20">
-                <User className="h-8 w-8 text-primary" />
+          <div className="space-y-3 md:space-y-4">
+            <div className="flex items-center space-x-3 md:space-x-4">
+              <div className="p-2 md:p-3 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/20">
+                <User className="h-6 w-6 md:h-8 md:w-8 text-primary" />
               </div>
               <div>
-                <h1 className="text-4xl font-bold text-white">
+                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
                   Settings
                 </h1>
-                <p className="text-muted-foreground">
+                <p className="text-sm sm:text-base text-muted-foreground">
                   Customize your HyperCognition experience
                 </p>
               </div>
@@ -113,8 +113,8 @@ const Settings = () => {
           </div>
 
           {/* Settings Tabs */}
-          <Tabs defaultValue="account" className="space-y-6">
-            <TabsList className="grid w-full grid-cols-6 h-12 bg-card/30 border border-border/50 backdrop-blur-sm">
+          <Tabs defaultValue="account" className="space-y-4 md:space-y-6">
+            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-10 sm:h-12 bg-card/30 border border-border/50 backdrop-blur-sm text-xs sm:text-sm">
               <TabsTrigger value="account" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
                 <User className="h-4 w-4 mr-2" />
                 Account

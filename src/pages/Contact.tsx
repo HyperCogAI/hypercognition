@@ -33,10 +33,10 @@ export default function Contact() {
         title="Contact Us - HyperCognition"
         description="Get in touch with the HyperCognition team for support, partnerships, or general inquiries"
       />
-      <div className="max-w-6xl mx-auto px-4 py-16">
-        <div className="text-center mb-12">
-          <h1 className="text-4xl font-bold text-white mb-4">Contact Us</h1>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
+      <div className="max-w-6xl mx-auto px-3 md:px-4 py-8 md:py-16">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-4">Contact Us</h1>
+          <p className="text-muted-foreground text-sm sm:text-base md:text-lg max-w-2xl mx-auto px-4">
             Have questions about our AI trading agents? Need technical support? We're here to help.
           </p>
         </div>

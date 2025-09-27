@@ -34,15 +34,15 @@ export function AdvancedTradingPage() {
         keywords="advanced trading, order management, stop loss, take profit, trading dashboard, AI agents"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white leading-tight mb-2">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-2">
             Advanced{" "}
             <span className="text-white">
               Trading
             </span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Professional trading tools with advanced order types and comprehensive order management
           </p>
         </div>

@@ -15,15 +15,15 @@ const Analytics = () => {
         keywords="trading analytics, market insights, portfolio analysis, trading signals, market news, sentiment analysis"
       />
       
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 space-y-6 md:space-y-8">
         <div>
-          <h1 className="text-4xl font-bold text-white leading-tight mb-2">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight mb-2">
             Analytics{" "}
             <span className="text-white">
               Dashboard
             </span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm sm:text-base text-muted-foreground">
             Comprehensive market analysis, trading signals, and performance insights
           </p>
         </div>

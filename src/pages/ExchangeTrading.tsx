@@ -23,15 +23,15 @@ const ExchangeTrading = () => {
         description="Professional cryptocurrency trading platform with advanced order types, risk management, and real-time market data across multiple exchanges."
         keywords="crypto trading, exchange trading, order book, portfolio management, risk management"
       />
-      <div className="container mx-auto px-4 py-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-white leading-tight mb-2">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight mb-2">
             Exchange{" "}
             <span className="text-white">
               Trading
             </span>
           </h1>
-          <p className="text-muted-foreground">Professional trading tools and analytics</p>
+          <p className="text-sm sm:text-base text-muted-foreground">Professional trading tools and analytics</p>
         </div>
 
         <Tabs defaultValue="trading" className="space-y-6">

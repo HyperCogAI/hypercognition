@@ -175,12 +175,12 @@ const InstitutionalAPIs = () => {
         keywords="institutional APIs, enterprise trading, hedge fund APIs, institutional trading, financial APIs, prime brokerage"
       />
       
-      <div className="container mx-auto px-4 py-16">
-        <div className="text-center mb-16">
-          <h1 className="text-4xl font-bold text-white mb-6">
+      <div className="container mx-auto px-3 md:px-4 py-8 md:py-16">
+        <div className="text-center mb-8 md:mb-16">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
             Institutional APIs
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Enterprise-grade trading APIs designed for institutional clients, hedge funds, and financial institutions
           </p>
         </div>

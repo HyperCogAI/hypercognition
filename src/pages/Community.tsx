@@ -99,12 +99,12 @@ const Community = () => {
         keywords="trading community, trader forum, AI trading chat, trading strategies, market discussion"
       />
       
-      <div className="container mx-auto px-4 py-8">
-        <div className="text-center mb-8">
-          <h1 className="text-4xl font-bold text-white mb-4">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-2 md:mb-4">
             Trading Community
           </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Connect with fellow traders, share strategies, and learn from the community
           </p>
         </div>
