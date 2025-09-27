@@ -3,7 +3,7 @@ import { ArrowRight, Sparkles, Zap } from "lucide-react";
 
 export const HyperCTA = () => {
   return (
-    <section className="pt-4 md:pt-6 lg:pt-8 pb-20 md:pb-24 lg:pb-28 px-4 relative overflow-hidden">
+    <section className="py-24 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-primary/5 to-background" />
       <div className="absolute inset-0 cyber-grid opacity-10" />

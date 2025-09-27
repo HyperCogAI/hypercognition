@@ -43,7 +43,7 @@ const features = [
 
 export const HyperFeatures = () => {
   return (
-    <section className="pt-24 pb-6 md:pb-8 lg:pb-10 px-4 relative overflow-hidden">
+    <section className="py-24 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/20 to-background" />
       <div className="absolute inset-0 cyber-grid opacity-20" />
