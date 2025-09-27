@@ -11,16 +11,13 @@ const RiskManagement: React.FC = () => {
         keywords="risk management, portfolio optimization, position sizing, VaR analysis, diversification"
       />
       
-      <div className="container mx-auto p-6">
-        <div className="mb-6">
-          <h1 className="text-3xl font-bold text-white leading-tight">
-            Risk{" "}
-            <span className="text-white">
-              Management
-            </span>
+      <div className="container mx-auto p-6 space-y-8">
+        <div className="text-center space-y-4">
+          <h1 className="text-4xl font-bold">
+            Risk Management
           </h1>
-          <p className="text-muted-foreground">
-            Monitor portfolio risk, optimize allocations, and calculate optimal position sizes
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            Monitor portfolio risk, optimize allocations, and calculate optimal position sizes with advanced analytics
           </p>
         </div>
         <RiskManagementDashboard />

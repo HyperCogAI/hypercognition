@@ -55,13 +55,16 @@ export const RiskManagementDashboard: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="space-y-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
-            <Skeleton key={i} className="h-32" />
+            <Skeleton key={i} className="h-32 rounded-lg" />
           ))}
         </div>
-        <Skeleton className="h-96" />
+        <div className="space-y-4">
+          <Skeleton className="h-12 rounded-lg" />
+          <Skeleton className="h-96 rounded-lg" />
+        </div>
       </div>
     );
   }
@@ -104,33 +107,33 @@ export const RiskManagementDashboard: React.FC = () => {
   const riskBadge = riskMetrics ? getRiskBadgeVariant(riskMetrics.riskScore) : null;
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Risk Overview Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium">Risk Score</CardTitle>
-            <Shield className="h-4 w-4 text-muted-foreground" />
+            <Shield className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold mb-2">
               {riskMetrics?.riskScore.toFixed(1) || '0.0'}
             </div>
             {riskBadge && (
-              <Badge variant={riskBadge.variant} className="mt-2">
+              <Badge variant={riskBadge.variant} className="text-xs">
                 {riskBadge.label}
               </Badge>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium">Value at Risk (5%)</CardTitle>
-            <TrendingDown className="h-4 w-4 text-muted-foreground" />
+            <TrendingDown className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold mb-2">
               {formatCurrency(riskMetrics?.valueAtRisk || 0)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -139,13 +142,13 @@ export const RiskManagementDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium">Sharpe Ratio</CardTitle>
-            <TrendingUp className="h-4 w-4 text-muted-foreground" />
+            <TrendingUp className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold mb-2">
               {riskMetrics?.sharpeRatio.toFixed(2) || '0.00'}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -154,13 +157,13 @@ export const RiskManagementDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
             <CardTitle className="text-sm font-medium">Diversification</CardTitle>
-            <Zap className="h-4 w-4 text-muted-foreground" />
+            <Zap className="h-5 w-5 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-3xl font-bold mb-2">
               {formatPercentage((riskMetrics?.diversificationRatio || 0) * 100, 1)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -170,28 +173,40 @@ export const RiskManagementDashboard: React.FC = () => {
         </Card>
       </div>
 
-      <Tabs defaultValue="limits" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="limits">Risk Limits</TabsTrigger>
-          <TabsTrigger value="positions">Position Risk</TabsTrigger>
-          <TabsTrigger value="calculator">Position Sizing</TabsTrigger>
-          <TabsTrigger value="optimization">Optimization</TabsTrigger>
+      <Tabs defaultValue="limits" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4">
+          <TabsTrigger value="limits" className="flex items-center gap-2">
+            <AlertTriangle className="h-4 w-4" />
+            Risk Limits
+          </TabsTrigger>
+          <TabsTrigger value="positions" className="flex items-center gap-2">
+            <Shield className="h-4 w-4" />
+            Position Risk
+          </TabsTrigger>
+          <TabsTrigger value="calculator" className="flex items-center gap-2">
+            <Calculator className="h-4 w-4" />
+            Position Sizing
+          </TabsTrigger>
+          <TabsTrigger value="optimization" className="flex items-center gap-2">
+            <Zap className="h-4 w-4" />
+            Optimization
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="limits" className="space-y-4">
+        <TabsContent value="limits" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Risk Limit Monitoring</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Risk Limit Monitoring</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="space-y-6">
               {riskLimits.map((limit) => (
-                <div key={limit.id} className="space-y-2">
+                <div key={limit.id} className="space-y-3 p-4 border rounded-lg hover:shadow-sm transition-shadow">
                   <div className="flex justify-between items-center">
-                    <span className="text-sm font-medium capitalize">
+                    <span className="text-sm font-semibold capitalize">
                       {limit.type.replace('_', ' ')}
                     </span>
-                    <div className="flex items-center gap-2">
-                      <span className={`text-sm ${getLimitStatusColor(limit.status)}`}>
+                    <div className="flex items-center gap-3">
+                      <span className={`text-sm font-medium ${getLimitStatusColor(limit.status)}`}>
                         {limit.type.includes('concentration') 
                           ? limit.current.toFixed(3) 
                           : formatPercentage(limit.current, 1)
@@ -201,72 +216,79 @@ export const RiskManagementDashboard: React.FC = () => {
                         }
                       </span>
                       {limit.status === 'breach' && (
-                        <AlertTriangle className="h-4 w-4 text-red-400" />
+                        <AlertTriangle className="h-5 w-5 text-red-400" />
                       )}
                     </div>
                   </div>
                   <Progress 
                     value={(limit.current / limit.limit) * 100} 
-                    className="h-2"
+                    className="h-3"
                   />
+                  <div className="text-xs text-muted-foreground">
+                    Status: <span className={`font-medium ${getLimitStatusColor(limit.status)}`}>
+                      {limit.status.toUpperCase()}
+                    </span>
+                  </div>
                 </div>
               ))}
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="positions" className="space-y-4">
+        <TabsContent value="positions" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Position Risk Analysis</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Position Risk Analysis</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="overflow-x-auto">
-                <table className="w-full text-sm">
-                  <thead>
-                    <tr className="border-b">
-                      <th className="text-left p-2">Asset</th>
-                      <th className="text-right p-2">Exposure</th>
-                      <th className="text-right p-2">% Portfolio</th>
-                      <th className="text-right p-2">Volatility</th>
-                      <th className="text-right p-2">Beta</th>
-                      <th className="text-right p-2">Risk Score</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {positionRisks.map((position) => (
-                      <tr key={position.agentId} className="border-b">
-                        <td className="p-2 font-medium">{position.symbol}</td>
-                        <td className="text-right p-2">{formatCurrency(position.exposure)}</td>
-                        <td className="text-right p-2">{formatPercentage(position.percentOfPortfolio, 1)}</td>
-                        <td className="text-right p-2">{formatPercentage(position.volatility * 100, 1)}</td>
-                        <td className="text-right p-2">{position.beta.toFixed(2)}</td>
-                        <td className="text-right p-2">
-                          <Badge variant={position.volatility > 0.1 ? 'destructive' : position.volatility > 0.05 ? 'secondary' : 'default'}>
-                            {position.volatility > 0.1 ? 'High' : position.volatility > 0.05 ? 'Medium' : 'Low'}
-                          </Badge>
-                        </td>
+              <div className="border rounded-lg overflow-hidden">
+                <div className="overflow-x-auto">
+                  <table className="w-full">
+                    <thead className="bg-muted/50">
+                      <tr>
+                        <th className="text-left p-4 font-medium">Asset</th>
+                        <th className="text-right p-4 font-medium">Exposure</th>
+                        <th className="text-right p-4 font-medium">% Portfolio</th>
+                        <th className="text-right p-4 font-medium">Volatility</th>
+                        <th className="text-right p-4 font-medium">Beta</th>
+                        <th className="text-right p-4 font-medium">Risk Score</th>
                       </tr>
-                    ))}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {positionRisks.map((position, index) => (
+                        <tr key={position.agentId} className={`border-b transition-colors hover:bg-muted/30 ${index % 2 === 0 ? 'bg-muted/10' : ''}`}>
+                          <td className="p-4 font-semibold">{position.symbol}</td>
+                          <td className="text-right p-4 font-medium">{formatCurrency(position.exposure)}</td>
+                          <td className="text-right p-4">{formatPercentage(position.percentOfPortfolio, 1)}</td>
+                          <td className="text-right p-4">{formatPercentage(position.volatility * 100, 1)}</td>
+                          <td className="text-right p-4 font-mono">{position.beta.toFixed(2)}</td>
+                          <td className="text-right p-4">
+                            <Badge variant={position.volatility > 0.1 ? 'destructive' : position.volatility > 0.05 ? 'secondary' : 'default'} className="font-medium">
+                              {position.volatility > 0.1 ? 'High' : position.volatility > 0.05 ? 'Medium' : 'Low'}
+                            </Badge>
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="calculator" className="space-y-4">
+        <TabsContent value="calculator" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5" />
+            <CardHeader className="pb-4">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Calculator className="h-6 w-6" />
                 Position Size Calculator
               </CardTitle>
             </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="targetRisk">Target Risk (%)</Label>
+            <CardContent className="space-y-6">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="space-y-3">
+                  <Label htmlFor="targetRisk" className="text-sm font-medium">Target Risk (%)</Label>
                   <Input
                     id="targetRisk"
                     type="number"
@@ -278,10 +300,11 @@ export const RiskManagementDashboard: React.FC = () => {
                       ...prev,
                       targetRisk: e.target.value
                     }))}
+                    className="h-12"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="stopLoss">Stop Loss (%)</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="stopLoss" className="text-sm font-medium">Stop Loss (%)</Label>
                   <Input
                     id="stopLoss"
                     type="number"
@@ -293,10 +316,11 @@ export const RiskManagementDashboard: React.FC = () => {
                       ...prev,
                       stopLoss: e.target.value
                     }))}
+                    className="h-12"
                   />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="portfolioValue">Portfolio Value ($)</Label>
+                <div className="space-y-3">
+                  <Label htmlFor="portfolioValue" className="text-sm font-medium">Portfolio Value ($)</Label>
                   <Input
                     id="portfolioValue"
                     type="number"
@@ -307,16 +331,17 @@ export const RiskManagementDashboard: React.FC = () => {
                       ...prev,
                       portfolioValue: e.target.value
                     }))}
+                    className="h-12"
                   />
                 </div>
               </div>
               
-              <div className="bg-muted p-4 rounded-lg">
-                <h4 className="font-medium mb-2">Recommended Position Size</h4>
-                <div className="text-2xl font-bold text-primary">
+              <div className="bg-gradient-to-r from-primary/10 to-primary/5 p-6 rounded-lg border">
+                <h4 className="font-semibold text-lg mb-3">Recommended Position Size</h4>
+                <div className="text-3xl font-bold text-primary mb-2">
                   {formatCurrency(calculatedPositionSize)}
                 </div>
-                <p className="text-sm text-muted-foreground mt-1">
+                <p className="text-sm text-muted-foreground">
                   {formatPercentage((calculatedPositionSize / parseFloat(positionSizeInputs.portfolioValue)) * 100, 1)} of portfolio
                 </p>
               </div>
@@ -324,44 +349,44 @@ export const RiskManagementDashboard: React.FC = () => {
           </Card>
         </TabsContent>
 
-        <TabsContent value="optimization" className="space-y-4">
+        <TabsContent value="optimization" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Portfolio Optimization Suggestions</CardTitle>
+            <CardHeader className="pb-4">
+              <CardTitle className="text-xl">Portfolio Optimization Suggestions</CardTitle>
             </CardHeader>
             <CardContent>
               {optimizationSuggestions.length > 0 ? (
-                <div className="space-y-4">
+                <div className="space-y-6">
                   {optimizationSuggestions.map((suggestion, index) => (
-                    <div key={index} className="border rounded-lg p-4">
-                      <div className="flex justify-between items-start">
+                    <div key={index} className="border rounded-lg p-6 hover:shadow-sm transition-shadow">
+                      <div className="flex justify-between items-start mb-4">
                         <div>
-                          <h4 className="font-medium">{suggestion.symbol}</h4>
-                          <p className="text-sm text-muted-foreground">{suggestion.reasoning}</p>
+                          <h4 className="font-semibold text-lg">{suggestion.symbol}</h4>
+                          <p className="text-sm text-muted-foreground leading-relaxed">{suggestion.reasoning}</p>
                         </div>
-                        <Badge variant={suggestion.action === 'reduce' ? 'destructive' : 'default'}>
+                        <Badge variant={suggestion.action === 'reduce' ? 'destructive' : 'default'} className="font-medium">
                           {suggestion.action === 'reduce' ? 'Reduce' : 'Increase'}
                         </Badge>
                       </div>
-                      <div className="mt-2 text-sm">
+                      <div className="flex items-center gap-4 text-sm">
                         <span className="text-muted-foreground">Current: </span>
-                        {formatPercentage(suggestion.currentWeight, 1)}
-                        <span className="text-muted-foreground mx-2">→</span>
+                        <span className="font-semibold">{formatPercentage(suggestion.currentWeight, 1)}</span>
+                        <span className="text-muted-foreground">→</span>
                         <span className="text-muted-foreground">Target: </span>
-                        {formatPercentage(suggestion.targetWeight, 1)}
+                        <span className="font-semibold text-primary">{formatPercentage(suggestion.targetWeight, 1)}</span>
                       </div>
                     </div>
                   ))}
-                  <Button className="w-full mt-4">
+                  <Button className="w-full h-12 text-base">
                     Apply Optimization Suggestions
                   </Button>
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Shield className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
-                  <h3 className="text-lg font-medium">Portfolio Well Optimized</h3>
-                  <p className="text-muted-foreground">
-                    Your portfolio allocation appears to be well balanced. No major adjustments needed.
+                <div className="text-center py-12">
+                  <Shield className="h-16 w-16 text-muted-foreground/50 mx-auto mb-6" />
+                  <h3 className="text-xl font-semibold mb-3">Portfolio Well Optimized</h3>
+                  <p className="text-muted-foreground max-w-md mx-auto">
+                    Your portfolio allocation appears to be well balanced. No major adjustments needed at this time.
                   </p>
                 </div>
               )}
