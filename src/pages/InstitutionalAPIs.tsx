@@ -175,89 +175,124 @@ const InstitutionalAPIs = () => {
         keywords="institutional APIs, enterprise trading, hedge fund APIs, institutional trading, financial APIs, prime brokerage"
       />
       
-      <div className="container mx-auto px-3 md:px-4 py-8 md:py-16">
-        <div className="text-center mb-8 md:mb-16">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 md:mb-6">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="text-center mb-8 md:mb-12">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
             Institutional APIs
           </h1>
-          <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-3xl mx-auto px-4">
             Enterprise-grade trading APIs designed for institutional clients, hedge funds, and financial institutions
           </p>
         </div>
 
         {/* Features Grid */}
-        <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3 mb-16">
+        <div className="grid gap-4 md:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 mb-8 md:mb-12">
           {features.map((feature, index) => (
-            <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50">
-              <CardContent className="p-8 text-center">
-                <feature.icon className="h-12 w-12 mx-auto mb-6 text-primary" />
-                <h3 className="font-semibold text-lg mb-3">{feature.title}</h3>
-                <p className="text-sm text-muted-foreground">{feature.description}</p>
+            <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200">
+              <CardContent className="p-6 text-center">
+                <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                  <feature.icon className="h-6 w-6 text-primary" />
+                </div>
+                <h3 className="font-semibold text-base mb-2">{feature.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{feature.description}</p>
               </CardContent>
             </Card>
           ))}
         </div>
 
-        <Tabs defaultValue="pricing" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-5">
-            <TabsTrigger value="pricing">Pricing</TabsTrigger>
-            <TabsTrigger value="endpoints">API Reference</TabsTrigger>
-            <TabsTrigger value="authentication">Authentication</TabsTrigger>
-            <TabsTrigger value="sla">SLA</TabsTrigger>
-            <TabsTrigger value="onboarding">Onboarding</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="pricing" className="space-y-6">
+          <div className="relative">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+              <TabsTrigger 
+                value="pricing" 
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">Pricing</span>
+                <span className="sm:hidden">Price</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="endpoints" 
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">API Reference</span>
+                <span className="sm:hidden">APIs</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="authentication" 
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">Authentication</span>
+                <span className="sm:hidden">Auth</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="sla" 
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                SLA
+              </TabsTrigger>
+              <TabsTrigger 
+                value="onboarding" 
+                className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+              >
+                <span className="hidden sm:inline">Onboarding</span>
+                <span className="sm:hidden">Setup</span>
+              </TabsTrigger>
+            </TabsList>
+          </div>
 
-          <TabsContent value="pricing" className="space-y-8">
-            <div className="grid gap-8 lg:grid-cols-3">
+          <TabsContent value="pricing" className="space-y-6">
+            <div className="grid gap-6 lg:grid-cols-3">
               {plans.map((plan) => (
                 <Card 
                   key={plan.id}
-                  className={`bg-card/50 backdrop-blur-sm border-border/50 relative ${
-                    plan.popular ? 'ring-2 ring-primary scale-105' : ''
+                  className={`bg-card/50 backdrop-blur-sm border-border/50 relative hover:border-primary/20 transition-all duration-200 ${
+                    plan.popular ? 'ring-2 ring-primary/50 scale-[1.02]' : ''
                   }`}
                 >
                   {plan.popular && (
-                    <div className="absolute -top-4 left-1/2 transform -translate-x-1/2">
-                      <Badge className="bg-primary/60 border border-white text-white">Most Popular</Badge>
+                    <div className="absolute -top-3 left-1/2 transform -translate-x-1/2">
+                      <Badge className="bg-primary text-primary-foreground px-3 py-1">Most Popular</Badge>
                     </div>
                   )}
                   
-                  <CardHeader className="text-center">
-                    <Building2 className="h-12 w-12 mx-auto mb-4 text-primary" />
-                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                    <div className="text-3xl font-bold">{plan.price}</div>
-                    <CardDescription>{plan.description}</CardDescription>
+                  <CardHeader className="text-center pb-4">
+                    <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto mb-4">
+                      <Building2 className="h-6 w-6 text-primary" />
+                    </div>
+                    <CardTitle className="text-xl mb-2">{plan.name}</CardTitle>
+                    <div className="text-2xl font-bold text-primary mb-2">{plan.price}</div>
+                    <CardDescription className="text-sm">{plan.description}</CardDescription>
                   </CardHeader>
                   
-                  <CardContent className="space-y-6">
-                    <div className="space-y-3">
+                  <CardContent className="space-y-4">
+                    <div className="space-y-2">
                       {plan.features.map((feature, idx) => (
-                        <div key={idx} className="flex items-center gap-2">
-                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0" />
-                          <span className="text-sm">{feature}</span>
+                        <div key={idx} className="flex items-start gap-2">
+                          <CheckCircle className="h-4 w-4 text-green-500 flex-shrink-0 mt-0.5" />
+                          <span className="text-sm leading-relaxed">{feature}</span>
                         </div>
                       ))}
                     </div>
                     
                     <div className="pt-4 border-t border-border/50">
-                      <div className="space-y-2 text-sm text-muted-foreground">
+                      <div className="space-y-2 text-sm">
                         <div className="flex justify-between">
-                          <span>API Calls:</span>
+                          <span className="text-muted-foreground">API Calls:</span>
                           <span className="font-medium">{plan.limits.calls}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Market Data:</span>
+                          <span className="text-muted-foreground">Market Data:</span>
                           <span className="font-medium">{plan.limits.data}</span>
                         </div>
                         <div className="flex justify-between">
-                          <span>Support:</span>
+                          <span className="text-muted-foreground">Support:</span>
                           <span className="font-medium">{plan.limits.support}</span>
                         </div>
                       </div>
                     </div>
                     
                     <Button 
-                      className="w-full" 
+                      className="w-full mt-4" 
                       variant={plan.popular ? "default" : "outline"}
                       size="lg"
                     >
@@ -269,30 +304,30 @@ const InstitutionalAPIs = () => {
             </div>
           </TabsContent>
 
-          <TabsContent value="endpoints" className="space-y-8">
-            <div className="space-y-8">
+          <TabsContent value="endpoints" className="space-y-6">
+            <div className="space-y-6">
               {apiEndpoints.map((category, index) => (
                 <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardHeader>
-                    <CardTitle>{category.category} APIs</CardTitle>
+                  <CardHeader className="pb-4">
+                    <CardTitle className="text-lg">{category.category} APIs</CardTitle>
                     <CardDescription>
                       {category.category} related endpoints for institutional access
                     </CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div className="space-y-4">
+                    <div className="space-y-3">
                       {category.endpoints.map((endpoint, idx) => (
-                        <div key={idx} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg">
-                          <div className="flex items-center gap-4">
-                            <Badge className={getMethodColor(endpoint.method)}>
+                        <div key={idx} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-4 bg-muted/20 rounded-lg border border-border/20">
+                          <div className="flex flex-col sm:flex-row sm:items-center gap-3 flex-1 min-w-0">
+                            <Badge className={`${getMethodColor(endpoint.method)} shrink-0 w-fit`}>
                               {endpoint.method}
                             </Badge>
-                            <div>
-                              <code className="text-sm font-mono">{endpoint.path}</code>
+                            <div className="min-w-0 flex-1">
+                              <code className="text-sm font-mono text-foreground break-all">{endpoint.path}</code>
                               <p className="text-xs text-muted-foreground mt-1">{endpoint.description}</p>
                             </div>
                           </div>
-                          <div className="text-right">
+                          <div className="text-right shrink-0">
                             <div className="text-sm font-medium">{endpoint.rateLimit}</div>
                             <div className="text-xs text-muted-foreground">Rate Limit</div>
                           </div>
