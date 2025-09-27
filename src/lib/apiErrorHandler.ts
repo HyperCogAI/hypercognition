@@ -286,12 +286,7 @@ export async function safeFetch<T>(
   }
 
   try {
-    return await apiErrorHandler.handleApiError(
-      null,
-      url,
-      fetchFn,
-      retryConfig
-    )
+    return await fetchFn()
   } catch (error) {
     return await apiErrorHandler.handleApiError(error, url, fetchFn, retryConfig)
   }

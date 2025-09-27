@@ -54,28 +54,15 @@ class CoinGeckoSolanaAPI {
     
     try {
       structuredLogger.apiRequest(url, 'GET', { component: 'CoinGeckoSolanaAPI' })
-      
-      const response = await safeFetch(url, {
+      const data = await safeFetch<T>(url, {
         method: 'GET',
-        headers: {
-          'Accept': 'application/json',
-        },
+        headers: { 'Accept': 'application/json' },
       })
-
-      structuredLogger.apiResponse(url, (response as Response).status, { component: 'CoinGeckoSolanaAPI' })
-
-      if (!(response as Response).ok) {
-        structuredLogger.warn(`CoinGecko API error ${(response as Response).status}, using fallback data`, {
-          component: 'CoinGeckoSolanaAPI'
-        })
-        return this.getFallbackData() as T
-      }
-
-      const data = await (response as Response).json()
+      structuredLogger.apiResponse(url, 200, { component: 'CoinGeckoSolanaAPI' })
       return data
 
     } catch (error) {
-      structuredLogger.warn('CoinGecko API network error, using demo data', {
+      structuredLogger.warn('CoinGecko API error, using demo data', {
         component: 'CoinGeckoSolanaAPI'
       })
       return this.getFallbackData() as T
