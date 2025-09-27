@@ -214,7 +214,7 @@ export const MobileNavigation = () => {
                       </div>
                       
                       {section.title !== "Resources" && (
-                        <Separator className="opacity-30 my-8 mx-8" />
+                        <Separator className="opacity-30 my-8" />
                       )}
                     </div>
                   ))}
