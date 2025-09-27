@@ -80,36 +80,40 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="container mx-auto p-6 space-y-8">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-3xl font-bold text-white leading-tight">
-            Technical{" "}
-            <span className="text-white">
-              Analysis
-            </span>
-          </h1>
-          <p className="text-muted-foreground">
-            Advanced charting tools and technical indicators for professional trading analysis
-          </p>
-        </div>
+      <div className="text-center space-y-4">
+        <h1 className="text-4xl font-bold">
+          Technical Analysis
+        </h1>
+        <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+          Advanced charting tools and technical indicators for professional trading analysis
+        </p>
       </div>
 
-      <Tabs defaultValue="chart" className="space-y-4">
-        <TabsList>
-          <TabsTrigger value="chart">Price Chart</TabsTrigger>
-          <TabsTrigger value="screener">Market Screener</TabsTrigger>
-          <TabsTrigger value="patterns">Pattern Scanner</TabsTrigger>
+      <Tabs defaultValue="chart" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3 mx-auto">
+          <TabsTrigger value="chart" className="flex items-center gap-2">
+            <BarChart3 className="h-4 w-4" />
+            Price Chart
+          </TabsTrigger>
+          <TabsTrigger value="screener" className="flex items-center gap-2">
+            <Search className="h-4 w-4" />
+            Market Screener
+          </TabsTrigger>
+          <TabsTrigger value="patterns" className="flex items-center gap-2">
+            <Activity className="h-4 w-4" />
+            Pattern Scanner
+          </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="chart" className="space-y-4">
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+        <TabsContent value="chart" className="space-y-6">
+          <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
             {/* Agent Selector */}
-            <div className="lg:col-span-1">
+            <div className="xl:col-span-1">
               <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-lg">
                     <Search className="h-5 w-5" />
                     Select Agent
                   </CardTitle>
@@ -122,33 +126,34 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                       placeholder="Search by name or symbol..."
                       value={searchTerm}
                       onChange={(e) => setSearchTerm(e.target.value)}
+                      className="h-10"
                     />
                   </div>
 
-                  <div className="space-y-2 max-h-64 overflow-y-auto">
+                  <div className="space-y-3 max-h-80 overflow-y-auto">
                     {filteredAgents.map((agent) => (
                       <div
                         key={agent.id}
-                        className={`p-3 border rounded-lg cursor-pointer transition-colors hover:bg-muted/50 ${
-                          selectedAgent.id === agent.id ? 'border-primary bg-muted' : ''
+                        className={`p-4 border rounded-lg cursor-pointer transition-all duration-200 hover:shadow-md ${
+                          selectedAgent.id === agent.id ? 'border-primary bg-primary/5 shadow-sm' : 'hover:bg-muted/50'
                         }`}
                         onClick={() => handleAgentSelect(agent)}
                       >
-                        <div className="flex justify-between items-start">
+                        <div className="flex justify-between items-start mb-3">
                           <div>
-                            <div className="font-medium">{agent.symbol}</div>
-                            <div className="text-sm text-muted-foreground">{agent.name}</div>
+                            <div className="font-semibold text-lg">{agent.symbol}</div>
+                            <div className="text-sm text-muted-foreground truncate">{agent.name}</div>
                           </div>
                           <div className="text-right">
-                            <div className="font-medium">{formatCurrency(Number(agent.price))}</div>
-                            <div className={`text-sm ${Number(agent.change_24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                            <div className="font-semibold">{formatCurrency(Number(agent.price))}</div>
+                            <div className={`text-sm font-medium ${Number(agent.change_24h) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                               {Number(agent.change_24h) >= 0 ? '+' : ''}{Number(agent.change_24h).toFixed(2)}%
                             </div>
                           </div>
                         </div>
-                        <div className="flex justify-between items-center mt-2 text-xs text-muted-foreground">
+                        <div className="flex justify-between items-center text-xs text-muted-foreground">
                           <span>Vol: {formatVolume(Number(agent.volume_24h))}</span>
-                          <Badge variant="outline" className="text-xs">
+                          <Badge variant={Number(agent.change_24h) >= 0 ? 'default' : 'destructive'} className="text-xs">
                             {Number(agent.change_24h) >= 0 ? 'Bullish' : 'Bearish'}
                           </Badge>
                         </div>
@@ -160,14 +165,14 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
             </div>
 
             {/* Chart Area */}
-            <div className="lg:col-span-3">
+            <div className="xl:col-span-3">
               {loading || agentsLoading ? (
                 <div className="space-y-4">
-                  <Skeleton className="h-12" />
-                  <Skeleton className="h-96" />
-                  <div className="grid grid-cols-2 gap-4">
-                    <Skeleton className="h-32" />
-                    <Skeleton className="h-32" />
+                  <Skeleton className="h-12 rounded-lg" />
+                  <Skeleton className="h-96 rounded-lg" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Skeleton className="h-32 rounded-lg" />
+                    <Skeleton className="h-32 rounded-lg" />
                   </div>
                 </div>
               ) : selectedAgent ? (
@@ -177,29 +182,35 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   currentPrice={Number(selectedAgent.price)}
                 />
               ) : (
-                <div className="text-center p-8 text-muted-foreground">
-                  Select an agent to view technical analysis
-                </div>
+                <Card className="h-96 flex items-center justify-center">
+                  <div className="text-center space-y-4">
+                    <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                    <div className="space-y-2">
+                      <h3 className="text-lg font-semibold text-muted-foreground">No Agent Selected</h3>
+                      <p className="text-sm text-muted-foreground">Select an agent from the sidebar to view technical analysis</p>
+                    </div>
+                  </div>
+                </Card>
               )}
             </div>
           </div>
         </TabsContent>
 
-        <TabsContent value="screener" className="space-y-4">
+        <TabsContent value="screener" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <BarChart3 className="h-5 w-5" />
+            <CardHeader className="pb-6">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <BarChart3 className="h-6 w-6" />
                 Market Screener
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div className="space-y-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                   <div className="space-y-2">
-                    <Label>Price Range</Label>
+                    <Label className="text-sm font-medium">Price Range</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Select range" />
                       </SelectTrigger>
                       <SelectContent>
@@ -212,9 +223,9 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Volume</Label>
+                    <Label className="text-sm font-medium">Volume</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Min volume" />
                       </SelectTrigger>
                       <SelectContent>
@@ -227,9 +238,9 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Change %</Label>
+                    <Label className="text-sm font-medium">Change %</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Price change" />
                       </SelectTrigger>
                       <SelectContent>
@@ -242,9 +253,9 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Technical Signal</Label>
+                    <Label className="text-sm font-medium">Technical Signal</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Signal type" />
                       </SelectTrigger>
                       <SelectContent>
@@ -257,68 +268,70 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <Button className="w-full">
-                  <Search className="h-4 w-4 mr-2" />
+                <Button className="w-full h-12 text-base">
+                  <Search className="h-5 w-5 mr-2" />
                   Scan Market
                 </Button>
 
-                <div className="overflow-x-auto">
-                  <table className="w-full text-sm">
-                    <thead>
-                      <tr className="border-b">
-                        <th className="text-left p-2">Symbol</th>
-                        <th className="text-right p-2">Price</th>
-                        <th className="text-right p-2">Change %</th>
-                        <th className="text-right p-2">Volume</th>
-                        <th className="text-right p-2">RSI</th>
-                        <th className="text-right p-2">Signal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      {filteredAgents.map((agent) => (
-                        <tr key={agent.id} className="border-b hover:bg-muted/50">
-                          <td className="p-2 font-medium">{agent.symbol}</td>
-                          <td className="text-right p-2">{formatCurrency(Number(agent.price))}</td>
-                          <td className={`text-right p-2 ${Number(agent.change_24h) >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                            {Number(agent.change_24h) >= 0 ? '+' : ''}{Number(agent.change_24h).toFixed(2)}%
-                          </td>
-                          <td className="text-right p-2">{formatVolume(Number(agent.volume_24h))}</td>
-                          <td className="text-right p-2">
-                            {technicalIndicators
-                              .filter(ti => ti.agent_id === agent.id && ti.indicator_type === 'rsi')
-                              .slice(0, 1)
-                              .map(ti => Number(ti.value).toFixed(0))[0] || 'N/A'}
-                          </td>
-                          <td className="text-right p-2">
-                            <Badge variant={Number(agent.change_24h) >= 0 ? 'default' : 'destructive'}>
-                              {Number(agent.change_24h) >= 0 ? 'Buy' : 'Sell'}
-                            </Badge>
-                          </td>
+                <div className="border rounded-lg overflow-hidden">
+                  <div className="overflow-x-auto">
+                    <table className="w-full">
+                      <thead className="bg-muted/50">
+                        <tr>
+                          <th className="text-left p-4 font-medium">Symbol</th>
+                          <th className="text-right p-4 font-medium">Price</th>
+                          <th className="text-right p-4 font-medium">Change %</th>
+                          <th className="text-right p-4 font-medium">Volume</th>
+                          <th className="text-right p-4 font-medium">RSI</th>
+                          <th className="text-right p-4 font-medium">Signal</th>
                         </tr>
-                      ))}
-                    </tbody>
-                  </table>
+                      </thead>
+                      <tbody>
+                        {filteredAgents.map((agent, index) => (
+                          <tr key={agent.id} className={`border-b transition-colors hover:bg-muted/30 ${index % 2 === 0 ? 'bg-muted/10' : ''}`}>
+                            <td className="p-4 font-semibold">{agent.symbol}</td>
+                            <td className="text-right p-4 font-medium">{formatCurrency(Number(agent.price))}</td>
+                            <td className={`text-right p-4 font-medium ${Number(agent.change_24h) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                              {Number(agent.change_24h) >= 0 ? '+' : ''}{Number(agent.change_24h).toFixed(2)}%
+                            </td>
+                            <td className="text-right p-4">{formatVolume(Number(agent.volume_24h))}</td>
+                            <td className="text-right p-4 font-mono">
+                              {technicalIndicators
+                                .filter(ti => ti.agent_id === agent.id && ti.indicator_type === 'rsi')
+                                .slice(0, 1)
+                                .map(ti => Number(ti.value).toFixed(0))[0] || 'N/A'}
+                            </td>
+                            <td className="text-right p-4">
+                              <Badge variant={Number(agent.change_24h) >= 0 ? 'default' : 'destructive'} className="font-medium">
+                                {Number(agent.change_24h) >= 0 ? 'Buy' : 'Sell'}
+                              </Badge>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  </div>
                 </div>
               </div>
             </CardContent>
           </Card>
         </TabsContent>
 
-        <TabsContent value="patterns" className="space-y-4">
+        <TabsContent value="patterns" className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
+            <CardHeader className="pb-6">
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Activity className="h-6 w-6" />
                 Pattern Scanner
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
+              <div className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div className="space-y-2">
-                    <Label>Pattern Type</Label>
+                    <Label className="text-sm font-medium">Pattern Type</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Select pattern" />
                       </SelectTrigger>
                       <SelectContent>
@@ -333,9 +346,9 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Timeframe</Label>
+                    <Label className="text-sm font-medium">Timeframe</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Select timeframe" />
                       </SelectTrigger>
                       <SelectContent>
@@ -348,9 +361,9 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
 
                   <div className="space-y-2">
-                    <Label>Confidence</Label>
+                    <Label className="text-sm font-medium">Confidence</Label>
                     <Select>
-                      <SelectTrigger>
+                      <SelectTrigger className="h-10">
                         <SelectValue placeholder="Min confidence" />
                       </SelectTrigger>
                       <SelectContent>
@@ -363,48 +376,54 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
                   </div>
                 </div>
 
-                <Button className="w-full">
-                  <Zap className="h-4 w-4 mr-2" />
+                <Button className="w-full h-12 text-base">
+                  <Zap className="h-5 w-5 mr-2" />
                   Scan for Patterns
                 </Button>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   {technicalIndicators
                     .filter(ti => ['triangle', 'head_shoulders', 'double_top', 'flag'].includes(ti.indicator_type))
                     .slice(0, 4)
                     .map((indicator, index) => {
                       const agent = agents.find(a => a.id === indicator.agent_id);
                       return (
-                        <div key={indicator.id} className="border rounded-lg p-4">
-                          <div className="flex items-center justify-between mb-2">
-                            <h4 className="font-medium capitalize">{indicator.indicator_type.replace('_', ' ')}</h4>
-                            <Badge variant="outline">
+                        <Card key={indicator.id} className="p-4">
+                          <div className="flex items-center justify-between mb-3">
+                            <h4 className="font-semibold text-lg capitalize">{indicator.indicator_type.replace('_', ' ')}</h4>
+                            <Badge variant="secondary" className="font-medium">
                               {indicator.strength ? `${Number(indicator.strength).toFixed(0)}%` : '65%'} confidence
                             </Badge>
                           </div>
-                          <div className="text-sm text-muted-foreground mb-2">
-                            Found in: {agent?.symbol || 'Unknown'}
+                          <div className="text-sm text-muted-foreground mb-3">
+                            Found in: <span className="font-medium text-foreground">{agent?.symbol || 'Unknown'}</span>
                           </div>
-                          <div className="text-sm">
-                            Pattern suggests {indicator.signal === 'buy' ? 'bullish' : 'bearish'} {indicator.signal || 'continuation'}.
+                          <div className="text-sm space-y-1">
+                            <p>Pattern suggests <span className={`font-medium ${indicator.signal === 'buy' ? 'text-green-500' : 'text-red-500'}`}>
+                              {indicator.signal === 'buy' ? 'bullish' : 'bearish'}</span> {indicator.signal || 'continuation'}.
+                            </p>
                             {agent && (
-                              <>Target: {formatCurrency(Number(agent.price) * (indicator.signal === 'buy' ? 1.05 : 0.95))}</>
+                              <p className="text-muted-foreground">
+                                Target: <span className="font-medium text-foreground">
+                                  {formatCurrency(Number(agent.price) * (indicator.signal === 'buy' ? 1.05 : 0.95))}
+                                </span>
+                              </p>
                             )}
                           </div>
-                        </div>
+                        </Card>
                       );
                     })}
                   {/* Fill with mock data if insufficient real data */}
                   {Array.from({ length: Math.max(0, 4 - technicalIndicators.filter(ti => ['triangle', 'head_shoulders', 'double_top', 'flag'].includes(ti.indicator_type)).length) }, (_, index) => (
-                    <div key={`mock-${index}`} className="border rounded-lg p-4">
-                      <div className="flex items-center justify-between mb-2">
-                        <h4 className="font-medium">Pattern Detection</h4>
+                    <Card key={`mock-${index}`} className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <h4 className="font-semibold text-lg">Pattern Detection</h4>
                         <Badge variant="outline">Scanning...</Badge>
                       </div>
                       <div className="text-sm text-muted-foreground">
                         No patterns detected in current timeframe
                       </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               </div>
