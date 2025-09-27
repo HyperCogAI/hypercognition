@@ -2,8 +2,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TrendingUp, TrendingDown, RefreshCw, ExternalLink } from "lucide-react"
+import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Wifi, WifiOff } from "lucide-react"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
+import { useLiveMarketFeed } from "@/hooks/useLiveMarketFeed"
 import { Skeleton } from "@/components/ui/skeleton"
 
 export function RealMarketDataDemo() {
@@ -15,6 +16,10 @@ export function RealMarketDataDemo() {
     lastUpdated, 
     refreshData 
   } = useRealMarketData()
+  
+  // Get live market feed for top symbols
+  const topSymbols = ['BTC', 'ETH', 'SOL', 'BNB', 'USDC', 'ADA', 'DOT', 'AVAX', 'MATIC', 'LINK']
+  const liveFeed = useLiveMarketFeed(topSymbols)
 
   const formatPrice = (price: number) => {
     if (price < 0.01) return `$${price.toFixed(6)}`
@@ -71,8 +76,13 @@ export function RealMarketDataDemo() {
           <div>
             <CardTitle className="flex items-center gap-2">
               Real Market Data
+              {liveFeed.isConnected ? (
+                <Wifi className="h-4 w-4 text-green-500" />
+              ) : (
+                <WifiOff className="h-4 w-4 text-red-500" />
+              )}
               <Badge variant="outline" className="text-xs">
-                LIVE
+                {liveFeed.isConnected ? 'LIVE' : 'OFFLINE'}
               </Badge>
             </CardTitle>
             <CardDescription>
@@ -82,11 +92,21 @@ export function RealMarketDataDemo() {
                   Last updated: {lastUpdated.toLocaleTimeString()}
                 </span>
               )}
+              {liveFeed.lastUpdate && (
+                <span className="block text-xs text-green-600 mt-1">
+                  Live feed: {liveFeed.lastUpdate.toLocaleTimeString()} ({liveFeed.symbols.length} symbols)
+                </span>
+              )}
             </CardDescription>
           </div>
-          <Button onClick={refreshData} variant="outline" size="sm">
-            <RefreshCw className="w-4 h-4" />
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={liveFeed.refresh} variant="outline" size="sm" title="Refresh live feed">
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+            <Button onClick={refreshData} variant="outline" size="sm" title="Refresh all data">
+              Refresh All
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -110,33 +130,48 @@ export function RealMarketDataDemo() {
                   <div className="text-sm font-medium">
                     {coin.name}
                   </div>
-                  <Badge variant="secondary" className="text-xs">
-                    {coin.symbol.toUpperCase()}
-                  </Badge>
+                  <div className="flex items-center gap-2">
+                    <Badge variant="secondary" className="text-xs">
+                      {coin.symbol.toUpperCase()}
+                    </Badge>
+                    {liveFeed.getFeed(coin.symbol.toUpperCase()) && (
+                      <Badge variant="outline" className="text-xs text-green-600 border-green-600">
+                        LIVE
+                      </Badge>
+                    )}
+                  </div>
                 </div>
                 
                 <div className="flex items-center space-x-4">
                   <div className="text-right">
                     <div className="font-semibold">
-                      {formatPrice(coin.current_price)}
+                      {liveFeed.getPrice(coin.symbol.toUpperCase()) > 0 
+                        ? formatPrice(liveFeed.getPrice(coin.symbol.toUpperCase()))
+                        : formatPrice(coin.current_price)
+                      }
                     </div>
                     <div className="text-xs text-muted-foreground">
                       {formatMarketCap(coin.market_cap)}
+                      {liveFeed.getFeed(coin.symbol.toUpperCase())?.volume_24h && (
+                        <span className="block">
+                          Vol: {formatMarketCap(liveFeed.getFeed(coin.symbol.toUpperCase())!.volume_24h)}
+                        </span>
+                      )}
                     </div>
                   </div>
                   
                   <div className="flex items-center space-x-2">
-                    {coin.price_change_percentage_24h >= 0 ? (
+                    {(liveFeed.getFeed(coin.symbol.toUpperCase())?.change_24h ?? coin.price_change_percentage_24h) >= 0 ? (
                       <TrendingUp className="w-4 h-4 text-success" />
                     ) : (
                       <TrendingDown className="w-4 h-4 text-destructive" />
                     )}
                     <Badge
-                      variant={coin.price_change_percentage_24h >= 0 ? "default" : "destructive"}
+                      variant={(liveFeed.getFeed(coin.symbol.toUpperCase())?.change_24h ?? coin.price_change_percentage_24h) >= 0 ? "default" : "destructive"}
                       className="text-xs"
                     >
-                      {coin.price_change_percentage_24h >= 0 ? '+' : ''}
-                      {coin.price_change_percentage_24h.toFixed(2)}%
+                      {(liveFeed.getFeed(coin.symbol.toUpperCase())?.change_24h ?? coin.price_change_percentage_24h) >= 0 ? '+' : ''}
+                      {(liveFeed.getFeed(coin.symbol.toUpperCase())?.change_24h ?? coin.price_change_percentage_24h).toFixed(2)}%
                     </Badge>
                   </div>
                 </div>

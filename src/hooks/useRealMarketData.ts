@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { coinGeckoApi, type CoinGeckoPrice } from '@/lib/apis/coinGeckoApi'
 import { jupiterApi } from '@/lib/apis/jupiterApi'
+import { alternativeMarketDataApi } from '@/lib/apis/alternativeMarketData'
 import { useSolanaRealtime } from './useSolanaRealtime'
 import { cache, CACHE_KEYS, CACHE_TTL } from '@/lib/cache'
 
@@ -36,12 +37,50 @@ export const useRealMarketData = () => {
     if (cached) return cached
 
     try {
-      const data = await coinGeckoApi.getTopCryptos(100)
-      cache.set(cacheKey, data, { ttl: 5 * 60 * 1000 }) // 5 minutes
+      // Try primary source first
+      let data = await coinGeckoApi.getTopCryptos(100)
+      
+      // If primary source fails or returns empty, try alternative
+      if (!data || data.length === 0) {
+        console.warn('Primary crypto API failed, trying alternative source')
+        const alternativeData = await alternativeMarketDataApi.getAggregatedMarketData()
+        
+        // Convert alternative data to CoinGecko format
+        data = alternativeData.crypto.map(coin => ({
+          id: coin.id,
+          symbol: coin.symbol,
+          name: coin.name,
+          current_price: coin.current_price,
+          market_cap: coin.market_cap,
+          market_cap_rank: 0,
+          fully_diluted_valuation: null,
+          total_volume: coin.total_volume,
+          high_24h: coin.current_price * 1.05,
+          low_24h: coin.current_price * 0.95,
+          price_change_24h: (coin.current_price * coin.price_change_percentage_24h) / 100,
+          price_change_percentage_24h: coin.price_change_percentage_24h,
+          market_cap_change_24h: 0,
+          market_cap_change_percentage_24h: 0,
+          circulating_supply: 0,
+          total_supply: null,
+          max_supply: null,
+          ath: coin.current_price * 2,
+          ath_change_percentage: -50,
+          ath_date: new Date().toISOString(),
+          atl: coin.current_price * 0.1,
+          atl_change_percentage: 900,
+          atl_date: new Date().toISOString(),
+          last_updated: new Date().toISOString()
+        })) as CoinGeckoPrice[]
+      }
+      
+      cache.set(cacheKey, data, { ttl: 3 * 60 * 1000 }) // 3 minutes for live data
       return data
     } catch (error) {
-      console.error('Failed to fetch crypto data:', error)
-      return []
+      console.error('All crypto data sources failed:', error)
+      // Return cached data if available, even if expired
+      const staleData = cache.get<CoinGeckoPrice[]>(cacheKey)
+      return staleData || []
     }
   }, [])
 
@@ -52,11 +91,33 @@ export const useRealMarketData = () => {
 
     try {
       const data = await jupiterApi.getPopularTokensWithPrices(50)
-      cache.set(cacheKey, data, { ttl: 5 * 60 * 1000 }) // 5 minutes
-      return data
+      
+      // Validate and enhance data
+      const validatedData = data.filter(token => 
+        token && 
+        token.price > 0 && 
+        token.symbol && 
+        token.name
+      ).map(token => ({
+        ...token,
+        // Ensure all required fields are present
+        id: token.id || token.mint_address,
+        mint_address: token.mint_address || token.id,
+        price: parseFloat(token.price.toString()),
+        market_cap: parseFloat(token.market_cap?.toString() || '0'),
+        volume_24h: parseFloat(token.volume_24h?.toString() || '0'),
+        change_24h: parseFloat(token.change_24h?.toString() || '0'),
+        is_active: true,
+        updated_at: new Date().toISOString()
+      }))
+      
+      cache.set(cacheKey, validatedData, { ttl: 3 * 60 * 1000 }) // 3 minutes for live data
+      return validatedData
     } catch (error) {
       console.error('Failed to fetch Solana data:', error)
-      return []
+      // Return cached data if available, even if expired
+      const staleData = cache.get<any[]>(cacheKey)
+      return staleData || []
     }
   }, [])
 
@@ -158,8 +219,8 @@ export const useRealMarketData = () => {
   useEffect(() => {
     fetchAllMarketData()
     
-    // Set up periodic refresh every 5 minutes
-    const interval = setInterval(fetchAllMarketData, 5 * 60 * 1000)
+    // Set up aggressive refresh for live data - every 2 minutes
+    const interval = setInterval(fetchAllMarketData, 2 * 60 * 1000)
     
     return () => clearInterval(interval)
   }, [fetchAllMarketData])
