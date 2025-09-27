@@ -125,70 +125,84 @@ export function ACPDashboard() {
   const totalEngagements = agents.reduce((sum, agent) => sum + agent.engagements, 0)
 
   return (
-    <div className="container mx-auto px-6 py-8 space-y-8">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white">
-            Agent Commerce Protocol
-          </h1>
-          <p className="text-muted-foreground mt-2">
-            Manage your autonomous agents and their interactions
-          </p>
+    <div className="container mx-auto px-6 py-8 space-y-8 animate-fade-in">
+      {/* Header */}
+      <div className="text-center mb-8">
+        <div className="flex items-center justify-center gap-3 mb-4">
+          <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/20">
+            <Bot className="h-8 w-8 text-primary" />
+          </div>
+          <div>
+            <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+              Agent Commerce Protocol
+            </h1>
+          </div>
         </div>
-        <CyberButton variant="cyber" className="group">
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-6">
+          Manage your autonomous agents and their interactions
+        </p>
+        <CyberButton variant="cyber" className="group bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
           <Bot className="h-4 w-4" />
           Deploy New Agent
         </CyberButton>
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-        <Card>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Earnings</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Earnings</CardTitle>
+            <div className="p-2 rounded-lg bg-gradient-to-r from-green-500/20 to-emerald-500/20">
+              <DollarSign className="h-4 w-4 text-green-400" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">${totalEarnings.toFixed(2)}</div>
+            <div className="text-2xl font-bold text-foreground">${totalEarnings.toFixed(2)}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-500">+12.5%</span> from last week
+              <span className="text-green-400 font-medium">+12.5%</span> from last week
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Active Agents</CardTitle>
-            <Bot className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Active Agents</CardTitle>
+            <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+              <Bot className="h-4 w-4 text-primary" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{activeAgents}</div>
+            <div className="text-2xl font-bold text-foreground">{activeAgents}</div>
             <p className="text-xs text-muted-foreground">
               {agents.length - activeAgents} inactive
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Engagements</CardTitle>
-            <Users className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Total Engagements</CardTitle>
+            <div className="p-2 rounded-lg bg-gradient-to-r from-blue-500/20 to-cyan-500/20">
+              <Users className="h-4 w-4 text-blue-400" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{totalEngagements}</div>
+            <div className="text-2xl font-bold text-foreground">{totalEngagements}</div>
             <p className="text-xs text-muted-foreground">
-              <span className="text-green-500">+8</span> new this hour
+              <span className="text-green-400 font-medium">+8</span> new this hour
             </p>
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Success Rate</CardTitle>
-            <Activity className="h-4 w-4 text-muted-foreground" />
+            <CardTitle className="text-sm font-medium text-muted-foreground">Success Rate</CardTitle>
+            <div className="p-2 rounded-lg bg-gradient-to-r from-purple-500/20 to-pink-500/20">
+              <Activity className="h-4 w-4 text-purple-400" />
+            </div>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">94.7%</div>
+            <div className="text-2xl font-bold text-foreground">94.7%</div>
             <p className="text-xs text-muted-foreground">
               Engagement completion rate
             </p>
@@ -197,17 +211,35 @@ export function ACPDashboard() {
       </div>
 
       <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="agents">My Agents</TabsTrigger>
-          <TabsTrigger value="activity">Activity Log</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-3 bg-gradient-to-r from-muted to-muted/50 p-1 rounded-xl">
+          <TabsTrigger 
+            value="overview" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200"
+          >
+            Overview
+          </TabsTrigger>
+          <TabsTrigger 
+            value="agents" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200"
+          >
+            My Agents
+          </TabsTrigger>
+          <TabsTrigger 
+            value="activity" 
+            className="data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200"
+          >
+            Activity Log
+          </TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
               <CardHeader>
-                <CardTitle>Agent Performance</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Bot className="h-5 w-5 text-primary" />
+                  Agent Performance
+                </CardTitle>
                 <CardDescription>Top performing agents by earnings</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -222,13 +254,13 @@ export function ACPDashboard() {
                 </Card>
               ))
             ) : agents.map((agent) => (
-                  <div key={agent.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div key={agent.id} className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10 hover:shadow-md transition-all duration-200">
                     <div className="flex items-center gap-3">
-                      <div className="text-2xl">{agent.avatar}</div>
+                      <div className="text-2xl p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">{agent.avatar}</div>
                       <div>
-                        <p className="font-medium">{agent.name}</p>
+                        <p className="font-medium text-foreground">{agent.name}</p>
                         <div className="flex items-center gap-2">
-                          <Badge variant={agent.status === "active" ? "default" : "secondary"}>
+                          <Badge variant={agent.status === "active" ? "default" : "secondary"} className="text-xs">
                             {agent.status}
                           </Badge>
                           <span className="text-sm text-muted-foreground">
@@ -238,7 +270,7 @@ export function ACPDashboard() {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold">${agent.earnings.toFixed(2)}</p>
+                      <p className="font-bold text-foreground">${agent.earnings.toFixed(2)}</p>
                       <p className="text-sm text-muted-foreground">USDC</p>
                     </div>
                   </div>
@@ -246,33 +278,36 @@ export function ACPDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
               <CardHeader>
-                <CardTitle>Recent Engagements</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-foreground">
+                  <Activity className="h-5 w-5 text-primary" />
+                  Recent Engagements
+                </CardTitle>
                 <CardDescription>Latest agent-to-agent interactions</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 {engagements.slice(0, 5).map((engagement) => (
-                  <div key={engagement.id} className="flex items-center justify-between p-3 rounded-lg bg-muted/30">
+                  <div key={engagement.id} className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10 hover:shadow-md transition-all duration-200">
                     <div className="flex items-center gap-3">
-                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10">
+                      <div className="flex items-center justify-center w-8 h-8 rounded-full bg-gradient-to-r from-primary/20 to-accent/20">
                         {engagement.type === "payment" && <DollarSign className="h-4 w-4 text-primary" />}
                         {engagement.type === "job" && <Zap className="h-4 w-4 text-primary" />}
                         {engagement.type === "interaction" && <Users className="h-4 w-4 text-primary" />}
                       </div>
                       <div>
-                        <p className="font-medium text-sm">{engagement.description}</p>
+                        <p className="font-medium text-sm text-foreground">{engagement.description}</p>
                         <p className="text-xs text-muted-foreground">
                           {engagement.from} → {engagement.to}
                         </p>
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-bold text-sm">${engagement.amount.toFixed(2)}</p>
+                      <p className="font-bold text-sm text-foreground">${engagement.amount.toFixed(2)}</p>
                       <div className="flex items-center gap-1">
-                        {engagement.status === "completed" && <CheckCircle className="h-3 w-3 text-green-500" />}
-                        {engagement.status === "ongoing" && <Clock className="h-3 w-3 text-yellow-500" />}
-                        {engagement.status === "pending" && <AlertCircle className="h-3 w-3 text-blue-500" />}
+                        {engagement.status === "completed" && <CheckCircle className="h-3 w-3 text-green-400" />}
+                        {engagement.status === "ongoing" && <Clock className="h-3 w-3 text-yellow-400" />}
+                        {engagement.status === "pending" && <AlertCircle className="h-3 w-3 text-blue-400" />}
                         <span className="text-xs text-muted-foreground">{engagement.status}</span>
                       </div>
                     </div>
