@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
-import { coinGeckoSolanaApi } from '@/lib/apis/coingeckoSolanaApi'
+import { coinCapApi } from '@/lib/apis/coinCapApi'
 
 interface SolanaPriceChartProps {
   token: any
@@ -26,25 +26,10 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
       try {
         const days = timeframe === '1h' ? 1 : timeframe === '24h' ? 1 : timeframe === '7d' ? 7 : 30
         
-        // Map database tokens to CoinGecko IDs based on symbol
-        const symbolToCoingeckoId: Record<string, string> = {
-          'SOL': 'solana',
-          'ETH': 'ethereum',
-          'USDT': 'tether',
-          'USDC': 'usd-coin',
-          'BONK': 'bonk',
-          'RAY': 'raydium',
-          'SRM': 'serum',
-          'mSOL': 'marinade-staked-sol',
-          'COPE': 'cope',
-          'FIDA': 'bonfida'
-        }
+        // Use token symbol directly with CoinCap API
+        const tokenSymbol = token.symbol || 'SOL'
         
-        // Use symbol mapping instead of database UUID
-        const tokenSymbol = token.symbol?.toUpperCase()
-        const coingeckoId = symbolToCoingeckoId[tokenSymbol] || 'solana' // fallback to SOL
-
-        const priceHistory = await coinGeckoSolanaApi.getPriceHistory(coingeckoId, days)
+        const priceHistory = await coinCapApi.getPriceHistory(tokenSymbol, days)
         
         if (priceHistory?.prices) {
           const chartPoints = priceHistory.prices.map((point, index) => {
