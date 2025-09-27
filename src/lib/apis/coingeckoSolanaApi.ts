@@ -175,6 +175,14 @@ class CoinGeckoSolanaAPI {
   // Get price history for charts
   async getPriceHistory(tokenId: string, days: number = 1): Promise<CoinGeckoPriceHistory | null> {
     try {
+      // Validate tokenId to prevent API calls with invalid IDs
+      if (!tokenId || tokenId.includes('-') && tokenId.length > 50) {
+        structuredLogger.warn('Invalid CoinGecko token ID, using fallback data', {
+          component: 'CoinGeckoSolanaAPI'
+        })
+        return this.generateFallbackPriceHistory(days)
+      }
+      
       const url = `${this.baseUrl}/coins/${tokenId}/market_chart?vs_currency=usd&days=${days <= 1 ? 2 : days}`
       return await this.fetchWithErrorHandling<CoinGeckoPriceHistory>(url)
     } catch (error) {
@@ -182,31 +190,34 @@ class CoinGeckoSolanaAPI {
         component: 'CoinGeckoSolanaAPI'
       })
       
-      // Return sample data for fallback
-      const now = Date.now()
-      const interval = days <= 1 ? 3600000 : 86400000 // 1 hour or 1 day
-      const points = days <= 1 ? 24 : days
+      return this.generateFallbackPriceHistory(days)
+    }
+  }
+
+  private generateFallbackPriceHistory(days: number): CoinGeckoPriceHistory {
+    const now = Date.now()
+    const interval = days <= 1 ? 3600000 : 86400000 // 1 hour or 1 day
+    const points = days <= 1 ? 24 : days
+    
+    const prices: [number, number][] = []
+    const volumes: [number, number][] = []
+    const marketCaps: [number, number][] = []
+    
+    for (let i = 0; i < points; i++) {
+      const timestamp = now - (points - i) * interval
+      const basePrice = 95.42 // Base SOL price
+      const priceVariation = (Math.random() - 0.5) * 0.1
+      const price = basePrice * (1 + priceVariation)
       
-      const prices: [number, number][] = []
-      const volumes: [number, number][] = []
-      const marketCaps: [number, number][] = []
-      
-      for (let i = 0; i < points; i++) {
-        const timestamp = now - (points - i) * interval
-        const basePrice = 95.42 // Base SOL price
-        const priceVariation = (Math.random() - 0.5) * 0.1
-        const price = basePrice * (1 + priceVariation)
-        
-        prices.push([timestamp, price])
-        volumes.push([timestamp, Math.random() * 1000000000])
-        marketCaps.push([timestamp, price * 400000000]) // Rough SOL supply
-      }
-      
-      return {
-        prices,
-        market_caps: marketCaps,
-        total_volumes: volumes
-      }
+      prices.push([timestamp, price])
+      volumes.push([timestamp, Math.random() * 1000000000])
+      marketCaps.push([timestamp, price * 400000000]) // Rough SOL supply
+    }
+    
+    return {
+      prices,
+      market_caps: marketCaps,
+      total_volumes: volumes
     }
   }
 

@@ -24,25 +24,27 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
 
     const fetchRealData = async () => {
       try {
-        // Map timeframe to days
         const days = timeframe === '1h' ? 1 : timeframe === '24h' ? 1 : timeframe === '7d' ? 7 : 30
         
-        // Try to get token ID from symbol or use provided ID
-        let tokenId = token.id
-        if (!tokenId && token.symbol) {
-          // Map common symbols to CoinGecko IDs
-          const symbolMap: Record<string, string> = {
-            'SOL': 'solana',
-            'RAY': 'raydium',
-            'SRM': 'serum',
-            'USDC': 'usd-coin',
-            'COPE': 'cope',
-            'FIDA': 'bonfida'
-          }
-          tokenId = symbolMap[token.symbol.toUpperCase()] || 'solana'
+        // Map database tokens to CoinGecko IDs based on symbol
+        const symbolToCoingeckoId: Record<string, string> = {
+          'SOL': 'solana',
+          'ETH': 'ethereum',
+          'USDT': 'tether',
+          'USDC': 'usd-coin',
+          'BONK': 'bonk',
+          'RAY': 'raydium',
+          'SRM': 'serum',
+          'mSOL': 'marinade-staked-sol',
+          'COPE': 'cope',
+          'FIDA': 'bonfida'
         }
+        
+        // Use symbol mapping instead of database UUID
+        const tokenSymbol = token.symbol?.toUpperCase()
+        const coingeckoId = symbolToCoingeckoId[tokenSymbol] || 'solana' // fallback to SOL
 
-        const priceHistory = await coinGeckoSolanaApi.getPriceHistory(tokenId, days)
+        const priceHistory = await coinGeckoSolanaApi.getPriceHistory(coingeckoId, days)
         
         if (priceHistory?.prices) {
           const chartPoints = priceHistory.prices.map((point, index) => {
