@@ -175,7 +175,7 @@ class CoinGeckoSolanaAPI {
   // Get price history for charts
   async getPriceHistory(tokenId: string, days: number = 1): Promise<CoinGeckoPriceHistory | null> {
     try {
-      const url = `${this.baseUrl}/coins/${tokenId}/market_chart?vs_currency=usd&days=${days}&interval=${days <= 1 ? 'hourly' : 'daily'}`
+      const url = `${this.baseUrl}/coins/${tokenId}/market_chart?vs_currency=usd&days=${days <= 1 ? 2 : days}`
       return await this.fetchWithErrorHandling<CoinGeckoPriceHistory>(url)
     } catch (error) {
       structuredLogger.warn('Error fetching price history', {
