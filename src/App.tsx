@@ -47,7 +47,7 @@ const AdvancedAI = lazy(() => import('./pages/AdvancedAI'));
 const InstitutionalAPIs = lazy(() => import('./pages/InstitutionalAPIs'));
 
 // Lazy loaded components - Trading
-const AdvancedTradingPage = lazy(() => import('./pages/AdvancedTrading').then(m => ({ default: m.AdvancedTradingPage })));
+const AdvancedTradingPage = lazy(() => import('./pages/AdvancedTrading'));
 const EnhancedTrading = lazy(() => import('./pages/EnhancedTrading').then(m => ({ default: m.EnhancedTrading })));
 const OrderManagement = lazy(() => import('./pages/OrderManagement'));
 const RiskManagement = lazy(() => import('./pages/RiskManagement'));

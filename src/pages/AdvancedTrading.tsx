@@ -165,3 +165,5 @@ export function AdvancedTradingPage() {
     </>
   )
 }
+
+export default AdvancedTradingPage;
