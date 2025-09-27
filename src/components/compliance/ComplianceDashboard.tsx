@@ -118,24 +118,24 @@ export const ComplianceDashboard: React.FC = () => {
   const currentViolations = getViolationsByFramework(selectedFramework);
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 md:space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-3xl font-bold text-white leading-tight">
+          <h1 className="text-2xl sm:text-3xl font-bold text-white leading-tight">
             Compliance &{" "}
             <span className="text-white">
               Regulatory
             </span>
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-sm md:text-base text-muted-foreground mt-1">
             Monitor regulatory compliance and manage risk across all frameworks
           </p>
         </div>
         
-        <div className="flex items-center gap-2">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
           <Select value={selectedFramework} onValueChange={setSelectedFramework}>
-            <SelectTrigger className="w-48">
+            <SelectTrigger className="w-full sm:w-48">
               <SelectValue placeholder="Select Framework" />
             </SelectTrigger>
             <SelectContent>
@@ -149,22 +149,24 @@ export const ComplianceDashboard: React.FC = () => {
           <Button 
             onClick={() => runComplianceCheck()}
             disabled={loading}
+            size="sm"
           >
             <Play className="h-4 w-4 mr-2" />
-            Run Check
+            <span className="hidden sm:inline">Run Check</span>
+            <span className="sm:hidden">Check</span>
           </Button>
         </div>
       </div>
 
       {/* Key Metrics */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <Card>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Compliance Score</CardTitle>
             <Shield className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {complianceMetrics.overall_score.toFixed(1)}%
             </div>
             <Progress value={complianceMetrics.overall_score} className="mt-2" />
@@ -174,13 +176,13 @@ export const ComplianceDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Active Violations</CardTitle>
             <AlertTriangle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold text-red-400">
+            <div className="text-xl md:text-2xl font-bold text-red-400">
               {complianceMetrics.active_violations}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -189,13 +191,13 @@ export const ComplianceDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Automation Coverage</CardTitle>
             <Zap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {complianceMetrics.automation_coverage.toFixed(0)}%
             </div>
             <Progress value={complianceMetrics.automation_coverage} className="mt-2" />
@@ -205,13 +207,13 @@ export const ComplianceDashboard: React.FC = () => {
           </CardContent>
         </Card>
 
-        <Card>
+        <Card className="bg-card/50 backdrop-blur-sm border-border/50">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Pending Reports</CardTitle>
             <FileText className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {complianceMetrics.pending_reports}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -223,13 +225,43 @@ export const ComplianceDashboard: React.FC = () => {
 
       {/* Main Content Tabs */}
       <Tabs value={activeTab} onValueChange={setActiveTab}>
-        <TabsList>
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="frameworks">Frameworks</TabsTrigger>
-          <TabsTrigger value="violations">Violations</TabsTrigger>
-          <TabsTrigger value="reports">Reports</TabsTrigger>
-          <TabsTrigger value="audit">Audit Trail</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+            <TabsTrigger 
+              value="overview"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Overview</span>
+              <span className="sm:hidden">Home</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="frameworks"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Frameworks</span>
+              <span className="sm:hidden">Frame</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="violations"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <span className="hidden sm:inline">Violations</span>
+              <span className="sm:hidden">Viol</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="reports"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              Reports
+            </TabsTrigger>
+            <TabsTrigger 
+              value="audit"
+              className="px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              Audit
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview" className="space-y-4">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
