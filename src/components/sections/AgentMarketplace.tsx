@@ -145,7 +145,7 @@ export const AgentMarketplace = () => {
   )
 
   return (
-    <div className="min-h-screen bg-background text-foreground p-2 sm:p-4 lg:p-6">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:mb-8">
         <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-white leading-tight">
