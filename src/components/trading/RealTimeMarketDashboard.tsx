@@ -274,12 +274,45 @@ export const RealTimeMarketDashboard: React.FC<RealTimeMarketDashboardProps> = (
       </div>
 
       <Tabs value={selectedTab} onValueChange={setSelectedTab} className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2">
-          <TabsTrigger value="overview" className="truncate">Market Overview</TabsTrigger>
-          <TabsTrigger value="watchlist" className="truncate">Watchlist ({watchlist.size})</TabsTrigger>
-          <TabsTrigger value="orderbook" className="truncate">Order Book</TabsTrigger>
-          <TabsTrigger value="trades" className="truncate">Live Trades</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1 bg-background/50 backdrop-blur-sm border border-border/50 p-1 h-auto">
+            <TabsTrigger 
+              value="overview" 
+              className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <BarChart3 className="w-4 h-4" />
+              <span className="hidden sm:inline">Market Overview</span>
+              <span className="sm:hidden">Market</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="watchlist" 
+              className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <Eye className="w-4 h-4" />
+              <span className="hidden sm:inline">Watchlist</span>
+              <span className="sm:hidden">Watch</span>
+              <Badge variant="secondary" className="ml-1 h-5 min-w-5 text-xs px-1.5">
+                {watchlist.size}
+              </Badge>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="orderbook" 
+              className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <Activity className="w-4 h-4" />
+              <span className="hidden sm:inline">Order Book</span>
+              <span className="sm:hidden">Orders</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="trades" 
+              className="flex items-center gap-2 px-3 py-2.5 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all duration-200 hover:bg-muted/50"
+            >
+              <Zap className="w-4 h-4" />
+              <span className="hidden sm:inline">Live Trades</span>
+              <span className="sm:hidden">Trades</span>
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
