@@ -68,28 +68,18 @@ export const MultiExchangeDashboard = () => {
   };
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold text-white leading-tight tracking-tight">
-            Multi-Exchange{" "}
-            <span className="text-white">
-              Trading
-            </span>
-          </h1>
-          <p className="text-muted-foreground">
-            Trade across multiple exchanges with unified portfolio management
-          </p>
-        </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-4">
-          <Badge variant={connectedExchanges.length > 0 ? "default" : "secondary"}>
+          <Badge variant={connectedExchanges.length > 0 ? "default" : "secondary"} className="px-3 py-1">
             {connectedExchanges.length} Exchange{connectedExchanges.length !== 1 ? 's' : ''} Connected
           </Badge>
           <Button 
             variant={autoArbitrageEnabled ? "default" : "outline"}
             onClick={() => setAutoArbitrageEnabled(!autoArbitrageEnabled)}
             className="gap-2"
+            size="sm"
           >
             <Zap className="h-4 w-4" />
             Auto Arbitrage {autoArbitrageEnabled ? 'ON' : 'OFF'}
@@ -98,18 +88,45 @@ export const MultiExchangeDashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="overview">Overview</TabsTrigger>
-          <TabsTrigger value="exchanges">Exchanges</TabsTrigger>
-          <TabsTrigger value="arbitrage">Arbitrage</TabsTrigger>
-          <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-          <TabsTrigger value="analytics">Analytics</TabsTrigger>
-        </TabsList>
+        <div className="relative">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl">
+            <TabsTrigger 
+              value="overview" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Overview
+            </TabsTrigger>
+            <TabsTrigger 
+              value="exchanges" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Exchanges
+            </TabsTrigger>
+            <TabsTrigger 
+              value="arbitrage" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Arbitrage
+            </TabsTrigger>
+            <TabsTrigger 
+              value="portfolio" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Portfolio
+            </TabsTrigger>
+            <TabsTrigger 
+              value="analytics" 
+              className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
+            >
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+        </div>
 
         {/* Overview Tab */}
-        <TabsContent value="overview" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-            <Card>
+        <TabsContent value="overview" className="space-y-6 animate-fade-in">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Total Portfolio Value</CardTitle>
                 <DollarSign className="h-4 w-4 text-muted-foreground" />
@@ -127,7 +144,7 @@ export const MultiExchangeDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Active Exchanges</CardTitle>
                 <Activity className="h-4 w-4 text-muted-foreground" />
@@ -140,7 +157,7 @@ export const MultiExchangeDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Arbitrage Opportunities</CardTitle>
                 <Target className="h-4 w-4 text-muted-foreground" />
@@ -153,7 +170,7 @@ export const MultiExchangeDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">Avg Latency</CardTitle>
                 <Clock className="h-4 w-4 text-muted-foreground" />
