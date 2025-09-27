@@ -4,7 +4,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
-import { coinCapApi } from '@/lib/apis/coinCapApi'
+import { binanceApi } from '@/lib/apis/binanceApi'
 
 interface SolanaPriceChartProps {
   token: any
@@ -26,10 +26,10 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
       try {
         const days = timeframe === '1h' ? 1 : timeframe === '24h' ? 1 : timeframe === '7d' ? 7 : 30
         
-        // Use token symbol directly with CoinCap API
-        const tokenSymbol = token.symbol || 'SOL'
+        // Use Binance klines via USDT pairs
+        const tokenSymbol = (token.symbol || 'SOL').toUpperCase()
         
-        const priceHistory = await coinCapApi.getPriceHistory(tokenSymbol, days)
+        const priceHistory = await binanceApi.getPriceHistory(tokenSymbol, days)
         
         if (priceHistory?.prices) {
           const chartPoints = priceHistory.prices.map((point, index) => {
@@ -141,13 +141,15 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
               <BarChart3 className="h-5 w-5 text-purple-400" />
               {token?.name} Price Chart
             </CardTitle>
-            <CardDescription className="flex items-center gap-2 mt-1">
+            <div className="text-muted-foreground flex items-center gap-2 mt-1">
               <span>${token?.price?.toFixed(4)}</span>
-              <Badge variant={isPositive ? "default" : "destructive"} className="flex items-center gap-1">
-                {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                {isPositive ? '+' : ''}{token?.change_24h?.toFixed(2)}%
-              </Badge>
-            </CardDescription>
+              <span className="inline-flex">
+                <Badge variant={isPositive ? "default" : "destructive"} className="flex items-center gap-1">
+                  {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                  {isPositive ? '+' : ''}{token?.change_24h?.toFixed(2)}%
+                </Badge>
+              </span>
+            </div>
           </div>
           <div className="flex gap-1">
             {(['1h', '24h', '7d', '30d'] as const).map((tf) => (
