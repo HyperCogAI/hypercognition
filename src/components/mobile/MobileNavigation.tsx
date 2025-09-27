@@ -170,25 +170,25 @@ export const MobileNavigation = () => {
               </Button>
             </SheetTrigger>
             <SheetContent side="bottom" className="h-[100vh] rounded-none bg-background/98 backdrop-blur-md border-none">
-              <SheetHeader className="pb-4 border-b border-border/20">
-                <SheetTitle className="text-xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent">
+              <SheetHeader className="pb-6 border-b border-border/20">
+                <SheetTitle className="text-2xl font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent text-center">
                   Navigation Menu
                 </SheetTitle>
               </SheetHeader>
               
-              <ScrollArea className="h-full pr-4">
-                <div className="space-y-8 py-8 px-2">
+              <ScrollArea className="h-full pr-2">
+                <div className="space-y-10 py-6 px-4">
                   {navigationSections.map((section) => (
-                    <div key={section.title} className="space-y-4">
-                      <div className="flex items-center justify-center px-2 mb-2">
-                        <div className="bg-card/50 border border-border/30 rounded-full px-4 py-2">
-                          <h3 className="text-sm font-semibold text-primary tracking-wider">
+                    <div key={section.title} className="space-y-6">
+                      <div className="flex items-center justify-center px-4 mb-4">
+                        <div className="bg-gradient-to-r from-primary/20 to-secondary/20 border border-border/40 rounded-xl px-6 py-3 shadow-sm">
+                          <h3 className="text-base font-bold text-primary tracking-wide">
                             {section.title}
                           </h3>
                         </div>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-4">
+                      <div className="grid grid-cols-2 gap-4 px-2">
                         {section.items.map((item) => {
                           const Icon = item.icon
                           const active = isActive(item.path)
@@ -199,23 +199,27 @@ export const MobileNavigation = () => {
                               variant={"outline"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
-                                "h-14 flex flex-col gap-2 transition-all duration-200 text-sm",
-                                "hover:scale-[1.02] hover:shadow-md border-2 hover:bg-transparent hover:text-foreground",
-                                active && "text-white shadow-lg scale-[1.02]"
+                                "h-16 flex flex-col gap-2 p-4 transition-all duration-200 text-sm",
+                                "hover:scale-[1.02] hover:shadow-lg border-2 hover:bg-accent/50 hover:text-foreground",
+                                "rounded-xl bg-card/50 backdrop-blur-sm",
+                                active && "text-white shadow-xl scale-[1.02] bg-primary/10 border-primary/30"
                               )}
                             >
-                              <Icon className="h-4 w-4" />
-                              <span className="text-[11px] font-semibold text-center leading-tight">{item.label}</span>
+                              <Icon className="h-5 w-5 mb-1" />
+                              <span className="text-xs font-semibold text-center leading-tight px-1">{item.label}</span>
                             </Button>
                           )
                         })}
                       </div>
                       
                       {section.title !== "Resources" && (
-                        <Separator className="opacity-40 my-6" />
+                        <Separator className="opacity-30 my-8 mx-8" />
                       )}
                     </div>
                   ))}
+                  
+                  {/* Bottom padding for safe area */}
+                  <div className="h-8" />
                 </div>
               </ScrollArea>
             </SheetContent>
