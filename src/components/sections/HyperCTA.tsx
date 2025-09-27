@@ -3,14 +3,14 @@ import { ArrowRight, Sparkles, Zap } from "lucide-react";
 
 export const HyperCTA = () => {
   return (
-    <section className="py-24 px-4 relative overflow-hidden">
+    <section className="py-12 md:py-16 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-t from-background via-primary/5 to-background" />
       <div className="absolute inset-0 cyber-grid opacity-10" />
       
       {/* Animated Orbs */}
 
-      <div className="max-w-4xl mx-auto text-center relative z-10 space-y-12">
+      <div className="max-w-4xl mx-auto text-center relative z-10 space-y-8 md:space-y-10">
         {/* Main CTA Content */}
         <div className="space-y-6">
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-sm font-medium">
@@ -33,7 +33,7 @@ export const HyperCTA = () => {
         </div>
 
         {/* Benefits List */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 my-8">
           <div className="flex items-center gap-3 p-4 bg-card/30 rounded-lg border border-border/30">
             <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
               <Zap className="w-4 h-4 text-primary" />
