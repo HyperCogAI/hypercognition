@@ -93,113 +93,150 @@ const Settings = () => {
         keywords="settings, preferences, security, trading configuration, notifications"
       />
       
-      <div className="min-h-screen bg-gradient-to-br from-background via-background/95 to-background/90 p-3 md:p-6">
-        <div className="max-w-6xl mx-auto space-y-6 md:space-y-8">
+      <div className="min-h-screen bg-background p-3 md:p-4 lg:p-6">
+        <div className="max-w-7xl mx-auto space-y-4 md:space-y-6">
           {/* Header */}
-          <div className="space-y-3 md:space-y-4">
-            <div className="flex items-center space-x-3 md:space-x-4">
-              <div className="p-2 md:p-3 rounded-xl bg-gradient-to-r from-primary/20 to-secondary/20 border border-primary/20">
-                <User className="h-6 w-6 md:h-8 md:w-8 text-primary" />
-              </div>
-              <div>
-                <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white">
-                  Settings
-                </h1>
-                <p className="text-sm sm:text-base text-muted-foreground">
-                  Customize your HyperCognition experience
-                </p>
-              </div>
+          <div className="flex items-center gap-3 md:gap-4 mb-6 md:mb-8">
+            <div className="flex items-center justify-center w-12 h-12 md:w-14 md:h-14 rounded-xl bg-primary/10 border border-primary/20">
+              <User className="w-6 h-6 md:w-7 md:h-7 text-primary" />
+            </div>
+            <div className="flex-1">
+              <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-foreground">
+                Settings
+              </h1>
+              <p className="text-sm md:text-base text-muted-foreground mt-1">
+                Customize your HyperCognition experience
+              </p>
             </div>
           </div>
 
           {/* Settings Tabs */}
           <Tabs defaultValue="account" className="space-y-4 md:space-y-6">
-            <TabsList className="grid w-full grid-cols-3 sm:grid-cols-6 h-10 sm:h-12 bg-card/30 border border-border/50 backdrop-blur-sm text-xs sm:text-sm">
-              <TabsTrigger value="account" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-                <User className="h-4 w-4 mr-2" />
-                Account
-              </TabsTrigger>
-              <TabsTrigger value="security" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-                <Shield className="h-4 w-4 mr-2" />
-                Security
-              </TabsTrigger>
-              <TabsTrigger value="notifications" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-                <Bell className="h-4 w-4 mr-2" />
-                Notifications
-              </TabsTrigger>
-              <TabsTrigger value="trading" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-                <TrendingUp className="h-4 w-4 mr-2" />
-                Trading
-              </TabsTrigger>
-              <TabsTrigger value="appearance" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-                <Palette className="h-4 w-4 mr-2" />
-                Appearance
-              </TabsTrigger>
-              <TabsTrigger value="advanced" className="data-[state=active]:bg-primary/20 data-[state=active]:text-primary">
-                <Monitor className="h-4 w-4 mr-2" />
-                Advanced
-              </TabsTrigger>
-            </TabsList>
+            <div className="w-full overflow-x-auto">
+              <TabsList className="inline-flex w-full min-w-max h-11 md:h-12 bg-card/80 border border-border/50 backdrop-blur-sm p-1 rounded-lg">
+                <TabsTrigger 
+                  value="account" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <User className="w-4 h-4" />
+                  <span className="hidden sm:inline">Account</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="security" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <Shield className="w-4 h-4" />
+                  <span className="hidden sm:inline">Security</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="notifications" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <Bell className="w-4 h-4" />
+                  <span className="hidden sm:inline">Notifications</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="trading" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <TrendingUp className="w-4 h-4" />
+                  <span className="hidden sm:inline">Trading</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="appearance" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <Palette className="w-4 h-4" />
+                  <span className="hidden sm:inline">Appearance</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="advanced" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <Monitor className="w-4 h-4" />
+                  <span className="hidden sm:inline">Advanced</span>
+                </TabsTrigger>
+              </TabsList>
+            </div>
 
             {/* Account Settings */}
-            <TabsContent value="account" className="space-y-6">
-              <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
-                <CardHeader>
-                  <CardTitle className="flex items-center space-x-2">
-                    <User className="h-5 w-5 text-primary" />
-                    <span>Profile Information</span>
+            <TabsContent value="account" className="space-y-4 md:space-y-6">
+              <Card className="bg-card/90 border backdrop-blur-sm">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
+                    <User className="w-5 h-5 text-primary" />
+                    Profile Information
                   </CardTitle>
-                  <CardDescription>
+                  <CardDescription className="text-sm md:text-base">
                     Manage your personal information and account details
                   </CardDescription>
                 </CardHeader>
                 <CardContent className="space-y-6">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-6">
                     <div className="space-y-2">
-                      <Label htmlFor="firstName">First Name</Label>
-                      <Input id="firstName" placeholder="Enter your first name" className="bg-background/50" />
+                      <Label htmlFor="firstName" className="text-sm font-medium">First Name</Label>
+                      <Input 
+                        id="firstName" 
+                        placeholder="Enter your first name" 
+                        className="bg-background/60 border-border/60 focus:border-primary/50" 
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="lastName">Last Name</Label>
-                      <Input id="lastName" placeholder="Enter your last name" className="bg-background/50" />
+                      <Label htmlFor="lastName" className="text-sm font-medium">Last Name</Label>
+                      <Input 
+                        id="lastName" 
+                        placeholder="Enter your last name" 
+                        className="bg-background/60 border-border/60 focus:border-primary/50" 
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="email">Email Address</Label>
-                      <Input id="email" type="email" placeholder="your@email.com" className="bg-background/50" />
+                      <Label htmlFor="email" className="text-sm font-medium">Email Address</Label>
+                      <Input 
+                        id="email" 
+                        type="email" 
+                        placeholder="your@email.com" 
+                        className="bg-background/60 border-border/60 focus:border-primary/50" 
+                      />
                     </div>
                     <div className="space-y-2">
-                      <Label htmlFor="phone">Phone Number</Label>
-                      <Input id="phone" placeholder="+1 (555) 123-4567" className="bg-background/50" />
+                      <Label htmlFor="phone" className="text-sm font-medium">Phone Number</Label>
+                      <Input 
+                        id="phone" 
+                        placeholder="+1 (555) 123-4567" 
+                        className="bg-background/60 border-border/60 focus:border-primary/50" 
+                      />
                     </div>
                   </div>
                   
-                  <Separator className="bg-border/50" />
+                  <Separator className="bg-border/30" />
                   
                   <div className="space-y-4">
-                    <h4 className="text-lg font-semibold">Account Status</h4>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="font-medium">Verification Status</p>
-                        <p className="text-sm text-muted-foreground">Complete KYC verification</p>
+                    <h4 className="text-base md:text-lg font-semibold text-foreground">Account Status</h4>
+                    <div className="space-y-3">
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
+                        <div className="space-y-1">
+                          <p className="font-medium text-sm">Verification Status</p>
+                          <p className="text-xs text-muted-foreground">Complete KYC verification</p>
+                        </div>
+                        <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30 text-xs px-2 py-1">
+                          Verified
+                        </Badge>
                       </div>
-                      <Badge variant="secondary" className="bg-green-500/20 text-green-400 border-green-500/30">
-                        Verified
-                      </Badge>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <div className="space-y-1">
-                        <p className="font-medium">Account Tier</p>
-                        <p className="text-sm text-muted-foreground">Current subscription level</p>
+                      <div className="flex items-center justify-between p-3 rounded-lg bg-muted/20 border border-border/30">
+                        <div className="space-y-1">
+                          <p className="font-medium text-sm">Account Tier</p>
+                          <p className="text-xs text-muted-foreground">Current subscription level</p>
+                        </div>
+                        <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs px-2 py-1">
+                          Pro Trader
+                        </Badge>
                       </div>
-                      <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
-                        Pro Trader
-                      </Badge>
                     </div>
                   </div>
 
-                  <div className="flex justify-end">
-                    <CyberButton variant="cyber" onClick={() => handleSave('Account')}>
-                      <Save className="h-4 w-4 mr-2" />
+                  <div className="flex justify-end pt-4">
+                    <CyberButton variant="cyber" onClick={() => handleSave('Account')} className="px-6">
+                      <Save className="w-4 h-4 mr-2" />
                       Save Changes
                     </CyberButton>
                   </div>
