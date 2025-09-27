@@ -173,7 +173,7 @@ export const MobileNavigation = () => {
             <SheetContent side="bottom" className="h-[100vh] rounded-none bg-background/98 backdrop-blur-md border-none">
               <SheetHeader className="pb-6 border-b border-border/20">
                 <SheetTitle className="flex items-center justify-center">
-                  <img src={hyperLogo} alt="HyperCognition" className="h-12 w-auto" />
+                  <img src={hyperLogo} alt="HyperCognition" className="h-10 w-auto" />
                 </SheetTitle>
               </SheetHeader>
               
