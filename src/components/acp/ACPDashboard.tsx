@@ -37,13 +37,11 @@ export function ACPDashboard() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (user) {
-      fetchDashboardData()
-    }
+    fetchDashboardData()
   }, [user])
 
   const fetchDashboardData = async () => {
-    if (!user) return
+    console.log('ACPDashboard: fetchDashboardData called, user:', user)
 
     try {
       setLoading(true)

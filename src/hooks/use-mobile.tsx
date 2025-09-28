@@ -3,7 +3,7 @@ import * as React from "react";
 const MOBILE_BREAKPOINT = 768;
 
 export function useIsMobile() {
-  const [isMobile, setIsMobile] = React.useState<boolean | undefined>(undefined);
+  const [isMobile, setIsMobile] = React.useState<boolean>(false);
 
   React.useEffect(() => {
     if (typeof window === 'undefined' || !window.matchMedia) {
@@ -13,9 +13,12 @@ export function useIsMobile() {
 
     const media = window.matchMedia(`(max-width: ${MOBILE_BREAKPOINT - 1}px)`)
 
-    const listener = () => {
-      setIsMobile(media.matches)
+    const listener = (event: MediaQueryListEvent | MediaQueryList) => {
+      setIsMobile(event.matches)
     }
+
+    // Set initial state
+    setIsMobile(media.matches)
 
     // Attach listener with cross-browser support
     if (typeof media.addEventListener === 'function') {
@@ -24,9 +27,6 @@ export function useIsMobile() {
       // Fallback for older Safari/iOS
       media.addListener(listener)
     }
-
-    // Set initial state
-    setIsMobile(media.matches)
 
     return () => {
       if (typeof media.removeEventListener === 'function') {
@@ -37,5 +37,5 @@ export function useIsMobile() {
     }
   }, [])
 
-  return isMobile === true;
+  return isMobile;
 }
