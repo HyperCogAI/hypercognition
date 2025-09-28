@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useWallet } from '@/hooks/useWallet';
 
 export interface NotificationChannel {
   id: string;
@@ -65,6 +66,7 @@ export interface NotificationStats {
 
 export const useAdvancedNotifications = () => {
   const { user } = useAuth();
+  const { isConnected: evmConnected } = useWallet();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [notifications, setNotifications] = useState<Notification[]>([]);
@@ -75,9 +77,14 @@ export const useAdvancedNotifications = () => {
 
   // Fetch notification data
   useEffect(() => {
-    if (!user) {
+    if (!evmConnected) {
       // Redirect to wallet auth instead of showing mock data
       window.location.href = '/evm-auth';
+      return;
+    }
+
+    // Wait for Supabase session if needed
+    if (!user) {
       return;
     }
 
@@ -123,7 +130,7 @@ export const useAdvancedNotifications = () => {
     };
 
     fetchNotificationData();
-  }, [user]);
+  }, [evmConnected, user]);
 
   // Set up real-time notifications
   useEffect(() => {

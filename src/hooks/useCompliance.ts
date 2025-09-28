@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useWallet } from '@/hooks/useWallet';
 
 export interface ComplianceFramework {
   id: string;
@@ -76,6 +77,7 @@ export interface ComplianceMetrics {
 
 export const useCompliance = () => {
   const { user } = useAuth();
+  const { isConnected: evmConnected } = useWallet();
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [frameworks, setFrameworks] = useState<ComplianceFramework[]>([]);
@@ -86,9 +88,13 @@ export const useCompliance = () => {
 
   // Fetch compliance data
   useEffect(() => {
-    if (!user) {
+    if (!evmConnected) {
       // Redirect to wallet auth instead of showing mock data
       window.location.href = '/evm-auth';
+      return;
+    }
+
+    if (!user) {
       return;
     }
 
@@ -170,7 +176,7 @@ export const useCompliance = () => {
     };
 
     fetchComplianceData();
-  }, [user]);
+  }, [evmConnected, user]);
 
   // Generate mock data for demonstration
   const generateMockData = () => {
