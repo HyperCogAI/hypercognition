@@ -17,7 +17,7 @@ import {
   Eye
 } from 'lucide-react';
 import { PriceChart } from '@/components/charts/PriceChart';
-import { coinGeckoApi } from '@/lib/apis/coinGeckoApi';
+import { birdeyeApi } from '@/lib/apis/birdeyeApi';
 import { useToast } from '@/components/ui/use-toast';
 
 interface TechnicalIndicator {
@@ -78,52 +78,60 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   const fetchMarketData = async () => {
     setIsLoading(true);
     try {
-      const coins = await coinGeckoApi.getTopCryptos(10, 1);
-      const mapped: MarketData[] = coins.map((c) => ({
-        symbol: c.symbol.toUpperCase(),
-        name: c.name,
-        price: c.current_price,
-        change_24h: c.price_change_percentage_24h,
-        volume_24h: c.total_volume,
-        market_cap: c.market_cap,
-        last_updated: c.last_updated,
-        sentiment: {
-          symbol: c.symbol.toUpperCase(),
-          sentiment: c.price_change_percentage_24h > 0 ? 'BULLISH' : c.price_change_percentage_24h < 0 ? 'BEARISH' : 'NEUTRAL',
-          score: Math.min(100, Math.max(0, 50 + c.price_change_percentage_24h)),
-          indicators: [
-            {
-              name: '24h Change',
-              value: c.price_change_percentage_24h,
-              signal: c.price_change_percentage_24h > 0 ? 'BUY' : c.price_change_percentage_24h < 0 ? 'SELL' : 'HOLD',
-              confidence: Math.min(1, Math.abs(c.price_change_percentage_24h) / 10),
+      const tokens = await birdeyeApi.getTokenList('market_cap', 'desc', 0, 10);
+      if (!tokens) throw new Error('Failed to fetch token data');
+
+      const mapped: MarketData[] = await Promise.all(
+        tokens.map(async (token) => {
+          const price = await birdeyeApi.getTokenPrice(token.address);
+          return {
+            symbol: token.symbol.toUpperCase(),
+            name: token.name,
+            price: price?.value || 0,
+            change_24h: price?.priceChange24h || 0,
+            volume_24h: token.v24hUSD || 0,
+            market_cap: token.mc || 0,
+            last_updated: new Date().toISOString(),
+            sentiment: {
+              symbol: token.symbol.toUpperCase(),
+              sentiment: (price?.priceChange24h || 0) > 0 ? 'BULLISH' : (price?.priceChange24h || 0) < 0 ? 'BEARISH' : 'NEUTRAL',
+              score: Math.min(100, Math.max(0, 50 + (price?.priceChange24h || 0))),
+              indicators: [
+                {
+                  name: '24h Change',
+                  value: price?.priceChange24h || 0,
+                  signal: (price?.priceChange24h || 0) > 0 ? 'BUY' : (price?.priceChange24h || 0) < 0 ? 'SELL' : 'HOLD',
+                  confidence: Math.min(1, Math.abs(price?.priceChange24h || 0) / 10),
+                },
+              ],
+              volume_trend: (token.v24hUSD || 0) > 0 ? 'increasing' : 'stable',
+              price_momentum: (price?.priceChange24h || 0) > 0 ? 'up' : (price?.priceChange24h || 0) < 0 ? 'down' : 'flat',
+              social_sentiment: undefined,
             },
-          ],
-          volume_trend: c.total_volume > 0 ? 'increasing' : 'stable',
-          price_momentum: c.price_change_percentage_24h > 0 ? 'up' : c.price_change_percentage_24h < 0 ? 'down' : 'flat',
-          social_sentiment: undefined,
-        },
-        technical_analysis: {
-          rsi: 50 + Math.max(-30, Math.min(30, c.price_change_percentage_24h)),
-          macd: c.price_change_percentage_24h,
-          bollinger_position: 0.5,
-          sma_20: c.current_price,
-          sma_50: c.current_price,
-          volume_sma: c.total_volume,
-        },
-      }));
+            technical_analysis: {
+              rsi: 50 + Math.max(-30, Math.min(30, price?.priceChange24h || 0)),
+              macd: price?.priceChange24h || 0,
+              bollinger_position: 0.5,
+              sma_20: price?.value || 0,
+              sma_50: price?.value || 0,
+              volume_sma: token.v24hUSD || 0,
+            },
+          };
+        })
+      );
 
       const avgChange = mapped.length
         ? mapped.reduce((sum, m) => sum + m.change_24h, 0) / mapped.length
         : 0;
 
       const overview: MarketOverview = {
-        total_market_cap: coins.reduce((s, c) => s + (c.market_cap || 0), 0),
+        total_market_cap: mapped.reduce((s, m) => s + (m.market_cap || 0), 0),
         average_change_24h: avgChange,
         bullish_sentiment_ratio: mapped.filter((m) => m.change_24h > 0).length / (mapped.length || 1),
         bearish_sentiment_ratio: mapped.filter((m) => m.change_24h < 0).length / (mapped.length || 1),
         active_trading_pairs: mapped.length,
         market_trend: avgChange >= 0 ? 'BULLISH' : 'BEARISH',
+        volatility_index: Math.abs(avgChange) * 2,
         last_updated: new Date().toISOString(),
       };
 

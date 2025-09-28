@@ -10,40 +10,50 @@ import { TechnicalChart } from '@/components/charts/TechnicalChart';
 import { Search, TrendingUp, BarChart3, Activity, Zap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
-import { supabase } from '@/integrations/supabase/client';
+import { birdeyeApi } from '@/lib/apis/birdeyeApi';
 
 export const TechnicalAnalysisDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Fetch agents from database
+  // Fetch tokens from Birdeye
   const { data: agents = [], isLoading: agentsLoading } = useQuery({
-    queryKey: ['agents-technical'],
+    queryKey: ['tokens-technical'],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('id, name, symbol, price, change_24h, volume_24h')
-        .order('volume_24h', { ascending: false })
-        .limit(20);
+      const tokens = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 20);
+      if (!tokens) return [];
       
-      if (error) throw error;
-      return data || [];
+      return await Promise.all(
+        tokens.map(async (token) => {
+          const price = await birdeyeApi.getTokenPrice(token.address);
+          return {
+            id: token.address,
+            name: token.name,
+            symbol: token.symbol,
+            price: price?.value || 0,
+            change_24h: price?.priceChange24h || 0,
+            volume_24h: token.v24hUSD || 0,
+          };
+        })
+      );
     }
   });
 
-  // Fetch technical indicators
+  // Generate mock technical indicators based on price data
   const { data: technicalIndicators = [] } = useQuery({
-    queryKey: ['technical-indicators'],
+    queryKey: ['technical-indicators', agents],
     queryFn: async () => {
-      const { data, error } = await supabase
-        .from('technical_indicators')
-        .select('*')
-        .order('calculated_at', { ascending: false })
-        .limit(100);
-      
-      if (error) throw error;
-      return data || [];
-    }
+      return agents.map(agent => ({
+        id: `${agent.id}-rsi`,
+        agent_id: agent.id,
+        indicator_type: 'rsi',
+        value: 50 + Math.max(-30, Math.min(30, agent.change_24h)),
+        calculated_at: new Date().toISOString(),
+        strength: agent.change_24h > 5 ? 'Strong' : agent.change_24h > 0 ? 'Moderate' : agent.change_24h < -5 ? 'Weak' : 'Neutral',
+        signal: agent.change_24h > 0 ? 'BUY' : agent.change_24h < 0 ? 'SELL' : 'HOLD',
+      }));
+    },
+    enabled: !!agents.length
   });
 
   const [selectedAgent, setSelectedAgent] = useState(agents[0] || null);
