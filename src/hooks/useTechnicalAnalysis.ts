@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
+import { birdeyeApi } from '@/lib/apis/birdeyeApi';
 
 export interface ChartData {
   timestamp: string;
@@ -44,39 +45,62 @@ export const useTechnicalAnalysis = (agentId: string, timeframe: string = '1h') 
     const fetchChartData = async () => {
       try {
         setLoading(true);
-        
-        // Get historical price data
-        const { data: priceData } = await supabase
-          .from('price_history')
-          .select('*')
-          .eq('agent_id', agentId)
-          .order('timestamp', { ascending: true })
-          .limit(1000);
 
-        if (priceData && priceData.length > 0) {
-          // Convert to OHLC format (simplified - in real app, aggregate by timeframe)
-          const ohlcData: ChartData[] = priceData.map((item, index) => {
-            const prevPrice = index > 0 ? priceData[index - 1].price : item.price;
-            const nextPrice = index < priceData.length - 1 ? priceData[index + 1].price : item.price;
-            
-            return {
-              timestamp: item.timestamp,
-              open: prevPrice,
-              high: Math.max(prevPrice, item.price, nextPrice),
-              low: Math.min(prevPrice, item.price, nextPrice),
-              close: item.price,
-              volume: item.volume || 0
-            };
-          });
-
-          setChartData(ohlcData);
+        const isSolanaAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(agentId);
+        if (isSolanaAddress) {
+          const mapTf = (tf: string): '1H' | '4H' | '1D' | '1W' | '1M' => {
+            const t = tf.toUpperCase();
+            if (t === '1M' || t === '1W' || t === '4H' || t === '1H') return t as any;
+            return '1D';
+          };
+          const items = await birdeyeApi.getPriceHistory(agentId, mapTf(timeframe));
+          if (items && items.length) {
+            const ohlcData: ChartData[] = items.map((pt, index, arr) => {
+              const prev = index > 0 ? arr[index - 1].value : pt.value;
+              const next = index < arr.length - 1 ? arr[index + 1].value : pt.value;
+              return {
+                timestamp: new Date(pt.unixTime * 1000).toISOString(),
+                open: Number(prev),
+                high: Math.max(Number(prev), Number(pt.value), Number(next)),
+                low: Math.min(Number(prev), Number(pt.value), Number(next)),
+                close: Number(pt.value),
+                volume: 0,
+              };
+            });
+            setChartData(ohlcData);
+          } else {
+            setChartData([]);
+          }
         } else {
-          // Generate mock data if no historical data available
-          generateMockData();
+          // Fallback to Supabase stored data for non-address IDs
+          const { data: priceData } = await supabase
+            .from('price_history')
+            .select('*')
+            .eq('agent_id', agentId)
+            .order('timestamp', { ascending: true })
+            .limit(1000);
+
+          if (priceData && priceData.length > 0) {
+            const ohlcData: ChartData[] = priceData.map((item, index) => {
+              const prevPrice = index > 0 ? priceData[index - 1].price : item.price;
+              const nextPrice = index < priceData.length - 1 ? priceData[index + 1].price : item.price;
+              return {
+                timestamp: item.timestamp,
+                open: prevPrice,
+                high: Math.max(prevPrice, item.price, nextPrice),
+                low: Math.min(prevPrice, item.price, nextPrice),
+                close: item.price,
+                volume: item.volume || 0
+              };
+            });
+            setChartData(ohlcData);
+          } else {
+            setChartData([]);
+          }
         }
       } catch (error) {
         console.error('Error fetching chart data:', error);
-        generateMockData();
+        setChartData([]);
       } finally {
         setLoading(false);
       }

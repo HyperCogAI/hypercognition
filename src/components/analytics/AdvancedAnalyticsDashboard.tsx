@@ -38,6 +38,7 @@ interface MarketSentiment {
 }
 
 interface MarketData {
+  address: string;
   symbol: string;
   name: string;
   price: number;
@@ -85,6 +86,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
         tokens.map(async (token) => {
           const price = await birdeyeApi.getTokenPrice(token.address);
           return {
+            address: token.address,
             symbol: token.symbol.toUpperCase(),
             name: token.name,
             price: price?.value || 0,
@@ -357,7 +359,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                 {selectedAgent ? (
                   <div className="h-[400px]">
                     <PriceChart 
-                      agentId={selectedAgent.symbol}
+                      agentId={selectedAgent.address}
                       symbol={selectedAgent.symbol}
                       currentPrice={selectedAgent.price}
                       change24h={selectedAgent.change_24h}

@@ -3,6 +3,7 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { supabase } from "@/integrations/supabase/client"
+import { birdeyeApi } from "@/lib/apis/birdeyeApi"
 
 interface PriceChartProps {
   agentId: string
@@ -27,24 +28,38 @@ export const PriceChart = ({ agentId, symbol, currentPrice, change24h }: PriceCh
     const fetchPriceHistory = async () => {
       setIsLoading(true)
       try {
-        const { data, error } = await supabase
-          .from('price_history')
-          .select('*')
-          .eq('agent_id', agentId)
-          .order('timestamp', { ascending: true })
-          .limit(24) // Last 24 hours
+        const isSolanaAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(agentId)
 
-        if (error) throw error
+        if (isSolanaAddress) {
+          const items = await birdeyeApi.getPriceHistory(agentId, '1D')
+          const formatted = (items || []).map(pt => ({
+            timestamp: new Date(pt.unixTime * 1000).toISOString(),
+            price: Number(pt.value),
+            volume: 0,
+            market_cap: 0,
+            time: new Date(pt.unixTime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }))
+          setPriceData(formatted)
+        } else {
+          const { data, error } = await supabase
+            .from('price_history')
+            .select('*')
+            .eq('agent_id', agentId)
+            .order('timestamp', { ascending: true })
+            .limit(24)
 
-        const formattedData = (data || []).map(point => ({
-          timestamp: new Date(point.timestamp).toISOString(),
-          price: Number(point.price),
-          volume: Number(point.volume),
-          market_cap: Number(point.market_cap),
-          time: new Date(point.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-        }))
+          if (error) throw error
 
-        setPriceData(formattedData)
+          const formattedData = (data || []).map(point => ({
+            timestamp: new Date(point.timestamp).toISOString(),
+            price: Number(point.price),
+            volume: Number(point.volume),
+            market_cap: Number(point.market_cap),
+            time: new Date(point.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+          }))
+
+          setPriceData(formattedData)
+        }
       } catch (error) {
         console.error('Error fetching price history:', error)
       } finally {
