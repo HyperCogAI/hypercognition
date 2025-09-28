@@ -39,9 +39,7 @@ const tradingItems = [
 // DeFi and crypto features
 const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
-  { title: "Solana", url: "/solana", icon: Sparkles },
   { title: "Solana Staking", url: "/solana-staking", icon: Lock },
-  
   { title: "Staking", url: "/staking", icon: Layers },
   { title: "Referrals", url: "/referrals", icon: Star },
 ]
@@ -65,20 +63,11 @@ const professionalItems = [
   { title: "Multi-Exchange", url: "/multi-exchange", icon: ArrowLeftRight },
   { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
   { title: "Advanced Trading", url: "/advanced-trading", icon: Target },
-  { title: "Live Trading", url: "/real-time-market", icon: Activity },
-  { title: "Social Trading", url: "/social-trading", icon: Share2 },
   { title: "Order Management", url: "/order-management", icon: ListOrdered },
-  { title: "Solana Signals", url: "/solana-signals", icon: Sparkles },
-  { title: "Advanced Analytics", url: "/advanced-analytics", icon: BarChart3 },
   { title: "Risk Management", url: "/risk-management", icon: Shield },
   { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
-  { title: "Advanced Notifications", url: "/advanced-notifications", icon: Bell },
   { title: "Advanced AI", url: "/advanced-ai", icon: Bot },
   { title: "Enhanced Features", url: "/enhanced-features", icon: Sparkles },
-  { title: "Institutional", url: "/institutional", icon: Building2 },
-  { title: "Institutional APIs", url: "/institutional-apis", icon: Briefcase },
-  { title: "Compliance", url: "/compliance", icon: Scale },
-  { title: "White Label", url: "/white-label", icon: Package },
   { title: "Multi Language", url: "/multi-language", icon: Globe },
 ]
 
