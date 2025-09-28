@@ -31,18 +31,28 @@ export class BirdeyeAPI {
       url.searchParams.append(key, value);
     });
 
-    const response = await fetch(url.toString(), {
-      headers: {
-        'Content-Type': 'application/json',
-      },
-    });
+    try {
+      const response = await fetch(url.toString(), {
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
 
-    if (!response.ok) {
-      throw new Error(`Birdeye API error: ${response.status} ${response.statusText}`);
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(`Birdeye API error: ${response.status} ${response.statusText}`, errorText);
+        throw new Error(`Birdeye API error: ${response.status} ${response.statusText}`);
+      }
+
+      const data = await response.json();
+      if (data.error) {
+        throw new Error(data.error);
+      }
+      return data.data || data;
+    } catch (error) {
+      console.error('Request failed:', error);
+      throw error;
     }
-
-    const data = await response.json();
-    return data.data || data;
   }
 
   async getTokenPrice(address: string): Promise<BirdeyeTokenPrice | null> {

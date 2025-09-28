@@ -98,7 +98,7 @@ export const useInstitutionalFeatures = () => {
         setLoading(true);
         
         // Fetch user's team membership to get their organization
-        const { data: teamMember } = await supabase
+        const { data: teamMember, error: teamError } = await supabase
           .from('team_members')
           .select(`
             *,
@@ -108,7 +108,10 @@ export const useInstitutionalFeatures = () => {
           .eq('status', 'active')
           .single();
 
-        if (!teamMember) {
+        if (teamError || !teamMember) {
+          console.log('No team membership found or error:', teamError);
+          // Use mock data for demonstration
+          generateMockData();
           setLoading(false);
           return;
         }

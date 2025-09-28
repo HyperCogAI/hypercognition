@@ -38,7 +38,13 @@ export const useRealtimeNotifications = () => {
         .order('created_at', { ascending: false })
         .limit(50);
 
-      if (error) throw error;
+      if (error) {
+        console.error('Error fetching notifications:', error);
+        // Set empty notifications if table doesn't exist or other error
+        setNotifications([]);
+        setUnreadCount(0);
+        return;
+      }
 
       // Transform data to match interface
       const transformedNotifications = (data || []).map((n: any) => ({
