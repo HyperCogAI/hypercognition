@@ -82,9 +82,21 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
       const tokens = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 8);
       if (!tokens || tokens.length === 0) throw new Error('Failed to fetch token data');
 
-      // Get all prices in one bulk call instead of individual calls
+      // Get all prices in one bulk call with graceful fallback to single-price to avoid 401/429
       const addresses = tokens.map(token => token.address);
-      const pricesData = await birdeyeApi.getMultipleTokenPrices(addresses);
+      let pricesData = await birdeyeApi.getMultipleTokenPrices(addresses);
+
+      // Fallback: if bulk endpoint is rate-limited or not permitted by the key, fetch sequentially with a tiny delay
+      if (!pricesData || Object.keys(pricesData).length === 0) {
+        const result: Record<string, any> = {};
+        for (const addr of addresses) {
+          const p = await birdeyeApi.getTokenPrice(addr);
+          if (p) result[addr] = p;
+          // Small delay to respect Birdeye public rate limits
+          await new Promise(r => setTimeout(r, 200));
+        }
+        pricesData = result;
+      }
 
       const mapped: MarketData[] = tokens.map((token) => {
         const price = pricesData?.[token.address];
