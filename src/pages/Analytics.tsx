@@ -2,7 +2,6 @@ import React from 'react';
 import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
 import { SolanaAnalyticsDashboard } from '@/components/analytics/SolanaAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
-import { TradingSignalsPanel } from '@/components/trading/TradingSignalsPanel';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3 } from 'lucide-react';
@@ -35,7 +34,7 @@ const Analytics = () => {
         
         <Tabs defaultValue="agents" className="space-y-8">
           <div className="relative">
-            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl">
+            <TabsList className="grid w-full grid-cols-3 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl">
               <TabsTrigger 
                 value="agents" 
                 className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
@@ -48,13 +47,6 @@ const Analytics = () => {
                 className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
               >
                 Solana
-              </TabsTrigger>
-              <TabsTrigger 
-                value="signals" 
-                className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
-              >
-                <span className="hidden sm:inline">Trading Signals</span>
-                <span className="sm:hidden">Signals</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="news" 
@@ -72,10 +64,6 @@ const Analytics = () => {
           
           <TabsContent value="solana" className="animate-fade-in">
             <SolanaAnalyticsDashboard />
-          </TabsContent>
-          
-          <TabsContent value="signals" className="animate-fade-in">
-            <TradingSignalsPanel />
           </TabsContent>
           
           <TabsContent value="news" className="animate-fade-in">

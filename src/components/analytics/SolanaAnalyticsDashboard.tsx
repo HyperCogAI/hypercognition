@@ -2,14 +2,14 @@ import React, { useState, useEffect } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
-import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
+import { useAnalytics } from "@/hooks/useAnalytics"
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, BarChart, Bar } from 'recharts'
 import { TrendingUp, TrendingDown, DollarSign, Activity, BarChart3, Zap } from "lucide-react"
 import { RealTechnicalAnalysisService } from '@/services/RealTechnicalAnalysisService'
 import { RealMarketSentimentService } from '@/services/RealMarketSentimentService'
 
 export const SolanaAnalyticsDashboard = () => {
-  const { tokens, isLoading } = useSolanaRealtime()
+  const { topAgents: tokens, marketStats, isLoading, formatCurrency } = useAnalytics()
   const [selectedMetric, setSelectedMetric] = useState<'price' | 'volume' | 'market_cap'>('price')
   const [enhancedAnalytics, setEnhancedAnalytics] = useState<any>(null)
   const [sentiment, setSentiment] = useState<any>(null)
@@ -31,9 +31,9 @@ export const SolanaAnalyticsDashboard = () => {
   }, []);
 
   // Calculate analytics data with enhanced metrics
-  const totalMarketCap = tokens.reduce((sum, token) => sum + token.market_cap, 0)
-  const totalVolume = enhancedAnalytics ? enhancedAnalytics.transactionVolume : tokens.reduce((sum, token) => sum + token.volume_24h, 0)
-  const averageChange = tokens.reduce((sum, token) => sum + token.change_24h, 0) / (tokens.length || 1)
+  const totalMarketCap = marketStats.totalMarketCap
+  const totalVolume = marketStats.totalVolume24h
+  const averageChange = marketStats.avgChange24h
   const topGainers = tokens.filter(t => t.change_24h > 0).slice(0, 5)
   const topLosers = tokens.filter(t => t.change_24h < 0).slice(0, 5)
 
@@ -54,12 +54,6 @@ export const SolanaAnalyticsDashboard = () => {
     market_cap: token.market_cap / 1e9 // Convert to billions
   }))
 
-  const formatCurrency = (value: number) => {
-    if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`
-    if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`
-    if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`
-    return `$${value.toFixed(2)}`
-  }
 
   if (isLoading) {
     return (

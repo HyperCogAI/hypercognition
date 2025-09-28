@@ -17,179 +17,42 @@ import {
   Eye
 } from 'lucide-react';
 import { PriceChart } from '@/components/charts/PriceChart';
-import { birdeyeApi } from '@/lib/apis/birdeyeApi';
+import { useAnalytics } from '@/hooks/useAnalytics';
 import { useToast } from '@/components/ui/use-toast';
 
-interface TechnicalIndicator {
-  name: string;
-  value: number;
-  signal: 'BUY' | 'SELL' | 'HOLD';
-  confidence: number;
-}
-
-interface MarketSentiment {
-  symbol: string;
-  sentiment: 'BULLISH' | 'BEARISH' | 'NEUTRAL';
-  score: number;
-  indicators: TechnicalIndicator[];
-  volume_trend: string;
-  price_momentum: string;
-  social_sentiment?: number;
-}
-
-interface MarketData {
-  address: string;
-  symbol: string;
-  name: string;
-  price: number;
-  change_24h: number;
-  volume_24h: number;
-  market_cap: number;
-  sentiment: MarketSentiment;
-  last_updated: string;
-  technical_analysis: {
-    rsi: number;
-    macd: number;
-    bollinger_position: number;
-    sma_20: number;
-    sma_50: number;
-    volume_sma: number;
-  };
-}
-
-interface MarketOverview {
-  total_market_cap: number;
-  average_change_24h: number;
-  bullish_sentiment_ratio: number;
-  bearish_sentiment_ratio: number;
-  active_trading_pairs: number;
-  market_trend: 'BULLISH' | 'BEARISH';
-  volatility_index: number;
-  last_updated: string;
-}
-
 const AdvancedAnalyticsDashboard: React.FC = () => {
-  const [marketData, setMarketData] = useState<MarketData[]>([]);
-  const [marketOverview, setMarketOverview] = useState<MarketOverview | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [selectedAgent, setSelectedAgent] = useState<MarketData | null>(null);
+  const { priceData, topAgents, marketStats, isLoading, formatCurrency, refetch } = useAnalytics();
+  const [selectedAgent, setSelectedAgent] = useState<any>(null);
   const [autoRefresh, setAutoRefresh] = useState(true);
   const { toast } = useToast();
 
-  const fetchMarketData = async () => {
-    setIsLoading(true);
-    try {
-      // Use CoinGecko free API instead of expensive Birdeye
-      const response = await fetch('https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=8&page=1&sparkline=false');
-      if (!response.ok) throw new Error('Failed to fetch CoinGecko data');
-      
-      const coins = await response.json();
-      if (!coins || coins.length === 0) throw new Error('No coin data available');
-
-      const mapped: MarketData[] = coins.map((coin: any) => ({
-        address: coin.id,
-        symbol: coin.symbol.toUpperCase(),
-        name: coin.name,
-        price: coin.current_price || 0,
-        change_24h: coin.price_change_percentage_24h || 0,
-        volume_24h: coin.total_volume || 0,
-        market_cap: coin.market_cap || 0,
-        last_updated: new Date().toISOString(),
-        sentiment: {
-          symbol: coin.symbol.toUpperCase(),
-          sentiment: (coin.price_change_percentage_24h || 0) > 0 ? 'BULLISH' : (coin.price_change_percentage_24h || 0) < 0 ? 'BEARISH' : 'NEUTRAL',
-          score: Math.min(100, Math.max(0, 50 + (coin.price_change_percentage_24h || 0))),
-          indicators: [
-            {
-              name: '24h Change',
-              value: coin.price_change_percentage_24h || 0,
-              signal: (coin.price_change_percentage_24h || 0) > 0 ? 'BUY' : (coin.price_change_percentage_24h || 0) < 0 ? 'SELL' : 'HOLD',
-              confidence: Math.min(1, Math.abs(coin.price_change_percentage_24h || 0) / 10),
-            },
-          ],
-          volume_trend: (coin.total_volume || 0) > 0 ? 'increasing' : 'stable',
-          price_momentum: (coin.price_change_percentage_24h || 0) > 0 ? 'up' : (coin.price_change_percentage_24h || 0) < 0 ? 'down' : 'flat',
-          social_sentiment: undefined,
-        },
-        technical_analysis: {
-          rsi: 50 + Math.max(-30, Math.min(30, coin.price_change_percentage_24h || 0)),
-          macd: coin.price_change_percentage_24h || 0,
-          bollinger_position: 0.5,
-          sma_20: coin.current_price || 0,
-          sma_50: coin.current_price || 0,
-          volume_sma: coin.total_volume || 0,
-        },
-      }));
-
-
-      const avgChange = mapped.length
-        ? mapped.reduce((sum, m) => sum + m.change_24h, 0) / mapped.length
-        : 0;
-
-      const overview: MarketOverview = {
-        total_market_cap: mapped.reduce((s, m) => s + (m.market_cap || 0), 0),
-        average_change_24h: avgChange,
-        bullish_sentiment_ratio: mapped.filter((m) => m.change_24h > 0).length / (mapped.length || 1),
-        bearish_sentiment_ratio: mapped.filter((m) => m.change_24h < 0).length / (mapped.length || 1),
-        active_trading_pairs: mapped.length,
-        market_trend: avgChange >= 0 ? 'BULLISH' : 'BEARISH',
-        volatility_index: Math.abs(avgChange) * 2,
-        last_updated: new Date().toISOString(),
-      };
-
-      setMarketData(mapped);
-      setMarketOverview(overview);
-      if (!selectedAgent && mapped.length > 0) {
-        setSelectedAgent(mapped[0]);
-      }
-    } catch (error) {
-      console.error('Error fetching market data:', error);
-      toast({
-        title: 'Error',
-        description: 'Failed to fetch market data',
-        variant: 'destructive',
-      });
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchMarketData();
-  }, []);
+    if (topAgents.length > 0 && !selectedAgent) {
+      setSelectedAgent(topAgents[0]);
+    }
+  }, [topAgents, selectedAgent]);
 
   useEffect(() => {
     if (autoRefresh) {
-      const interval = setInterval(fetchMarketData, 30000); // Refresh every 30 seconds
+      const interval = setInterval(refetch, 30000); // Refresh every 30 seconds
       return () => clearInterval(interval);
     }
-  }, [autoRefresh]);
-
-  const formatCurrency = (value: number) => {
-    if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`;
-    if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`;
-    if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`;
-    return `$${value.toFixed(2)}`;
-  };
+  }, [autoRefresh, refetch]);
 
   const formatPercentage = (value: number) => {
     return `${value >= 0 ? '+' : ''}${value.toFixed(2)}%`;
   };
 
-  const getSignalIcon = (signal: string) => {
-    switch (signal) {
-      case 'BUY': return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case 'SELL': return <XCircle className="h-4 w-4 text-red-500" />;
-      default: return <Eye className="h-4 w-4 text-yellow-500" />;
-    }
+  const getSentimentColor = (change24h: number) => {
+    if (change24h > 0) return 'text-green-500 bg-green-500/10';
+    if (change24h < 0) return 'text-red-500 bg-red-500/10';
+    return 'text-yellow-500 bg-yellow-500/10';
   };
 
-  const getSentimentColor = (sentiment: string) => {
-    switch (sentiment) {
-      case 'BULLISH': return 'text-green-500 bg-green-500/10';
-      case 'BEARISH': return 'text-red-500 bg-red-500/10';
-      default: return 'text-yellow-500 bg-yellow-500/10';
-    }
+  const getSentimentLabel = (change24h: number) => {
+    if (change24h > 0) return 'BULLISH';
+    if (change24h < 0) return 'BEARISH';
+    return 'NEUTRAL';
   };
 
   return (
@@ -199,9 +62,9 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
         <div className="space-y-2">
           <div className="flex items-center gap-3">
             <BarChart3 className="h-8 w-8 text-primary" />
-            <h2 className="text-2xl font-bold">Market Dashboard</h2>
+            <h2 className="text-2xl font-bold">AI Agents Analytics</h2>
           </div>
-          <p className="text-muted-foreground">Real-time market data and technical analysis</p>
+          <p className="text-muted-foreground">Real-time AI agent performance and market data</p>
         </div>
         <div className="flex items-center gap-3">
           <Button
@@ -216,7 +79,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
           <Button
             variant="outline"
             size="sm"
-            onClick={fetchMarketData}
+            onClick={refetch}
             disabled={isLoading}
             className="h-10"
           >
@@ -227,82 +90,65 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
       </div>
 
       {/* Market Overview */}
-      {marketOverview && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <PieChart className="h-6 w-6 text-primary" />
-                <span className="text-sm font-medium">Total Market Cap</span>
-              </div>
-              <p className="text-3xl font-bold mb-2">{formatCurrency(marketOverview.total_market_cap)}</p>
-              <p className={`text-sm font-medium ${marketOverview.average_change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                {formatPercentage(marketOverview.average_change_24h)} 24h
-              </p>
-            </CardContent>
-          </Card>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <PieChart className="h-6 w-6 text-primary" />
+              <span className="text-sm font-medium">Total Market Cap</span>
+            </div>
+            <p className="text-3xl font-bold mb-2">{formatCurrency(marketStats.totalMarketCap)}</p>
+            <p className={`text-sm font-medium ${marketStats.avgChange24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {formatPercentage(marketStats.avgChange24h)} 24h
+            </p>
+          </CardContent>
+        </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <TrendingUp className="h-6 w-6 text-green-500" />
-                <span className="text-sm font-medium">Market Sentiment</span>
-              </div>
-              <p className="text-3xl font-bold mb-3">
-                {(marketOverview.bullish_sentiment_ratio * 100).toFixed(0)}% Bullish
-              </p>
-              <Progress 
-                value={marketOverview.bullish_sentiment_ratio * 100} 
-                className="h-3"
-              />
-            </CardContent>
-          </Card>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <Activity className="h-6 w-6 text-blue-500" />
+              <span className="text-sm font-medium">Total Volume</span>
+            </div>
+            <p className="text-3xl font-bold mb-2">{formatCurrency(marketStats.totalVolume24h)}</p>
+            <p className="text-sm text-muted-foreground">24h volume</p>
+          </CardContent>
+        </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <Activity className="h-6 w-6 text-blue-500" />
-                <span className="text-sm font-medium">Volatility Index</span>
-              </div>
-              <p className="text-3xl font-bold mb-3">{marketOverview.volatility_index.toFixed(1)}</p>
-              <Badge variant={marketOverview.volatility_index > 50 ? 'destructive' : 'secondary'} className="text-xs">
-                {marketOverview.volatility_index > 50 ? 'High' : 'Moderate'}
-              </Badge>
-            </CardContent>
-          </Card>
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <TrendingUp className="h-6 w-6 text-green-500" />
+              <span className="text-sm font-medium">Active Agents</span>
+            </div>
+            <p className="text-3xl font-bold mb-2">{marketStats.activeAgents}</p>
+            <p className="text-sm text-muted-foreground">AI agents</p>
+          </CardContent>
+        </Card>
 
-          <Card className="hover:shadow-lg transition-shadow">
-            <CardContent className="p-6">
-              <div className="flex items-center gap-3 mb-4">
-                <BarChart3 className="h-6 w-6 text-purple-500" />
-                <span className="text-sm font-medium">Active Pairs</span>
-              </div>
-              <p className="text-3xl font-bold mb-3">{marketOverview.active_trading_pairs}</p>
-              <Badge variant="outline" className="text-xs">
-                {marketOverview.market_trend}
-              </Badge>
-            </CardContent>
-          </Card>
-        </div>
-      )}
+        <Card className="hover:shadow-lg transition-shadow">
+          <CardContent className="p-6">
+            <div className="flex items-center gap-3 mb-4">
+              <BarChart3 className="h-6 w-6 text-purple-500" />
+              <span className="text-sm font-medium">Avg Change</span>
+            </div>
+            <p className={`text-3xl font-bold mb-2 ${marketStats.avgChange24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+              {formatPercentage(marketStats.avgChange24h)}
+            </p>
+            <p className="text-sm text-muted-foreground">24h average</p>
+          </CardContent>
+        </Card>
+      </div>
 
       <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 lg:grid-cols-4 h-12">
+        <TabsList className="grid w-full grid-cols-2 h-12">
           <TabsTrigger value="overview" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Market Overview
           </TabsTrigger>
-          <TabsTrigger value="technical" className="flex items-center gap-2">
+          <TabsTrigger value="charts" className="flex items-center gap-2">
             <Activity className="h-4 w-4" />
-            Technical Analysis
-          </TabsTrigger>
-          <TabsTrigger value="sentiment" className="flex items-center gap-2">
-            <TrendingUp className="h-4 w-4" />
-            Sentiment Analysis
-          </TabsTrigger>
-          <TabsTrigger value="alerts" className="flex items-center gap-2">
-            <AlertTriangle className="h-4 w-4" />
-            Price Alerts
+            Price Charts
           </TabsTrigger>
         </TabsList>
 
@@ -315,11 +161,11 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
               </CardHeader>
               <CardContent>
                 <div className="space-y-4">
-                  {marketData.map((agent) => (
+                  {topAgents.map((agent) => (
                     <div
-                      key={agent.symbol}
+                      key={agent.id}
                       className={`p-4 rounded-lg border cursor-pointer transition-all hover:shadow-md ${
-                        selectedAgent?.symbol === agent.symbol 
+                        selectedAgent?.id === agent.id 
                           ? 'border-primary bg-primary/5 shadow-sm' 
                           : 'border-border hover:border-primary/50'
                       }`}
@@ -329,8 +175,8 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                         <div className="space-y-1">
                           <div className="flex items-center gap-3">
                             <span className="font-semibold text-lg">{agent.symbol}</span>
-                            <Badge className={`${getSentimentColor(agent.sentiment.sentiment)} font-medium`}>
-                              {agent.sentiment.sentiment}
+                            <Badge className={`${getSentimentColor(agent.change_24h)} font-medium`}>
+                              {getSentimentLabel(agent.change_24h)}
                             </Badge>
                           </div>
                           <p className="text-sm text-muted-foreground">{agent.name}</p>
@@ -359,7 +205,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
                 {selectedAgent ? (
                   <div className="h-[400px]">
                     <PriceChart 
-                      agentId={selectedAgent.address}
+                      agentId={selectedAgent.id}
                       symbol={selectedAgent.symbol}
                       currentPrice={selectedAgent.price}
                       change24h={selectedAgent.change_24h}
@@ -381,154 +227,58 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
           </div>
         </TabsContent>
 
-        <TabsContent value="technical" className="space-y-6">
+        <TabsContent value="charts" className="space-y-6">
           {selectedAgent ? (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">Technical Indicators</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-4">
-                    {selectedAgent.sentiment.indicators.map((indicator, index) => (
-                      <div key={index} className="flex items-center justify-between p-4 bg-muted/30 rounded-lg hover:bg-muted/50 transition-colors">
-                        <div className="flex items-center gap-3">
-                          {getSignalIcon(indicator.signal)}
-                          <span className="font-medium">{indicator.name}</span>
-                        </div>
-                        <div className="text-right space-y-1">
-                          <p className="font-semibold">{indicator.value.toFixed(2)}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {(indicator.confidence * 100).toFixed(0)}% confidence
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+            <Card>
+              <CardHeader className="pb-4">
+                <CardTitle className="text-xl">
+                  {selectedAgent.name} ({selectedAgent.symbol}) - Detailed Analysis
+                </CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Market Cap</p>
+                    <p className="font-semibold">{formatCurrency(selectedAgent.market_cap)}</p>
                   </div>
-                </CardContent>
-              </Card>
-
-              <Card>
-                <CardHeader className="pb-4">
-                  <CardTitle className="text-xl">Moving Averages</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <span className="font-medium">Current Price</span>
-                      <span className="font-bold text-lg">${selectedAgent.price.toFixed(4)}</span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <span className="font-medium">SMA 20</span>
-                      <span className={`font-semibold ${selectedAgent.price > selectedAgent.technical_analysis.sma_20 ? 'text-green-500' : 'text-red-500'}`}>
-                        ${selectedAgent.technical_analysis.sma_20.toFixed(4)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <span className="font-medium">SMA 50</span>
-                      <span className={`font-semibold ${selectedAgent.price > selectedAgent.technical_analysis.sma_50 ? 'text-green-500' : 'text-red-500'}`}>
-                        ${selectedAgent.technical_analysis.sma_50.toFixed(4)}
-                      </span>
-                    </div>
-                    <div className="flex justify-between items-center p-3 border rounded-lg">
-                      <span className="font-medium">RSI</span>
-                      <div className="text-right">
-                        <span className={`font-semibold ${selectedAgent.technical_analysis.rsi > 70 ? 'text-red-500' : selectedAgent.technical_analysis.rsi < 30 ? 'text-green-500' : 'text-yellow-500'}`}>
-                          {selectedAgent.technical_analysis.rsi.toFixed(1)}
-                        </span>
-                        <div className="text-xs text-muted-foreground mt-1">
-                          {selectedAgent.technical_analysis.rsi > 70 ? 'Overbought' : selectedAgent.technical_analysis.rsi < 30 ? 'Oversold' : 'Neutral'}
-                        </div>
-                      </div>
-                    </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">24h Volume</p>
+                    <p className="font-semibold">{formatCurrency(selectedAgent.volume_24h)}</p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">24h Change</p>
+                    <p className={`font-semibold ${selectedAgent.change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {formatPercentage(selectedAgent.change_24h)}
+                    </p>
+                  </div>
+                  <div className="space-y-1">
+                    <p className="text-sm text-muted-foreground">Current Price</p>
+                    <p className="font-bold">${selectedAgent.price.toFixed(4)}</p>
+                  </div>
+                </div>
+                <div className="h-[400px]">
+                  <PriceChart 
+                    agentId={selectedAgent.id}
+                    symbol={selectedAgent.symbol}
+                    currentPrice={selectedAgent.price}
+                    change24h={selectedAgent.change_24h}
+                  />
+                </div>
+              </CardContent>
+            </Card>
           ) : (
             <Card>
-              <CardContent className="py-16">
-                <div className="text-center space-y-4">
-                  <Activity className="h-16 w-16 mx-auto text-muted-foreground/50" />
-                  <div className="space-y-2">
-                    <h3 className="text-xl font-semibold text-muted-foreground">No Agent Selected</h3>
-                    <p className="text-muted-foreground">Select an agent from the Market Overview tab to view technical analysis</p>
+              <CardContent className="h-[400px] flex items-center justify-center">
+                <div className="text-center space-y-3">
+                  <BarChart3 className="h-16 w-16 mx-auto text-muted-foreground/50" />
+                  <div className="space-y-1">
+                    <h3 className="text-lg font-semibold text-muted-foreground">No Agent Selected</h3>
+                    <p className="text-sm text-muted-foreground">Select an agent to view detailed charts</p>
                   </div>
                 </div>
               </CardContent>
             </Card>
           )}
-        </TabsContent>
-
-        <TabsContent value="sentiment" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-6">
-            {marketData.map((agent) => (
-              <Card key={agent.symbol} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center justify-between">
-                    <span className="text-lg">{agent.symbol}</span>
-                    <Badge className={`${getSentimentColor(agent.sentiment.sentiment)} font-medium px-3 py-1`}>
-                      {agent.sentiment.sentiment}
-                    </Badge>
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-5">
-                    <div>
-                      <div className="flex justify-between text-sm mb-2">
-                        <span className="font-medium">Sentiment Score</span>
-                        <span className="font-semibold">{agent.sentiment.score.toFixed(0)}%</span>
-                      </div>
-                      <Progress value={agent.sentiment.score} className="h-3" />
-                    </div>
-                    
-                    {agent.sentiment.social_sentiment && (
-                      <div>
-                        <div className="flex justify-between text-sm mb-2">
-                          <span className="font-medium">Social Sentiment</span>
-                          <span className="font-semibold">{agent.sentiment.social_sentiment.toFixed(0)}%</span>
-                        </div>
-                        <Progress value={agent.sentiment.social_sentiment} className="h-3" />
-                      </div>
-                    )}
-                    
-                    <div className="space-y-3 pt-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Volume Trend:</span>
-                        <Badge variant="outline" className="font-medium">{agent.sentiment.volume_trend}</Badge>
-                      </div>
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm font-medium">Price Momentum:</span>
-                        <Badge variant="outline" className="font-medium">{agent.sentiment.price_momentum}</Badge>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </TabsContent>
-
-        <TabsContent value="alerts" className="space-y-6">
-          <Card>
-            <CardHeader className="pb-4">
-              <CardTitle className="flex items-center gap-3 text-xl">
-                <AlertTriangle className="h-6 w-6" />
-                Price Alerts & Notifications
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-center py-16">
-                <AlertTriangle className="h-20 w-20 text-muted-foreground/50 mx-auto mb-6" />
-                <div className="space-y-3">
-                  <h3 className="text-2xl font-semibold">Price Alerts Coming Soon</h3>
-                  <p className="text-muted-foreground max-w-md mx-auto">
-                    Set custom price alerts and get notified when your favorite AI agents hit target prices.
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
       </Tabs>
     </div>
