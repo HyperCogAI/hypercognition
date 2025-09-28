@@ -122,8 +122,8 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
               volume_sma: token.v24hUSD || 0,
             },
           };
-        })
-      );
+        });
+
 
       const avgChange = mapped.length
         ? mapped.reduce((sum, m) => sum + m.change_24h, 0) / mapped.length
