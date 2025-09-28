@@ -3,6 +3,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 }
 
+// Simple in-memory cache to absorb burst traffic and reduce 429s
+const cache = new Map<string, { timestamp: number; data: any }>();
+const CACHE_TTL_MS = 15_000; // 15s per Birdeye guidance for public endpoints
+
 Deno.serve(async (req) => {
   // Handle CORS preflight requests
   if (req.method === 'OPTIONS') {
@@ -33,28 +37,54 @@ Deno.serve(async (req) => {
       }
     });
 
+    // Cache key based on endpoint + params
+    const cacheKey = `${endpoint}?${birdeyeUrl.searchParams.toString()}`;
+    const now = Date.now();
+    const cached = cache.get(cacheKey);
+    if (cached && (now - cached.timestamp) < CACHE_TTL_MS) {
+      return new Response(JSON.stringify(cached.data), {
+        headers: {
+          ...corsHeaders,
+          'Content-Type': 'application/json',
+          'X-Cache': 'HIT'
+        },
+      });
+    }
+
     console.log('Fetching from Birdeye:', birdeyeUrl.toString());
 
-    // Make request to Birdeye API
-    const response = await fetch(birdeyeUrl.toString(), {
+    const doFetch = () => fetch(birdeyeUrl.toString(), {
       headers: {
         'X-API-KEY': BIRDEYE_API_KEY,
         'Content-Type': 'application/json',
+        'x-chain': 'solana',
       },
     });
 
+    // Make request to Birdeye API with a single retry on 429/5xx
+    let response = await doFetch();
+    if (response.status === 429 || (response.status >= 500 && response.status < 600)) {
+      await new Promise((r) => setTimeout(r, 250));
+      response = await doFetch();
+    }
+
     if (!response.ok) {
-      console.error('Birdeye API error:', response.status, response.statusText);
-      throw new Error(`Birdeye API error: ${response.status} ${response.statusText}`);
+      const text = await response.text();
+      console.error('Birdeye API error:', response.status, text);
+      return new Response(
+        JSON.stringify({ error: `Birdeye API error: ${response.status}`, details: text, success: false }),
+        { status: response.status, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
     }
 
     const data = await response.json();
-    console.log('Birdeye response:', data);
+    cache.set(cacheKey, { timestamp: now, data });
 
     return new Response(JSON.stringify(data), {
       headers: {
         ...corsHeaders,
         'Content-Type': 'application/json',
+        'X-Cache': 'MISS'
       },
     });
 
