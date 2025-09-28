@@ -4408,6 +4408,10 @@ export type Database = {
         }
         Returns: undefined
       }
+      make_user_admin: {
+        Args: { target_user_id?: string }
+        Returns: undefined
+      }
       validate_and_sanitize_input: {
         Args: {
           allow_html?: boolean

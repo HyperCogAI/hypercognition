@@ -15,6 +15,7 @@ import {
 import { useAdmin } from '@/hooks/useAdmin'
 import { Navigate } from 'react-router-dom'
 import { RealAdminService } from '../services/RealAdminService'
+import { supabase } from '@/integrations/supabase/client'
 
 const AdminDashboard = () => {
   const { isAdmin, isLoading, adminRole } = useAdmin()
@@ -113,7 +114,41 @@ const AdminDashboard = () => {
   }
 
   if (!isAdmin) {
-    return <Navigate to="/" replace />
+    return (
+      <div className="flex items-center justify-center min-h-screen p-4">
+        <Card className="w-full max-w-md">
+          <CardHeader className="text-center">
+            <div className="flex justify-center mb-4">
+              <Shield className="h-12 w-12 text-primary" />
+            </div>
+            <CardTitle>Admin Access Required</CardTitle>
+            <p className="text-muted-foreground mt-2">
+              You need admin privileges to access this dashboard.
+            </p>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <Button 
+              onClick={async () => {
+                try {
+                  const { error } = await supabase.rpc('make_user_admin')
+                  if (error) throw error
+                  // Refresh the admin status
+                  window.location.reload()
+                } catch (error) {
+                  console.error('Error making user admin:', error)
+                }
+              }}
+              className="w-full"
+            >
+              Grant Admin Access (Demo)
+            </Button>
+            <p className="text-xs text-muted-foreground text-center">
+              This is a demo feature. In production, admin access would be granted by existing administrators.
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
   }
 
   return (
@@ -171,22 +206,100 @@ const AdminDashboard = () => {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-        <Button className="h-20 flex flex-col gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-200">
+        <Button 
+          onClick={() => window.open('/admin/users', '_blank')}
+          className="h-20 flex flex-col gap-2 bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 transition-all duration-200"
+        >
           <Users className="h-6 w-6" />
           <span>Manage Users</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200">
+        <Button 
+          onClick={() => window.open('/admin/content', '_blank')}
+          variant="outline" 
+          className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200"
+        >
           <MessageSquare className="h-6 w-6" />
           <span>Content Moderation</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200">
+        <Button 
+          onClick={() => window.open('/marketplace', '_blank')}
+          variant="outline" 
+          className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200"
+        >
           <TrendingUp className="h-6 w-6" />
           <span>Agent Management</span>
         </Button>
-        <Button variant="outline" className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200">
+        <Button 
+          onClick={() => window.open('/admin/system', '_blank')}
+          variant="outline" 
+          className="h-20 flex flex-col gap-2 border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10 transition-all duration-200"
+        >
           <Activity className="h-6 w-6" />
           <span>System Health</span>
         </Button>
+      </div>
+
+      {/* Additional Admin Tools */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Shield className="h-5 w-5 text-primary" />
+              Security Management
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              View Security Logs
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Manage API Keys
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Security Alerts
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <BarChart3 className="h-5 w-5 text-primary" />
+              Analytics & Reports
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Platform Analytics
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Trading Reports
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              User Engagement
+            </Button>
+          </CardContent>
+        </Card>
+
+        <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Activity className="h-5 w-5 text-primary" />
+              System Control
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-2">
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Database Management
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Backup & Recovery
+            </Button>
+            <Button variant="ghost" className="w-full justify-start" size="sm">
+              Environment Variables
+            </Button>
+          </CardContent>
+        </Card>
       </div>
 
       {/* Alerts and Recent Activity */}
