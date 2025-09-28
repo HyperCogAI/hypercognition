@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
-import { useWallet } from '@/hooks/useWallet';
+
 
 export interface Organization {
   id: string;
@@ -82,7 +82,7 @@ export interface ApiKey {
 
 export const useInstitutionalFeatures = () => {
   const { user } = useAuth();
-  const { isConnected: evmConnected } = useWallet();
+  
   const { toast } = useToast();
   const [loading, setLoading] = useState(true);
   const [organization, setOrganization] = useState<Organization | null>(null);
@@ -93,12 +93,6 @@ export const useInstitutionalFeatures = () => {
 
   // Fetch organization data
   useEffect(() => {
-    if (!evmConnected) {
-      // Redirect to wallet auth instead of showing mock data
-      window.location.href = '/evm-auth';
-      return;
-    }
-
     if (!user) {
       return;
     }
@@ -214,7 +208,7 @@ export const useInstitutionalFeatures = () => {
     };
 
     fetchOrganizationData();
-  }, [evmConnected, user]);
+  }, [user]);
 
   // Generate mock data for demonstration
   const generateMockData = () => {
