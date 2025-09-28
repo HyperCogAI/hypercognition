@@ -91,7 +91,12 @@ export const useInstitutionalFeatures = () => {
 
   // Fetch organization data
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      // Show demo org when unauthenticated so page doesn't hang
+      generateMockData();
+      setLoading(false);
+      return;
+    }
 
     const fetchOrganizationData = async () => {
       try {

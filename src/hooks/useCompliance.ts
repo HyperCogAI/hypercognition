@@ -86,7 +86,12 @@ export const useCompliance = () => {
 
   // Fetch compliance data
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      // No auth? Show demo data instead of blocking UI
+      generateMockData();
+      setLoading(false);
+      return;
+    }
 
     const fetchComplianceData = async () => {
       try {

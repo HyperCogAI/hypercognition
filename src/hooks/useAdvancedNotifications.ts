@@ -75,7 +75,14 @@ export const useAdvancedNotifications = () => {
 
   // Fetch notification data
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      // Load demo notifications/preferences when logged out
+      generateMockNotifications();
+      generateMockPreferences();
+      generateMockStaticData();
+      setLoading(false);
+      return;
+    }
 
     const fetchNotificationData = async () => {
       try {
