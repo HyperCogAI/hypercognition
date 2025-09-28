@@ -106,7 +106,7 @@ export function EnhancedHero() {
           {/* Stats Row */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 md:gap-6 max-w-5xl mx-auto">
             <div className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-primary/10 to-primary/5 border border-primary/20 backdrop-blur-sm">
-              <div className="text-2xl md:text-4xl font-bold text-primary mb-1 md:mb-2">$2.4B+</div>
+              <div className="text-2xl md:text-4xl font-bold text-primary mb-1 md:mb-2">-</div>
               <div className="text-xs md:text-sm text-muted-foreground">Total Volume Traded</div>
             </div>
             <div className="text-center p-4 md:p-6 rounded-xl bg-gradient-to-br from-accent/10 to-accent/5 border border-accent/20 backdrop-blur-sm">
