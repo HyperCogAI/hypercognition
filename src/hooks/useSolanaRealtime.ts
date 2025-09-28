@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { birdeyeApi, SOLANA_TOKEN_ADDRESSES } from '@/lib/apis/birdeyeApi'
 
 interface SolanaToken {
   id: string
@@ -21,44 +21,74 @@ export const useSolanaRealtime = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTokens = async () => {
-    const { data, error } = await supabase
-      .from('solana_tokens')
-      .select('*')
-      .eq('is_active', true)
-      .order('market_cap', { ascending: false })
+    try {
+      setIsLoading(true)
+      
+      // Get well-known Solana tokens
+      const tokenAddresses = Object.values(SOLANA_TOKEN_ADDRESSES)
+      const pricesData = await birdeyeApi.getMultipleTokenPrices(tokenAddresses)
+      
+      if (!pricesData) {
+        console.error('Failed to fetch token prices from Birdeye')
+        setIsLoading(false)
+        return
+      }
 
-    if (error) {
+      // Fetch detailed info for each token
+      const tokenPromises = tokenAddresses.map(async (address) => {
+        try {
+          const [overview, price] = await Promise.all([
+            birdeyeApi.getTokenOverview(address),
+            Promise.resolve(pricesData[address])
+          ])
+          
+          if (!overview || !price) return null
+          
+          return {
+            id: address,
+            mint_address: address,
+            name: overview.name,
+            symbol: overview.symbol,
+            description: `${overview.name} token`,
+            image_url: overview.logoURI,
+            decimals: overview.decimals,
+            price: price.value,
+            market_cap: overview.mc || 0,
+            volume_24h: overview.v24hUSD || 0,
+            change_24h: price.priceChange24h || 0,
+            is_active: true
+          } as SolanaToken
+        } catch (error) {
+          console.error(`Error fetching data for token ${address}:`, error)
+          return null
+        }
+      })
+
+      const tokenResults = await Promise.all(tokenPromises)
+      const validTokens = tokenResults.filter((token): token is SolanaToken => token !== null)
+      
+      // Sort by market cap descending
+      validTokens.sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0))
+      
+      setTokens(validTokens)
+      console.log('Fetched', validTokens.length, 'Solana tokens from Birdeye')
+      
+    } catch (error) {
       console.error('Error fetching Solana tokens:', error)
-      return
+    } finally {
+      setIsLoading(false)
     }
-
-    setTokens(data || [])
-    setIsLoading(false)
   }
 
   useEffect(() => {
     // Initial fetch
     fetchTokens()
 
-    // Set up real-time subscription
-    const channel = supabase
-      .channel('solana-tokens-changes')
-      .on(
-        'postgres_changes',
-        {
-          event: '*',
-          schema: 'public',
-          table: 'solana_tokens'
-        },
-        (payload) => {
-          console.log('Solana token update:', payload)
-          fetchTokens() // Refetch data on any change
-        }
-      )
-      .subscribe()
+    // Set up periodic refresh every 30 seconds for real-time data
+    const interval = setInterval(fetchTokens, 30000)
 
     return () => {
-      supabase.removeChannel(channel)
+      clearInterval(interval)
     }
   }, [])
 
