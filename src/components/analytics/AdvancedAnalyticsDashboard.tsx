@@ -79,35 +79,31 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   const fetchMarketData = async () => {
     setIsLoading(true);
     try {
-      const tokens = await birdeyeApi.getTokenList('mc', 'desc', 0, 10);
-      if (!tokens || tokens.length === 0) {
-        // Fallback sort when mc is unsupported
-        const alt = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 10);
-        if (!alt || alt.length === 0) throw new Error('Failed to fetch token data');
-        var tokenList = alt;
-      } else {
-        var tokenList = tokens;
-      }
+      const tokens = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 10);
+      if (!tokens || tokens.length === 0) throw new Error('Failed to fetch token data');
 
-      const mapped: MarketData[] = await Promise.all(
-        tokenList.map(async (token) => {
-          const price = await birdeyeApi.getTokenPrice(token.address);
-          return {
-            address: token.address,
+      // Get all prices in one bulk call instead of individual calls
+      const addresses = tokens.map(token => token.address);
+      const pricesData = await birdeyeApi.getMultipleTokenPrices(addresses);
+
+      const mapped: MarketData[] = tokens.map((token) => {
+        const price = pricesData?.[token.address];
+        return {
+          address: token.address,
+          symbol: token.symbol.toUpperCase(),
+          name: token.name,
+          price: price?.value || 0,
+          change_24h: price?.priceChange24h || 0,
+          volume_24h: token.v24hUSD || 0,
+          market_cap: token.mc || 0,
+          last_updated: new Date().toISOString(),
+          sentiment: {
             symbol: token.symbol.toUpperCase(),
-            name: token.name,
-            price: price?.value || 0,
-            change_24h: price?.priceChange24h || 0,
-            volume_24h: token.v24hUSD || 0,
-            market_cap: token.mc || 0,
-            last_updated: new Date().toISOString(),
-            sentiment: {
-              symbol: token.symbol.toUpperCase(),
-              sentiment: (price?.priceChange24h || 0) > 0 ? 'BULLISH' : (price?.priceChange24h || 0) < 0 ? 'BEARISH' : 'NEUTRAL',
-              score: Math.min(100, Math.max(0, 50 + (price?.priceChange24h || 0))),
-              indicators: [
-                {
-                  name: '24h Change',
+            sentiment: (price?.priceChange24h || 0) > 0 ? 'BULLISH' : (price?.priceChange24h || 0) < 0 ? 'BEARISH' : 'NEUTRAL',
+            score: Math.min(100, Math.max(0, 50 + (price?.priceChange24h || 0))),
+            indicators: [
+              {
+                name: '24h Change',
                   value: price?.priceChange24h || 0,
                   signal: (price?.priceChange24h || 0) > 0 ? 'BUY' : (price?.priceChange24h || 0) < 0 ? 'SELL' : 'HOLD',
                   confidence: Math.min(1, Math.abs(price?.priceChange24h || 0) / 10),
