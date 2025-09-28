@@ -76,11 +76,8 @@ export const useAdvancedNotifications = () => {
   // Fetch notification data
   useEffect(() => {
     if (!user) {
-      // Load demo notifications/preferences when logged out
-      generateMockNotifications();
-      generateMockPreferences();
-      generateMockStaticData();
-      setLoading(false);
+      // Redirect to wallet auth instead of showing mock data
+      window.location.href = '/evm-auth';
       return;
     }
 

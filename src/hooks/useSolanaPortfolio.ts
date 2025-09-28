@@ -37,6 +37,19 @@ export const useSolanaPortfolio = () => {
   const [solBalance, setSolBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
+  // Redirect to Solana auth if not authenticated
+  if (!user) {
+    window.location.href = '/solana-auth';
+    return {
+      portfolio: [],
+      solBalance: 0,
+      isLoading: false,
+      refreshPortfolio: () => {},
+      totalValue: 0,
+      totalChange24h: 0
+    };
+  }
+
   const fetchSolanaTokens = async (): Promise<SolanaToken[]> => {
     const { data, error } = await supabase
       .from('solana_tokens')

@@ -33,6 +33,12 @@ export default function Auth() {
     return null
   }
 
+  // For this general auth page, redirect to EVM auth
+  if (!isLoading) {
+    navigate('/evm-auth')
+    return null
+  }
+
   const handleEmailAuth = async (e: React.FormEvent) => {
     e.preventDefault()
     setLoading(true)

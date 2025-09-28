@@ -22,6 +22,8 @@ import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
+const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
+const LazySolanaAuth = lazy(() => import('./pages/SolanaAuth'));
 import Settings from "./pages/Settings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Footer } from "./components/sections/Footer";
@@ -168,7 +170,9 @@ const AppLayout = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
-                <Route path="/auth" element={<Auth />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/evm-auth" element={<LazyEVMAuth />} />
+            <Route path="/solana-auth" element={<LazySolanaAuth />} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />

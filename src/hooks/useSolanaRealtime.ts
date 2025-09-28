@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import { birdeyeApi, SOLANA_TOKEN_ADDRESSES } from '@/lib/apis/birdeyeApi'
+import { useAuth } from '@/contexts/AuthContext'
 
 interface SolanaToken {
   id: string
@@ -17,10 +18,17 @@ interface SolanaToken {
 }
 
 export const useSolanaRealtime = () => {
+  const { user } = useAuth();
   const [tokens, setTokens] = useState<SolanaToken[]>([])
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTokens = async () => {
+    // Redirect to Solana auth if not authenticated
+    if (!user) {
+      window.location.href = '/solana-auth';
+      return;
+    }
+
     try {
       setIsLoading(true)
       
@@ -135,6 +143,9 @@ export const useSolanaRealtime = () => {
   }
 
   useEffect(() => {
+    // Don't start fetching if user is not authenticated
+    if (!user) return;
+    
     // Initial fetch
     fetchTokens()
 
@@ -144,7 +155,7 @@ export const useSolanaRealtime = () => {
     return () => {
       clearInterval(interval)
     }
-  }, [])
+  }, [user])
 
   const getTokenByMint = (mintAddress: string) => {
     return tokens.find(token => token.mint_address === mintAddress)

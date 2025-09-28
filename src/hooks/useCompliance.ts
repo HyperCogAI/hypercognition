@@ -87,9 +87,8 @@ export const useCompliance = () => {
   // Fetch compliance data
   useEffect(() => {
     if (!user) {
-      // No auth? Show demo data instead of blocking UI
-      generateMockData();
-      setLoading(false);
+      // Redirect to wallet auth instead of showing mock data
+      window.location.href = '/evm-auth';
       return;
     }
 

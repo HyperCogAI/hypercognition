@@ -92,9 +92,8 @@ export const useInstitutionalFeatures = () => {
   // Fetch organization data
   useEffect(() => {
     if (!user) {
-      // Show demo org when unauthenticated so page doesn't hang
-      generateMockData();
-      setLoading(false);
+      // Redirect to wallet auth instead of showing mock data
+      window.location.href = '/evm-auth';
       return;
     }
 
