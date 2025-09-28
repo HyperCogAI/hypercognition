@@ -143,7 +143,9 @@ console.log('Web3Modal created:', web3Modal)
 const AppLayout = () => {
   const isMobile = useIsMobile()
   const location = window.location
-  const isAIAssistantPage = location.pathname === '/ai-assistant'
+  const pathname = location.pathname
+  const isAIAssistantPage = pathname === '/ai-assistant'
+  const isACPPage = pathname === '/acp'
 
   if (isMobile) {
     return (
@@ -238,9 +240,11 @@ const AppLayout = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
-          <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
-            <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
-          </div>
+          {!isACPPage && (
+            <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
+              <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
+            </div>
+          )}
           <main className="flex-1 relative">
             <ErrorBoundary level="page" name="Desktop App">
               <Suspense fallback={

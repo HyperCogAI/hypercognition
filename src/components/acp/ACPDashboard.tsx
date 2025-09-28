@@ -41,99 +41,93 @@ export function ACPDashboard() {
   }, [user])
 
   const fetchDashboardData = async () => {
-    console.log('ACPDashboard: fetchDashboardData called, user:', user)
-
     try {
       setLoading(true)
-      
-      // Fetch agents - simplified query to avoid relationship issues
-      const { data: agentsData, error: agentsError } = await supabase
-        .from('agents')
-        .select('*')
-        .limit(10)
-
-      if (agentsError) {
-        console.error('Error fetching agents:', agentsError)
-        // Use mock data if database query fails
-        const mockAgents: Agent[] = [
-          {
-            id: '1',
-            name: 'VIRTUAL AI Agent',
-            status: 'active',
-            earnings: 1250.75,
-            engagements: 24,
-            avatar: '🤖'
-          },
-          {
-            id: '2', 
-            name: 'AI16Z Agent',
-            status: 'active',
-            earnings: 890.50,
-            engagements: 18,
-            avatar: '🔥'
-          },
-          {
-            id: '3',
-            name: 'GOAT Agent', 
-            status: 'active',
-            earnings: 675.25,
-            engagements: 12,
-            avatar: '🐐'
-          }
-        ]
-        setAgents(mockAgents)
-        setEngagements([
-          {
-            id: '1',
-            type: 'payment',
-            from: 'VIRTUAL AI Agent',
-            to: 'User',
-            amount: 125.50,
-            timestamp: new Date().toLocaleString(),
-            description: 'Trading signal payment',
-            status: 'completed'
-          },
-          {
-            id: '2', 
-            type: 'job',
-            from: 'AI16Z Agent',
-            to: 'User',
-            amount: 89.25,
-            timestamp: new Date(Date.now() - 3600000).toLocaleString(),
-            description: 'Portfolio optimization task',
-            status: 'ongoing'
-          }
-        ])
+      if (!user) {
+        setAgents([])
+        setEngagements([])
         return
       }
 
-      // Process agents data - use actual data if available
-      const processedAgents: Agent[] = agentsData?.map(agent => ({
-        id: agent.id,
-        name: agent.name,
-        status: "active",
-        earnings: Math.random() * 1000, // Mock earnings for now
-        engagements: Math.floor(Math.random() * 20), // Mock engagements
-        avatar: agent.avatar_url || "🤖"
-      })) || []
+      // 1) Fetch earnings for the current user and aggregate by agent
+      const { data: earningsData, error: earningsError } = await supabase
+        .from('agents_earnings')
+        .select('agent_id, amount')
+        .eq('user_id', user.id)
+        .limit(1000)
 
-      // Create mock engagements based on agents
-      const mockEngagements: Engagement[] = processedAgents.slice(0, 5).map((agent, index) => ({
-        id: `engagement_${index + 1}`,
-        type: ['payment', 'job', 'interaction'][index % 3] as "payment" | "job" | "interaction",
-        from: agent.name,
-        to: "User",
-        amount: Math.random() * 200,
-        timestamp: new Date(Date.now() - index * 3600000).toLocaleString(),
-        description: `${agent.name} interaction`,
-        status: ['pending', 'ongoing', 'completed'][index % 3] as "pending" | "ongoing" | "completed"
+      if (earningsError) throw earningsError
+
+      const totals = new Map<string, number>()
+      ;(earningsData || []).forEach((e: any) => {
+        const id = e.agent_id
+        const amt = Number(e.amount) || 0
+        totals.set(id, (totals.get(id) || 0) + amt)
+      })
+
+      // 2) Fetch agent profiles (only those with earnings; fallback to top agents)
+      const agentIds = Array.from(totals.keys())
+      let agentsData: any[] = []
+      if (agentIds.length > 0) {
+        const { data, error } = await supabase
+          .from('agents')
+          .select('id, name, avatar_url')
+          .in('id', agentIds)
+        if (error) throw error
+        agentsData = data || []
+      } else {
+        const { data, error } = await supabase
+          .from('agents')
+          .select('id, name, avatar_url')
+          .order('market_cap', { ascending: false })
+          .limit(6)
+        if (error) throw error
+        agentsData = data || []
+      }
+
+      // 3) Fetch recent interactions for this user
+      const { data: interactionsData, error: interactionsError } = await supabase
+        .from('agent_interactions')
+        .select('id, interaction_type, description, amount, status, created_at, agent_id, agents!agent_id (name)')
+        .or(`from_user_id.eq.${user.id},to_user_id.eq.${user.id}`)
+        .order('created_at', { ascending: false })
+        .limit(20)
+
+      if (interactionsError) throw interactionsError
+
+      // 4) Reduce interactions to counts per agent
+      const engagementCounts: Record<string, number> = {}
+      ;(interactionsData || []).forEach((i: any) => {
+        const id = i.agent_id
+        engagementCounts[id] = (engagementCounts[id] || 0) + 1
+      })
+
+      // 5) Build Agent list
+      const processedAgents: Agent[] = (agentsData || []).map((a: any) => ({
+        id: a.id,
+        name: a.name,
+        status: 'active',
+        earnings: Number(totals.get(a.id) || 0),
+        engagements: engagementCounts[a.id] || 0,
+        avatar: a.avatar_url || '🤖'
+      }))
+
+      // 6) Build Engagement list
+      const processedEngagements: Engagement[] = (interactionsData || []).map((inter: any) => ({
+        id: inter.id,
+        type: inter.interaction_type as 'payment' | 'job' | 'interaction',
+        from: inter.agents?.name || 'Agent',
+        to: 'You',
+        amount: Number(inter.amount) || 0,
+        timestamp: new Date(inter.created_at).toLocaleString(),
+        description: inter.description || 'Interaction',
+        status: inter.status as 'pending' | 'ongoing' | 'completed'
       }))
 
       setAgents(processedAgents)
-      setEngagements(mockEngagements)
+      setEngagements(processedEngagements)
     } catch (error) {
       console.error('Error fetching dashboard data:', error)
-      // Fallback to empty arrays if everything fails
       setAgents([])
       setEngagements([])
     } finally {
@@ -277,7 +271,13 @@ export function ACPDashboard() {
             ) : agents.map((agent) => (
                   <div key={agent.id} className="flex items-center justify-between p-3 rounded-lg bg-gradient-to-r from-muted/30 to-muted/10 border border-primary/10 hover:shadow-md transition-all duration-200">
                     <div className="flex items-center gap-3">
-                      <div className="text-2xl p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">{agent.avatar}</div>
+                      <div className="text-2xl p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                        {agent.avatar && (agent.avatar.startsWith('http') || agent.avatar.startsWith('data:') || agent.avatar.startsWith('blob:')) ? (
+                          <img src={agent.avatar} alt={`${agent.name} avatar`} className="h-8 w-8 rounded object-cover" />
+                        ) : (
+                          <span>{agent.avatar || '🤖'}</span>
+                        )}
+                      </div>
                       <div>
                         <p className="font-medium text-foreground">{agent.name}</p>
                         <div className="flex items-center gap-2">
@@ -347,7 +347,13 @@ export function ACPDashboard() {
                 <CardHeader>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-3">
-                      <div className="text-3xl">{agent.avatar}</div>
+                      <div className="text-3xl">
+                        {agent.avatar && (agent.avatar.startsWith('http') || agent.avatar.startsWith('data:') || agent.avatar.startsWith('blob:')) ? (
+                          <img src={agent.avatar} alt={`${agent.name} avatar`} className="h-8 w-8 rounded object-cover" />
+                        ) : (
+                          <span>{agent.avatar || '🤖'}</span>
+                        )}
+                      </div>
                       <div>
                         <CardTitle className="text-lg">{agent.name}</CardTitle>
                         <Badge variant={agent.status === "active" ? "default" : "secondary"}>
