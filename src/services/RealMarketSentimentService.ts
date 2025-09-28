@@ -101,54 +101,135 @@ export const RealMarketSentimentService = {
       const newsTemplates = [
         {
           title: "AI Trading Agents Show 40% Performance Improvement",
-          summary: "Recent analysis reveals significant improvements in AI trading algorithms.",
+          summary: "Recent analysis reveals significant improvements in AI trading algorithms with enhanced pattern recognition capabilities.",
           sentiment: 0.6,
           source: "CryptoTimes",
           impact: 'high' as const
         },
         {
           title: "Market Volatility Expected as Fed Decision Approaches",
-          summary: "Traders anticipate increased volatility ahead of Federal Reserve announcement.",
+          summary: "Traders anticipate increased volatility ahead of Federal Reserve announcement on interest rate policy.",
           sentiment: -0.3,
           source: "Financial Herald",
           impact: 'medium' as const
         },
         {
           title: "Institutional Adoption of DeFi Protocols Accelerates",
-          summary: "Major financial institutions increase their exposure to decentralized finance.",
+          summary: "Major financial institutions increase their exposure to decentralized finance, driving mainstream adoption.",
           sentiment: 0.4,
           source: "DeFi Weekly",
           impact: 'high' as const
         },
         {
           title: "Regulatory Clarity Drives Market Optimism",
-          summary: "New regulatory guidelines provide clearer framework for digital assets.",
+          summary: "New regulatory guidelines provide clearer framework for digital assets, boosting investor confidence.",
           sentiment: 0.5,
           source: "Regulatory Review",
           impact: 'medium' as const
         },
         {
           title: "Technical Analysis Suggests Bullish Momentum Building",
-          summary: "Multiple indicators point to potential upward price movement.",
+          summary: "Multiple indicators point to potential upward price movement across major cryptocurrency markets.",
           sentiment: 0.3,
           source: "Technical Trader",
           impact: 'medium' as const
+        },
+        {
+          title: "Blockchain Infrastructure Upgrades Show Promising Results",
+          summary: "Recent network improvements demonstrate enhanced scalability and reduced transaction costs.",
+          sentiment: 0.4,
+          source: "Blockchain Today",
+          impact: 'medium' as const
+        },
+        {
+          title: "Trading Volume Surges Across Major Exchanges",
+          summary: "24-hour trading volumes reach new monthly highs as market participation increases.",
+          sentiment: 0.2,
+          source: "Exchange Monitor",
+          impact: 'low' as const
+        },
+        {
+          title: "Smart Contract Security Audits Show Improvement",
+          summary: "Latest security audit reports indicate significant improvements in protocol safety measures.",
+          sentiment: 0.3,
+          source: "Security Watch",
+          impact: 'medium' as const
+        },
+        {
+          title: "Cross-Chain Bridge Technology Advances",
+          summary: "New interoperability solutions enable seamless asset transfers between blockchain networks.",
+          sentiment: 0.4,
+          source: "Interop News",
+          impact: 'high' as const
+        },
+        {
+          title: "Yield Farming Strategies Evolve with Market Conditions",
+          summary: "DeFi protocols adapt their reward mechanisms to changing market dynamics and user behavior.",
+          sentiment: 0.1,
+          source: "Yield Analytics",
+          impact: 'low' as const
+        },
+        {
+          title: "NFT Market Shows Signs of Recovery",
+          summary: "Non-fungible token trading activity increases with new utility-focused projects gaining traction.",
+          sentiment: 0.2,
+          source: "NFT Report",
+          impact: 'low' as const
+        },
+        {
+          title: "Central Bank Digital Currency Pilots Expand Globally",
+          summary: "Multiple countries advance their CBDC testing programs, exploring digital currency implementation.",
+          sentiment: 0.1,
+          source: "Global Finance",
+          impact: 'medium' as const
+        },
+        {
+          title: "Layer 2 Solutions Demonstrate Scalability Benefits",
+          summary: "Second-layer blockchain solutions show significant improvements in transaction throughput and cost efficiency.",
+          sentiment: 0.3,
+          source: "Layer2 Today",
+          impact: 'medium' as const
+        },
+        {
+          title: "Algorithmic Trading Bots Achieve New Efficiency Milestones",
+          summary: "Automated trading systems demonstrate improved performance metrics across multiple market conditions.",
+          sentiment: 0.4,
+          source: "Algo Trading Weekly",
+          impact: 'medium' as const
+        },
+        {
+          title: "Staking Rewards Reach Competitive Levels",
+          summary: "Proof-of-stake networks offer attractive yields as more validators join the ecosystem.",
+          sentiment: 0.3,
+          source: "Staking Report",
+          impact: 'low' as const
         }
       ];
 
-      for (let i = 0; i < Math.min(limit, newsTemplates.length * 4); i++) {
-        const template = newsTemplates[i % newsTemplates.length];
+      // Ensure unique news items by limiting to available templates and using Set to track IDs
+      const maxItems = Math.min(limit, newsTemplates.length);
+      const usedTemplates = new Set<number>();
+      
+      for (let i = 0; i < maxItems; i++) {
+        let templateIndex;
+        do {
+          templateIndex = Math.floor(Math.random() * newsTemplates.length);
+        } while (usedTemplates.has(templateIndex));
+        
+        usedTemplates.add(templateIndex);
+        const template = newsTemplates[templateIndex];
+        
         const hoursAgo = Math.floor(Math.random() * 24);
         const publishedAt = new Date();
         publishedAt.setHours(publishedAt.getHours() - hoursAgo);
 
         newsItems.push({
-          id: `news_${i + 1}`,
+          id: `news_${templateIndex}_${Date.now()}_${i}`,
           title: template.title,
           summary: template.summary,
           sentiment: template.sentiment + (Math.random() - 0.5) * 0.2,
           source: template.source,
-          url: `https://example.com/news/${i + 1}`,
+          url: `https://example.com/news/${templateIndex}`,
           publishedAt: publishedAt.toISOString(),
           relevanceScore: 70 + Math.random() * 30,
           impact: template.impact
