@@ -236,8 +236,8 @@ export const AgentMarketplace = () => {
                 Array.from({ length: 6 }).map((_, i) => (
                   <CardSkeleton key={i} />
                 ))
-              ) : filteredTrendingAgents.length > 0 ? (
-                filteredTrendingAgents.map((agent, index) => (
+               ) : filteredTrendingAgents.length > 0 ? (
+                filteredTrendingAgents.slice(0, 5).map((agent, index) => (
                   <div
                     key={agent.id}
                     className="animate-fade-in"
