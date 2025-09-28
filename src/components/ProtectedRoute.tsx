@@ -1,5 +1,9 @@
 import { useAuth } from "@/contexts/AuthContext"
 import { WalletButton } from "@/components/wallet/WalletButton"
+import { SolanaWalletButton } from "@/components/wallet/SolanaWalletButton"
+import { useWallet as useEvmWallet } from "@/hooks/useWallet"
+import { useSolanaWallet } from "@/hooks/useSolanaWallet"
+import { useLocation } from "react-router-dom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Wallet } from "lucide-react"
 
@@ -8,7 +12,12 @@ interface ProtectedRouteProps {
 }
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const { isConnected, isLoading } = useAuth()
+  const { isLoading } = useAuth()
+  const { isConnected: evmConnected } = useEvmWallet()
+  const { isConnected: solanaConnected } = useSolanaWallet()
+  const location = useLocation()
+  const isSolanaRoute = location.pathname.startsWith('/solana')
+  const isConnected = isSolanaRoute ? solanaConnected : evmConnected
 
   if (isLoading) {
     return (
@@ -32,7 +41,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
             </CardDescription>
           </CardHeader>
           <CardContent className="flex justify-center">
-            <WalletButton />
+            {isSolanaRoute ? <SolanaWalletButton /> : <WalletButton />}
           </CardContent>
         </Card>
       </div>

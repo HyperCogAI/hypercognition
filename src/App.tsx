@@ -268,6 +268,8 @@ const AppLayout = () => {
                   <Route path="/" element={<Home />} />
                   <Route path="/home" element={<Home />} />
                   <Route path="/auth" element={<Auth />} />
+                  <Route path="/evm-auth" element={<LazyEVMAuth />} />
+                  <Route path="/solana-auth" element={<LazySolanaAuth />} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                   <Route path="/enhanced-trading" element={<EnhancedTrading />} />
