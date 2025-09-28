@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { supabase } from '@/integrations/supabase/client'
+import { aiAgentMarketApi, type AIAgentMarketData, type AIAgentPriceHistory } from '@/lib/apis/aiAgentMarketApi'
 
 interface AnalyticsData {
   timestamp: string
@@ -45,65 +45,39 @@ export const useAnalytics = () => {
     try {
       setIsLoading(true)
       
-      // Fetch price history for chart
-      const { data: priceHistory, error: priceError } = await supabase
-        .from('price_history')
-        .select('*')
-        .order('timestamp', { ascending: true })
-        .limit(200)
+      // Fetch real AI agent market data
+      const [agents, marketStats, priceHistory] = await Promise.all([
+        aiAgentMarketApi.getTopAIAgents(20),
+        aiAgentMarketApi.getMarketStats(),
+        aiAgentMarketApi.getAIAgentPriceHistory('virtual', 30)
+      ])
       
-      if (priceError) throw priceError
-      
-      // Fetch top agents
-      const { data: agents, error: agentsError } = await supabase
-        .from('agents')
-        .select('*')
-        .order('market_cap', { ascending: false })
-        .limit(10)
-      
-      if (agentsError) throw agentsError
-      
-      // Group price history by timestamp and aggregate
-      const priceMap = new Map()
-      priceHistory?.forEach(item => {
-        const date = new Date(item.timestamp).toLocaleDateString()
-        if (!priceMap.has(date)) {
-          priceMap.set(date, {
-            timestamp: date,
-            totalVolume: 0,
-            totalMarketCap: 0,
-            count: 0
-          })
-        }
-        const existing = priceMap.get(date)
-        existing.totalVolume += Number(item.volume)
-        existing.totalMarketCap += Number(item.market_cap)
-        existing.count += 1
-      })
-      
-      // Transform to chart data
-      const chartData = Array.from(priceMap.values()).map(item => ({
-        timestamp: item.timestamp,
-        volume: item.totalVolume,
-        market_cap: item.totalMarketCap,
-        avg_price: item.totalMarketCap / item.totalVolume || 0
+      // Transform agent data to match our interface
+      const transformedAgents = agents.map(agent => ({
+        id: agent.id,
+        name: agent.name,
+        symbol: agent.symbol,
+        price: agent.price,
+        change_24h: agent.change_percent_24h,
+        volume_24h: agent.volume_24h,
+        market_cap: agent.market_cap,
+        avatar_url: agent.avatar_url
       }))
       
-      // Calculate market stats
-      const totalMarketCap = agents?.reduce((sum, agent) => sum + Number(agent.market_cap), 0) || 0
-      const totalVolume = agents?.reduce((sum, agent) => sum + Number(agent.volume_24h), 0) || 0
-      const avgChange = agents?.reduce((sum, agent) => sum + Number(agent.change_24h), 0) / (agents?.length || 1) || 0
+      // Transform price history for chart
+      const chartData = priceHistory.map(item => ({
+        timestamp: new Date(item.timestamp).toLocaleDateString(),
+        volume: item.volume,
+        market_cap: item.market_cap,
+        avg_price: item.price
+      }))
       
       setPriceData(chartData)
-      setTopAgents(agents || [])
-      setMarketStats({
-        totalMarketCap,
-        totalVolume24h: totalVolume,
-        activeAgents: agents?.length || 0,
-        avgChange24h: avgChange
-      })
+      setTopAgents(transformedAgents)
+      setMarketStats(marketStats)
+      
     } catch (error) {
-      console.error('Error fetching analytics data:', error)
+      console.error('Error fetching AI agent market data:', error)
     } finally {
       setIsLoading(false)
     }
