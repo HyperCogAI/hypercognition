@@ -1,5 +1,8 @@
 project_id = "xdinlkmqmjlrmunsjswf"
 
+[functions.birdeye-proxy]
+verify_jwt = false
+
 [functions.admin-2fa]
 verify_jwt = true
 
