@@ -23,6 +23,8 @@ export interface BirdeyeTokenOverview {
 
 export class BirdeyeAPI {
   private baseUrl = 'https://xdinlkmqmjlrmunsjswf.supabase.co/functions/v1/birdeye-proxy';
+  private cache = new Map<string, { data: any; ts: number }>();
+  private TTL = 15000; // 15s client-side cache to align with proxy TTL
 
   private async request<T>(endpoint: string, params: Record<string, string> = {}): Promise<T> {
     const url = new URL(this.baseUrl);
@@ -31,28 +33,38 @@ export class BirdeyeAPI {
       url.searchParams.append(key, value);
     });
 
-    try {
-      const response = await fetch(url.toString(), {
-        headers: {
-          'Content-Type': 'application/json',
-        },
-      });
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`Birdeye API error: ${response.status} ${response.statusText}`, errorText);
-        throw new Error(`Birdeye API error: ${response.status} ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      if (data.error) {
-        throw new Error(data.error);
-      }
-      return data.data || data;
-    } catch (error) {
-      console.error('Request failed:', error);
-      throw error;
+    // Simple client cache to avoid duplicate bursts
+    const cacheKey = `${endpoint}?${url.searchParams.toString()}`;
+    const now = Date.now();
+    const cached = this.cache.get(cacheKey);
+    if (cached && (now - cached.ts) < this.TTL) {
+      return cached.data as T;
     }
+
+    const doFetch = () => fetch(url.toString(), {
+      headers: { 'Content-Type': 'application/json' },
+    });
+
+    // One retry on 429/5xx with short backoff
+    let response = await doFetch();
+    if (response.status === 429 || (response.status >= 500 && response.status < 600)) {
+      await new Promise((r) => setTimeout(r, 300));
+      response = await doFetch();
+    }
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`Birdeye API error: ${response.status} ${response.statusText}`, errorText);
+      throw new Error(`Birdeye API error: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    if ((data as any).error) {
+      throw new Error((data as any).error);
+    }
+    const payload = (data.data ?? data) as T;
+    this.cache.set(cacheKey, { data: payload, ts: now });
+    return payload;
   }
 
   async getTokenPrice(address: string): Promise<BirdeyeTokenPrice | null> {

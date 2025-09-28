@@ -79,7 +79,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   const fetchMarketData = async () => {
     setIsLoading(true);
     try {
-      const tokens = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 10);
+      const tokens = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 8);
       if (!tokens || tokens.length === 0) throw new Error('Failed to fetch token data');
 
       // Get all prices in one bulk call instead of individual calls
