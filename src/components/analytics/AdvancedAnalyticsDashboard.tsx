@@ -17,7 +17,7 @@ import {
   Eye
 } from 'lucide-react';
 import { PriceChart } from '@/components/charts/PriceChart';
-import { supabase } from '@/integrations/supabase/client';
+import { coinGeckoApi } from '@/lib/apis/coinGeckoApi';
 import { useToast } from '@/components/ui/use-toast';
 
 interface TechnicalIndicator {
@@ -78,29 +78,66 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   const fetchMarketData = async () => {
     setIsLoading(true);
     try {
-      const { data, error } = await supabase.functions.invoke('realtime-market-data', {
-        body: {
-          symbols: [], // Empty array gets top 10 agents
-          metrics: ['price', 'volume', 'sentiment', 'technical'],
-          timeframe: '1h'
-        }
-      });
+      const coins = await coinGeckoApi.getTopCryptos(10, 1);
+      const mapped: MarketData[] = coins.map((c) => ({
+        symbol: c.symbol.toUpperCase(),
+        name: c.name,
+        price: c.current_price,
+        change_24h: c.price_change_percentage_24h,
+        volume_24h: c.total_volume,
+        market_cap: c.market_cap,
+        last_updated: c.last_updated,
+        sentiment: {
+          symbol: c.symbol.toUpperCase(),
+          sentiment: c.price_change_percentage_24h > 0 ? 'BULLISH' : c.price_change_percentage_24h < 0 ? 'BEARISH' : 'NEUTRAL',
+          score: Math.min(100, Math.max(0, 50 + c.price_change_percentage_24h)),
+          indicators: [
+            {
+              name: '24h Change',
+              value: c.price_change_percentage_24h,
+              signal: c.price_change_percentage_24h > 0 ? 'BUY' : c.price_change_percentage_24h < 0 ? 'SELL' : 'HOLD',
+              confidence: Math.min(1, Math.abs(c.price_change_percentage_24h) / 10),
+            },
+          ],
+          volume_trend: c.total_volume > 0 ? 'increasing' : 'stable',
+          price_momentum: c.price_change_percentage_24h > 0 ? 'up' : c.price_change_percentage_24h < 0 ? 'down' : 'flat',
+          social_sentiment: undefined,
+        },
+        technical_analysis: {
+          rsi: 50 + Math.max(-30, Math.min(30, c.price_change_percentage_24h)),
+          macd: c.price_change_percentage_24h,
+          bollinger_position: 0.5,
+          sma_20: c.current_price,
+          sma_50: c.current_price,
+          volume_sma: c.total_volume,
+        },
+      }));
 
-      if (error) throw error;
+      const avgChange = mapped.length
+        ? mapped.reduce((sum, m) => sum + m.change_24h, 0) / mapped.length
+        : 0;
 
-      if (data.success) {
-        setMarketData(data.data);
-        setMarketOverview(data.overview);
-        if (!selectedAgent && data.data.length > 0) {
-          setSelectedAgent(data.data[0]);
-        }
+      const overview: MarketOverview = {
+        total_market_cap: coins.reduce((s, c) => s + (c.market_cap || 0), 0),
+        average_change_24h: avgChange,
+        bullish_sentiment_ratio: mapped.filter((m) => m.change_24h > 0).length / (mapped.length || 1),
+        bearish_sentiment_ratio: mapped.filter((m) => m.change_24h < 0).length / (mapped.length || 1),
+        active_trading_pairs: mapped.length,
+        market_trend: avgChange >= 0 ? 'BULLISH' : 'BEARISH',
+        last_updated: new Date().toISOString(),
+      };
+
+      setMarketData(mapped);
+      setMarketOverview(overview);
+      if (!selectedAgent && mapped.length > 0) {
+        setSelectedAgent(mapped[0]);
       }
     } catch (error) {
       console.error('Error fetching market data:', error);
       toast({
-        title: "Error",
-        description: "Failed to fetch market data",
-        variant: "destructive",
+        title: 'Error',
+        description: 'Failed to fetch market data',
+        variant: 'destructive',
       });
     } finally {
       setIsLoading(false);
