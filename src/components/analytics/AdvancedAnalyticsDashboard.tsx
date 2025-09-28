@@ -79,11 +79,18 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
   const fetchMarketData = async () => {
     setIsLoading(true);
     try {
-      const tokens = await birdeyeApi.getTokenList('market_cap', 'desc', 0, 10);
-      if (!tokens) throw new Error('Failed to fetch token data');
+      const tokens = await birdeyeApi.getTokenList('mc', 'desc', 0, 10);
+      if (!tokens || tokens.length === 0) {
+        // Fallback sort when mc is unsupported
+        const alt = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 10);
+        if (!alt || alt.length === 0) throw new Error('Failed to fetch token data');
+        var tokenList = alt;
+      } else {
+        var tokenList = tokens;
+      }
 
       const mapped: MarketData[] = await Promise.all(
-        tokens.map(async (token) => {
+        tokenList.map(async (token) => {
           const price = await birdeyeApi.getTokenPrice(token.address);
           return {
             address: token.address,
