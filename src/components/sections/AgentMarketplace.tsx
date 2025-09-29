@@ -14,6 +14,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
 import { useIsMobile, useIsTablet } from "@/hooks/useMediaQuery"
 import { generateDefaultAvatar } from "@/utils/avatarUtils"
+import { Link } from "react-router-dom"
 
 interface Agent {
   id: string
@@ -161,10 +162,12 @@ export const AgentMarketplace = () => {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
-          <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50 whitespace-nowrap">
-            <BarChart3 className="h-4 w-4 mr-2" />
-            Analytics
-          </Button>
+          <Link to="/analytics">
+            <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50 whitespace-nowrap">
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Analytics
+            </Button>
+          </Link>
         </div>
       </div>
 

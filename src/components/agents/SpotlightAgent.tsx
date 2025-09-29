@@ -8,6 +8,7 @@ import { supabase } from "@/integrations/supabase/client"
 import { useAgentLogo } from "@/hooks/useAgentLogo"
 import { toast } from "sonner"
 import { generateDefaultAvatar } from "@/utils/avatarUtils"
+import { Link } from "react-router-dom"
 
 interface Agent {
   id: string
@@ -310,14 +311,18 @@ export const SpotlightAgent = () => {
 
       {/* Action Buttons */}
       <div className="space-y-3">
-        <CyberButton variant="neon" className="w-full">
-          <ExternalLink className="h-4 w-4 mr-2 text-white" />
-          <span className="text-white">View Agent</span>
-        </CyberButton>
-        <CyberButton variant="analytics" className="w-full">
-          <TrendingUp className="h-4 w-4 mr-2 text-white" />
-          <span className="text-white">View Analytics</span>
-        </CyberButton>
+        <Link to={`/agent/${spotlightAgent.id}`}>
+          <CyberButton variant="neon" className="w-full">
+            <ExternalLink className="h-4 w-4 mr-2 text-white" />
+            <span className="text-white">View Agent</span>
+          </CyberButton>
+        </Link>
+        <Link to="/analytics">
+          <CyberButton variant="analytics" className="w-full">
+            <TrendingUp className="h-4 w-4 mr-2 text-white" />
+            <span className="text-white">View Analytics</span>
+          </CyberButton>
+        </Link>
       </div>
     </div>
   )
