@@ -32,7 +32,7 @@ export const Footer = () => {
                 <MessageCircle className="w-4 h-4 text-muted-foreground hover:text-accent" />
               </a>
               <a 
-                href="#" 
+                href="https://github.com/HyperCogAI/hypercognition" 
                 className="w-8 h-8 bg-card/40 rounded-lg flex items-center justify-center hover:bg-accent/20 transition-colors"
                 aria-label="GitHub"
               >
