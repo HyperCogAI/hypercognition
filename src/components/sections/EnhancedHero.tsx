@@ -127,16 +127,15 @@ export function EnhancedHero() {
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4 pointer-events-auto">
             <Link to="/marketplace">
-              <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base justify-center hover:shadow-xl hover:shadow-primary/25 transform hover:scale-105 transition-all duration-300">
+              <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base justify-center hover:brightness-110 transition-all duration-300">
                 <span className="relative z-10 text-white font-semibold text-center">Start Trading Now</span>
                 <ArrowRight className="h-3 w-3 md:h-4 md:w-4 ml-2 text-white group-hover:translate-x-1 transition-transform" />
-                <div className="absolute inset-0 bg-gradient-to-r from-primary to-primary-glow opacity-0 group-hover:opacity-100 transition-all duration-300" />
               </CyberButton>
             </Link>
             
             <Link to="/tutorials-hub">
-              <CyberButton variant="analytics" size="lg" className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base hover:shadow-lg hover:shadow-accent/20 transform hover:scale-105 transition-all duration-300">
-                <Play className="h-3 w-3 md:h-4 md:w-4 mr-2 text-white group-hover:scale-110 transition-transform" />
+              <CyberButton variant="analytics" size="lg" className="group w-full sm:w-auto px-6 py-3 md:px-8 md:py-4 text-sm md:text-base hover:brightness-110 transition-all duration-300">
+                <Play className="h-3 w-3 md:h-4 md:w-4 mr-2 text-white" />
                 <span className="text-white font-semibold">Watch Demo</span>
               </CyberButton>
             </Link>
