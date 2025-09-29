@@ -1,5 +1,6 @@
 import { CyberButton } from "@/components/ui/cyber-button";
 import { ArrowRight, Sparkles, Zap } from "lucide-react";
+import { Link } from "react-router-dom";
 
 export const HyperCTA = () => {
   return (
@@ -67,22 +68,26 @@ export const HyperCTA = () => {
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <CyberButton 
-            variant="neon" 
-            size="xl" 
-            className="group min-w-[320px] text-sm"
-          >
-            <span className="text-white">Launch HyperCognition</span>
-            <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-white" />
-          </CyberButton>
+          <Link to="/create-agent">
+            <CyberButton 
+              variant="neon" 
+              size="xl" 
+              className="group min-w-[320px] text-sm"
+            >
+              <span className="text-white">Launch HyperCognition</span>
+              <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform text-white" />
+            </CyberButton>
+          </Link>
           
-          <CyberButton 
-            variant="analytics" 
-            size="xl" 
-            className="min-w-[320px] text-sm"
-          >
-            <span className="text-white">Explore Marketplace</span>
-          </CyberButton>
+          <Link to="/marketplace">
+            <CyberButton 
+              variant="analytics" 
+              size="xl" 
+              className="min-w-[320px] text-sm"
+            >
+              <span className="text-white">Explore Marketplace</span>
+            </CyberButton>
+          </Link>
         </div>
 
         {/* Trust Indicators */}
