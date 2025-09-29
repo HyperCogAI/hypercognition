@@ -318,7 +318,7 @@ export const SpotlightAgent = () => {
           </CyberButton>
         </Link>
         <Link to="/analytics">
-          <CyberButton variant="analytics" className="w-full">
+          <CyberButton variant="analytics" className="w-full mt-2">
             <TrendingUp className="h-4 w-4 mr-2 text-white" />
             <span className="text-white">View Analytics</span>
           </CyberButton>

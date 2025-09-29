@@ -163,7 +163,7 @@ export const AgentMarketplace = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
           />
           <Link to="/analytics">
-            <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50 whitespace-nowrap">
+            <Button variant="outline" size="sm" className="border-primary/30 hover:border-primary/50 whitespace-nowrap mt-2">
               <BarChart3 className="h-4 w-4 mr-2" />
               Analytics
             </Button>
