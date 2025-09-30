@@ -23,14 +23,6 @@ interface NewsArticle {
   url: string
 }
 
-interface MarketAlert {
-  id: string
-  type: 'breaking' | 'price' | 'regulatory' | 'technical'
-  message: string
-  severity: 'high' | 'medium' | 'low'
-  timestamp: string
-  affectedSymbols: string[]
-}
 
 const EnhancedMarketNews = () => {
   const [searchTerm, setSearchTerm] = useState("")
@@ -65,107 +57,7 @@ const EnhancedMarketNews = () => {
     fetchNews();
   }, []);
 
-  const [alerts, setAlerts] = useState<MarketAlert[]>([])
-
-  const generateMarketAlerts = (): MarketAlert[] => {
-    const alertTypes = ['breaking', 'price', 'regulatory', 'technical'] as const
-    const severities = ['high', 'medium', 'low'] as const
-    const symbols = ['SOL', 'ETH', 'USDT', 'USDC', 'BONK', 'mSOL', 'ALPHA', 'BETA', 'GAMMA']
-    
-    const alertTemplates = [
-      {
-        type: 'breaking',
-        messages: [
-          'Major whale movement detected: {amount} {symbol} transferred to unknown wallet',
-          'Large institutional buy order executed for {symbol}',
-          'Breaking: {symbol} reaches new daily high amid heavy trading volume',
-          'Alert: Unusual trading pattern detected in {symbol} market'
-        ]
-      },
-      {
-        type: 'price',
-        messages: [
-          '{symbol} price surge: +{percent}% in last hour',
-          'Significant price drop: {symbol} down {percent}% from daily high',
-          '{symbol} breaks key resistance level at ${price}',
-          'Flash crash detected: {symbol} recovers from temporary dip'
-        ]
-      },
-      {
-        type: 'regulatory',
-        messages: [
-          'New regulations announced affecting {symbol} trading',
-          'Regulatory clarity improves for {symbol} ecosystem',
-          'Compliance update: Enhanced KYC requirements for {symbol}',
-          'Government statement impacts {symbol} market sentiment'
-        ]
-      },
-      {
-        type: 'technical',
-        messages: [
-          'Golden cross formation detected in {symbol} chart',
-          'RSI oversold condition reached for {symbol}',
-          'Volume spike: {symbol} trading volume up {percent}%',
-          'Technical breakout: {symbol} exits consolidation pattern'
-        ]
-      }
-    ]
-
-    const numAlerts = Math.floor(Math.random() * 4) + 2 // 2-5 alerts
-    const alerts: MarketAlert[] = []
-    
-    for (let i = 0; i < numAlerts; i++) {
-      const alertType = alertTypes[Math.floor(Math.random() * alertTypes.length)]
-      const template = alertTemplates.find(t => t.type === alertType)!
-      const messageTemplate = template.messages[Math.floor(Math.random() * template.messages.length)]
-      
-      const symbol = symbols[Math.floor(Math.random() * symbols.length)]
-      const affectedSymbols = [symbol, ...symbols.filter(s => s !== symbol).slice(0, Math.floor(Math.random() * 2))]
-      
-      // Generate dynamic values
-      const amount = (Math.random() * 50000 + 10000).toFixed(0)
-      const percent = (Math.random() * 20 + 5).toFixed(1)
-      const price = (Math.random() * 100 + 10).toFixed(2)
-      
-      const message = messageTemplate
-        .replace('{amount}', amount)
-        .replace('{symbol}', symbol)
-        .replace('{percent}', percent)
-        .replace('{price}', price)
-      
-      // Determine severity based on alert type and random factors
-      let severity: 'high' | 'medium' | 'low' = 'medium'
-      if (alertType === 'breaking' && Math.random() > 0.5) severity = 'high'
-      else if (alertType === 'regulatory' && Math.random() > 0.7) severity = 'high'
-      else if (Math.random() > 0.8) severity = 'low'
-      
-      // Generate recent timestamp (within last 2 hours)
-      const timestamp = new Date(Date.now() - Math.random() * 2 * 60 * 60 * 1000).toISOString()
-      
-      alerts.push({
-        id: `alert_${Date.now()}_${i}`,
-        type: alertType,
-        message,
-        severity,
-        timestamp,
-        affectedSymbols
-      })
-    }
-    
-    return alerts.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
-  }
-
-  useEffect(() => {
-    // Initial alert generation
-    setAlerts(generateMarketAlerts())
-    
-    // Update alerts every 2 minutes
-    const alertInterval = setInterval(() => {
-      setAlerts(generateMarketAlerts())
-    }, 120000)
-    
-    return () => clearInterval(alertInterval)
-  }, [])
+  // Market alerts removed - was displaying mock data
 
   // Filter news based on search and filters
   const filteredNews = news.filter(article => {
@@ -231,54 +123,7 @@ const EnhancedMarketNews = () => {
         </Badge>
       </div>
 
-      {/* Market Alerts */}
-      {alerts.length > 0 && (
-        <div className="space-y-3">
-          <h2 className="text-lg font-semibold flex items-center gap-2">
-            <AlertTriangle className="h-5 w-5 text-orange-500" />
-            Market Alerts
-          </h2>
-          <div className="grid gap-3">
-            {alerts.map((alert) => (
-              <Card key={alert.id} className={cn(
-                "border-l-4",
-                alert.severity === 'high' && "border-l-destructive bg-destructive/5",
-                alert.severity === 'medium' && "border-l-orange-500 dark:border-l-orange-400 bg-orange-500/10 dark:bg-orange-950/20",
-                alert.severity === 'low' && "border-l-primary bg-primary/5"
-              )}>
-                <CardContent className="p-4">
-                  <div className="flex items-start justify-between">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline" className="text-xs">
-                          {alert.type.toUpperCase()}
-                        </Badge>
-                        <Badge 
-                          variant={alert.severity === 'high' ? 'destructive' : alert.severity === 'medium' ? 'default' : 'secondary'} 
-                          className={cn(
-                            "text-xs",
-                            alert.severity === 'medium' && "bg-orange-500 text-white border-0"
-                          )}
-                        >
-                          {alert.severity.toUpperCase()}
-                        </Badge>
-                      </div>
-                      <p className="text-sm font-medium">{alert.message}</p>
-                      <div className="flex items-center gap-4 mt-2 text-xs text-muted-foreground">
-                        <span className="flex items-center gap-1">
-                          <Clock className="h-3 w-3" />
-                          {formatTimeAgo(alert.timestamp)}
-                        </span>
-                        <span>Affects: {alert.affectedSymbols.join(', ')}</span>
-                      </div>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      )}
+      {/* Market Alerts section removed - was displaying mock data */}
 
       <Tabs defaultValue="all" className="space-y-6">
         <div className="flex flex-col lg:flex-row gap-4 items-start lg:items-center justify-between">
