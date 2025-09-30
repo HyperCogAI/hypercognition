@@ -81,56 +81,42 @@ export const CreateAgent = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl pt-6 md:pt-10">
       {/* Header */}
-      <div className="border-b border-border/20 bg-gradient-to-r from-card/30 to-card/10 backdrop-blur-md sticky top-0 z-10">
-        <div className="container mx-auto px-6 py-4">
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigate("/")}
-                className="hover:bg-card/50 border border-primary/20"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/20">
-                  <Bot className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                    Create AI Agent
-                  </h1>
-                  <p className="text-muted-foreground">Launch your own AI agent in minutes</p>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center gap-2 flex-wrap">
-              <Badge variant={step >= 1 ? "default" : "outline"} className="bg-gradient-to-r from-primary/20 to-accent/20 border-primary/20">
-                1. Basic Info
-              </Badge>
-              <Badge variant={step >= 2 ? "default" : "outline"} className="bg-gradient-to-r from-primary/20 to-accent/20 border-primary/20">
-                2. Configuration
-              </Badge>
-              <Badge variant={step >= 3 ? "default" : "outline"} className="bg-gradient-to-r from-primary/20 to-accent/20 border-primary/20">
-                3. Launch
-              </Badge>
-            </div>
-          </div>
+      <div className="flex flex-col gap-4 mb-6 sm:mb-8">
+        <div className="flex items-center gap-4">
+          <Button 
+            variant="ghost" 
+            size="sm" 
+            onClick={() => navigate("/")}
+            className="hover:bg-card/50 border border-primary/20"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
+            Create AI Agent
+          </h1>
+        </div>
+        <div className="flex items-center gap-2 flex-wrap">
+          <Badge variant={step >= 1 ? "default" : "outline"} className="border-primary/30">
+            1. Basic Info
+          </Badge>
+          <Badge variant={step >= 2 ? "default" : "outline"} className="border-primary/30">
+            2. Configuration
+          </Badge>
+          <Badge variant={step >= 3 ? "default" : "outline"} className="border-primary/30">
+            3. Launch
+          </Badge>
         </div>
       </div>
 
-      <div className="container mx-auto px-6 py-8 max-w-4xl animate-fade-in">
+      <div className="max-w-4xl mx-auto animate-fade-in">
         {/* Step 1: Basic Information */}
         {step === 1 && (
-          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-lg shadow-primary/10">
+          <Card className="bg-card/30 border border-border/50 backdrop-blur-sm">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
-                  <Bot className="h-5 w-5 text-primary" />
-                </div>
+                <Bot className="h-5 w-5 text-primary" />
                 Basic Information
               </CardTitle>
             </CardHeader>
@@ -222,12 +208,10 @@ export const CreateAgent = () => {
 
         {/* Step 2: Configuration */}
         {step === 2 && (
-          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-lg shadow-primary/10 animate-fade-in">
+          <Card className="bg-card/30 border border-border/50 backdrop-blur-sm animate-fade-in">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
-                  <Settings className="h-5 w-5 text-primary" />
-                </div>
+                <Settings className="h-5 w-5 text-primary" />
                 Agent Configuration
               </CardTitle>
             </CardHeader>
@@ -312,12 +296,10 @@ export const CreateAgent = () => {
 
         {/* Step 3: Launch */}
         {step === 3 && (
-          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 shadow-lg shadow-primary/10 animate-fade-in">
+          <Card className="bg-card/30 border border-border/50 backdrop-blur-sm animate-fade-in">
             <CardHeader className="pb-4">
               <CardTitle className="flex items-center gap-3 text-xl">
-                <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
-                  <Zap className="h-5 w-5 text-primary" />
-                </div>
+                <Zap className="h-5 w-5 text-primary" />
                 Launch Your Agent
               </CardTitle>
             </CardHeader>
