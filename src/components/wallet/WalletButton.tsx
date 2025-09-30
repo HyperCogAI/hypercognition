@@ -51,9 +51,9 @@ export const WalletButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <CyberButton variant="cyber" size="sm">
-          <Wallet className="h-4 w-4" />
-          {formatAddress(address!)}
+        <CyberButton variant="outline" size="sm" className="w-[130px] justify-center">
+          <Wallet className="h-4 w-4 text-white" />
+          <span className="text-white">{formatAddress(address!)}</span>
         </CyberButton>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 bg-black/60 border-white/20 backdrop-blur-md">
