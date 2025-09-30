@@ -52,7 +52,7 @@ const EnhancedMarketNews = () => {
           category: "Market Analysis",
           sentiment: item.sentiment > 0.2 ? "positive" : item.sentiment < -0.2 ? "negative" : "neutral",
           impact: item.impact,
-          relatedAgents: ["ALPHA", "BETA", "GAMMA"],
+          relatedAgents: [],
           url: item.url
         }));
         setNews(formattedNews);
