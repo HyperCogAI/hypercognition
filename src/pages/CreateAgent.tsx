@@ -2,7 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { ArrowLeft, Upload, Bot, Settings, Zap, Brain } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { CyberButton } from "@/components/ui/cyber-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -85,14 +85,14 @@ export const CreateAgent = () => {
       {/* Header */}
       <div className="flex flex-col gap-4 mb-6 sm:mb-8">
         <div className="flex items-center gap-4">
-          <Button 
-            variant="ghost" 
+          <CyberButton 
+            variant="outline" 
             size="sm" 
             onClick={() => navigate("/")}
             className="hover:bg-card/50 border border-primary/20"
           >
             <ArrowLeft className="h-4 w-4" />
-          </Button>
+          </CyberButton>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white leading-tight">
             Create AI Agent
           </h1>
@@ -186,21 +186,22 @@ export const CreateAgent = () => {
                       Paste an image URL or leave blank for auto-generated avatar
                     </p>
                   </div>
-                  <Button variant="outline" size="sm">
+                  <CyberButton variant="outline" size="sm">
                     <Upload className="h-4 w-4 mr-2" />
                     Upload
-                  </Button>
+                  </CyberButton>
                 </div>
               </div>
 
               <div className="flex justify-end pt-4">
-                <Button 
+                <CyberButton 
+                  variant="neon"
+                  size="lg"
                   onClick={handleNext}
                   disabled={!agentData.name || !agentData.symbol || !agentData.description || !agentData.category}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                 >
-                  Next: Configuration
-                </Button>
+                  <span className="text-white">Next: Configuration</span>
+                </CyberButton>
               </div>
             </CardContent>
           </Card>
@@ -279,16 +280,17 @@ export const CreateAgent = () => {
               </div>
 
               <div className="flex justify-between pt-4">
-                <Button variant="outline" onClick={handlePrev} className="border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10">
-                  Previous
-                </Button>
-                <Button 
+                <CyberButton variant="outline" onClick={handlePrev} size="lg" className="border-primary/20 hover:bg-card/50">
+                  <span className="text-white">Previous</span>
+                </CyberButton>
+                <CyberButton 
+                  variant="neon"
+                  size="lg"
                   onClick={handleNext}
                   disabled={agentData.features.length === 0}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                 >
-                  Next: Launch
-                </Button>
+                  <span className="text-white">Next: Launch</span>
+                </CyberButton>
               </div>
             </CardContent>
           </Card>
@@ -376,15 +378,17 @@ export const CreateAgent = () => {
               </div>
 
               <div className="flex justify-between pt-4">
-                <Button variant="outline" onClick={handlePrev} className="border-primary/20 hover:bg-gradient-to-r hover:from-primary/10 hover:to-accent/10">
-                  Previous
-                </Button>
-                <Button 
+                <CyberButton variant="outline" onClick={handlePrev} size="lg" className="border-primary/20 hover:bg-card/50">
+                  <span className="text-white">Previous</span>
+                </CyberButton>
+                <CyberButton 
+                  variant="neon"
+                  size="lg"
                   onClick={handleSubmit}
-                  className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90 shadow-lg shadow-primary/30"
+                  className="px-8"
                 >
-                  🚀 Launch Agent
-                </Button>
+                  <span className="text-white">🚀 Launch Agent</span>
+                </CyberButton>
               </div>
             </CardContent>
           </Card>
