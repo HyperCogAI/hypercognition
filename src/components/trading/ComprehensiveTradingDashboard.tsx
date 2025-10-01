@@ -2,17 +2,15 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Wifi, WifiOff, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
-import { useLiveMarketFeed } from "@/hooks/useLiveMarketFeed"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useMediaQuery"
 
 export function ComprehensiveTradingDashboard() {
   const { 
-    crypto, 
-    solana, 
+    crypto = [], 
     isLoading, 
     error, 
     lastUpdated, 
@@ -20,10 +18,6 @@ export function ComprehensiveTradingDashboard() {
   } = useRealMarketData()
   
   const isMobile = useIsMobile()
-  
-  // Get live market feed for top symbols
-  const topSymbols = ['BTC', 'ETH', 'SOL', 'BNB', 'USDC', 'ADA', 'DOT', 'AVAX', 'MATIC', 'LINK']
-  const liveFeed = useLiveMarketFeed(topSymbols)
 
   const formatPrice = (price: number) => {
     if (price < 0.01) return `$${price.toFixed(6)}`
@@ -46,16 +40,22 @@ export function ComprehensiveTradingDashboard() {
     return `$${volume.toFixed(2)}`
   }
 
-  // Calculate market stats
-  const totalMarketCap = crypto.reduce((sum, token) => sum + (token.market_cap || 0), 0)
-  const total24hVolume = crypto.reduce((sum, token) => sum + (token.total_volume || 0), 0)
-  const avgChange24h = crypto.length > 0 
-    ? crypto.reduce((sum, token) => sum + (token.price_change_percentage_24h || 0), 0) / crypto.length 
+  // Calculate market stats - with safe fallbacks
+  const totalMarketCap = Array.isArray(crypto) ? crypto.reduce((sum, token) => sum + (token?.market_cap || 0), 0) : 0
+  const total24hVolume = Array.isArray(crypto) ? crypto.reduce((sum, token) => sum + (token?.total_volume || 0), 0) : 0
+  const avgChange24h = Array.isArray(crypto) && crypto.length > 0
+    ? crypto.reduce((sum, token) => sum + (token?.price_change_percentage_24h || 0), 0) / crypto.length 
     : 0
 
-  const topGainers = [...crypto].sort((a, b) => (b.price_change_percentage_24h || 0) - (a.price_change_percentage_24h || 0)).slice(0, 5)
-  const topLosers = [...crypto].sort((a, b) => (a.price_change_percentage_24h || 0) - (b.price_change_percentage_24h || 0)).slice(0, 5)
-  const topByVolume = [...crypto].sort((a, b) => (b.total_volume || 0) - (a.total_volume || 0)).slice(0, 5)
+  const topGainers = Array.isArray(crypto) && crypto.length > 0 
+    ? [...crypto].sort((a, b) => (b?.price_change_percentage_24h || 0) - (a?.price_change_percentage_24h || 0)).slice(0, 5)
+    : []
+  const topLosers = Array.isArray(crypto) && crypto.length > 0
+    ? [...crypto].sort((a, b) => (a?.price_change_percentage_24h || 0) - (b?.price_change_percentage_24h || 0)).slice(0, 5)
+    : []
+  const topByVolume = Array.isArray(crypto) && crypto.length > 0
+    ? [...crypto].sort((a, b) => (b?.total_volume || 0) - (a?.total_volume || 0)).slice(0, 5)
+    : []
 
   if (isLoading) {
     return (
@@ -106,17 +106,10 @@ export function ComprehensiveTradingDashboard() {
           <CardContent>
             <div className="text-2xl font-bold">{formatMarketCap(totalMarketCap)}</div>
             <div className="flex items-center gap-1 text-xs text-muted-foreground mt-1">
-              {liveFeed.isConnected ? (
-                <Badge variant="outline" className="text-xs gap-1">
-                  <Wifi className="h-3 w-3" />
-                  LIVE
-                </Badge>
-              ) : (
-                <Badge variant="outline" className="text-xs gap-1">
-                  <WifiOff className="h-3 w-3" />
-                  CACHED
-                </Badge>
-              )}
+              <Badge variant="outline" className="text-xs gap-1">
+                <Activity className="h-3 w-3" />
+                Real-time
+              </Badge>
             </div>
           </CardContent>
         </Card>
@@ -177,11 +170,9 @@ export function ComprehensiveTradingDashboard() {
             <div>
               <CardTitle className="flex items-center gap-2">
                 Live Market Data
-                {liveFeed.isConnected && (
-                  <Badge variant="outline" className="text-xs">
-                    {liveFeed.symbols.length} Tracked
-                  </Badge>
-                )}
+                <Badge variant="outline" className="text-xs">
+                  {crypto.length} Assets
+                </Badge>
               </CardTitle>
               <CardDescription>
                 Real-time cryptocurrency prices and market data
