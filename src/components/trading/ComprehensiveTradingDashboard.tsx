@@ -2,11 +2,14 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
 import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight } from "lucide-react"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useMediaQuery"
+import { PriceChart } from "@/components/charts/PriceChart"
+import { useState } from "react"
 
 export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }) {
   const { 
@@ -18,6 +21,7 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
   } = useRealMarketData()
   
   const isMobile = useIsMobile()
+  const [selectedCrypto, setSelectedCrypto] = useState<any>(null)
 
   const formatPrice = (price: number) => {
     if (price < 0.01) return `$${price.toFixed(6)}`
@@ -198,7 +202,8 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
               {crypto.slice(0, limit).map((token, index) => (
                 <div 
                   key={token.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30"
+                  onClick={() => setSelectedCrypto(token)}
+                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <span className="text-sm text-muted-foreground w-6">{index + 1}</span>
@@ -236,7 +241,8 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
               {topGainers.map((token, index) => (
                 <div 
                   key={token.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-green-500/20"
+                  onClick={() => setSelectedCrypto(token)}
+                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-green-500/20 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <TrendingUp className="h-5 w-5 text-green-500" />
@@ -261,7 +267,8 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
               {topLosers.map((token, index) => (
                 <div 
                   key={token.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-red-500/20"
+                  onClick={() => setSelectedCrypto(token)}
+                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-red-500/20 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <TrendingDown className="h-5 w-5 text-red-500" />
@@ -286,7 +293,8 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
               {topByVolume.map((token, index) => (
                 <div 
                   key={token.id}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30"
+                  onClick={() => setSelectedCrypto(token)}
+                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <Activity className="h-5 w-5 text-primary" />
@@ -323,6 +331,29 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
           </div>
         </CardContent>
       </Card>
+
+      {/* Price Chart Dialog */}
+      <Dialog open={!!selectedCrypto} onOpenChange={() => setSelectedCrypto(null)}>
+        <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-3">
+              {selectedCrypto?.name}
+              <Badge variant="outline">{selectedCrypto?.symbol.toUpperCase()}</Badge>
+            </DialogTitle>
+            <DialogDescription>
+              Historical price chart and market statistics
+            </DialogDescription>
+          </DialogHeader>
+          {selectedCrypto && (
+            <PriceChart 
+              agentId={selectedCrypto.id}
+              symbol={selectedCrypto.symbol}
+              currentPrice={selectedCrypto.current_price}
+              change24h={selectedCrypto.price_change_percentage_24h}
+            />
+          )}
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
