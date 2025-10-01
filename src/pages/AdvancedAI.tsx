@@ -1,564 +1,320 @@
 import { useState, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Progress } from "@/components/ui/progress"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Brain, TrendingUp, Target, Zap, BarChart3, AlertCircle, Lightbulb, Cpu, LineChart, Activity } from "lucide-react"
+import { Brain, MessageSquare, TrendingUp, Zap } from "lucide-react"
 import { SEOHead } from "@/components/seo/SEOHead"
+import AITradingAssistant from "@/components/ai/AITradingAssistant"
+import { useAITradingAssistant } from "@/hooks/useAITradingAssistant"
+import { supabase } from "@/integrations/supabase/client"
+import { useToast } from "@/hooks/use-toast"
 
-interface AIInsight {
+interface Agent {
   id: string
-  type: 'prediction' | 'recommendation' | 'alert' | 'optimization'
-  title: string
-  description: string
-  confidence: number
-  impact: 'high' | 'medium' | 'low'
-  category: string
-  timestamp: string
-  data?: any
-}
-
-interface MarketPrediction {
   symbol: string
-  currentPrice: number
-  predictedPrice: number
-  timeframe: '1h' | '4h' | '1d' | '1w'
-  confidence: number
-  factors: string[]
+  name: string
+  price: number
+  change_24h: number
 }
 
 const AdvancedAI = () => {
-  const [selectedTimeframe, setSelectedTimeframe] = useState("1d")
-  const [insights, setInsights] = useState<AIInsight[]>([])
-  const [predictions, setPredictions] = useState<MarketPrediction[]>([])
-  const [lastUpdate, setLastUpdate] = useState<Date>(new Date())
-  const [isUpdating, setIsUpdating] = useState(false)
+  const [selectedAgent, setSelectedAgent] = useState<string | undefined>()
+  const [agents, setAgents] = useState<Agent[]>([])
+  const [portfolio, setPortfolio] = useState<any>(null)
+  const [activeTab, setActiveTab] = useState("assistant")
+  const { toast } = useToast()
+  
+  const {
+    loading,
+    getMarketAnalysis,
+    getPortfolioAdvice,
+    getTradingSignals,
+    getRiskAssessment
+  } = useAITradingAssistant()
 
-  // Generate dynamic AI insights with real-time updates
-  const generateInsights = () => {
-    const insightTemplates = [
-      {
-        type: "prediction" as const,
-        titles: [
-          "ALPHA Token Bullish Breakout Predicted",
-          "ETH Cross-Chain Bridge Activity Surge",
-          "BTC Mining Difficulty Adjustment Impact",
-          "DeFi TVL Momentum Building"
-        ],
-        descriptions: [
-          "ML models indicate {confidence}% probability of upward breakout within 24h based on volume surge and technical patterns",
-          "Neural network analysis shows {confidence}% chance of price increase due to institutional accumulation patterns",
-          "Transformer model predicts {confidence}% likelihood of trend continuation based on on-chain metrics",
-          "LSTM analysis indicates {confidence}% probability of resistance level breakthrough"
-        ],
-        category: "Technical Analysis"
-      },
-      {
-        type: "recommendation" as const,
-        titles: [
-          "Portfolio Rebalancing Suggested",
-          "Risk Exposure Optimization Alert",
-          "Correlation-Based Asset Rotation",
-          "Liquidity Pool Reallocation Advised"
-        ],
-        descriptions: [
-          "Current allocation suboptimal. Recommend reducing exposure to DeFi tokens by {percentage}% based on correlation analysis",
-          "Risk-adjusted returns could improve by {percentage}% through sector diversification adjustments",
-          "Cross-asset correlation analysis suggests {percentage}% reallocation to maximize Sharpe ratio",
-          "Portfolio concentration risk detected. Suggest {percentage}% reduction in top holdings"
-        ],
-        category: "Portfolio Management"
-      },
-      {
-        type: "alert" as const,
-        titles: [
-          "Unusual Trading Pattern Detected",
-          "Whale Movement Alert",
-          "Market Maker Activity Surge",
-          "Cross-Exchange Arbitrage Opportunity"
-        ],
-        descriptions: [
-          "BETA agent showing abnormal volume spike (+{percentage}%) with whale accumulation signals",
-          "Large wallet movement detected: {percentage}% of circulating supply transferred",
-          "Orderbook imbalance detected with {percentage}% buy-side dominance",
-          "Price differential of {percentage}% detected across major exchanges"
-        ],
-        category: "Market Anomaly"
-      },
-      {
-        type: "optimization" as const,
-        titles: [
-          "Stop-Loss Optimization Available",
-          "Take-Profit Level Adjustment",
-          "Position Sizing Recommendation",
-          "Trade Timing Enhancement"
-        ],
-        descriptions: [
-          "Dynamic stop-loss adjustment could improve risk-adjusted returns by {percentage}% based on volatility modeling",
-          "Optimal take-profit levels suggest {percentage}% improvement in win rate",
-          "Kelly criterion analysis recommends {percentage}% position size adjustment",
-          "Market microstructure analysis suggests {percentage}% execution cost reduction"
-        ],
-        category: "Risk Management"
-      }
-    ];
-
-    const impacts: ('high' | 'medium' | 'low')[] = ['high', 'medium', 'low'];
-    const now = new Date();
-    
-    return Array.from({ length: 4 }, (_, index) => {
-      const template = insightTemplates[index % insightTemplates.length];
-      const titleIndex = Math.floor(Math.random() * template.titles.length);
-      const descIndex = Math.floor(Math.random() * template.descriptions.length);
-      
-      const confidence = 60 + Math.random() * 35; // 60-95%
-      const percentage = Math.floor(Math.random() * 25) + 5; // 5-30%
-      
-      // Generate timestamps in the last 6 hours
-      const minutesAgo = Math.floor(Math.random() * 360); // 0-6 hours
-      const timestamp = new Date(now.getTime() - minutesAgo * 60 * 1000).toISOString();
-      
-      return {
-        id: `insight_${Date.now()}_${index}`,
-        type: template.type,
-        title: template.titles[titleIndex],
-        description: template.descriptions[descIndex]
-          .replace('{confidence}', Math.floor(confidence).toString())
-          .replace('{percentage}', percentage.toString()),
-        confidence: Math.floor(confidence),
-        impact: impacts[Math.floor(Math.random() * impacts.length)],
-        category: template.category,
-        timestamp
-      };
-    });
-  };
-
-  const generatePredictions = () => {
-    const symbols = ["ALPHA", "BETA", "GAMMA", "DELTA", "EPSILON"];
-    const factors = [
-      ["Volume surge", "RSI oversold", "Whale accumulation"],
-      ["Resistance level", "Market correlation", "Options flow"],
-      ["Technical breakout", "Social sentiment", "News catalyst"],
-      ["Support retest", "DeFi integration", "Tokenomics update"],
-      ["Cross-chain bridge", "Yield farming", "Governance proposal"]
-    ];
-
-    return Array.from({ length: 3 }, (_, index) => {
-      const symbol = symbols[index % symbols.length];
-      const basePrice = 0.5 + Math.random() * 3; // $0.50 - $3.50
-      const priceChange = (Math.random() - 0.5) * 0.4; // ±20% max change
-      const predictedPrice = basePrice + priceChange;
-      
-      return {
-        symbol,
-        currentPrice: Number(basePrice.toFixed(3)),
-        predictedPrice: Number(predictedPrice.toFixed(3)),
-        timeframe: selectedTimeframe as '1h' | '4h' | '1d' | '1w',
-        confidence: Math.floor(60 + Math.random() * 35), // 60-95%
-        factors: factors[index % factors.length]
-      };
-    });
-  };
-
-    // Initialize data and set up real-time updates
+  // Load real agents from database
   useEffect(() => {
-    const updateData = () => {
-      setIsUpdating(true);
-      setInsights(generateInsights());
-      setPredictions(generatePredictions());
-      setLastUpdate(new Date());
-      
-      // Show updating indicator for a brief moment
-      setTimeout(() => setIsUpdating(false), 1000);
-    };
+    const loadAgents = async () => {
+      const { data, error } = await supabase
+        .from('agents')
+        .select('id, symbol, name, price, change_24h')
+        .order('market_cap', { ascending: false })
+        .limit(10)
 
-    // Initial load
-    updateData();
-
-    // Update every 30 seconds for real-time feel
-    const interval = setInterval(updateData, 30000);
-
-    return () => clearInterval(interval);
-  }, [selectedTimeframe]);
-
-  const getInsightIcon = (type: string) => {
-    switch (type) {
-      case 'prediction': return <TrendingUp className="h-5 w-5" />
-      case 'recommendation': return <Lightbulb className="h-5 w-5" />
-      case 'alert': return <AlertCircle className="h-5 w-5" />
-      case 'optimization': return <Target className="h-5 w-5" />
-      default: return <Brain className="h-5 w-5" />
+      if (data && !error) {
+        setAgents(data)
+      }
     }
-  }
 
-  const getConfidenceColor = (confidence: number) => {
-    if (confidence >= 80) return "text-green-500"
-    if (confidence >= 60) return "text-yellow-500"
-    return "text-orange-500"
-  }
+    loadAgents()
+  }, [])
 
-  const getImpactVariant = (impact: string) => {
-    switch (impact) {
-      case 'high': return 'destructive'
-      case 'medium': return 'default'
-      default: return 'secondary'
+  // Load user's portfolio - mock data for now
+  useEffect(() => {
+    setPortfolio({
+      total_value: 5420.32,
+      holdings: [
+        { agent_id: '1', agent_symbol: 'SOL', amount: 100, value: 1250.50 },
+        { agent_id: '2', agent_symbol: 'BTC', amount: 0.5, value: 2100.75 },
+      ]
+    })
+  }, [])
+
+  const handleQuickAction = async (action: string) => {
+    try {
+      switch (action) {
+        case 'market':
+          if (agents.length > 0) {
+            await getMarketAnalysis(agents.slice(0, 5).map(a => a.id))
+          }
+          break
+        case 'portfolio':
+          if (portfolio) {
+            await getPortfolioAdvice(portfolio)
+          }
+          break
+        case 'signals':
+          if (selectedAgent) {
+            await getTradingSignals(selectedAgent)
+          } else if (agents.length > 0) {
+            await getTradingSignals(agents[0].id)
+          }
+          break
+        case 'risk':
+          if (portfolio?.holdings) {
+            await getRiskAssessment(portfolio.holdings)
+          }
+          break
+      }
+    } catch (error) {
+      toast({
+        title: "Analysis Failed",
+        description: "Could not complete AI analysis. Please try again.",
+        variant: "destructive"
+      })
     }
-  }
-
-  const formatTimeAgo = (timestamp: string) => {
-    const now = new Date()
-    const time = new Date(timestamp)
-    const diff = now.getTime() - time.getTime()
-    const hours = Math.floor(diff / (1000 * 60 * 60))
-    const minutes = Math.floor(diff / (1000 * 60))
-    
-    if (hours > 0) return `${hours}h ago`
-    return `${minutes}m ago`
-  }
-
-  const calculatePriceChange = (current: number, predicted: number) => {
-    return ((predicted - current) / current * 100).toFixed(2)
   }
 
   return (
     <>
       <SEOHead
-        title="Advanced AI Insights - ML-Powered Trading Analytics"
-        description="Get cutting-edge AI insights with machine learning predictions, market analysis, and intelligent trading recommendations powered by advanced algorithms."
-        keywords="AI trading insights, machine learning predictions, algorithmic analysis, AI recommendations, advanced trading AI"
+        title="Advanced AI Trading - Real-Time Insights & Analysis"
+        description="Get real-time AI-powered trading insights, market analysis, and intelligent recommendations using advanced machine learning."
+        keywords="AI trading, machine learning, market analysis, trading insights, real-time AI"
       />
       
       <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
         <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight mb-2 md:mb-4">
-            Advanced{" "}
-            <span className="text-white">
-              AI Insights
-            </span>
+            Advanced AI Trading
           </h1>
           <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
-            Harness the power of machine learning for intelligent trading decisions and market predictions
+            Get real-time insights powered by advanced machine learning and natural language processing
           </p>
         </div>
 
-        {/* AI Performance Stats */}
-        <div className="grid gap-4 md:grid-cols-4 mb-8">
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-6 text-center">
-              <Brain className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">94.2%</div>
-              <div className="text-sm text-muted-foreground">Prediction Accuracy</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-6 text-center">
-              <Cpu className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">847</div>
-              <div className="text-sm text-muted-foreground">Models Running</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-6 text-center">
-              <BarChart3 className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">2.3TB</div>
-              <div className="text-sm text-muted-foreground">Data Processed</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-6 text-center">
-              <Zap className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">12ms</div>
-              <div className="text-sm text-muted-foreground">Avg Response Time</div>
-            </CardContent>
-          </Card>
-        </div>
-
-        <Tabs defaultValue="insights" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4">
-            <TabsTrigger value="insights">AI Insights</TabsTrigger>
-            <TabsTrigger value="predictions">Predictions</TabsTrigger>
-            <TabsTrigger value="sentiment">Sentiment</TabsTrigger>
-            <TabsTrigger value="models">Models</TabsTrigger>
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+          <TabsList className="grid w-full grid-cols-2 md:grid-cols-4">
+            <TabsTrigger value="assistant">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              AI Assistant
+            </TabsTrigger>
+            <TabsTrigger value="market">
+              <TrendingUp className="h-4 w-4 mr-2" />
+              Market Analysis
+            </TabsTrigger>
+            <TabsTrigger value="portfolio">
+              <Brain className="h-4 w-4 mr-2" />
+              Portfolio Insights
+            </TabsTrigger>
+            <TabsTrigger value="signals">
+              <Zap className="h-4 w-4 mr-2" />
+              Trading Signals
+            </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="insights" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <div className="flex items-center gap-4">
-                <h2 className="text-2xl font-semibold">Real-time AI Insights</h2>
-                <div className="flex items-center gap-2">
-                  <div className={`w-2 h-2 rounded-full ${isUpdating ? 'bg-yellow-500' : 'bg-green-500'} animate-pulse`} />
-                  <span className="text-sm text-muted-foreground">
-                    Last updated: {lastUpdate.toLocaleTimeString()}
-                  </span>
-                </div>
-              </div>
-              <Select defaultValue="all">
-                <SelectTrigger className="w-48">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All Categories</SelectItem>
-                  <SelectItem value="technical">Technical Analysis</SelectItem>
-                  <SelectItem value="portfolio">Portfolio Management</SelectItem>
-                  <SelectItem value="risk">Risk Management</SelectItem>
-                  <SelectItem value="market">Market Anomaly</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="space-y-4">
-              {insights.map((insight) => (
-                <Card key={insight.id} className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200">
-                  <CardContent className="p-6">
-                    <div className="flex items-start gap-4">
-                      <div className="p-3 bg-primary/10 rounded-xl shrink-0">
-                        {getInsightIcon(insight.type)}
-                      </div>
-                      
-                      <div className="flex-1 min-w-0">
-                        {/* Header Row */}
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-3 mb-4">
-                          <div className="flex-1 min-w-0">
-                            <h3 className="font-semibold text-lg text-foreground mb-2">{insight.title}</h3>
-                            <p className="text-muted-foreground text-sm leading-relaxed">{insight.description}</p>
-                          </div>
-                          <div className="flex items-center gap-2 shrink-0">
-                            <Badge variant={getImpactVariant(insight.impact)} className="capitalize">
-                              {insight.impact}
-                            </Badge>
-                            <span className="text-xs text-muted-foreground whitespace-nowrap">
-                              {formatTimeAgo(insight.timestamp)}
-                            </span>
-                          </div>
-                        </div>
-                        
-                        {/* Metrics Row */}
-                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                          <div className="flex items-center gap-4">
-                            <Badge variant="outline" className="text-xs">
-                              {insight.category}
-                            </Badge>
-                            <div className="flex items-center gap-2">
-                              <span className="text-xs text-muted-foreground">Confidence:</span>
-                              <span className={`text-sm font-semibold ${getConfidenceColor(insight.confidence)}`}>
-                                {insight.confidence}%
-                              </span>
-                            </div>
-                          </div>
-                          <Button variant="ghost" size="sm" className="self-start sm:self-auto">
-                            View Details
-                          </Button>
-                        </div>
-                        
-                        {/* Progress Bar */}
-                        <div className="mt-4">
-                          <Progress value={insight.confidence} className="h-2" />
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+          <TabsContent value="assistant" className="space-y-6">
+            <AITradingAssistant
+              selectedAgent={selectedAgent}
+              portfolio={portfolio}
+              marketData={{ agents }}
+            />
           </TabsContent>
 
-          <TabsContent value="predictions" className="space-y-6">
-            <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-semibold">ML Price Predictions</h2>
-              <Select value={selectedTimeframe} onValueChange={setSelectedTimeframe}>
-                <SelectTrigger className="w-32">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="1h">1 Hour</SelectItem>
-                  <SelectItem value="4h">4 Hours</SelectItem>
-                  <SelectItem value="1d">1 Day</SelectItem>
-                  <SelectItem value="1w">1 Week</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {predictions.map((prediction, index) => (
-                <Card key={index} className="bg-card/50 backdrop-blur-sm border-border/50">
-                  <CardHeader>
-                    <div className="flex justify-between items-start">
-                      <CardTitle className="text-lg">{prediction.symbol}</CardTitle>
-                      <Badge variant="outline">{prediction.timeframe}</Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-4">
-                    <div className="space-y-2">
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Current Price</span>
-                        <span className="font-medium">${prediction.currentPrice}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Predicted Price</span>
-                        <span className="font-medium">${prediction.predictedPrice}</span>
-                      </div>
-                      <div className="flex justify-between">
-                        <span className="text-sm text-muted-foreground">Expected Change</span>
-                        <span className={`font-medium ${
-                          Number(calculatePriceChange(prediction.currentPrice, prediction.predictedPrice)) > 0 
-                            ? 'text-green-500' : 'text-red-500'
-                        }`}>
-                          {calculatePriceChange(prediction.currentPrice, prediction.predictedPrice)}%
-                        </span>
-                      </div>
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <div className="flex justify-between items-center">
-                        <span className="text-sm text-muted-foreground">Confidence</span>
-                        <span className={`font-medium ${getConfidenceColor(prediction.confidence)}`}>
-                          {prediction.confidence}%
-                        </span>
-                      </div>
-                      <Progress value={prediction.confidence} className="h-2" />
-                    </div>
-                    
-                    <div className="space-y-2">
-                      <span className="text-sm font-medium">Key Factors:</span>
-                      <div className="flex flex-wrap gap-1">
-                        {prediction.factors.map((factor, idx) => (
-                          <Badge key={idx} variant="secondary" className="text-xs">
-                            {factor}
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="sentiment" className="space-y-6">
-            <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+          <TabsContent value="market" className="space-y-6">
+            <Card>
               <CardHeader>
-                <CardTitle>Market Sentiment Analysis</CardTitle>
-                <CardDescription>
-                  AI-powered sentiment analysis from multiple data sources
-                </CardDescription>
+                <CardTitle>Market Analysis</CardTitle>
               </CardHeader>
-              <CardContent>
-                <div className="grid gap-6 md:grid-cols-3">
-                  <div className="text-center p-6 bg-card/50 border border-border/50 rounded-lg">
-                    <div className="text-3xl font-bold text-green-600 mb-2">Bullish</div>
-                    <div className="text-sm text-muted-foreground">Overall Market</div>
-                    <div className="text-xs text-muted-foreground mt-1">Confidence: 76%</div>
-                  </div>
-                  <div className="text-center p-6 bg-card/50 border border-border/50 rounded-lg">
-                    <div className="text-3xl font-bold text-blue-600 mb-2">Neutral</div>
-                    <div className="text-sm text-muted-foreground">Social Media</div>
-                    <div className="text-xs text-muted-foreground mt-1">Confidence: 82%</div>
-                  </div>
-                  <div className="text-center p-6 bg-card/50 border border-border/50 rounded-lg">
-                    <div className="text-3xl font-bold text-orange-600 mb-2">Cautious</div>
-                    <div className="text-sm text-muted-foreground">Institutional</div>
-                    <div className="text-xs text-muted-foreground mt-1">Confidence: 89%</div>
-                  </div>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  Get comprehensive AI-powered analysis of current market conditions, trends, and opportunities.
+                </p>
+                <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+                  {agents.slice(0, 6).map((agent) => (
+                    <Card key={agent.id} className="hover:border-primary/50 transition-colors cursor-pointer">
+                      <CardContent className="p-4">
+                        <div className="flex items-center justify-between mb-2">
+                          <h3 className="font-semibold">{agent.symbol}</h3>
+                          <span className={agent.change_24h >= 0 ? "text-green-500" : "text-red-500"}>
+                            {agent.change_24h >= 0 ? "+" : ""}{agent.change_24h?.toFixed(2)}%
+                          </span>
+                        </div>
+                        <p className="text-sm text-muted-foreground mb-3">{agent.name}</p>
+                        <Button 
+                          variant="outline" 
+                          size="sm" 
+                          className="w-full"
+                          onClick={() => {
+                            setSelectedAgent(agent.id)
+                            handleQuickAction('signals')
+                          }}
+                          disabled={loading}
+                        >
+                          Analyze {agent.symbol}
+                        </Button>
+                      </CardContent>
+                    </Card>
+                  ))}
                 </div>
-                
-                <div className="mt-8">
-                  <h4 className="font-medium mb-4">Sentiment Drivers</h4>
-                  <div className="space-y-3">
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Regulatory News</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 bg-muted rounded-full h-2">
-                          <div className="h-2 rounded-full bg-green-500" style={{ width: '70%' }} />
-                        </div>
-                        <span className="text-sm text-green-500">+70%</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Market Volume</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 bg-muted rounded-full h-2">
-                          <div className="h-2 rounded-full bg-blue-500" style={{ width: '45%' }} />
-                        </div>
-                        <span className="text-sm text-blue-500">+45%</span>
-                      </div>
-                    </div>
-                    <div className="flex justify-between items-center">
-                      <span className="text-sm">Fear & Greed Index</span>
-                      <div className="flex items-center gap-2">
-                        <div className="w-32 bg-muted rounded-full h-2">
-                          <div className="h-2 rounded-full bg-orange-500" style={{ width: '30%' }} />
-                        </div>
-                        <span className="text-sm text-orange-500">-30%</span>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+                <Button 
+                  onClick={() => handleQuickAction('market')}
+                  disabled={loading || agents.length === 0}
+                  className="w-full"
+                >
+                  <Brain className="h-4 w-4 mr-2" />
+                  {loading ? "Analyzing..." : "Analyze All Markets"}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
 
-          <TabsContent value="models" className="space-y-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                <CardHeader>
-                  <CardTitle>Active ML Models</CardTitle>
-                  <CardDescription>
-                    Currently deployed machine learning models
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {[
-                    { name: "LSTM Price Predictor", accuracy: "94.2%", status: "Active" },
-                    { name: "Sentiment Analyzer", accuracy: "87.5%", status: "Active" },
-                    { name: "Volume Anomaly Detector", accuracy: "91.8%", status: "Active" },
-                    { name: "Portfolio Optimizer", accuracy: "89.3%", status: "Training" }
-                  ].map((model, index) => (
-                    <div key={index} className="flex justify-between items-center p-3 bg-muted/30 rounded-lg">
-                      <div>
-                        <div className="font-medium">{model.name}</div>
-                        <div className="text-sm text-muted-foreground">Accuracy: {model.accuracy}</div>
-                      </div>
-                      <Badge variant={model.status === "Active" ? "default" : "secondary"}>
-                        {model.status}
-                      </Badge>
+          <TabsContent value="portfolio" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Portfolio Insights</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {portfolio ? (
+                  <>
+                    <div className="grid gap-4 md:grid-cols-2">
+                      <Card className="bg-card/50">
+                        <CardContent className="p-4">
+                          <p className="text-sm text-muted-foreground mb-1">Total Portfolio Value</p>
+                          <p className="text-2xl font-bold">${portfolio.total_value.toFixed(2)}</p>
+                        </CardContent>
+                      </Card>
+                      <Card className="bg-card/50">
+                        <CardContent className="p-4">
+                          <p className="text-sm text-muted-foreground mb-1">Holdings</p>
+                          <p className="text-2xl font-bold">{portfolio.holdings.length}</p>
+                        </CardContent>
+                      </Card>
                     </div>
-                  ))}
-                </CardContent>
-              </Card>
-
-              <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-                <CardHeader>
-                  <CardTitle>Model Performance</CardTitle>
-                  <CardDescription>
-                    Real-time performance metrics
-                  </CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-6">
-                    <div className="text-center">
-                      <LineChart className="h-16 w-16 mx-auto mb-4 text-primary" />
-                      <div className="text-2xl font-bold">847</div>
-                      <div className="text-sm text-muted-foreground">Models Deployed</div>
-                    </div>
-                    
-                    <div className="grid gap-4 grid-cols-2">
-                      <div className="text-center p-3 bg-muted/30 rounded-lg">
-                        <div className="text-lg font-bold text-green-500">↑ 12.3%</div>
-                        <div className="text-xs text-muted-foreground">Avg Accuracy</div>
-                      </div>
-                      <div className="text-center p-3 bg-muted/30 rounded-lg">
-                        <div className="text-lg font-bold text-blue-500">2.1s</div>
-                        <div className="text-xs text-muted-foreground">Training Time</div>
-                      </div>
-                    </div>
+                    <Button 
+                      onClick={() => handleQuickAction('portfolio')}
+                      disabled={loading}
+                      className="w-full"
+                    >
+                      <Brain className="h-4 w-4 mr-2" />
+                      {loading ? "Analyzing..." : "Get AI Portfolio Analysis"}
+                    </Button>
+                  </>
+                ) : (
+                  <div className="text-center py-8">
+                    <p className="text-muted-foreground mb-4">
+                      Connect your wallet to get personalized portfolio insights
+                    </p>
                   </div>
-                </CardContent>
-              </Card>
-            </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          <TabsContent value="signals" className="space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Trading Signals</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <p className="text-muted-foreground">
+                  Get AI-generated trading signals with precise entry/exit points and risk management recommendations.
+                </p>
+                <div className="space-y-3">
+                  <label className="text-sm font-medium">Select Agent for Signals</label>
+                  <div className="grid gap-2">
+                    {agents.slice(0, 5).map((agent) => (
+                      <Button
+                        key={agent.id}
+                        variant={selectedAgent === agent.id ? "default" : "outline"}
+                        onClick={() => setSelectedAgent(agent.id)}
+                        className="justify-start"
+                      >
+                        <span className="font-semibold mr-2">{agent.symbol}</span>
+                        <span className="text-muted-foreground">${agent.price?.toFixed(4)}</span>
+                      </Button>
+                    ))}
+                  </div>
+                </div>
+                <Button 
+                  onClick={() => handleQuickAction('signals')}
+                  disabled={loading || !selectedAgent}
+                  className="w-full"
+                >
+                  <Zap className="h-4 w-4 mr-2" />
+                  {loading ? "Generating..." : "Generate Trading Signals"}
+                </Button>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
+
+        {/* Quick Actions */}
+        <Card className="mt-6">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid gap-3 md:grid-cols-2 lg:grid-cols-4">
+              <Button 
+                variant="outline" 
+                onClick={() => handleQuickAction('market')}
+                disabled={loading}
+                className="h-auto py-4 flex-col gap-2"
+              >
+                <TrendingUp className="h-5 w-5" />
+                <span>Market Overview</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => handleQuickAction('portfolio')}
+                disabled={loading || !portfolio}
+                className="h-auto py-4 flex-col gap-2"
+              >
+                <Brain className="h-5 w-5" />
+                <span>Portfolio Review</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => handleQuickAction('signals')}
+                disabled={loading || !selectedAgent}
+                className="h-auto py-4 flex-col gap-2"
+              >
+                <Zap className="h-5 w-5" />
+                <span>Get Signals</span>
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => handleQuickAction('risk')}
+                disabled={loading || !portfolio}
+                className="h-auto py-4 flex-col gap-2"
+              >
+                <Brain className="h-5 w-5" />
+                <span>Risk Assessment</span>
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </>
   )
