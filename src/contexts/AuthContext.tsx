@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react'
 import { useWallet } from '@/hooks/useWallet'
 import { useSolanaWallet } from '@/hooks/useSolanaWallet'
 import { supabase } from '@/integrations/supabase/client'
@@ -37,6 +37,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
                   undefined
   const isConnected = evmWallet.isConnected || solanaWallet.isConnected
 
+  const walletAuthState = useRef<{ inProgress: boolean; lastAddr?: string }>({ inProgress: false, lastAddr: undefined })
+
   useEffect(() => {
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
@@ -60,10 +62,24 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Auto sign in when wallet is connected
   useEffect(() => {
     if (isConnected && address && !user) {
-      // Determine wallet type
       const type = evmWallet.isConnected ? 'evm' : 'solana'
       setWalletType(type)
+
+      if (walletAuthState.current.inProgress || walletAuthState.current.lastAddr === address) {
+        console.info('[Auth] Wallet auth skipped (inProgress or same address)', walletAuthState.current)
+        return
+      }
+
+      walletAuthState.current.inProgress = true
+      walletAuthState.current.lastAddr = address
+      console.info('[Auth] Starting wallet auth', { address, type })
+
       signInWithWallet()
+        .catch((e) => console.error('[Auth] Wallet auth failed', e))
+        .finally(() => {
+          walletAuthState.current.inProgress = false
+          console.info('[Auth] Wallet auth finished', { address: walletAuthState.current.lastAddr })
+        })
     }
     // Do not auto sign out when wallet disconnects to avoid race conditions
   }, [isConnected, address, user])
@@ -92,6 +108,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         token_hash,
       })
       if (otpError) throw otpError
+
+      // Ensure session is established
+      const { data: sessData } = await supabase.auth.getSession()
+      console.info('[Auth] Post-verify session', { hasSession: !!sessData?.session })
 
       // Optionally initialize demo balance after login (best-effort)
       try {
