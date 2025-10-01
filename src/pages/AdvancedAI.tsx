@@ -8,7 +8,8 @@ import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import { useAITradingAssistant } from "@/hooks/useAITradingAssistant"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
-
+import { RealTimeTicker } from "@/components/trading/RealTimeTicker"
+import { WalletSection } from "@/components/wallet/WalletSection"
 interface Agent {
   id: string
   symbol: string
@@ -49,16 +50,7 @@ const AdvancedAI = () => {
     loadAgents()
   }, [])
 
-  // Load user's portfolio - mock data for now
-  useEffect(() => {
-    setPortfolio({
-      total_value: 5420.32,
-      holdings: [
-        { agent_id: '1', agent_symbol: 'SOL', amount: 100, value: 1250.50 },
-        { agent_id: '2', agent_symbol: 'BTC', amount: 0.5, value: 2100.75 },
-      ]
-    })
-  }, [])
+  // Portfolio insights require connected wallet; we show WalletSection when not connected
 
   const handleQuickAction = async (action: string) => {
     try {
@@ -86,6 +78,8 @@ const AdvancedAI = () => {
           }
           break
       }
+      // Show results in the Assistant tab
+      setActiveTab('assistant')
     } catch (error) {
       toast({
         title: "Analysis Failed",
@@ -111,6 +105,10 @@ const AdvancedAI = () => {
           <p className="text-sm sm:text-base md:text-xl text-muted-foreground max-w-2xl mx-auto px-4">
             Get real-time insights powered by advanced machine learning and natural language processing
           </p>
+        </div>
+
+        <div className="mb-6">
+          <RealTimeTicker />
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
@@ -225,6 +223,9 @@ const AdvancedAI = () => {
                     <p className="text-muted-foreground mb-4">
                       Connect your wallet to get personalized portfolio insights
                     </p>
+                    <div className="max-w-sm mx-auto">
+                      <WalletSection />
+                    </div>
                   </div>
                 )}
               </CardContent>
