@@ -8,7 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { PaperTradingToggle } from "@/components/ui/paper-trading-toggle"
 import { useAuth } from "@/contexts/AuthContext"
-import { useTradingOperations } from "@/hooks/useTradingOperations"
+import { useOrderExecution } from "@/hooks/useOrderExecution"
+import { useUserBalance } from "@/hooks/useUserBalance"
 import { usePaperTrading } from "@/hooks/usePaperTrading"
 
 interface TradingPanelProps {
@@ -25,9 +26,9 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
   const [buyAmount, setBuyAmount] = useState("")
   const [sellAmount, setSellAmount] = useState("")
   const [slippage, setSlippage] = useState("0.5")
-  const [isTrading, setIsTrading] = useState(false)
   const { isConnected, address } = useAuth()
-  const { placeOrder } = useTradingOperations()
+  const { placeBuyOrder, placeSellOrder, isExecuting } = useOrderExecution()
+  const { balance } = useUserBalance()
   const { 
     isEnabled: paperTradingEnabled, 
     togglePaperTrading, 
@@ -38,64 +39,39 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
   const handleBuy = async () => {
     if (!buyAmount || parseFloat(buyAmount) <= 0) return
     
-    setIsTrading(true)
-    try {
-      const amount = parseFloat(buyAmount) / parseFloat(agent.price.replace('$', ''))
-      const price = parseFloat(agent.price.replace('$', ''))
-      
-      if (paperTradingEnabled) {
-        const success = await executePaperTrade('buy', agent.symbol, amount, price)
-        if (success) {
-          setBuyAmount("")
-        }
-      } else {
-        const success = await placeOrder({
-          agent_id: agentId,
-          type: 'market',
-          side: 'buy',
-          amount: amount,
-          price: price
-        })
-        if (success) {
-          setBuyAmount("")
-          // Refresh the page to show updated balance
-          window.location.reload()
-        }
+    const usdAmount = parseFloat(buyAmount)
+    const price = parseFloat(agent.price.replace('$', ''))
+    const amount = usdAmount / price
+    
+    if (paperTradingEnabled) {
+      const success = await executePaperTrade('buy', agent.symbol, amount, price)
+      if (success) {
+        setBuyAmount("")
       }
-    } finally {
-      setIsTrading(false)
+    } else {
+      const result = await placeBuyOrder(agentId, amount)
+      if (result) {
+        setBuyAmount("")
+      }
     }
   }
 
   const handleSell = async () => {
     if (!sellAmount || parseFloat(sellAmount) <= 0) return
     
-    setIsTrading(true)
-    try {
-      const amount = parseFloat(sellAmount)
-      const price = parseFloat(agent.price.replace('$', ''))
-      
-      if (paperTradingEnabled) {
-        const success = await executePaperTrade('sell', agent.symbol, amount, price)
-        if (success) {
-          setSellAmount("")
-        }
-      } else {
-        const success = await placeOrder({
-          agent_id: agentId,
-          type: 'market',
-          side: 'sell',
-          amount: amount,
-          price: price
-        })
-        if (success) {
-          setSellAmount("")
-          // Refresh the page to show updated balance
-          window.location.reload()
-        }
+    const amount = parseFloat(sellAmount)
+    const price = parseFloat(agent.price.replace('$', ''))
+    
+    if (paperTradingEnabled) {
+      const success = await executePaperTrade('sell', agent.symbol, amount, price)
+      if (success) {
+        setSellAmount("")
       }
-    } finally {
-      setIsTrading(false)
+    } else {
+      const result = await placeSellOrder(agentId, amount)
+      if (result) {
+        setSellAmount("")
+      }
     }
   }
 
@@ -133,6 +109,16 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
             </div>
           </div>
         ) : (
+          <>
+            {/* Balance Display */}
+            {balance && !paperTradingEnabled && (
+              <div className="mb-4 p-3 bg-card/50 rounded-lg border border-border/50">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm text-muted-foreground">Available Balance:</span>
+                  <span className="font-semibold">${balance.available_balance.toFixed(2)}</span>
+                </div>
+              </div>
+            )}
           <Tabs defaultValue="buy" className="w-full">
             <TabsList className="grid w-full grid-cols-2 bg-card/50">
               <TabsTrigger value="buy" className="flex items-center gap-2">
@@ -210,10 +196,10 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
               <Button 
                 onClick={handleBuy} 
                 className="w-full bg-green-600 hover:bg-green-600/90"
-                disabled={!buyAmount || parseFloat(buyAmount) <= 0 || isTrading}
+                disabled={!buyAmount || parseFloat(buyAmount) <= 0 || isExecuting}
               >
                 <TrendingUp className="h-4 w-4 mr-2" />
-                {isTrading ? "Processing..." : `Buy ${agent.symbol}`}
+                {isExecuting ? "Processing..." : `Buy ${agent.symbol}`}
               </Button>
             </TabsContent>
 
@@ -283,13 +269,14 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
                 onClick={handleSell} 
                 variant="destructive"
                 className="w-full"
-                disabled={!sellAmount || parseFloat(sellAmount) <= 0 || isTrading}
+                disabled={!sellAmount || parseFloat(sellAmount) <= 0 || isExecuting}
               >
                 <TrendingDown className="h-4 w-4 mr-2" />
-                {isTrading ? "Processing..." : `Sell ${agent.symbol}`}
+                {isExecuting ? "Processing..." : `Sell ${agent.symbol}`}
               </Button>
             </TabsContent>
           </Tabs>
+          </>
         )}
 
         {isConnected && (

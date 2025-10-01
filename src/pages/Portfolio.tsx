@@ -6,54 +6,29 @@ import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
+import { useRealPortfolio } from '@/hooks/useRealPortfolio'
+import { useUserBalance } from '@/hooks/useUserBalance'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
 import { PortfolioOptimizer } from '@/components/portfolio/PortfolioOptimizer'
 import { PortfolioPerformanceDashboard } from '@/components/portfolio/PortfolioPerformanceDashboard'
 import { SolanaPortfolioCard } from '@/components/portfolio/SolanaPortfolioCard'
-import { Wallet, TrendingUp, BarChart3, Target, Plus } from 'lucide-react'
+import { Wallet, TrendingUp, BarChart3, Target, Plus, DollarSign } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function Portfolio() {
   const { user } = useAuth()
+  const { balance } = useUserBalance()
+  const { 
+    holdings, 
+    portfolioValue, 
+    totalInvested, 
+    totalPnL, 
+    totalPnLPercent,
+    loading: portfolioLoading 
+  } = useRealPortfolio()
 
-  const { data: portfolioSummary, isLoading } = useQuery({
-    queryKey: ['portfolio-summary', user?.id],
-    queryFn: async () => {
-      if (!user?.id) return null
-
-      const { data: holdings, error } = await supabase
-        .from('user_holdings')
-        .select(`
-          *,
-          agents (
-            id,
-            name,
-            symbol,
-            price,
-            change_24h
-          )
-        `)
-        .eq('user_id', user.id)
-        .gt('total_amount', 0)
-
-      if (error) throw error
-
-      const totalValue = holdings?.reduce((sum, h) => sum + (h.total_amount * (h.agents?.price || 0)), 0) || 0
-      const totalInvested = holdings?.reduce((sum, h) => sum + h.total_invested, 0) || 0
-      const totalPnL = totalValue - totalInvested
-
-      return {
-        holdings: holdings || [],
-        totalValue,
-        totalInvested,
-        totalPnL,
-        totalPnLPercentage: totalInvested > 0 ? (totalPnL / totalInvested) * 100 : 0
-      }
-    },
-    enabled: !!user?.id,
-    refetchInterval: 30000
-  })
+  const isLoading = portfolioLoading
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -111,8 +86,26 @@ export default function Portfolio() {
           </Button>
         </div>
 
-        {portfolioSummary && portfolioSummary.holdings.length > 0 ? (
+        {holdings && holdings.length > 0 ? (
           <>
+            {/* Balance Card */}
+            {balance && (
+              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 mb-6">
+                <CardContent className="p-6">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      <p className="text-sm font-medium text-muted-foreground mb-2">Available Cash</p>
+                      <p className="text-2xl font-bold text-foreground">${balance.available_balance.toFixed(2)}</p>
+                      <p className="text-xs text-muted-foreground mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20">
+                      <DollarSign className="h-6 w-6 text-green-400" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            )}
+            
             {/* Portfolio Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
               <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
@@ -120,7 +113,7 @@ export default function Portfolio() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-2">Total Portfolio Value</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(portfolioSummary.totalValue)}</p>
+                      <p className="text-2xl font-bold text-foreground">{formatCurrency(portfolioValue)}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20">
                       <Wallet className="h-6 w-6 text-primary" />
@@ -134,7 +127,7 @@ export default function Portfolio() {
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-2">Total Invested</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(portfolioSummary.totalInvested)}</p>
+                      <p className="text-2xl font-bold text-foreground">{formatCurrency(totalInvested)}</p>
                     </div>
                     <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20">
                       <TrendingUp className="h-6 w-6 text-primary" />
@@ -149,11 +142,11 @@ export default function Portfolio() {
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-2">Total P&L</p>
                       <div className="flex items-center gap-2">
-                        <p className={`text-2xl font-bold ${portfolioSummary.totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                          {formatCurrency(portfolioSummary.totalPnL)}
+                        <p className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                          {formatCurrency(totalPnL)}
                         </p>
-                        <Badge variant={portfolioSummary.totalPnL >= 0 ? 'default' : 'destructive'} className="text-xs">
-                          {portfolioSummary.totalPnL >= 0 ? '+' : ''}{portfolioSummary.totalPnLPercentage.toFixed(2)}%
+                        <Badge variant={totalPnL >= 0 ? 'default' : 'destructive'} className="text-xs">
+                          {totalPnL >= 0 ? '+' : ''}{totalPnLPercent.toFixed(2)}%
                         </Badge>
                       </div>
                     </div>
@@ -237,8 +230,8 @@ export default function Portfolio() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {portfolioSummary.holdings.map((holding, index) => {
-                        const currentValue = holding.total_amount * (holding.agents?.price || 0)
+                      {holdings.map((holding, index) => {
+                        const currentValue = holding.quantity * parseFloat(holding.agent?.price?.toString() || '0')
                         const pnl = currentValue - holding.total_invested
                         const pnlPercentage = holding.total_invested > 0 ? (pnl / holding.total_invested) * 100 : 0
 
@@ -249,9 +242,9 @@ export default function Portfolio() {
                                 <Wallet className="h-4 w-4 text-primary" />
                               </div>
                               <div>
-                                <p className="font-medium text-foreground">{holding.agents?.name}</p>
+                                <p className="font-medium text-foreground">{holding.agent?.name}</p>
                                 <p className="text-sm text-muted-foreground">
-                                  {holding.total_amount.toFixed(4)} {holding.agents?.symbol}
+                                  {holding.quantity.toFixed(4)} {holding.agent?.symbol}
                                 </p>
                               </div>
                             </div>
