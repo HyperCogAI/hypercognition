@@ -31,12 +31,19 @@ export const WalletButton = () => {
   if (!isConnected) {
     const inIframe = typeof window !== 'undefined' && window.top !== window.self
     if (inIframe) {
-      const href = window.location.href
+      let href = '#'
+      try {
+        const url = new URL(window.location.href)
+        url.searchParams.set('w3m-connect', '1')
+        href = url.toString()
+      } catch (_) {}
       return (
         <div className="w-full flex flex-col gap-2">
-          <CyberButton variant="outline" size="sm" onClick={connectWallet} className="w-[130px] justify-center">
-            <Wallet className="h-4 w-4 text-white" />
-            <span className="text-white">Connect EVM</span>
+          <CyberButton asChild variant="outline" size="sm" className="w-[130px] justify-center">
+            <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Connect EVM wallet in a new tab">
+              <Wallet className="h-4 w-4 text-white" />
+              <span className="text-white">Connect EVM</span>
+            </a>
           </CyberButton>
           <a
             href={href}
@@ -44,11 +51,12 @@ export const WalletButton = () => {
             rel="noopener noreferrer"
             className="text-xs underline opacity-80 hover:opacity-100"
           >
-            Having trouble in preview? Open in a new tab to connect.
+            Open in a new tab to connect (recommended).
           </a>
         </div>
       )
     }
+
 
     return (
       <CyberButton variant="outline" size="sm" onClick={connectWallet} className="w-[130px] justify-center">
