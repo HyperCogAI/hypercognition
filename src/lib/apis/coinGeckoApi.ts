@@ -44,8 +44,28 @@ interface CoinGeckoSearchResult {
 
 class CoinGeckoAPI {
   private baseUrl = 'https://api.coingecko.com/api/v3'
-  private rateLimitDelay = 1000 // 1 second between requests for free tier
+  private rateLimitDelay = 1500 // 1.5 seconds between requests for free tier
   private lastRequestTime = 0
+  private cache = new Map<string, { data: any; timestamp: number }>()
+  private pendingRequests = new Map<string, Promise<any>>()
+  private cacheDuration = 30000 // Cache for 30 seconds
+
+  private getCacheKey(url: string): string {
+    return url
+  }
+
+  private getCachedData<T>(key: string): T | null {
+    const cached = this.cache.get(key)
+    if (cached && Date.now() - cached.timestamp < this.cacheDuration) {
+      return cached.data as T
+    }
+    this.cache.delete(key)
+    return null
+  }
+
+  private setCachedData(key: string, data: any): void {
+    this.cache.set(key, { data, timestamp: Date.now() })
+  }
 
   private async rateLimit() {
     const now = Date.now()
@@ -57,29 +77,56 @@ class CoinGeckoAPI {
   }
 
   private async fetchWithErrorHandling<T>(url: string): Promise<T> {
-    await this.rateLimit()
+    const cacheKey = this.getCacheKey(url)
     
-    try {
-      const response = await fetch(url)
-      
-      if (!response.ok) {
-        if (response.status === 429) {
-          // Rate limited, wait and retry once
-          await new Promise(resolve => setTimeout(resolve, 5000))
-          const retryResponse = await fetch(url)
-          if (!retryResponse.ok) {
-            throw new Error(`CoinGecko API error: ${retryResponse.status}`)
-          }
-          return retryResponse.json()
-        }
-        throw new Error(`CoinGecko API error: ${response.status}`)
-      }
-      
-      return response.json()
-    } catch (error) {
-      console.error('CoinGecko API request failed:', error)
-      throw error
+    // Check cache first
+    const cachedData = this.getCachedData<T>(cacheKey)
+    if (cachedData) {
+      return cachedData
     }
+
+    // Check if there's already a pending request for this URL
+    const pendingRequest = this.pendingRequests.get(cacheKey)
+    if (pendingRequest) {
+      return pendingRequest
+    }
+
+    // Create new request
+    const requestPromise = (async () => {
+      try {
+        await this.rateLimit()
+        
+        const response = await fetch(url)
+        
+        if (!response.ok) {
+          if (response.status === 429) {
+            // Rate limited, wait longer and retry once
+            console.warn('CoinGecko rate limit hit, waiting 10 seconds...')
+            await new Promise(resolve => setTimeout(resolve, 10000))
+            const retryResponse = await fetch(url)
+            if (!retryResponse.ok) {
+              throw new Error(`CoinGecko API error: ${retryResponse.status}`)
+            }
+            const data = await retryResponse.json()
+            this.setCachedData(cacheKey, data)
+            return data
+          }
+          throw new Error(`CoinGecko API error: ${response.status}`)
+        }
+        
+        const data = await response.json()
+        this.setCachedData(cacheKey, data)
+        return data
+      } catch (error) {
+        console.error('CoinGecko API request failed:', error)
+        throw error
+      } finally {
+        this.pendingRequests.delete(cacheKey)
+      }
+    })()
+
+    this.pendingRequests.set(cacheKey, requestPromise)
+    return requestPromise
   }
 
   async getTopCryptos(limit: number = 100, page: number = 1): Promise<CoinGeckoPrice[]> {
