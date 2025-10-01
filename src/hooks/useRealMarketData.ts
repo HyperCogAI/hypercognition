@@ -229,7 +229,7 @@ export const useRealMarketData = () => {
   return {
     ...marketData,
     solana: mergedSolana,
-    isLoading: marketData.isLoading || solanaLoading,
+    isLoading: marketData.isLoading,
     refreshData,
     getPriceHistory,
     searchTokens,
