@@ -333,7 +333,7 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
       </Card>
 
       {/* Price Chart Dialog */}
-      <Dialog open={!!selectedCrypto} onOpenChange={() => setSelectedCrypto(null)}>
+      <Dialog open={!!selectedCrypto} onOpenChange={(open) => { if (!open) setSelectedCrypto(null) }}>
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
