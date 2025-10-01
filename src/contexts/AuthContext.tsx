@@ -72,71 +72,62 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInWithWallet = async () => {
     if (!address) return
 
-    console.log('Signing in with wallet:', { address, walletType })
-
     try {
-      // Use a valid email domain instead of .local
-      const email = `${address.toLowerCase()}@wallet.hypercognition.app`
-      // Enhanced security: Generate a stronger password from wallet address + salt
-      const salt = 'hypercognition_secure_salt_2024'
-      const password = await hashWalletAddress(address, salt)
-      
-      console.log('Attempting sign in with email:', email)
-      
-      // Try to sign in first
-      const { error: signInError } = await supabase.auth.signInWithPassword({
-        email,
-        password,
+      const type = evmWallet.isConnected ? 'evm' : 'solana'
+      setWalletType(type)
+
+      // Call Edge Function to create/link the user and get an OTP for session exchange
+      const resp = await fetch('https://xdinlkmqmjlrmunsjswf.supabase.co/functions/v1/wallet-auth', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ address, walletType: type }),
       })
 
-      // If sign in fails, create account
-      if (signInError) {
-        console.log('Sign in failed, creating new account...', signInError)
-        
-        const type = evmWallet.isConnected ? 'evm' : 'solana'
-        
-        const { error: signUpError } = await supabase.auth.signUp({
-          email,
-          password,
-          options: {
-            emailRedirectTo: `${window.location.origin}/`,
-            data: {
-              wallet_address: address,
-              wallet_type: type,
-              auth_method: 'wallet',
-              security_level: 'enhanced'
-            }
-          }
-        })
+      if (!resp.ok) {
+        const err = await resp.json().catch(() => ({}))
+        throw new Error(err.error || `wallet-auth failed: ${resp.status}`)
+      }
 
-        if (signUpError) {
-          console.error('Sign up error:', signUpError)
-          if (signUpError.message !== 'User already registered') {
-            throw signUpError
-          }
-        } else {
-          console.log('Account created successfully')
+      const { email, email_otp } = await resp.json()
+
+      // Exchange OTP for a session (no email required)
+      const { error: otpError } = await supabase.auth.verifyOtp({
+        type: 'email',
+        email,
+        token: email_otp,
+      })
+      if (otpError) throw otpError
+
+      // Optionally initialize demo balance after login (best-effort)
+      try {
+        const { data: sessionData } = await supabase.auth.getSession()
+        const token = sessionData?.session?.access_token
+        if (token) {
+          await fetch('https://xdinlkmqmjlrmunsjswf.supabase.co/functions/v1/initialize-balance', {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${token}` },
+          })
         }
-      } else {
-        console.log('Signed in successfully')
-      }
+      } catch (_) { /* non-blocking */ }
 
-      // Log security event
-      if (user) {
-        await logSecurityEvent('wallet_auth', 'authentication', {
+      // Log security event (deferred)
+      setTimeout(() => {
+        logSecurityEvent('wallet_auth', 'authentication', {
           wallet_address: address,
-          wallet_type: walletType,
-          success: true
+          wallet_type: type,
+          success: true,
         })
-      }
+      }, 0)
     } catch (error: any) {
       console.error('Wallet authentication error:', error)
-      // Log failed auth attempt
-      await logSecurityEvent('wallet_auth_failed', 'authentication', {
-        wallet_address: address,
-        wallet_type: walletType,
-        error: error.message
-      })
+      // Log failed auth attempt (deferred)
+      setTimeout(() => {
+        logSecurityEvent('wallet_auth_failed', 'authentication', {
+          wallet_address: address,
+          wallet_type: walletType,
+          error: error.message,
+        })
+      }, 0)
     }
   }
 
