@@ -24,10 +24,12 @@ export const useSolanaWallet = () => {
         return
       }
 
-      // Try preferred wallets automatically if available
+      // Try preferred wallets automatically if available (only when detected or loadable)
       const preferred = ['Phantom', 'Solflare']
       for (const name of preferred) {
-        const found = wallets.find((w) => w.adapter.name === name && w.readyState !== 'Unsupported')
+        const found = wallets.find(
+          (w) => w.adapter.name === name && (w.readyState === 'Installed' || w.readyState === 'Loadable')
+        )
         if (found) {
           await select(found.adapter.name)
           try {
