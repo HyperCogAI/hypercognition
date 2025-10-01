@@ -86,25 +86,26 @@ export default function Portfolio() {
           </Button>
         </div>
 
+        {/* Balance Card - Always show if available */}
+        {balance && (
+          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 mb-6">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Available Cash</p>
+                  <p className="text-2xl font-bold text-foreground">${balance.available_balance.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
+                </div>
+                <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20">
+                  <DollarSign className="h-6 w-6 text-green-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {holdings && holdings.length > 0 ? (
           <>
-            {/* Balance Card */}
-            {balance && (
-              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 mb-6">
-                <CardContent className="p-6">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-2">Available Cash</p>
-                      <p className="text-2xl font-bold text-foreground">${balance.available_balance.toFixed(2)}</p>
-                      <p className="text-xs text-muted-foreground mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
-                    </div>
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20">
-                      <DollarSign className="h-6 w-6 text-green-400" />
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
-            )}
             
             {/* Portfolio Summary Cards */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">

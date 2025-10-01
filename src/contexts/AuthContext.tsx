@@ -113,11 +113,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const { data: sessData } = await supabase.auth.getSession()
       console.info('[Auth] Post-verify session', { hasSession: !!sessData?.session })
 
-      // Optionally initialize demo balance after login (best-effort)
-      try {
-        await supabase.functions.invoke('initialize-balance', { body: {} })
-      } catch (_) { /* non-blocking */ }
-
+      // Balance initialization is handled by useUserBalance hook when needed
+      
       // Log security event (deferred)
       setTimeout(() => {
         logSecurityEvent('wallet_auth', 'authentication', {
