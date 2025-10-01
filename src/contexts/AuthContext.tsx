@@ -76,19 +76,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const type = evmWallet.isConnected ? 'evm' : 'solana'
       setWalletType(type)
 
-      // Call Edge Function to create/link the user and get an OTP for session exchange
-      const resp = await fetch('https://xdinlkmqmjlrmunsjswf.supabase.co/functions/v1/wallet-auth', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ address, walletType: type }),
+      // Call Edge Function via Supabase client to create/link user and get OTP
+      const { data: waData, error: waError } = await supabase.functions.invoke('wallet-auth', {
+        body: { address, walletType: type },
       })
+      if (waError) throw waError
+      const { email, email_otp } = (waData as any) || {}
 
-      if (!resp.ok) {
-        const err = await resp.json().catch(() => ({}))
-        throw new Error(err.error || `wallet-auth failed: ${resp.status}`)
+      if (!email || !email_otp) {
+        throw new Error('wallet-auth did not return OTP')
       }
-
-      const { email, email_otp } = await resp.json()
 
       // Exchange OTP for a session (no email required)
       const { error: otpError } = await supabase.auth.verifyOtp({
@@ -100,14 +97,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Optionally initialize demo balance after login (best-effort)
       try {
-        const { data: sessionData } = await supabase.auth.getSession()
-        const token = sessionData?.session?.access_token
-        if (token) {
-          await fetch('https://xdinlkmqmjlrmunsjswf.supabase.co/functions/v1/initialize-balance', {
-            method: 'POST',
-            headers: { Authorization: `Bearer ${token}` },
-          })
-        }
+        await supabase.functions.invoke('initialize-balance', { body: {} })
       } catch (_) { /* non-blocking */ }
 
       // Log security event (deferred)

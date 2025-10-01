@@ -62,3 +62,6 @@ verify_jwt = false
 
 [functions.security-monitoring]
 verify_jwt = true
+
+[functions.wallet-auth]
+verify_jwt = false
