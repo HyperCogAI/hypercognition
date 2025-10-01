@@ -2180,8 +2180,10 @@ export type Database = {
         Row: {
           agent_id: string
           amount: number
+          average_fill_price: number | null
           created_at: string
           expires_at: string | null
+          fees: number | null
           fill_or_kill: boolean | null
           filled_amount: number
           id: string
@@ -2204,8 +2206,10 @@ export type Database = {
         Insert: {
           agent_id: string
           amount: number
+          average_fill_price?: number | null
           created_at?: string
           expires_at?: string | null
+          fees?: number | null
           fill_or_kill?: boolean | null
           filled_amount?: number
           id?: string
@@ -2228,8 +2232,10 @@ export type Database = {
         Update: {
           agent_id?: string
           amount?: number
+          average_fill_price?: number | null
           created_at?: string
           expires_at?: string | null
+          fees?: number | null
           fill_or_kill?: boolean | null
           filled_amount?: number
           id?: string
@@ -3959,6 +3965,39 @@ export type Database = {
           phone_verified?: boolean | null
           recovery_email?: string | null
           secret_encrypted?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      user_balances: {
+        Row: {
+          available_balance: number
+          created_at: string
+          currency: string
+          id: string
+          locked_balance: number
+          total_balance: number | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          available_balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          locked_balance?: number
+          total_balance?: number | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          available_balance?: number
+          created_at?: string
+          currency?: string
+          id?: string
+          locked_balance?: number
+          total_balance?: number | null
           updated_at?: string
           user_id?: string
         }

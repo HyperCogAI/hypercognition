@@ -1,5 +1,14 @@
 project_id = "xdinlkmqmjlrmunsjswf"
 
+[functions.process-order]
+verify_jwt = true
+
+[functions.initialize-balance]
+verify_jwt = true
+
+[functions.update-market-data]
+verify_jwt = false
+
 [functions.birdeye-proxy]
 verify_jwt = false
 
