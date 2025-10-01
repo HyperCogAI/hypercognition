@@ -64,9 +64,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       const type = evmWallet.isConnected ? 'evm' : 'solana'
       setWalletType(type)
       signInWithWallet()
-    } else if (!isConnected && user) {
-      signOut()
     }
+    // Do not auto sign out when wallet disconnects to avoid race conditions
   }, [isConnected, address, user])
 
   const signInWithWallet = async () => {
