@@ -3,8 +3,10 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight } from "lucide-react"
+import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight, Star } from "lucide-react"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
+import { useCryptoWatchlist } from "@/hooks/useCryptoWatchlist"
+import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useMediaQuery"
@@ -22,6 +24,16 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
   
   const isMobile = useIsMobile()
   const [selectedCrypto, setSelectedCrypto] = useState<any>(null)
+  const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useCryptoWatchlist()
+
+  const handleWatchlistToggle = async (coin: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    if (isInWatchlist(coin.id)) {
+      await removeFromWatchlist(coin.id)
+    } else {
+      await addToWatchlist(coin.id, coin.name, coin.symbol)
+    }
+  }
 
   const formatPrice = (price: number) => {
     if (price < 0.01) return `$${price.toFixed(6)}`
@@ -219,6 +231,19 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 w-8 p-0 hover:bg-transparent"
+                      onClick={(e) => handleWatchlistToggle(token, e)}
+                    >
+                      <Star
+                        className={cn(
+                          "h-4 w-4 transition-colors",
+                          isInWatchlist(token.id) && "fill-yellow-500 text-yellow-500"
+                        )}
+                      />
+                    </Button>
                     <span className="text-sm text-muted-foreground w-6">{index + 1}</span>
                     <div className="flex-1">
                       <div className="font-semibold">{token.name}</div>

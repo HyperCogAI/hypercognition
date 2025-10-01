@@ -995,6 +995,123 @@ export type Database = {
         }
         Relationships: []
       }
+      crypto_portfolio: {
+        Row: {
+          amount: number
+          created_at: string | null
+          crypto_id: string
+          crypto_name: string
+          crypto_symbol: string
+          exchange: string | null
+          id: string
+          notes: string | null
+          purchase_date: string | null
+          purchase_price: number
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          created_at?: string | null
+          crypto_id: string
+          crypto_name: string
+          crypto_symbol: string
+          exchange?: string | null
+          id?: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price: number
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string | null
+          crypto_id?: string
+          crypto_name?: string
+          crypto_symbol?: string
+          exchange?: string | null
+          id?: string
+          notes?: string | null
+          purchase_date?: string | null
+          purchase_price?: number
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      crypto_price_alerts: {
+        Row: {
+          alert_type: string
+          created_at: string | null
+          crypto_id: string
+          crypto_name: string
+          crypto_symbol: string
+          current_value: number | null
+          id: string
+          is_active: boolean | null
+          is_triggered: boolean | null
+          target_value: number
+          triggered_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_type: string
+          created_at?: string | null
+          crypto_id: string
+          crypto_name: string
+          crypto_symbol: string
+          current_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_triggered?: boolean | null
+          target_value: number
+          triggered_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_type?: string
+          created_at?: string | null
+          crypto_id?: string
+          crypto_name?: string
+          crypto_symbol?: string
+          current_value?: number | null
+          id?: string
+          is_active?: boolean | null
+          is_triggered?: boolean | null
+          target_value?: number
+          triggered_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      crypto_watchlist: {
+        Row: {
+          created_at: string | null
+          crypto_id: string
+          crypto_name: string
+          crypto_symbol: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          crypto_id: string
+          crypto_name: string
+          crypto_symbol: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          crypto_id?: string
+          crypto_name?: string
+          crypto_symbol?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       defi_pools: {
         Row: {
           apy: number
