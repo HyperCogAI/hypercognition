@@ -8,7 +8,7 @@ import { useRealMarketData } from "@/hooks/useRealMarketData"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useMediaQuery"
-import { PriceChart } from "@/components/charts/PriceChart"
+import { ProfessionalPriceChart } from "@/components/charts/ProfessionalPriceChart"
 import { useState } from "react"
 
 export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }) {
@@ -345,11 +345,16 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
             </DialogDescription>
           </DialogHeader>
           {selectedCrypto && (
-            <PriceChart 
-              agentId={selectedCrypto.id}
+            <ProfessionalPriceChart 
+              cryptoId={selectedCrypto.id}
+              cryptoName={selectedCrypto.name}
               symbol={selectedCrypto.symbol}
               currentPrice={selectedCrypto.current_price}
               change24h={selectedCrypto.price_change_percentage_24h}
+              high24h={selectedCrypto.high_24h}
+              low24h={selectedCrypto.low_24h}
+              volume24h={selectedCrypto.total_volume}
+              marketCap={selectedCrypto.market_cap}
             />
           )}
         </DialogContent>
