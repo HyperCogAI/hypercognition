@@ -15,8 +15,6 @@ import { useRealtimeAllPrices } from "@/hooks/useRealtimePrice"
 import { useIsMobile, useIsTablet } from "@/hooks/useMediaQuery"
 import { generateDefaultAvatar } from "@/utils/avatarUtils"
 import { Link } from "react-router-dom"
-import { useRealMarketData } from "@/hooks/useRealMarketData"
-import { coinGeckoApi } from "@/lib/apis/coinGeckoApi"
 
 interface Agent {
   id: string
@@ -62,10 +60,7 @@ export const AgentMarketplace = () => {
   const isMobile = useIsMobile()
   const isTablet = useIsTablet()
   
-  // Use real market data from CoinGecko
-  const { crypto: realCryptoData, isLoading: isLoadingRealData } = useRealMarketData()
-  
-  // Fetch agents from Supabase and merge with real CoinGecko data
+  // Fetch agents from Supabase
   useEffect(() => {
     const fetchAgents = async () => {
       try {
@@ -76,40 +71,13 @@ export const AgentMarketplace = () => {
 
         if (error) {
           console.error('Error fetching agents:', error)
+          return
         }
 
-        // Merge database agents with real crypto data
-        let mergedAgents: Agent[] = []
-        
-        if (realCryptoData.length > 0) {
-          // Use real CoinGecko data as primary source
-          mergedAgents = realCryptoData.map(cryptoToken => {
-            // Try to find matching agent in database
-            const dbAgent = data?.find(a => 
-              a.symbol.toLowerCase() === cryptoToken.symbol.toLowerCase() ||
-              a.name.toLowerCase() === cryptoToken.name.toLowerCase()
-            )
-            
-            return {
-              id: dbAgent?.id || cryptoToken.id,
-              name: cryptoToken.name,
-              symbol: cryptoToken.symbol.toUpperCase(),
-              description: dbAgent?.description || `${cryptoToken.name} cryptocurrency`,
-              price: cryptoToken.current_price,
-              market_cap: cryptoToken.market_cap,
-              volume_24h: cryptoToken.total_volume,
-              change_24h: cryptoToken.price_change_percentage_24h,
-              chain: dbAgent?.chain || 'Multi-chain',
-              avatar_url: dbAgent?.avatar_url || null
-            }
-          })
-        } else if (data) {
-          // Fallback to database data if CoinGecko unavailable
-          mergedAgents = data
+        if (data) {
+          setAgents(data)
+          updateAgentDisplays(data)
         }
-
-        setAgents(mergedAgents)
-        updateAgentDisplays(mergedAgents)
       } catch (error) {
         console.error('Error fetching agents:', error)
       } finally {
@@ -117,10 +85,8 @@ export const AgentMarketplace = () => {
       }
     }
 
-    if (!isLoadingRealData) {
-      fetchAgents()
-    }
-  }, [realCryptoData, isLoadingRealData])
+    fetchAgents()
+  }, [])
 
   // Update agent displays when realtime prices change
   const updateAgentDisplays = (agentData: Agent[]) => {
