@@ -134,12 +134,9 @@ export const useRealMarketData = () => {
       const crypto: CoinGeckoPrice[] = cryptoData.status === 'fulfilled' ? cryptoData.value : []
       const solana: any[] = solanaData.status === 'fulfilled' ? solanaData.value : []
 
-      // Merge with Supabase Solana data if available
-      const mergedSolana = solanaTokens.length > 0 ? solanaTokens : solana
-
       setMarketData({
         crypto,
-        solana: mergedSolana,
+        solana,
         isLoading: false,
         error: cryptoData.status === 'rejected' && solanaData.status === 'rejected' 
           ? 'Failed to fetch market data' 
@@ -153,7 +150,7 @@ export const useRealMarketData = () => {
         error: 'Failed to fetch market data'
       }))
     }
-  }, [fetchCryptoData, fetchSolanaData, solanaTokens])
+  }, [fetchCryptoData, fetchSolanaData])
 
   const refreshData = useCallback(() => {
     // Clear cache and refetch
@@ -226,18 +223,22 @@ export const useRealMarketData = () => {
     return () => clearInterval(interval)
   }, [fetchAllMarketData])
 
+  // Merge Solana data from Supabase if available
+  const mergedSolana = solanaTokens.length > 0 ? solanaTokens : marketData.solana
+
   return {
     ...marketData,
+    solana: mergedSolana,
     isLoading: marketData.isLoading || solanaLoading,
     refreshData,
     getPriceHistory,
     searchTokens,
     // Helper functions
     getCryptoById: (id: string) => marketData.crypto.find(c => c.id === id),
-    getSolanaByMint: (mint: string) => marketData.solana.find(s => s.mint_address === mint),
+    getSolanaByMint: (mint: string) => mergedSolana.find(s => s.mint_address === mint),
     getAllTokens: () => [
       ...marketData.crypto.map(c => ({ ...c, type: 'crypto' })),
-      ...marketData.solana.map(s => ({ ...s, type: 'solana' }))
+      ...mergedSolana.map(s => ({ ...s, type: 'solana' }))
     ]
   }
 }
