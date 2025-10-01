@@ -13,9 +13,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isLoading, session } = useAuth()
-  const { isConnected: evmConnected } = useEvmWallet()
-  const { isConnected: solanaConnected } = useSolanaWallet()
-  const hasAccess = !!session || evmConnected || solanaConnected
+  const hasAccess = !!session
 
   if (isLoading) {
     return (
