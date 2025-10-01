@@ -31,7 +31,7 @@ export default function MarketOverview() {
         </div>
 
         {/* Main Dashboard */}
-        <ComprehensiveTradingDashboard />
+        <ComprehensiveTradingDashboard limit={100} />
       </main>
     </div>
   )

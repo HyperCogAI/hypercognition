@@ -8,7 +8,7 @@ import { Skeleton } from "@/components/ui/skeleton"
 import { Link } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useMediaQuery"
 
-export function ComprehensiveTradingDashboard() {
+export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }) {
   const { 
     crypto = [], 
     isLoading, 
@@ -187,15 +187,15 @@ export function ComprehensiveTradingDashboard() {
         <CardContent>
           <Tabs defaultValue="top" className="w-full">
             <TabsList className="grid w-full grid-cols-4 mb-6">
-              <TabsTrigger value="top">Top 10</TabsTrigger>
+              <TabsTrigger value="top">Top {limit}</TabsTrigger>
               <TabsTrigger value="gainers">Top Gainers</TabsTrigger>
               <TabsTrigger value="losers">Top Losers</TabsTrigger>
               <TabsTrigger value="volume">By Volume</TabsTrigger>
             </TabsList>
 
-            {/* Top 10 */}
+            {/* Top Cryptocurrencies */}
             <TabsContent value="top" className="space-y-3">
-              {crypto.slice(0, 10).map((token, index) => (
+              {crypto.slice(0, limit).map((token, index) => (
                 <div 
                   key={token.id}
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30"
