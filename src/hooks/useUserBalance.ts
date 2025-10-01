@@ -20,10 +20,13 @@ export const useUserBalance = () => {
 
   const fetchBalance = async () => {
     if (!user) {
+      console.log('useUserBalance: No user found');
       setBalance(null);
       setLoading(false);
       return;
     }
+
+    console.log('useUserBalance: Fetching balance for user:', user.id);
 
     try {
       const { data, error } = await supabase
@@ -31,16 +34,19 @@ export const useUserBalance = () => {
         .select('*')
         .eq('user_id', user.id)
         .eq('currency', 'USD')
-        .single();
+        .maybeSingle();
 
       if (error) {
-        if (error.code === 'PGRST116') {
-          // No balance found, initialize it
-          await initializeBalance();
-        } else {
-          throw error;
-        }
+        console.error('useUserBalance: Error fetching balance:', error);
+        throw error;
+      }
+
+      if (!data) {
+        console.log('useUserBalance: No balance found, initializing...');
+        // No balance found, initialize it
+        await initializeBalance();
       } else {
+        console.log('useUserBalance: Balance found:', data);
         setBalance(data);
       }
     } catch (error: any) {
@@ -56,17 +62,23 @@ export const useUserBalance = () => {
   };
 
   const initializeBalance = async () => {
+    console.log('useUserBalance: Calling initialize-balance edge function...');
     try {
       const { data, error } = await supabase.functions.invoke('initialize-balance');
 
+      console.log('useUserBalance: Initialize-balance response:', { data, error });
+
       if (error) throw error;
 
-      if (data.success && data.balance) {
+      if (data?.success && data?.balance) {
+        console.log('useUserBalance: Balance initialized successfully:', data.balance);
         setBalance(data.balance);
         toast({
           title: "Welcome!",
           description: "Your trading account has been initialized with $10,000",
         });
+      } else {
+        console.error('useUserBalance: Unexpected response from initialize-balance:', data);
       }
     } catch (error: any) {
       console.error('Error initializing balance:', error);
