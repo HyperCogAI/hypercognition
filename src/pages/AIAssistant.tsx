@@ -103,8 +103,15 @@ const AIAssistant = () => {
               ))}
             </div>
 
+            {/* AI Trading Assistant Interface */}
+            <AITradingAssistant
+              selectedAgent={selectedAgent}
+              portfolio={mockPortfolio}
+              marketData={{}}
+            />
+
             <Card 
-              className="border-primary/20 relative overflow-hidden"
+              className="border-primary/20 relative overflow-hidden mt-6"
               style={{ 
                 backgroundImage: `url(${gradientBlurMidBlue})`,
                 backgroundSize: 'cover',
@@ -114,20 +121,11 @@ const AIAssistant = () => {
             >
               <CardContent className="p-6 md:p-12 text-center space-y-4 md:space-y-6">
                 <Brain className="h-10 w-10 md:h-16 md:w-16 mx-auto text-primary" />
-                <h3 className="text-xl md:text-3xl font-bold text-white">Ready to Start Trading Smarter?</h3>
+                <h3 className="text-xl md:text-3xl font-bold text-white">Need More Help?</h3>
                 <p className="text-muted-foreground max-w-lg mx-auto text-sm md:text-lg leading-relaxed">
-                  Our AI assistant is trained on vast amounts of market data and uses advanced 
-                  machine learning to provide you with the best possible trading insights.
+                  Try our voice assistant for hands-free trading guidance and real-time market insights.
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2 md:pt-4">
-                  <Button 
-                    onClick={() => setSelectedAgent(undefined)} 
-                    size="default"
-                    className="gap-2 text-sm md:text-base"
-                  >
-                    <Zap className="h-4 w-4" />
-                    Try AI Assistant Now
-                  </Button>
                   <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
                     <Button 
                       variant="outline" 
@@ -135,7 +133,7 @@ const AIAssistant = () => {
                       className="gap-2 border-white/30 text-white hover:bg-white/10 text-sm md:text-base"
                     >
                       <Mic className="h-4 w-4 md:h-5 md:w-5" />
-                      Voice Mode
+                      Try Voice Mode
                     </Button>
                   </VoiceAssistantModal>
                 </div>
