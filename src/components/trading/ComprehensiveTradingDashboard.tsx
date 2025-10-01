@@ -306,17 +306,17 @@ export function ComprehensiveTradingDashboard() {
             </TabsContent>
           </Tabs>
 
-          {/* CTA to full marketplace */}
+          {/* CTA to full market overview */}
           <div className="mt-6 pt-6 border-t border-border/50 flex items-center justify-between">
             <div>
-              <div className="font-semibold">Explore More Trading Opportunities</div>
+              <div className="font-semibold">View Complete Market Data</div>
               <div className="text-sm text-muted-foreground">
-                Access full marketplace with {crypto.length}+ crypto assets
+                Explore detailed analytics for all {crypto.length}+ cryptocurrencies
               </div>
             </div>
             <Button asChild>
-              <Link to="/marketplace">
-                View Marketplace
+              <Link to="/market-overview">
+                View Full Market
                 <ExternalLink className="ml-2 h-4 w-4" />
               </Link>
             </Button>

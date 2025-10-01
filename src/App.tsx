@@ -30,6 +30,7 @@ import { ScrollToTop } from "./components/ScrollToTop";
 
 // Lazy loaded components - Core pages
 const Marketplace = lazy(() => import('./pages/Marketplace'));
+const MarketOverview = lazy(() => import('./pages/MarketOverview'));
 const AgentDetail = lazy(() => import('./pages/AgentDetail').then(m => ({ default: m.AgentDetail })));
 const CreateAgent = lazy(() => import('./pages/CreateAgent').then(m => ({ default: m.CreateAgent })));
 const Portfolio = lazy(() => import('./pages/Portfolio'));
@@ -179,6 +180,7 @@ const AppLayout = () => {
                 <Route path="/enhanced-trading" element={<EnhancedTrading />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
+                <Route path="/market-overview" element={<MarketOverview />} />
                 <Route path="/customer-support" element={<CustomerSupport />} />
                 <Route path="/defi" element={<DeFi />} />
                 <Route path="/solana" element={<SolanaDashboard />} />
@@ -280,6 +282,7 @@ const AppLayout = () => {
             <Route path="/real-time-market" element={<RealTimeMarketPage />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
                   <Route path="/marketplace" element={<Marketplace />} />
+                  <Route path="/market-overview" element={<MarketOverview />} />
             <Route path="/customer-support" element={<CustomerSupport />} />
             <Route path="/defi" element={<DeFi />} />
             <Route path="/solana" element={<SolanaDashboard />} />
