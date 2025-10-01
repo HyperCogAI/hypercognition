@@ -86,17 +86,17 @@ serve(async (req) => {
       );
     }
 
-    const email_otp = (linkData as any)?.properties?.email_otp;
+    const token_hash = (linkData as any)?.properties?.hashed_token ?? (linkData as any)?.properties?.token_hash;
 
-    if (!email_otp) {
+    if (!token_hash) {
       return new Response(
-        JSON.stringify({ error: "OTP not available in generated link" }),
+        JSON.stringify({ error: "Token hash not available in generated magic link" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
 
     return new Response(
-      JSON.stringify({ email, email_otp }),
+      JSON.stringify({ email, token_hash }),
       { status: 200, headers: { "Content-Type": "application/json", ...corsHeaders } }
     );
   } catch (e) {

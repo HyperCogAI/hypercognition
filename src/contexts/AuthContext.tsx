@@ -81,17 +81,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         body: { address, walletType: type },
       })
       if (waError) throw waError
-      const { email, email_otp } = (waData as any) || {}
+      const { token_hash } = (waData as any) || {}
 
-      if (!email || !email_otp) {
-        throw new Error('wallet-auth did not return OTP')
+      if (!token_hash) {
+        throw new Error('wallet-auth did not return token_hash')
       }
 
       // Exchange OTP for a session (no email required)
       const { error: otpError } = await supabase.auth.verifyOtp({
         type: 'magiclink',
-        email,
-        token: email_otp,
+        token_hash,
       })
       if (otpError) throw otpError
 
