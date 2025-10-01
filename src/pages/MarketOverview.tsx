@@ -1,10 +1,16 @@
 import { ComprehensiveTradingDashboard } from "@/components/trading/ComprehensiveTradingDashboard"
+import { MarketSentiment } from "@/components/trading/MarketSentiment"
+import { TrendingCoins } from "@/components/trading/TrendingCoins"
+import { SearchInput } from "@/components/ui/search-input"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { ArrowLeft } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 export default function MarketOverview() {
+  const [searchQuery, setSearchQuery] = useState("")
+
   return (
     <div className="min-h-screen bg-background">
       <SEOHead 
@@ -30,8 +36,24 @@ export default function MarketOverview() {
           </p>
         </div>
 
+        {/* Search Bar */}
+        <div className="mb-6">
+          <SearchInput
+            placeholder="Search cryptocurrencies..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+        </div>
+
+        {/* Market Sentiment */}
+        <MarketSentiment />
+
+        {/* Trending Coins */}
+        <TrendingCoins />
+
         {/* Main Dashboard */}
-        <ComprehensiveTradingDashboard limit={100} />
+        <ComprehensiveTradingDashboard limit={100} searchQuery={searchQuery} />
       </main>
     </div>
   )

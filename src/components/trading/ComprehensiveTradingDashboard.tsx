@@ -11,7 +11,7 @@ import { useIsMobile } from "@/hooks/useMediaQuery"
 import { ProfessionalPriceChart } from "@/components/charts/ProfessionalPriceChart"
 import { useState } from "react"
 
-export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }) {
+export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: { limit?: number; searchQuery?: string }) {
   const { 
     crypto = [], 
     isLoading, 
@@ -60,6 +60,14 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
   const topByVolume = Array.isArray(crypto) && crypto.length > 0
     ? [...crypto].sort((a, b) => (b?.total_volume || 0) - (a?.total_volume || 0)).slice(0, 5)
     : []
+
+  // Filter crypto based on search query
+  const filteredCrypto = searchQuery
+    ? crypto.filter(token => 
+        token.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        token.symbol.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : crypto
 
   if (isLoading) {
     return (
@@ -199,7 +207,12 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
 
             {/* Top Cryptocurrencies */}
             <TabsContent value="top" className="space-y-3">
-              {crypto.slice(0, limit).map((token, index) => (
+              {filteredCrypto.length === 0 ? (
+                <div className="text-center py-8 text-muted-foreground">
+                  No cryptocurrencies found matching "{searchQuery}"
+                </div>
+              ) : (
+                filteredCrypto.slice(0, limit).map((token, index) => (
                 <div 
                   key={token.id}
                   onClick={() => setSelectedCrypto(token)}
@@ -233,7 +246,7 @@ export function ComprehensiveTradingDashboard({ limit = 10 }: { limit?: number }
                     )}
                   </div>
                 </div>
-              ))}
+              )))}
             </TabsContent>
 
             {/* Top Gainers */}
