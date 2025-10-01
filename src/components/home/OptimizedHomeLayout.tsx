@@ -15,6 +15,7 @@ const HyperCTA = lazy(() => import('@/components/sections/HyperCTA').then(m => (
 
 const EnhancedMarketNews = lazy(() => import('@/components/news/EnhancedMarketNews'))
 const AgentMarketplace = lazy(() => import('@/components/sections/AgentMarketplace').then(m => ({ default: m.AgentMarketplace })))
+const ComprehensiveTradingDashboard = lazy(() => import('@/components/trading/ComprehensiveTradingDashboard').then(m => ({ default: m.ComprehensiveTradingDashboard })))
 
 // Enhanced Loading components with animations
 const HeroSkeleton = () => (
@@ -195,6 +196,16 @@ export function OptimizedHomeLayout() {
         )}>
           <Suspense fallback={<MarketNewsSkeleton />}>
             <EnhancedMarketNews />
+          </Suspense>
+        </section>
+
+        {/* Live Trading Dashboard */}
+        <section className={cn(
+          "container mx-auto px-6 md:px-8 lg:px-12",
+          isMobile && "px-4"
+        )}>
+          <Suspense fallback={<MarketNewsSkeleton />}>
+            <ComprehensiveTradingDashboard />
           </Suspense>
         </section>
 
