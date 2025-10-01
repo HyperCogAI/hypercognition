@@ -64,15 +64,18 @@ export const PriceChart = ({ agentId, symbol, currentPrice, change24h }: PriceCh
 
           setPriceData(formattedData)
         } else {
-          // Use CoinGecko API for crypto IDs (bitcoin, ethereum, solana, etc.)
           const chartData = await coinGeckoApi.getMarketChart(agentId, 1)
           
           if (chartData && chartData.prices) {
-            const formatted = chartData.prices.map((point: [number, number]) => ({
+            const prices: [number, number][] = chartData.prices
+            const volumes: [number, number][] = chartData.total_volumes || []
+            const marketCaps: [number, number][] = chartData.market_caps || []
+
+            const formatted = prices.map((point, i) => ({
               timestamp: new Date(point[0]).toISOString(),
               price: point[1],
-              volume: 0,
-              market_cap: 0,
+              volume: volumes[i] ? volumes[i][1] : 0,
+              market_cap: marketCaps[i] ? marketCaps[i][1] : 0,
               time: new Date(point[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
             }))
             setPriceData(formatted)
