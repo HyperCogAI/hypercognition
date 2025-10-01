@@ -4,6 +4,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { supabase } from "@/integrations/supabase/client"
 import { birdeyeApi } from "@/lib/apis/birdeyeApi"
+import { coinGeckoApi } from "@/lib/apis/coinGeckoApi"
 
 interface PriceChartProps {
   agentId: string
@@ -29,8 +30,10 @@ export const PriceChart = ({ agentId, symbol, currentPrice, change24h }: PriceCh
       setIsLoading(true)
       try {
         const isSolanaAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(agentId)
+        const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(agentId)
 
         if (isSolanaAddress) {
+          // Use Birdeye API for Solana addresses
           const items = await birdeyeApi.getPriceHistory(agentId, '1D')
           const formatted = (items || []).map(pt => ({
             timestamp: new Date(pt.unixTime * 1000).toISOString(),
@@ -40,7 +43,8 @@ export const PriceChart = ({ agentId, symbol, currentPrice, change24h }: PriceCh
             time: new Date(pt.unixTime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }))
           setPriceData(formatted)
-        } else {
+        } else if (isUUID) {
+          // Use Supabase for platform agents (UUIDs)
           const { data, error } = await supabase
             .from('price_history')
             .select('*')
@@ -59,6 +63,20 @@ export const PriceChart = ({ agentId, symbol, currentPrice, change24h }: PriceCh
           }))
 
           setPriceData(formattedData)
+        } else {
+          // Use CoinGecko API for crypto IDs (bitcoin, ethereum, solana, etc.)
+          const chartData = await coinGeckoApi.getMarketChart(agentId, 1)
+          
+          if (chartData && chartData.prices) {
+            const formatted = chartData.prices.map((point: [number, number]) => ({
+              timestamp: new Date(point[0]).toISOString(),
+              price: point[1],
+              volume: 0,
+              market_cap: 0,
+              time: new Date(point[0]).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            }))
+            setPriceData(formatted)
+          }
         }
       } catch (error) {
         console.error('Error fetching price history:', error)
