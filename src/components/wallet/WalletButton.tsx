@@ -40,18 +40,17 @@ export const WalletButton = () => {
       return (
         <div className="w-full flex flex-col gap-2">
           <CyberButton asChild variant="outline" size="sm" className="w-[130px] justify-center">
-            <a href={href} target="_blank" rel="noopener noreferrer" aria-label="Connect EVM wallet in a new tab">
+            <a href={href} target="_top" aria-label="Connect EVM wallet (open in full window)">
               <Wallet className="h-4 w-4 text-white" />
               <span className="text-white">Connect EVM</span>
             </a>
           </CyberButton>
           <a
             href={href}
-            target="_blank"
-            rel="noopener noreferrer"
+            target="_top"
             className="text-xs underline opacity-80 hover:opacity-100"
           >
-            Open in a new tab to connect (recommended).
+            Open in a full window to connect (recommended).
           </a>
         </div>
       )
