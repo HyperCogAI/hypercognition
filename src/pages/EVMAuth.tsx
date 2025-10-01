@@ -111,7 +111,7 @@ export default function EVMAuth() {
                 to="/solana-auth"
                 className="text-primary hover:text-primary/80 hover:underline"
               >
-                Connect Solana wallet
+                Connect Solana Wallet
               </Link>
             </div>
           </CardContent>

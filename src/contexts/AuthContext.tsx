@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react'
 import { useWallet } from '@/hooks/useWallet'
+import { useSolanaWallet } from '@/hooks/useSolanaWallet'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session } from '@supabase/supabase-js'
 
@@ -9,6 +10,7 @@ interface AuthContextType {
   address: string | undefined
   isConnected: boolean
   isLoading: boolean
+  walletType: 'evm' | 'solana' | null
   signInWithWallet: () => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>
@@ -21,7 +23,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const { address, isConnected, disconnectWallet } = useWallet()
+  const [walletType, setWalletType] = useState<'evm' | 'solana' | null>(null)
+  
+  // EVM wallet
+  const evmWallet = useWallet()
+  
+  // Solana wallet  
+  const solanaWallet = useSolanaWallet()
+  
+  // Determine which wallet is connected
+  const address = evmWallet.isConnected ? evmWallet.address : 
+                  solanaWallet.isConnected ? solanaWallet.address : 
+                  undefined
+  const isConnected = evmWallet.isConnected || solanaWallet.isConnected
 
   useEffect(() => {
     // Set up auth state listener
@@ -46,6 +60,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Auto sign in when wallet is connected
   useEffect(() => {
     if (isConnected && address && !user) {
+      // Determine wallet type
+      const type = evmWallet.isConnected ? 'evm' : 'solana'
+      setWalletType(type)
       signInWithWallet()
     } else if (!isConnected && user) {
       signOut()
@@ -55,12 +72,16 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const signInWithWallet = async () => {
     if (!address) return
 
+    console.log('Signing in with wallet:', { address, walletType })
+
     try {
-      // Create a deterministic email from wallet address
-      const email = `${address.toLowerCase()}@wallet.local`
+      // Use a valid email domain instead of .local
+      const email = `${address.toLowerCase()}@wallet.hypercognition.app`
       // Enhanced security: Generate a stronger password from wallet address + salt
       const salt = 'hypercognition_secure_salt_2024'
       const password = await hashWalletAddress(address, salt)
+      
+      console.log('Attempting sign in with email:', email)
       
       // Try to sign in first
       const { error: signInError } = await supabase.auth.signInWithPassword({
@@ -70,6 +91,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // If sign in fails, create account
       if (signInError) {
+        console.log('Sign in failed, creating new account...', signInError)
+        
+        const type = evmWallet.isConnected ? 'evm' : 'solana'
+        
         const { error: signUpError } = await supabase.auth.signUp({
           email,
           password,
@@ -77,29 +102,39 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
             emailRedirectTo: `${window.location.origin}/`,
             data: {
               wallet_address: address,
+              wallet_type: type,
               auth_method: 'wallet',
               security_level: 'enhanced'
             }
           }
         })
 
-        if (signUpError && signUpError.message !== 'User already registered') {
+        if (signUpError) {
           console.error('Sign up error:', signUpError)
+          if (signUpError.message !== 'User already registered') {
+            throw signUpError
+          }
+        } else {
+          console.log('Account created successfully')
         }
+      } else {
+        console.log('Signed in successfully')
       }
 
       // Log security event
       if (user) {
         await logSecurityEvent('wallet_auth', 'authentication', {
           wallet_address: address,
+          wallet_type: walletType,
           success: true
         })
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Wallet authentication error:', error)
       // Log failed auth attempt
       await logSecurityEvent('wallet_auth_failed', 'authentication', {
         wallet_address: address,
+        wallet_type: walletType,
         error: error.message
       })
     }
@@ -172,7 +207,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const signOut = async () => {
     await supabase.auth.signOut()
-    disconnectWallet()
+    evmWallet.disconnectWallet()
+    solanaWallet.disconnectWallet()
+    setWalletType(null)
   }
 
   return (
@@ -182,6 +219,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       address,
       isConnected,
       isLoading,
+      walletType,
       signInWithWallet,
       signInWithEmail,
       signUpWithEmail,

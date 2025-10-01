@@ -21,7 +21,6 @@ import { LoadingScreen } from "@/components/ui/loading-screen"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
-import Auth from "./pages/Auth";
 const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
 const LazySolanaAuth = lazy(() => import('./pages/SolanaAuth'));
 import Settings from "./pages/Settings";
@@ -172,7 +171,7 @@ const AppLayout = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
-            <Route path="/auth" element={<Auth />} />
+            <Route path="/auth" element={<LazyEVMAuth />} />
             <Route path="/evm-auth" element={<LazyEVMAuth />} />
             <Route path="/solana-auth" element={<LazySolanaAuth />} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
@@ -271,7 +270,7 @@ const AppLayout = () => {
                 <Routes>
                   <Route path="/" element={<Home />} />
                   <Route path="/home" element={<Home />} />
-                  <Route path="/auth" element={<Auth />} />
+                  <Route path="/auth" element={<LazyEVMAuth />} />
                   <Route path="/evm-auth" element={<LazyEVMAuth />} />
                   <Route path="/solana-auth" element={<LazySolanaAuth />} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />

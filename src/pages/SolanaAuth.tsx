@@ -108,10 +108,10 @@ export default function SolanaAuth() {
                 Need EVM wallet instead?
               </span>{' '}
               <Link
-                to="/auth"
+                to="/evm-auth"
                 className="text-primary hover:text-primary/80 hover:underline"
               >
-                Connect EVM wallet
+                Connect EVM Wallet
               </Link>
             </div>
           </CardContent>
