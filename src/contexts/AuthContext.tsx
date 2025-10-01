@@ -89,7 +89,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
       // Exchange OTP for a session (no email required)
       const { error: otpError } = await supabase.auth.verifyOtp({
-        type: 'email',
+        type: 'magiclink',
         email,
         token: email_otp,
       })

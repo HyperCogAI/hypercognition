@@ -56,17 +56,23 @@ serve(async (req) => {
       },
     });
 
-    if (createErr && createErr.message !== "User already registered") {
-      // If it's a different error, stop here
-      return new Response(
-        JSON.stringify({ error: createErr.message || "Failed to create user" }),
-        { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
-      );
+    if (createErr) {
+      const msg = String(createErr.message || '');
+      const code = (createErr as any)?.code;
+      const status = (createErr as any)?.status;
+      // Allow "already registered" and email_exists cases to proceed
+      const isAlready = msg.toLowerCase().includes('already') || code === 'email_exists' || status === 422;
+      if (!isAlready) {
+        return new Response(
+          JSON.stringify({ error: msg || "Failed to create user" }),
+          { status: 400, headers: { "Content-Type": "application/json", ...corsHeaders } }
+        );
+      }
     }
 
     // 2) Generate an OTP we can exchange client-side for a session
     const { data: linkData, error: linkErr } = await admin.auth.admin.generateLink({
-      type: "email",
+      type: "magiclink",
       email,
       options: {
         redirectTo: `${SUPABASE_URL}/auth/v1/verify`,
