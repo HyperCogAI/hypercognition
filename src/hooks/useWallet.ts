@@ -8,6 +8,15 @@ export const useWallet = () => {
 
   const connectWallet = async () => {
     try {
+      const inIframe = typeof window !== 'undefined' && window.top !== window.self
+      if (inIframe) {
+        // Open current app in a new tab and auto-trigger wallet connect
+        const url = new URL(window.location.href)
+        url.searchParams.set('w3m-connect', '1')
+        window.open(url.toString(), '_blank', 'noopener,noreferrer')
+        return
+      }
+
       console.log('Web3Modal hook available:', !!open)
       console.log('Opening Web3Modal...')
       

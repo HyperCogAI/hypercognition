@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { useWallet } from "@/hooks/useWallet"
 import { Wallet, LogOut } from "lucide-react"
@@ -13,6 +14,19 @@ export const WalletButton = () => {
 
   console.log('WalletButton state:', { address, isConnected, isConnecting })
 
+  // Auto-trigger wallet modal if opened in a new tab via redirect param
+  useEffect(() => {
+    try {
+      const url = new URL(window.location.href)
+      if (url.searchParams.get('w3m-connect') === '1') {
+        connectWallet()
+        url.searchParams.delete('w3m-connect')
+        window.history.replaceState({}, '', url.toString())
+      }
+    } catch (_) {
+      // ignore
+    }
+  }, [connectWallet])
 
   if (!isConnected) {
     const inIframe = typeof window !== 'undefined' && window.top !== window.self
