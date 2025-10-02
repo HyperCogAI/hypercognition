@@ -223,11 +223,25 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "agent_comments_agent_id_agents_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "agent_comments_parent_id_fkey"
             columns: ["parent_id"]
             isOneToOne: false
             referencedRelation: "agent_comments"
             referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_comments_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
           },
         ]
       }
@@ -1711,7 +1725,15 @@ export type Database = {
           verification_notes?: string | null
           verification_type?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "kyc_verifications_user_id_profiles_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["user_id"]
+          },
+        ]
       }
       login_attempts: {
         Row: {
