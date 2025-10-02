@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
-import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, RefreshCw, Search, Twitter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchInput } from '@/components/ui/search-input';
@@ -140,7 +140,18 @@ export const KaitoInfluenceDashboard = () => {
                       #{originalRank}
                     </div>
                     <div>
-                      <div className="font-semibold">@{agent.twitter_username}</div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-semibold">@{agent.twitter_username}</span>
+                        <a
+                          href={`https://x.com/${agent.twitter_username}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-muted-foreground hover:text-primary transition-colors"
+                          aria-label={`Visit @${agent.twitter_username} on X`}
+                        >
+                          <Twitter className="h-4 w-4" />
+                        </a>
+                      </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
                         <span className={influenceTier.color}>{influenceTier.tier}</span>
                         <span>•</span>
