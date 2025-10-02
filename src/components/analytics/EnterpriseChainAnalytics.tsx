@@ -25,7 +25,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   const [liquidityPools, setLiquidityPools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(true, 30000); // Sync every 30 seconds
+  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(false); // Disable auto-sync, we'll control it manually
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -58,15 +58,20 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   };
 
   useEffect(() => {
-    // Force immediate sync on component mount
-    syncAll();
-    fetchData();
-    const interval = setInterval(() => {
-      syncAll(); // This triggers the API calls
-      setTimeout(fetchData, 2000); // Fetch updated data 2 seconds after sync
-    }, 30000); // Every 30 seconds
+    // Sync data from APIs, then fetch from database
+    const syncAndFetch = async () => {
+      await syncAll();
+      await fetchData();
+    };
+
+    // Initial sync and fetch
+    syncAndFetch();
+    
+    // Set up interval - sync APIs and fetch data every 60 seconds
+    const interval = setInterval(syncAndFetch, 60000);
+    
     return () => clearInterval(interval);
-  }, [syncAll]);
+  }, []);
 
   const formatNumber = (num: number) => {
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
@@ -138,16 +143,15 @@ export const EnterpriseChainAnalytics: React.FC = () => {
           </div>
           <Button 
             onClick={async () => { 
-              console.log('[Analytics] Manual refresh triggered');
               await syncAll(); 
-              setTimeout(fetchData, 3000); // Wait 3 seconds for data to update
+              await fetchData();
             }} 
             disabled={isSyncing || isLoading}
             size="sm"
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${(isSyncing || isLoading) ? 'animate-spin' : ''}`} />
-            {isSyncing ? 'Syncing APIs...' : isLoading ? 'Loading...' : 'Refresh All Data'}
+            {isSyncing ? 'Syncing...' : isLoading ? 'Loading...' : 'Refresh Data'}
           </Button>
         </CardHeader>
       </Card>
