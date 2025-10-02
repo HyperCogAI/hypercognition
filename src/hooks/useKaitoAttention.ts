@@ -27,9 +27,25 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   // Fetch top agents by attention
   const { data: topAgents = [], isLoading: isLoadingTop } = useQuery({
     queryKey: ['kaito-attention', 'top'],
-    queryFn: () => KaitoService.getTopAgentsByAttention(50, '30d'),
-    staleTime: 30 * 60 * 1000, // 30 minutes
-    refetchInterval: 30 * 60 * 1000
+    queryFn: async (): Promise<KaitoAttentionScore[]> => {
+      const primary = await KaitoService.getTopAgentsByAttention(50, '30d');
+      if ((primary?.length || 0) >= 50) return primary || [];
+      const fallback = await KaitoService.getTopAgentsByAttention(50, 'all');
+      const seen = new Set((primary || []).map(a => a.twitter_username));
+      const merged: KaitoAttentionScore[] = [...(primary || [])];
+      for (const a of fallback || []) {
+        if (merged.length >= 50) break;
+        if (!seen.has(a.twitter_username)) {
+          seen.add(a.twitter_username);
+          merged.push(a);
+        }
+      }
+      return merged;
+    },
+    staleTime: 10 * 60 * 1000, // 10 minutes
+    gcTime: 60 * 60 * 1000, // 1 hour
+    refetchOnWindowFocus: false,
+    retry: 2,
   });
 
   // Sync mutation

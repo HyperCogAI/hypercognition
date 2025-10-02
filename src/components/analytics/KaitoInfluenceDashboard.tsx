@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
 import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
@@ -17,15 +17,17 @@ const DEFAULT_USERNAMES = [
 export const KaitoInfluenceDashboard = () => {
   const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier } = useKaitoAttention();
   const [searchQuery, setSearchQuery] = useState('');
+  const autoSyncedRef = useRef(false);
 
   // Auto-bootstrap: if list is sparse, sync a default set of influencers
   useEffect(() => {
-    if (!isLoadingTop && topAgents.length < 5 && !isSyncing) {
+    if (!isLoadingTop && !isSyncing && topAgents.length < 5 && !autoSyncedRef.current) {
+      autoSyncedRef.current = true;
       console.log('Auto-syncing influencers, current count:', topAgents.length);
       const toSync = DEFAULT_USERNAMES.slice(0, 50);
       syncMultiple({ usernames: toSync });
     }
-  }, [isLoadingTop, topAgents.length, isSyncing]);
+  }, [isLoadingTop, isSyncing, topAgents.length]);
 
   // Filter agents based on search query
   const filteredAgents = useMemo(() => {

@@ -108,7 +108,7 @@ export class KaitoService {
       
       const { data, error } = await supabase
         .from('kaito_attention_scores')
-        .select('*')
+        .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
         .not(field, 'is', null)
         .gt(field, 0)
         .order(field, { ascending: false })

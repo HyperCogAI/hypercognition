@@ -82,20 +82,41 @@ serve(async (req) => {
     // Rate limit: 100 calls per 5 minutes = ~3 seconds between calls to be safe
     const delayBetweenCalls = 3000;
 
+    async function fetchKaitoWithRetry(username: string, retries = 2): Promise<KaitoYapsResponse> {
+      const url = `https://api.kaito.ai/api/v1/yaps?username=${encodeURIComponent(username)}`;
+      let attempt = 0;
+      let lastErr: any = null;
+      while (attempt <= retries) {
+        try {
+          const resp = await fetch(url, { signal: AbortSignal.timeout(7000) });
+          if (!resp.ok) throw new Error(`API returned ${resp.status}`);
+          const raw = await resp.text();
+          let json: any;
+          try {
+            json = JSON.parse(raw);
+          } catch (e) {
+            console.error('Kaito JSON parse error. Body snippet:', raw?.slice(0, 200));
+            throw new Error('Invalid JSON from Kaito');
+          }
+          if (!json?.username) throw new Error('Missing username in Kaito response');
+          return json as KaitoYapsResponse;
+        } catch (e) {
+          lastErr = e;
+          if (attempt < retries) {
+            await new Promise(r => setTimeout(r, (attempt + 1) * 1000));
+            attempt++;
+            continue;
+          }
+          throw lastErr;
+        }
+      }
+      throw lastErr ?? new Error('Unknown fetch error');
+    }
+
     for (const username of usernameList) {
       try {
-        // Fetch from Kaito API (public, no auth needed)
-        const kaitoResponse = await fetch(
-          `https://api.kaito.ai/api/v1/yaps?username=${encodeURIComponent(username)}`
-        );
-
-        if (!kaitoResponse.ok) {
-          console.error(`Kaito API error for ${username}:`, kaitoResponse.status);
-          results.failed.push({ username, error: `API returned ${kaitoResponse.status}` });
-          continue;
-        }
-
-        const yapsData: KaitoYapsResponse = await kaitoResponse.json();
+        // Fetch from Kaito API with retries and timeout
+        const yapsData = await fetchKaitoWithRetry(username, 2);
         console.log(`Received Yaps data for ${username}:`, yapsData);
 
         // Find associated agent if exists (match by name or symbol)
@@ -105,32 +126,37 @@ serve(async (req) => {
           .or(`name.ilike.%${username}%,symbol.ilike.%${username}%`)
           .maybeSingle();
 
-        // Upsert to database
-        const { error: upsertError } = await supabaseClient
-          .from('kaito_attention_scores')
-          .upsert({
-            agent_id: agent?.id || null,
-            twitter_user_id: yapsData.user_id,
-            twitter_username: yapsData.username,
-            yaps_24h: yapsData.yaps_l24h,
-            yaps_48h: yapsData.yaps_l48h,
-            yaps_7d: yapsData.yaps_l7d,
-            yaps_30d: yapsData.yaps_l30d,
-            yaps_3m: yapsData.yaps_l3m,
-            yaps_6m: yapsData.yaps_l6m,
-            yaps_12m: yapsData.yaps_l12m,
-            yaps_all: yapsData.yaps_all,
-            metadata: { raw_response: yapsData },
-            updated_at: new Date().toISOString()
-          }, {
-            onConflict: 'twitter_username'
-          });
-
-        if (upsertError) {
-          console.error(`Database error for ${username}:`, upsertError);
-          results.failed.push({ username, error: upsertError.message });
+        // Guard against null usernames
+        if (!yapsData.username) {
+          results.failed.push({ username, error: 'Empty username in response' });
         } else {
-          results.success.push({ username, yaps_all: yapsData.yaps_all });
+          // Upsert to database
+          const { error: upsertError } = await supabaseClient
+            .from('kaito_attention_scores')
+            .upsert({
+              agent_id: agent?.id || null,
+              twitter_user_id: yapsData.user_id,
+              twitter_username: yapsData.username,
+              yaps_24h: yapsData.yaps_l24h,
+              yaps_48h: yapsData.yaps_l48h,
+              yaps_7d: yapsData.yaps_l7d,
+              yaps_30d: yapsData.yaps_l30d,
+              yaps_3m: yapsData.yaps_l3m,
+              yaps_6m: yapsData.yaps_l6m,
+              yaps_12m: yapsData.yaps_l12m,
+              yaps_all: yapsData.yaps_all,
+              metadata: { raw_response: yapsData },
+              updated_at: new Date().toISOString()
+            }, {
+              onConflict: 'twitter_username'
+            });
+
+          if (upsertError) {
+            console.error(`Database error for ${username}:`, upsertError);
+            results.failed.push({ username, error: upsertError.message });
+          } else {
+            results.success.push({ username, yaps_all: yapsData.yaps_all });
+          }
         }
 
         // Rate limiting delay (except for last item)
@@ -138,9 +164,9 @@ serve(async (req) => {
           await new Promise(resolve => setTimeout(resolve, delayBetweenCalls));
         }
 
-      } catch (error) {
+      } catch (error: any) {
         console.error(`Error processing ${username}:`, error);
-        results.failed.push({ username, error: error.message });
+        results.failed.push({ username, error: error?.message || 'Unknown error' });
       }
     }
 
