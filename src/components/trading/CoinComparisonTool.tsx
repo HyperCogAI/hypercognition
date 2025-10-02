@@ -3,8 +3,9 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, X, TrendingUp, TrendingDown } from "lucide-react";
+import { Search, X, TrendingUp, TrendingDown, ArrowRightLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useNavigate } from "react-router-dom";
 
 interface Crypto {
   id: string;
@@ -18,6 +19,7 @@ interface Crypto {
 }
 
 export const CoinComparisonTool = () => {
+  const navigate = useNavigate();
   const [selectedCoins, setSelectedCoins] = useState<Crypto[]>([]);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -48,6 +50,17 @@ export const CoinComparisonTool = () => {
 
   const removeCoin = (coinId: string) => {
     setSelectedCoins(selectedCoins.filter(c => c.id !== coinId));
+  };
+
+  const handleTrade = (coin: Crypto) => {
+    navigate('/exchange-trading', { 
+      state: { 
+        selectedCrypto: coin.id,
+        symbol: coin.symbol,
+        name: coin.name,
+        price: coin.current_price
+      } 
+    });
   };
 
   return (
@@ -148,6 +161,15 @@ export const CoinComparisonTool = () => {
                   <p className="text-sm text-muted-foreground">Rank</p>
                   <Badge variant="secondary">#{coin.market_cap_rank}</Badge>
                 </div>
+
+                <Button 
+                  variant="default" 
+                  className="w-full mt-2"
+                  onClick={() => handleTrade(coin)}
+                >
+                  <ArrowRightLeft className="h-4 w-4 mr-2" />
+                  Trade {coin.symbol.toUpperCase()}
+                </Button>
               </CardContent>
             </Card>
           ))}

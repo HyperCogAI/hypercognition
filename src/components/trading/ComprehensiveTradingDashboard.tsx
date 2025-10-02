@@ -3,17 +3,19 @@ import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
-import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight, Star } from "lucide-react"
+import { TrendingUp, TrendingDown, RefreshCw, ExternalLink, Activity, DollarSign, BarChart3, ArrowUpRight, ArrowDownRight, Star, ShoppingCart, ArrowRightLeft } from "lucide-react"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
 import { useCryptoWatchlist } from "@/hooks/useCryptoWatchlist"
 import { cn } from "@/lib/utils"
 import { Skeleton } from "@/components/ui/skeleton"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
 import { useIsMobile } from "@/hooks/useMediaQuery"
 import { ProfessionalPriceChart } from "@/components/charts/ProfessionalPriceChart"
 import { useState } from "react"
+import { QuickAddToPortfolio } from "@/components/trading/QuickAddToPortfolio"
 
 export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: { limit?: number; searchQuery?: string }) {
+  const navigate = useNavigate();
   const { 
     crypto = [], 
     isLoading, 
@@ -24,6 +26,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
   
   const isMobile = useIsMobile()
   const [selectedCrypto, setSelectedCrypto] = useState<any>(null)
+  const [portfolioCrypto, setPortfolioCrypto] = useState<any>(null)
+  const [showPortfolioDialog, setShowPortfolioDialog] = useState(false)
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useCryptoWatchlist()
 
   const handleWatchlistToggle = async (coin: any, e: React.MouseEvent) => {
@@ -33,6 +37,24 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
     } else {
       await addToWatchlist(coin.id, coin.name, coin.symbol)
     }
+  }
+
+  const handleAddToPortfolio = (coin: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    setPortfolioCrypto(coin)
+    setShowPortfolioDialog(true)
+  }
+
+  const handleTrade = (coin: any, e: React.MouseEvent) => {
+    e.stopPropagation()
+    navigate('/exchange-trading', { 
+      state: { 
+        selectedCrypto: coin.id,
+        symbol: coin.symbol,
+        name: coin.name,
+        price: coin.current_price
+      } 
+    });
   }
 
   const formatPrice = (price: number) => {
@@ -249,6 +271,26 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                       <div className="font-semibold">{token.name}</div>
                       <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
                     </div>
+                    {!isMobile && (
+                      <div className="flex gap-2">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={(e) => handleAddToPortfolio(token, e)}
+                          title="Add to Portfolio"
+                        >
+                          <ShoppingCart className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="default"
+                          size="sm"
+                          onClick={(e) => handleTrade(token, e)}
+                          title="Trade Now"
+                        >
+                          <ArrowRightLeft className="h-4 w-4" />
+                        </Button>
+                      </div>
+                    )}
                   </div>
                   <div className={isMobile ? "text-right" : "flex items-center gap-8 text-right"}>
                     <div>
@@ -397,6 +439,15 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Add to Portfolio Dialog */}
+      {portfolioCrypto && (
+        <QuickAddToPortfolio
+          open={showPortfolioDialog}
+          onOpenChange={setShowPortfolioDialog}
+          crypto={portfolioCrypto}
+        />
+      )}
     </div>
   )
 }
