@@ -5,6 +5,7 @@ import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchInput } from '@/components/ui/search-input';
+import { supabase } from '@/integrations/supabase/client';
 
 const DEFAULT_USERNAMES = [
   'VitalikButerin','cz_binance','brian_armstrong','saylor','APompliano','balajis','naval','aantonop','ErikVoorhees','TuurDemeester',
@@ -22,8 +23,10 @@ const XLogo = ({ className = "h-4 w-4" }: { className?: string }) => (
 );
 
 export const KaitoInfluenceDashboard = () => {
-  const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier } = useKaitoAttention();
+  const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier, syncForUsername } = useKaitoAttention();
   const [searchQuery, setSearchQuery] = useState('');
+  const [searchedAgents, setSearchedAgents] = useState<any[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
   const autoSyncedRef = useRef(false);
 
   // Auto-bootstrap: if list is sparse, sync a default set of influencers
@@ -36,15 +39,27 @@ export const KaitoInfluenceDashboard = () => {
     }
   }, [isLoadingTop, isSyncing, topAgents.length]);
 
+  // Combine top agents with searched agents and filter
+  const allAgents = useMemo(() => {
+    const combined = [...topAgents, ...searchedAgents];
+    // Remove duplicates by twitter_username
+    const seen = new Set<string>();
+    return combined.filter(agent => {
+      if (seen.has(agent.twitter_username)) return false;
+      seen.add(agent.twitter_username);
+      return true;
+    });
+  }, [topAgents, searchedAgents]);
+
   // Filter agents based on search query
   const filteredAgents = useMemo(() => {
-    if (!searchQuery.trim()) return topAgents;
+    if (!searchQuery.trim()) return allAgents;
     
     const query = searchQuery.toLowerCase();
-    return topAgents.filter(agent => 
+    return allAgents.filter(agent => 
       agent.twitter_username.toLowerCase().includes(query)
     );
-  }, [topAgents, searchQuery]);
+  }, [allAgents, searchQuery]);
 
   const handleRefresh = () => {
     // Sync top 50 agents or bootstrap defaults if list is small
@@ -53,6 +68,44 @@ export const KaitoInfluenceDashboard = () => {
       : DEFAULT_USERNAMES.slice(0, 50)
     );
     syncMultiple({ usernames });
+  };
+
+  const handleSearch = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const username = searchQuery.trim();
+    
+    if (!username) return;
+    
+    // Check if already exists in current data
+    const exists = allAgents.some(
+      agent => agent.twitter_username.toLowerCase() === username.toLowerCase()
+    );
+    
+    if (exists) {
+      // Just filter to show it
+      return;
+    }
+    
+    // Fetch from API
+    setIsSearching(true);
+    try {
+      await syncForUsername(username);
+      
+      // After sync, fetch the newly added data
+      const { data, error } = await supabase
+        .from('kaito_attention_scores')
+        .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
+        .eq('twitter_username', username)
+        .maybeSingle();
+      
+      if (data && !error) {
+        setSearchedAgents(prev => [...prev, data]);
+      }
+    } catch (error) {
+      console.error('Error searching for username:', error);
+    } finally {
+      setIsSearching(false);
+    }
   };
 
   if (isLoadingTop) {
@@ -84,7 +137,7 @@ export const KaitoInfluenceDashboard = () => {
               Social Influence Rankings
             </CardTitle>
             <CardDescription>
-              Powered by Kaito AI • Showing top {topAgents.length} influencers
+              Powered by Kaito AI • Showing {allAgents.length} influencers
             </CardDescription>
           </div>
           <Button
@@ -99,12 +152,36 @@ export const KaitoInfluenceDashboard = () => {
         </div>
         
         <div className="mt-4">
-          <SearchInput
-            placeholder="Search by X username..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="max-w-md"
-          />
+          <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
+            <SearchInput
+              placeholder="Search or fetch X username (e.g., VitalikButerin)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="flex-1"
+              disabled={isSearching || isSyncing}
+            />
+            <Button 
+              type="submit" 
+              variant="outline" 
+              size="sm"
+              disabled={isSearching || isSyncing || !searchQuery.trim()}
+            >
+              {isSearching ? (
+                <>
+                  <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
+                  Fetching...
+                </>
+              ) : (
+                <>
+                  <Search className="h-4 w-4 mr-2" />
+                  Fetch
+                </>
+              )}
+            </Button>
+          </form>
+          <p className="text-xs text-muted-foreground mt-2">
+            Type any X username and click "Fetch" to get their Kaito statistics
+          </p>
         </div>
       </CardHeader>
       <CardContent>
@@ -135,7 +212,7 @@ export const KaitoInfluenceDashboard = () => {
                 : 0;
               
               // Find original rank in the full list
-              const originalRank = topAgents.findIndex(a => a.id === agent.id) + 1;
+              const originalRank = allAgents.findIndex(a => a.id === agent.id) + 1;
 
               return (
                 <div
