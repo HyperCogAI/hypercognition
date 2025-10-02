@@ -86,3 +86,6 @@ verify_jwt = false
 
 [functions.defi-pool-sync]
 verify_jwt = false
+
+[functions.ai-chat]
+verify_jwt = true
