@@ -92,18 +92,19 @@ class RealtimePriceService {
 
   /**
    * Fetch latest prices from CoinGecko API
+   * Uses the existing API handler with fallback to demo data
    */
   private async fetchPrices() {
     try {
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=false'
-      )
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
+      // Dynamically import to avoid circular dependencies
+      const { coinGeckoApi } = await import('@/lib/apis/coinGeckoApi')
+      const data = await coinGeckoApi.getTopCryptos(100)
+      
+      if (!data || data.length === 0) {
+        console.warn('[RealtimePrice] No data received from API')
+        return
       }
 
-      const data = await response.json()
       const timestamp = Date.now()
 
       data.forEach((coin: any) => {

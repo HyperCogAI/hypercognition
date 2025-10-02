@@ -35,9 +35,11 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
   const [tradeModalCrypto, setTradeModalCrypto] = useState<any>(null)
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useCryptoWatchlist()
 
-  // Get crypto IDs for real-time price updates
-  const cryptoIds = crypto.slice(0, limit).map((c: any) => c.id)
-  const { prices: realtimePrices, isConnected } = useRealtimePrices({ cryptoIds })
+  // Disable real-time updates to avoid API spam - data already refreshes from useRealMarketData
+  const { prices: realtimePrices, isConnected } = useRealtimePrices({ 
+    cryptoIds: [], 
+    autoStart: false 
+  })
 
   const handleWatchlistToggle = async (coin: any, e: React.MouseEvent) => {
     e.stopPropagation()
