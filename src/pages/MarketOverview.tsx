@@ -146,37 +146,39 @@ export default function MarketOverview() {
 
         {/* User Features Tabs */}
         <Tabs defaultValue="market" className="w-full mb-6">
-          <TabsList className="grid w-full grid-cols-4 lg:grid-cols-9 gap-1">
-            <TabsTrigger value="market">Market</TabsTrigger>
-            <TabsTrigger value="watchlist" className="gap-2">
+          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-9 gap-1 scrollbar-hide">
+            <TabsTrigger value="market" className="flex-shrink-0">
+              <span className="lg:inline">Market</span>
+            </TabsTrigger>
+            <TabsTrigger value="watchlist" className="flex-shrink-0 gap-2">
               <Star className="h-4 w-4" />
               <span className="hidden sm:inline">Watchlist</span>
             </TabsTrigger>
-            <TabsTrigger value="alerts" className="gap-2">
+            <TabsTrigger value="alerts" className="flex-shrink-0 gap-2">
               <Bell className="h-4 w-4" />
               <span className="hidden sm:inline">Alerts</span>
             </TabsTrigger>
-            <TabsTrigger value="portfolio" className="gap-2">
+            <TabsTrigger value="portfolio" className="flex-shrink-0 gap-2">
               <PieChart className="h-4 w-4" />
               <span className="hidden sm:inline">Portfolio</span>
             </TabsTrigger>
-            <TabsTrigger value="news" className="gap-2">
+            <TabsTrigger value="news" className="flex-shrink-0 gap-2">
               <Newspaper className="h-4 w-4" />
               <span className="hidden sm:inline">News</span>
             </TabsTrigger>
-            <TabsTrigger value="filters" className="gap-2">
+            <TabsTrigger value="filters" className="flex-shrink-0 gap-2">
               <Filter className="h-4 w-4" />
               <span className="hidden sm:inline">Filters</span>
             </TabsTrigger>
-            <TabsTrigger value="compare" className="gap-2">
+            <TabsTrigger value="compare" className="flex-shrink-0 gap-2">
               <GitCompare className="h-4 w-4" />
               <span className="hidden sm:inline">Compare</span>
             </TabsTrigger>
-            <TabsTrigger value="history" className="gap-2">
+            <TabsTrigger value="history" className="flex-shrink-0 gap-2">
               <Calendar className="h-4 w-4" />
               <span className="hidden sm:inline">History</span>
             </TabsTrigger>
-            <TabsTrigger value="heatmap" className="gap-2">
+            <TabsTrigger value="heatmap" className="flex-shrink-0 gap-2">
               <Map className="h-4 w-4" />
               <span className="hidden sm:inline">Heatmap</span>
             </TabsTrigger>

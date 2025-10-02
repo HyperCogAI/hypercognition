@@ -451,4 +451,14 @@
     background: rgba(0, 0, 0, 0.6) !important;
     backdrop-filter: blur(4px) !important;
   }
+
+  /* Hide scrollbar for tabs on mobile */
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
 }
