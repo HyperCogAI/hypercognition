@@ -1,16 +1,14 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useCallback, useRef } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: number = 60000) {
   const [isSyncing, setIsSyncing] = useState(false);
   const [lastSyncTime, setLastSyncTime] = useState<Date | null>(null);
+  const isSyncingRef = useRef(false);
   const { toast } = useToast();
 
   const syncChainAnalytics = async () => {
-    if (isSyncing) return;
-    
-    setIsSyncing(true);
     try {
       console.log('[ChainSync] Starting chain analytics sync...');
       
@@ -21,26 +19,15 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
       if (error) throw error;
 
       console.log('[ChainSync] Sync completed:', data);
-      setLastSyncTime(new Date());
       
       return data;
     } catch (error) {
       console.error('[ChainSync] Error:', error);
-      toast({
-        title: "Sync Error",
-        description: "Failed to sync chain analytics data",
-        variant: "destructive"
-      });
       throw error;
-    } finally {
-      setIsSyncing(false);
     }
   };
 
   const syncMarketSentiment = async () => {
-    if (isSyncing) return;
-    
-    setIsSyncing(true);
     try {
       console.log('[SentimentSync] Starting market sentiment sync...');
       
@@ -51,26 +38,15 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
       if (error) throw error;
 
       console.log('[SentimentSync] Sync completed:', data);
-      setLastSyncTime(new Date());
       
       return data;
     } catch (error) {
       console.error('[SentimentSync] Error:', error);
-      toast({
-        title: "Sync Error",
-        description: "Failed to sync market sentiment data",
-        variant: "destructive"
-      });
       throw error;
-    } finally {
-      setIsSyncing(false);
     }
   };
 
   const syncPriceData = async () => {
-    if (isSyncing) return;
-    
-    setIsSyncing(true);
     try {
       console.log('[PriceSync] Starting price data sync...');
       
@@ -81,23 +57,22 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
       if (error) throw error;
 
       console.log('[PriceSync] Sync completed:', data);
-      setLastSyncTime(new Date());
       
       return data;
     } catch (error) {
       console.error('[PriceSync] Error:', error);
-      toast({
-        title: "Sync Error",
-        description: "Failed to sync price data",
-        variant: "destructive"
-      });
       throw error;
-    } finally {
-      setIsSyncing(false);
     }
   };
 
-  const syncAll = async () => {
+  const syncAll = useCallback(async () => {
+    if (isSyncingRef.current) {
+      console.log('[Sync] Already syncing, skipping...');
+      return;
+    }
+    
+    isSyncingRef.current = true;
+    setIsSyncing(true);
     try {
       await Promise.all([
         syncChainAnalytics(),
@@ -105,14 +80,22 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
         syncPriceData()
       ]);
       
-      toast({
-        title: "Sync Complete",
-        description: "All analytics data has been updated",
-      });
+      setLastSyncTime(new Date());
+      console.log('[Sync] All data synced successfully');
     } catch (error) {
-      console.error('[Sync] Error syncing all data:', error);
+      console.error('[Sync] Error syncing data:', error);
+      toast({
+        title: "Sync Error",
+        description: "Failed to sync analytics data",
+        variant: "destructive"
+      });
+    } finally {
+      isSyncingRef.current = false;
+      setIsSyncing(false);
     }
-  };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [toast]); // syncChainAnalytics, syncMarketSentiment, syncPriceData are stable
+
 
   useEffect(() => {
     if (autoSync) {
@@ -124,7 +107,7 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
       
       return () => clearInterval(interval);
     }
-  }, [autoSync, intervalMs]);
+  }, [autoSync, intervalMs, syncAll]);
 
   return {
     syncChainAnalytics,

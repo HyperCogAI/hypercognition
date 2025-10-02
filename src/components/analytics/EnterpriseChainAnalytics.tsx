@@ -71,7 +71,8 @@ export const EnterpriseChainAnalytics: React.FC = () => {
     const interval = setInterval(syncAndFetch, 60000);
     
     return () => clearInterval(interval);
-  }, []);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Empty deps array is intentional - we only want this to run once on mount
 
   const formatNumber = (num: number) => {
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
