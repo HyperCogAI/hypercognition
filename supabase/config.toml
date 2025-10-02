@@ -74,3 +74,15 @@ verify_jwt = true
 
 [functions.analytics-aggregator]
 verify_jwt = false
+
+[functions.defi-operations]
+verify_jwt = true
+
+[functions.staking-operations]
+verify_jwt = true
+
+[functions.defi-rewards-calculator]
+verify_jwt = false
+
+[functions.defi-pool-sync]
+verify_jwt = false
