@@ -216,41 +216,37 @@ export const SolanaAnalyticsDashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={marketDominance}
-                      cx="50%"
-                      cy="50%"
-                      innerRadius={60}
-                      outerRadius={120}
-                      paddingAngle={2}
-                      dataKey="value"
-                      label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
-                      labelLine={true}
-                    >
-                      {marketDominance.map((entry, index) => (
-                        <Cell 
-                          key={`cell-${index}`} 
-                          fill={entry.color}
-                          className="transition-all hover:opacity-80"
-                          stroke="hsl(var(--background))"
-                          strokeWidth={2}
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {marketDominance.map((entry) => (
+                  <Card 
+                    key={entry.name}
+                    className="border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300"
+                    style={{
+                      borderColor: entry.color + '30',
+                    }}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div 
+                          className="w-2 h-2 rounded-full" 
+                          style={{ backgroundColor: entry.color }}
                         />
-                      ))}
-                    </Pie>
-                    <Tooltip 
-                      formatter={(value: number) => [formatCurrency(value), 'Market Cap']}
-                      contentStyle={{ 
-                        backgroundColor: 'hsl(var(--card))',
-                        border: '1px solid hsl(var(--border))',
-                        borderRadius: '8px',
-                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
-                      }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
+                        <span className="text-sm font-medium" style={{ color: entry.color }}>
+                          {entry.name}
+                        </span>
+                      </div>
+                      <div 
+                        className="text-4xl font-bold mb-2" 
+                        style={{ color: entry.color }}
+                      >
+                        {entry.percentage.toFixed(0)}%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatCurrency(entry.value)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))}
               </div>
             </CardContent>
           </Card>

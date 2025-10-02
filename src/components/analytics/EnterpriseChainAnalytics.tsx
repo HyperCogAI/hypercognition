@@ -215,51 +215,40 @@ export const EnterpriseChainAnalytics: React.FC = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
-                <PieChart>
-                  <Pie
-                    data={crossChainData.chainDistribution}
-                    dataKey="volume"
-                    nameKey="chain"
-                    cx="50%"
-                    cy="50%"
-                    innerRadius={60}
-                    outerRadius={120}
-                    paddingAngle={2}
-                    label={({ chain, percentage }) => `${chain}: ${percentage.toFixed(1)}%`}
-                    labelLine={true}
-                  >
-                    {crossChainData.chainDistribution.map((entry: any, index: number) => (
-                      <Cell 
-                        key={`cell-${index}`} 
-                        fill={chainColors[entry.chain] || `hsl(${index * 60}, 70%, 50%)`}
-                        className="transition-all hover:opacity-80"
-                        stroke="hsl(var(--background))"
-                        strokeWidth={2}
-                      />
-                    ))}
-                  </Pie>
-                  <Tooltip 
-                    formatter={(value: number) => formatNumber(value)}
-                    contentStyle={{
-                      backgroundColor: 'hsl(var(--card))',
-                      border: '1px solid hsl(var(--border))',
-                      borderRadius: '8px',
-                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+              {crossChainData.chainDistribution.map((chain: any) => {
+                const chainColor = chainColors[chain.chain] || '#888888';
+                return (
+                  <Card 
+                    key={chain.chain} 
+                    className="border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300"
+                    style={{
+                      borderColor: chainColor + '30',
                     }}
-                  />
-                </PieChart>
-              </ResponsiveContainer>
-            </div>
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-4 gap-4">
-              {crossChainData.chainDistribution.map((chain: any) => (
-                <div key={chain.chain} className="text-center">
-                  <div className="text-sm text-muted-foreground">{chain.chain}</div>
-                  <div className="font-bold">{formatNumber(chain.volume)}</div>
-                  <div className="text-xs text-muted-foreground">{chain.percentage.toFixed(1)}%</div>
-                </div>
-              ))}
+                  >
+                    <CardContent className="p-6">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div 
+                          className="w-2 h-2 rounded-full" 
+                          style={{ backgroundColor: chainColor }}
+                        />
+                        <span className="text-sm font-medium" style={{ color: chainColor }}>
+                          {chain.chain}
+                        </span>
+                      </div>
+                      <div 
+                        className="text-4xl font-bold mb-2" 
+                        style={{ color: chainColor }}
+                      >
+                        {chain.percentage.toFixed(0)}%
+                      </div>
+                      <div className="text-sm text-muted-foreground">
+                        {formatNumber(chain.volume)}
+                      </div>
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           </CardContent>
         </Card>
