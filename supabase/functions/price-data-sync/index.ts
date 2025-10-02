@@ -156,25 +156,34 @@ serve(async (req) => {
 
     // Update market sentiment with real Fear & Greed data
     if (fearGreedData) {
-      const { error: sentimentError } = await supabase
-        .from('market_sentiment')
-        .insert({
+      // Insert for multiple timeframes to match market_sentiment_sync pattern
+      const timeframes = ['1h', '4h', '24h', '7d'];
+      const sentimentInserts = timeframes.map(timeframe => 
+        supabase.from('market_sentiment').insert({
           fear_greed_index: fearGreedData.value,
-          sentiment_label: fearGreedData.classification.toLowerCase(),
           overall_sentiment: (fearGreedData.value - 50) / 50, // Normalize to -1 to 1
-          timeframe: '24h', // Required field
+          timeframe: timeframe,
+          bullish_percentage: fearGreedData.value > 50 ? Math.round((fearGreedData.value - 50) * 2) : 0,
+          bearish_percentage: fearGreedData.value < 50 ? Math.round((50 - fearGreedData.value) * 2) : 0,
+          neutral_percentage: Math.abs(fearGreedData.value - 50) < 10 ? 50 : 20,
+          social_sentiment: fearGreedData.classification.toLowerCase(),
           metadata: {
             source: 'alternative.me',
             real_data: true,
-            coingecko_available: !!coinGeckoData
+            coingecko_available: !!coinGeckoData,
+            classification: fearGreedData.classification
           },
           timestamp: new Date().toISOString()
-        });
+        })
+      );
 
-      if (sentimentError) {
-        console.error('[PriceSync] Error inserting sentiment:', sentimentError);
+      const results = await Promise.allSettled(sentimentInserts);
+      const errors = results.filter(r => r.status === 'rejected');
+      
+      if (errors.length > 0) {
+        console.error('[PriceSync] Error inserting sentiment:', errors);
       } else {
-        console.log('[PriceSync] Updated market sentiment with real Fear & Greed data');
+        console.log('[PriceSync] Updated market sentiment with real Fear & Greed data for all timeframes');
       }
     }
 
