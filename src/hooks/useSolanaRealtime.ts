@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { birdeyeApi, SOLANA_TOKEN_ADDRESSES } from '@/lib/apis/birdeyeApi'
+import { coinGeckoSolanaApi } from '@/lib/apis/coingeckoSolanaApi'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface SolanaToken {
@@ -32,56 +32,48 @@ export const useSolanaRealtime = () => {
     try {
       setIsLoading(true)
       
-      // Get well-known Solana tokens
-      const tokenAddresses = Object.values(SOLANA_TOKEN_ADDRESSES)
-      const pricesData = await birdeyeApi.getMultipleTokenPrices(tokenAddresses)
+      // Use CoinGecko Solana API instead of Birdeye
+      const tokensData = await coinGeckoSolanaApi.getSolanaTokens()
       
-      if (!pricesData) {
-        console.error('Failed to fetch token prices from Birdeye - using mock data')
-        // Fallback to mock data when API fails
+      if (!tokensData || tokensData.length === 0) {
+        console.warn('[SolanaRealtime] No data from CoinGecko - using mock data')
         setTokens(generateMockTokens())
         setIsLoading(false)
         return
       }
 
-      // Fetch detailed info for each token
-      const tokenPromises = tokenAddresses.map(async (address) => {
+      // Map CoinGecko data to our format
+      const mappedTokens = tokensData.slice(0, 20).map((token) => {
         try {
-          const [overview, price] = await Promise.all([
-            birdeyeApi.getTokenOverview(address),
-            Promise.resolve(pricesData[address])
-          ])
-          
-          if (!overview || !price) return null
+          if (!token || !token.id) return null
           
           return {
-            id: address,
-            mint_address: address,
-            name: overview.name,
-            symbol: overview.symbol,
-            description: `${overview.name} token`,
-            image_url: overview.logoURI,
-            decimals: overview.decimals,
-            price: price.value,
-            market_cap: overview.mc || 0,
-            volume_24h: overview.v24hUSD || 0,
-            change_24h: price.priceChange24h || 0,
+            id: token.id,
+            mint_address: token.id, // Use ID as mint address proxy
+            name: token.name,
+            symbol: token.symbol,
+            description: `${token.name} on Solana`,
+            image_url: token.image || '/placeholder.svg',
+            decimals: 9, // Default Solana decimals
+            price: token.current_price,
+            market_cap: token.market_cap || 0,
+            volume_24h: token.total_volume || 0,
+            change_24h: token.price_change_percentage_24h || 0,
             is_active: true
           } as SolanaToken
         } catch (error) {
-          console.error(`Error fetching data for token ${address}:`, error)
+          console.error(`Error mapping token ${token?.id}:`, error)
           return null
         }
       })
 
-      const tokenResults = await Promise.all(tokenPromises)
-      const validTokens = tokenResults.filter((token): token is SolanaToken => token !== null)
+      const validTokens = mappedTokens.filter((token): token is SolanaToken => token !== null)
       
       // Sort by market cap descending
       validTokens.sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0))
       
       setTokens(validTokens)
-      console.log('Fetched', validTokens.length, 'Solana tokens from Birdeye')
+      console.log('Fetched', validTokens.length, 'Solana tokens from CoinGecko')
       
     } catch (error) {
       console.error('Error fetching Solana tokens:', error)
@@ -96,8 +88,8 @@ export const useSolanaRealtime = () => {
   const generateMockTokens = (): SolanaToken[] => {
     const mockTokens = [
       {
-        id: SOLANA_TOKEN_ADDRESSES.SOL,
-        mint_address: SOLANA_TOKEN_ADDRESSES.SOL,
+        id: 'solana',
+        mint_address: 'So11111111111111111111111111111111111111112',
         name: 'Solana',
         symbol: 'SOL',
         description: 'Solana native token',
@@ -110,8 +102,8 @@ export const useSolanaRealtime = () => {
         is_active: true
       },
       {
-        id: SOLANA_TOKEN_ADDRESSES.BONK,
-        mint_address: SOLANA_TOKEN_ADDRESSES.BONK,
+        id: 'bonk',
+        mint_address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
         name: 'Bonk',
         symbol: 'BONK',
         description: 'Community meme coin',
@@ -124,8 +116,8 @@ export const useSolanaRealtime = () => {
         is_active: true
       },
       {
-        id: SOLANA_TOKEN_ADDRESSES.JUP,
-        mint_address: SOLANA_TOKEN_ADDRESSES.JUP,
+        id: 'jupiter',
+        mint_address: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
         name: 'Jupiter',
         symbol: 'JUP',
         description: 'DEX aggregator token',

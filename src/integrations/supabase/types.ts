@@ -2445,6 +2445,122 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_holdings: {
+        Row: {
+          asset_id: string
+          asset_name: string
+          asset_symbol: string
+          asset_type: string
+          average_buy_price: number
+          created_at: string
+          current_value: number
+          id: string
+          last_updated: string
+          quantity: number
+          realized_pnl: number
+          total_invested: number
+          unrealized_pnl: number
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          asset_id: string
+          asset_name: string
+          asset_symbol: string
+          asset_type?: string
+          average_buy_price?: number
+          created_at?: string
+          current_value?: number
+          id?: string
+          last_updated?: string
+          quantity?: number
+          realized_pnl?: number
+          total_invested?: number
+          unrealized_pnl?: number
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          asset_id?: string
+          asset_name?: string
+          asset_symbol?: string
+          asset_type?: string
+          average_buy_price?: number
+          created_at?: string
+          current_value?: number
+          id?: string
+          last_updated?: string
+          quantity?: number
+          realized_pnl?: number
+          total_invested?: number
+          unrealized_pnl?: number
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_transactions: {
+        Row: {
+          asset_id: string
+          asset_name: string
+          asset_symbol: string
+          created_at: string
+          exchange: string | null
+          fees: number
+          holding_id: string | null
+          id: string
+          notes: string | null
+          price: number
+          quantity: number
+          total_amount: number
+          transaction_date: string
+          transaction_type: string
+          user_id: string
+        }
+        Insert: {
+          asset_id: string
+          asset_name: string
+          asset_symbol: string
+          created_at?: string
+          exchange?: string | null
+          fees?: number
+          holding_id?: string | null
+          id?: string
+          notes?: string | null
+          price: number
+          quantity: number
+          total_amount: number
+          transaction_date?: string
+          transaction_type: string
+          user_id: string
+        }
+        Update: {
+          asset_id?: string
+          asset_name?: string
+          asset_symbol?: string
+          created_at?: string
+          exchange?: string | null
+          fees?: number
+          holding_id?: string | null
+          id?: string
+          notes?: string | null
+          price?: number
+          quantity?: number
+          total_amount?: number
+          transaction_date?: string
+          transaction_type?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "portfolio_transactions_holding_id_fkey"
+            columns: ["holding_id"]
+            isOneToOne: false
+            referencedRelation: "portfolio_holdings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       portfolios: {
         Row: {
           agent_id: string
@@ -4447,7 +4563,7 @@ export type Database = {
           description?: string | null
           id?: string | null
           logo_url?: string | null
-          total_apis?: never
+          total_apis?: number | null
           verified?: boolean | null
           website_url?: string | null
         }
@@ -4457,7 +4573,7 @@ export type Database = {
           description?: string | null
           id?: string | null
           logo_url?: string | null
-          total_apis?: never
+          total_apis?: number | null
           verified?: boolean | null
           website_url?: string | null
         }

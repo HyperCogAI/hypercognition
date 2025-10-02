@@ -65,3 +65,6 @@ verify_jwt = true
 
 [functions.wallet-auth]
 verify_jwt = false
+
+[functions.migrate-portfolio]
+verify_jwt = true

@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
+import { portfolioService, PortfolioHolding } from '@/services/PortfolioService';
 import { supabase } from '@/integrations/supabase/client';
 
 interface Holding {
@@ -48,50 +49,58 @@ export const useRealPortfolio = () => {
 
   const fetchPortfolioData = async () => {
     if (!user) {
-      setHoldings([]);
-      setTransactions([]);
       setLoading(false);
       return;
     }
 
     try {
-      // Fetch holdings with agent data
-      const { data: holdingsData, error: holdingsError } = await supabase
-        .from('user_holdings')
-        .select(`
-          *,
-          agent:agents (
-            id,
-            name,
-            symbol,
-            price,
-            avatar_url,
-            change_24h
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('total_invested', { ascending: false });
+      // Fetch holdings from new portfolio service
+      const holdingsData = await portfolioService.getHoldings(user.id);
+      
+      // Map to legacy format for compatibility
+      const mappedHoldings: Holding[] = holdingsData.map(h => ({
+        id: h.id,
+        user_id: h.user_id,
+        agent_id: h.asset_id,
+        quantity: h.quantity,
+        average_buy_price: h.average_buy_price,
+        total_invested: h.total_invested,
+        realized_pnl: h.realized_pnl,
+        created_at: h.created_at,
+        updated_at: h.updated_at,
+        agent: {
+          id: h.asset_id,
+          name: h.asset_name,
+          symbol: h.asset_symbol,
+          price: h.current_value / h.quantity,
+          avatar_url: '/placeholder.svg',
+          change_24h: 0
+        }
+      }));
 
-      if (holdingsError) throw holdingsError;
+      setHoldings(mappedHoldings);
+      
+      // Fetch transactions
+      const transactionsData = await portfolioService.getTransactions(user.id, 50);
+      const mappedTransactions: Transaction[] = transactionsData.map(t => ({
+        id: t.id,
+        user_id: t.user_id,
+        agent_id: t.asset_id,
+        order_id: null,
+        type: t.transaction_type,
+        quantity: t.quantity,
+        price: t.price,
+        total_amount: t.total_amount,
+        fees: t.fees,
+        status: 'completed',
+        created_at: t.created_at,
+        agent: {
+          name: t.asset_name,
+          symbol: t.asset_symbol
+        }
+      }));
 
-      // Fetch recent transactions
-      const { data: transactionsData, error: transactionsError } = await supabase
-        .from('transactions')
-        .select(`
-          *,
-          agent:agents (
-            name,
-            symbol
-          )
-        `)
-        .eq('user_id', user.id)
-        .order('created_at', { ascending: false })
-        .limit(50);
-
-      if (transactionsError) throw transactionsError;
-
-      setHoldings((holdingsData as any) || []);
-      setTransactions((transactionsData as any) || []);
+      setTransactions(mappedTransactions);
     } catch (error) {
       console.error('Error fetching portfolio:', error);
     } finally {
@@ -108,34 +117,32 @@ export const useRealPortfolio = () => {
     if (!user) return;
 
     const holdingsChannel = supabase
-      .channel('portfolio-holdings')
+      .channel('portfolio-holdings-new')
       .on(
         'postgres_changes',
         {
           event: '*',
           schema: 'public',
-          table: 'user_holdings',
+          table: 'portfolio_holdings',
           filter: `user_id=eq.${user.id}`
         },
         () => {
-          console.log('Holdings updated');
           fetchPortfolioData();
         }
       )
       .subscribe();
 
     const transactionsChannel = supabase
-      .channel('portfolio-transactions')
+      .channel('portfolio-transactions-new')
       .on(
         'postgres_changes',
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'transactions',
+          table: 'portfolio_transactions',
           filter: `user_id=eq.${user.id}`
         },
         () => {
-          console.log('New transaction');
           fetchPortfolioData();
         }
       )

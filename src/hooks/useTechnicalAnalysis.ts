@@ -1,7 +1,7 @@
 import { useState, useEffect, useMemo } from 'react';
 import { useAuth } from '@/contexts/AuthContext';
 import { supabase } from '@/integrations/supabase/client';
-import { birdeyeApi } from '@/lib/apis/birdeyeApi';
+import { coinGeckoApi } from '@/lib/apis/coinGeckoApi';
 
 export interface ChartData {
   timestamp: string;
@@ -48,23 +48,23 @@ export const useTechnicalAnalysis = (agentId: string, timeframe: string = '1h') 
 
         const isSolanaAddress = /^[1-9A-HJ-NP-Za-km-z]{32,44}$/.test(agentId);
         if (isSolanaAddress) {
-          const mapTf = (tf: string): '1H' | '4H' | '1D' | '1W' | '1M' => {
-            const t = tf.toUpperCase();
-            if (t === '1M' || t === '1W' || t === '4H' || t === '1H') return t as any;
-            return '1D';
-          };
-          const items = await birdeyeApi.getPriceHistory(agentId, mapTf(timeframe));
-          if (items && items.length) {
-            const ohlcData: ChartData[] = items.map((pt, index, arr) => {
-              const prev = index > 0 ? arr[index - 1].value : pt.value;
-              const next = index < arr.length - 1 ? arr[index + 1].value : pt.value;
+          // For Solana tokens, use CoinGecko market chart data
+          const days = timeframe === '1h' ? 1 : timeframe === '24h' ? 1 : timeframe === '7d' ? 7 : 30;
+          const chartData = await coinGeckoApi.getMarketChart(agentId, days);
+          
+          if (chartData && chartData.prices && chartData.prices.length) {
+            const ohlcData: ChartData[] = chartData.prices.map(([timestamp, price], index, arr) => {
+              const prev = index > 0 ? arr[index - 1][1] : price;
+              const next = index < arr.length - 1 ? arr[index + 1][1] : price;
+              const volume = chartData.total_volumes?.[index]?.[1] || 0;
+              
               return {
-                timestamp: new Date(pt.unixTime * 1000).toISOString(),
+                timestamp: new Date(timestamp).toISOString(),
                 open: Number(prev),
-                high: Math.max(Number(prev), Number(pt.value), Number(next)),
-                low: Math.min(Number(prev), Number(pt.value), Number(next)),
-                close: Number(pt.value),
-                volume: 0,
+                high: Math.max(Number(prev), Number(price), Number(next)),
+                low: Math.min(Number(prev), Number(price), Number(next)),
+                close: Number(price),
+                volume: Number(volume),
               };
             });
             setChartData(ohlcData);
