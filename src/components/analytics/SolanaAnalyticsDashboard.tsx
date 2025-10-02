@@ -223,21 +223,30 @@ export const SolanaAnalyticsDashboard = () => {
                       data={marketDominance}
                       cx="50%"
                       cy="50%"
-                      outerRadius={100}
-                      fill="#8884d8"
+                      innerRadius={60}
+                      outerRadius={120}
+                      paddingAngle={2}
                       dataKey="value"
                       label={({ name, percentage }) => `${name}: ${percentage.toFixed(1)}%`}
+                      labelLine={true}
                     >
                       {marketDominance.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={entry.color} />
+                        <Cell 
+                          key={`cell-${index}`} 
+                          fill={entry.color}
+                          className="transition-all hover:opacity-80"
+                          stroke="hsl(var(--background))"
+                          strokeWidth={2}
+                        />
                       ))}
                     </Pie>
                     <Tooltip 
                       formatter={(value: number) => [formatCurrency(value), 'Market Cap']}
                       contentStyle={{ 
-                        backgroundColor: 'hsl(var(--background))',
+                        backgroundColor: 'hsl(var(--card))',
                         border: '1px solid hsl(var(--border))',
-                        borderRadius: '6px'
+                        borderRadius: '8px',
+                        boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
                       }}
                     />
                   </PieChart>

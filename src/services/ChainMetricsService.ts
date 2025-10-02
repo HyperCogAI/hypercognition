@@ -1,7 +1,7 @@
 import { supabase } from '@/integrations/supabase/client';
 
 export interface ChainMetrics {
-  chain: 'solana' | 'ethereum' | 'base' | 'polygon';
+  chain: 'solana' | 'ethereum' | 'base' | 'bnb';
   tvl: number;
   volume24h: number;
   transactions24h: number;
@@ -60,9 +60,9 @@ export class ChainMetricsService {
   }
 
   /**
-   * Fetch live EVM chain metrics (Ethereum, Base, Polygon) from APIs
+   * Fetch live EVM chain metrics (Ethereum, Base, BNB Chain) from APIs
    */
-  static async getEVMMetrics(chain: 'ethereum' | 'base' | 'polygon'): Promise<ChainMetrics> {
+  static async getEVMMetrics(chain: 'ethereum' | 'base' | 'bnb'): Promise<ChainMetrics> {
     try {
       console.log(`[ChainMetrics] Fetching live ${chain} metrics from APIs...`);
       
@@ -82,7 +82,7 @@ export class ChainMetricsService {
       const fallbacks = {
         ethereum: { tvl: 50000000000, volume24h: 8000000000, tps: 15 },
         base: { tvl: 2000000000, volume24h: 500000000, tps: 50 },
-        polygon: { tvl: 1200000000, volume24h: 300000000, tps: 100 }
+        bnb: { tvl: 5000000000, volume24h: 1200000000, tps: 160 }
       };
 
       return {
@@ -103,7 +103,7 @@ export class ChainMetricsService {
       const fallbacks = {
         ethereum: { tvl: 50000000000, volume24h: 8000000000, tps: 15 },
         base: { tvl: 2000000000, volume24h: 500000000, tps: 50 },
-        polygon: { tvl: 1200000000, volume24h: 300000000, tps: 100 }
+        bnb: { tvl: 5000000000, volume24h: 1200000000, tps: 160 }
       };
 
       return {
@@ -132,15 +132,15 @@ export class ChainMetricsService {
       console.log('[ChainMetrics] Calculating live cross-chain analytics...');
       
       // Fetch all chain metrics in parallel
-      const [solana, ethereum, base, polygon] = await Promise.all([
+      const [solana, ethereum, base, bnb] = await Promise.all([
         this.getSolanaMetrics(),
         this.getEVMMetrics('ethereum'),
         this.getEVMMetrics('base'),
-        this.getEVMMetrics('polygon')
+        this.getEVMMetrics('bnb')
       ]);
 
-      const totalTVL = solana.tvl + ethereum.tvl + base.tvl + polygon.tvl;
-      const totalVolume24h = solana.volume24h + ethereum.volume24h + base.volume24h + polygon.volume24h;
+      const totalTVL = solana.tvl + ethereum.tvl + base.tvl + bnb.tvl;
+      const totalVolume24h = solana.volume24h + ethereum.volume24h + base.volume24h + bnb.volume24h;
 
       const chainDistribution = [
         { 
@@ -159,9 +159,9 @@ export class ChainMetricsService {
           percentage: (base.volume24h / totalVolume24h) * 100 
         },
         { 
-          chain: 'Polygon', 
-          volume: polygon.volume24h, 
-          percentage: (polygon.volume24h / totalVolume24h) * 100 
+          chain: 'BNB Chain', 
+          volume: bnb.volume24h, 
+          percentage: (bnb.volume24h / totalVolume24h) * 100 
         }
       ];
 
@@ -178,19 +178,19 @@ export class ChainMetricsService {
         solana: 2500000000,
         ethereum: 8000000000,
         base: 500000000,
-        polygon: 300000000
+        bnb: 1200000000
       };
       
       const totalVolume = Object.values(fallbackVolume).reduce((sum, vol) => sum + vol, 0);
       
       return {
-        totalTVL: 98200000000, // $98.2B
+        totalTVL: 102200000000, // $102.2B
         totalVolume24h: totalVolume,
         chainDistribution: [
-          { chain: 'Ethereum', volume: fallbackVolume.ethereum, percentage: 68.4 },
-          { chain: 'Solana', volume: fallbackVolume.solana, percentage: 21.4 },
-          { chain: 'Base', volume: fallbackVolume.base, percentage: 4.3 },
-          { chain: 'Polygon', volume: fallbackVolume.polygon, percentage: 2.6 }
+          { chain: 'Ethereum', volume: fallbackVolume.ethereum, percentage: 65.6 },
+          { chain: 'Solana', volume: fallbackVolume.solana, percentage: 20.5 },
+          { chain: 'BNB Chain', volume: fallbackVolume.bnb, percentage: 9.8 },
+          { chain: 'Base', volume: fallbackVolume.base, percentage: 4.1 }
         ]
       };
     }

@@ -17,7 +17,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Skeleton } from '@/components/ui/skeleton';
 
 export const EnterpriseChainAnalytics: React.FC = () => {
-  const [selectedChain, setSelectedChain] = useState<'all' | 'solana' | 'ethereum' | 'base' | 'polygon'>('all');
+  const [selectedChain, setSelectedChain] = useState<'all' | 'solana' | 'ethereum' | 'base' | 'bnb'>('all');
   const [solanaMetrics, setSolanaMetrics] = useState<ChainMetrics | null>(null);
   const [evmMetrics, setEvmMetrics] = useState<Record<string, ChainMetrics>>({});
   const [topTokens, setTopTokens] = useState<TokenMetrics[]>([]);
@@ -30,18 +30,18 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const [solana, ethereum, base, polygon, tokens, crossChain, pools] = await Promise.all([
+      const [solana, ethereum, base, bnb, tokens, crossChain, pools] = await Promise.all([
         RealTimeChainAnalytics.getSolanaMetrics(),
         RealTimeChainAnalytics.getEVMMetrics('ethereum'),
         RealTimeChainAnalytics.getEVMMetrics('base'),
-        RealTimeChainAnalytics.getEVMMetrics('polygon'),
+        RealTimeChainAnalytics.getEVMMetrics('bnb'),
         RealTimeChainAnalytics.getTopTokensByVolume(20),
         RealTimeChainAnalytics.getCrossChainAnalytics(),
         RealTimeChainAnalytics.getLiquidityPools()
       ]);
 
       setSolanaMetrics(solana);
-      setEvmMetrics({ ethereum, base, polygon });
+      setEvmMetrics({ ethereum, base, bnb });
       setTopTokens(tokens);
       setCrossChainData(crossChain);
       setLiquidityPools(pools);
@@ -91,14 +91,14 @@ export const EnterpriseChainAnalytics: React.FC = () => {
     { key: 'solana', data: solanaMetrics, name: 'Solana', color: '#14F195' },
     { key: 'ethereum', data: evmMetrics.ethereum, name: 'Ethereum', color: '#627EEA' },
     { key: 'base', data: evmMetrics.base, name: 'Base', color: '#0052FF' },
-    { key: 'polygon', data: evmMetrics.polygon, name: 'Polygon', color: '#8247E5' }
+    { key: 'bnb', data: evmMetrics.bnb, name: 'BNB Chain', color: '#F3BA2F' }
   ];
 
   const chainColors: Record<string, string> = {
     'Solana': '#14F195',
     'Ethereum': '#627EEA',
     'Base': '#0052FF',
-    'Polygon': '#8247E5'
+    'BNB Chain': '#F3BA2F'
   };
 
   if (isLoading) {
@@ -224,14 +224,31 @@ export const EnterpriseChainAnalytics: React.FC = () => {
                     nameKey="chain"
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
+                    innerRadius={60}
+                    outerRadius={120}
+                    paddingAngle={2}
                     label={({ chain, percentage }) => `${chain}: ${percentage.toFixed(1)}%`}
+                    labelLine={true}
                   >
                     {crossChainData.chainDistribution.map((entry: any, index: number) => (
-                      <Cell key={`cell-${index}`} fill={chainColors[entry.chain] || `hsl(${index * 60}, 70%, 50%)`} />
+                      <Cell 
+                        key={`cell-${index}`} 
+                        fill={chainColors[entry.chain] || `hsl(${index * 60}, 70%, 50%)`}
+                        className="transition-all hover:opacity-80"
+                        stroke="hsl(var(--background))"
+                        strokeWidth={2}
+                      />
                     ))}
                   </Pie>
-                  <Tooltip formatter={(value: number) => formatNumber(value)} />
+                  <Tooltip 
+                    formatter={(value: number) => formatNumber(value)}
+                    contentStyle={{
+                      backgroundColor: 'hsl(var(--card))',
+                      border: '1px solid hsl(var(--border))',
+                      borderRadius: '8px',
+                      boxShadow: '0 4px 12px rgba(0,0,0,0.1)'
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </div>
@@ -257,7 +274,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
 
         <TabsContent value="tokens" className="space-y-4">
           <div className="flex gap-2 mb-4">
-            {['all', 'solana', 'ethereum', 'base', 'polygon'].map(chain => (
+            {['all', 'solana', 'ethereum', 'base', 'bnb'].map(chain => (
               <Badge
                 key={chain}
                 variant={selectedChain === chain ? 'default' : 'outline'}

@@ -16,8 +16,8 @@ const Analytics = () => {
     <>
       <SEOHead
         title="Analytics - Real-Time Web3 Insights"
-        description="Advanced real-time analytics for Solana, Ethereum, Base, and Polygon. Enterprise-grade chain metrics, cross-chain analysis, and live market data."
-        keywords="web3 analytics, solana analytics, ethereum analytics, real-time blockchain data, defi analytics, cross-chain metrics"
+        description="Advanced real-time analytics for Solana, Ethereum, Base, and BNB Chain. Enterprise-grade chain metrics, cross-chain analysis, and live market data."
+        keywords="web3 analytics, solana analytics, ethereum analytics, bnb chain analytics, real-time blockchain data, defi analytics, cross-chain metrics"
       />
       
       <div className="min-h-screen bg-background">
