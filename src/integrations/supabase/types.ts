@@ -276,6 +276,74 @@ export type Database = {
           },
         ]
       }
+      agent_performance_metrics: {
+        Row: {
+          active_users: number | null
+          agent_id: string
+          avg_roi: number
+          calculated_at: string | null
+          id: string
+          metadata: Json | null
+          period: string
+          period_end: string
+          period_start: string
+          sentiment_score: number | null
+          successful_trades: number
+          total_holders: number | null
+          total_profit: number
+          total_trades: number
+          total_volume: number
+          volatility: number | null
+          win_rate: number
+        }
+        Insert: {
+          active_users?: number | null
+          agent_id: string
+          avg_roi?: number
+          calculated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          period: string
+          period_end: string
+          period_start: string
+          sentiment_score?: number | null
+          successful_trades?: number
+          total_holders?: number | null
+          total_profit?: number
+          total_trades?: number
+          total_volume?: number
+          volatility?: number | null
+          win_rate?: number
+        }
+        Update: {
+          active_users?: number | null
+          agent_id?: string
+          avg_roi?: number
+          calculated_at?: string | null
+          id?: string
+          metadata?: Json | null
+          period?: string
+          period_end?: string
+          period_start?: string
+          sentiment_score?: number | null
+          successful_trades?: number
+          total_holders?: number | null
+          total_profit?: number
+          total_trades?: number
+          total_volume?: number
+          volatility?: number | null
+          win_rate?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_performance_metrics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_ratings: {
         Row: {
           agent_id: string
@@ -431,6 +499,84 @@ export type Database = {
           query?: string
           response?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      analytics_events: {
+        Row: {
+          created_at: string | null
+          event_category: string
+          event_data: Json | null
+          event_name: string
+          event_type: string
+          id: string
+          ip_address: unknown | null
+          page_url: string | null
+          referrer: string | null
+          session_id: string | null
+          user_agent: string | null
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string | null
+          event_category: string
+          event_data?: Json | null
+          event_name: string
+          event_type: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string | null
+          event_category?: string
+          event_data?: Json | null
+          event_name?: string
+          event_type?: string
+          id?: string
+          ip_address?: unknown | null
+          page_url?: string | null
+          referrer?: string | null
+          session_id?: string | null
+          user_agent?: string | null
+          user_id?: string | null
+        }
+        Relationships: []
+      }
+      analytics_preferences: {
+        Row: {
+          alert_thresholds: Json | null
+          created_at: string | null
+          dashboard_layout: Json | null
+          default_period: string | null
+          favorite_metrics: string[] | null
+          id: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          alert_thresholds?: Json | null
+          created_at?: string | null
+          dashboard_layout?: Json | null
+          default_period?: string | null
+          favorite_metrics?: string[] | null
+          id?: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          alert_thresholds?: Json | null
+          created_at?: string | null
+          dashboard_layout?: Json | null
+          default_period?: string | null
+          favorite_metrics?: string[] | null
+          id?: string
+          updated_at?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -2445,6 +2591,75 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_analytics: {
+        Row: {
+          avg_loss: number
+          avg_profit: number
+          best_trade: number | null
+          calculated_at: string | null
+          id: string
+          losing_trades: number
+          max_drawdown: number | null
+          metadata: Json | null
+          period: string
+          period_end: string
+          period_start: string
+          sharpe_ratio: number | null
+          total_pnl: number
+          total_pnl_percentage: number
+          total_trades: number
+          total_value: number
+          user_id: string
+          win_rate: number
+          winning_trades: number
+          worst_trade: number | null
+        }
+        Insert: {
+          avg_loss?: number
+          avg_profit?: number
+          best_trade?: number | null
+          calculated_at?: string | null
+          id?: string
+          losing_trades?: number
+          max_drawdown?: number | null
+          metadata?: Json | null
+          period: string
+          period_end: string
+          period_start: string
+          sharpe_ratio?: number | null
+          total_pnl?: number
+          total_pnl_percentage?: number
+          total_trades?: number
+          total_value?: number
+          user_id: string
+          win_rate?: number
+          winning_trades?: number
+          worst_trade?: number | null
+        }
+        Update: {
+          avg_loss?: number
+          avg_profit?: number
+          best_trade?: number | null
+          calculated_at?: string | null
+          id?: string
+          losing_trades?: number
+          max_drawdown?: number | null
+          metadata?: Json | null
+          period?: string
+          period_end?: string
+          period_start?: string
+          sharpe_ratio?: number | null
+          total_pnl?: number
+          total_pnl_percentage?: number
+          total_trades?: number
+          total_value?: number
+          user_id?: string
+          win_rate?: number
+          winning_trades?: number
+          worst_trade?: number | null
+        }
+        Relationships: []
+      }
       portfolio_holdings: {
         Row: {
           asset_id: string
@@ -3802,6 +4017,83 @@ export type Database = {
           win_rate?: number
         }
         Relationships: []
+      }
+      trading_analytics: {
+        Row: {
+          agent_id: string | null
+          avg_position_size: number | null
+          avg_trade_duration: unknown | null
+          calculated_at: string | null
+          consecutive_losses: number | null
+          consecutive_wins: number | null
+          id: string
+          largest_loss: number | null
+          largest_win: number | null
+          metadata: Json | null
+          period: string
+          period_end: string
+          period_start: string
+          profitable_trades: number
+          total_loss: number
+          total_profit: number
+          total_volume: number
+          trade_count: number
+          unprofitable_trades: number
+          user_id: string
+        }
+        Insert: {
+          agent_id?: string | null
+          avg_position_size?: number | null
+          avg_trade_duration?: unknown | null
+          calculated_at?: string | null
+          consecutive_losses?: number | null
+          consecutive_wins?: number | null
+          id?: string
+          largest_loss?: number | null
+          largest_win?: number | null
+          metadata?: Json | null
+          period: string
+          period_end: string
+          period_start: string
+          profitable_trades?: number
+          total_loss?: number
+          total_profit?: number
+          total_volume?: number
+          trade_count?: number
+          unprofitable_trades?: number
+          user_id: string
+        }
+        Update: {
+          agent_id?: string | null
+          avg_position_size?: number | null
+          avg_trade_duration?: unknown | null
+          calculated_at?: string | null
+          consecutive_losses?: number | null
+          consecutive_wins?: number | null
+          id?: string
+          largest_loss?: number | null
+          largest_win?: number | null
+          metadata?: Json | null
+          period?: string
+          period_end?: string
+          period_start?: string
+          profitable_trades?: number
+          total_loss?: number
+          total_profit?: number
+          total_volume?: number
+          trade_count?: number
+          unprofitable_trades?: number
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "trading_analytics_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       trading_competitions: {
         Row: {

@@ -72,5 +72,5 @@ verify_jwt = true
 [functions.send-notification]
 verify_jwt = true
 
-[functions.copy-trading-engine]
-verify_jwt = true
+[functions.analytics-aggregator]
+verify_jwt = false
