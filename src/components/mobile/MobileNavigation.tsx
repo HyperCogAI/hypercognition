@@ -67,6 +67,7 @@ const navigationSections = [
       { icon: Star, label: 'Favorites', path: '/favorites', id: 'favorites' },
       { icon: BarChart3, label: 'Compare', path: '/compare', id: 'compare' },
       { icon: Users, label: 'Community', path: '/community', id: 'community' },
+      { icon: Share2, label: 'Social Trading', path: '/social-trading', id: 'social-trading' },
       { icon: GraduationCap, label: 'Trading Academy', path: '/trading-academy', id: 'trading-academy' },
     ]
   },

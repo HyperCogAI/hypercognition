@@ -56,6 +56,7 @@ const communityItems = [
   { title: "Favorites", url: "/favorites", icon: Star },
   { title: "Compare", url: "/compare", icon: BarChart3 },
   { title: "Community", url: "/community", icon: Users },
+  { title: "Social Trading", url: "/social-trading", icon: Share2 },
   { title: "Trading Academy", url: "/trading-academy", icon: GraduationCap },
 ]
 
