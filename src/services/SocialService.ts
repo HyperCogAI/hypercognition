@@ -42,9 +42,9 @@ export class SocialService {
   /**
    * Get social feed posts
    */
-  async getFeedPosts(limit: number = 20, offset: number = 0): Promise<SocialPost[]> {
+  async getFeedPosts(limit: number = 20, offset: number = 0): Promise<any[]> {
     const { data, error } = await supabase
-      .from('social_posts')
+      .from('social_posts' as any)
       .select('*')
       .eq('visibility', 'public')
       .is('deleted_at', null)

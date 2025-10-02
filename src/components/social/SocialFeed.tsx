@@ -206,13 +206,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike, onFollow, onUnfollow,
 export const SocialFeed = () => {
   const {
     posts,
-    stats,
-    loading,
+    isLoading,
     createPost,
     likePost,
     followUser,
     unfollowUser,
-    sharePost
   } = useSocialFeed();
 
   const [newPostContent, setNewPostContent] = useState('');
@@ -221,13 +219,31 @@ export const SocialFeed = () => {
   const handleCreatePost = async () => {
     if (!newPostContent.trim()) return;
     
-    await createPost(newPostContent, postType);
+    createPost({ 
+      content: newPostContent,
+      post_type: postType,
+      visibility: 'public'
+    });
     setNewPostContent('');
+  };
+
+  const handleSharePost = (postId: string) => {
+    // Share functionality placeholder
+    console.log('Share post:', postId);
+  };
+
+  // Placeholder stats
+  const stats = {
+    totalPosts: posts.length,
+    totalFollowers: 0,
+    totalFollowing: 0,
+    totalLikes: 0,
+    engagement: 0
   };
 
   return (
     <div className="space-y-12">
-      {/* Social Stats */}
+      {/* Social Stats - Placeholder */}
       <div className="space-y-6">
         <div className="text-center">
           <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
@@ -336,7 +352,7 @@ export const SocialFeed = () => {
       <div>
         <h2 className="text-xl font-semibold mb-4">Community Feed</h2>
         
-        {loading ? (
+        {isLoading ? (
           <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="h-48 bg-muted animate-pulse rounded-lg" />
@@ -347,11 +363,14 @@ export const SocialFeed = () => {
             {posts.map((post) => (
               <PostCard
                 key={post.id}
-                post={post}
+                post={{
+                  ...post,
+                  views_count: post.views_count || 0
+                }}
                 onLike={likePost}
                 onFollow={followUser}
                 onUnfollow={unfollowUser}
-                onShare={sharePost}
+                onShare={handleSharePost}
               />
             ))}
             

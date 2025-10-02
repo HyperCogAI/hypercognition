@@ -74,7 +74,7 @@ export class CommunityService {
 
     if (!data || data.length === 0) return []
 
-    const communityIds = data.map(item => item.community_id)
+    const communityIds = data.map((item: any) => item.community_id)
     const { data: communities } = await supabase
       .from('communities' as any)
       .select('*')
@@ -114,12 +114,12 @@ export class CommunityService {
 
       // Add creator as owner
       await supabase.from('community_members' as any).insert({
-        community_id: data.id,
+        community_id: (data as any).id,
         user_id: user.id,
         role: 'owner'
       } as any)
 
-      return { success: true, community: data as Community }
+      return { success: true, community: data as any }
     } catch (error: any) {
       return { success: false, error: error.message }
     }
@@ -154,10 +154,10 @@ export class CommunityService {
         .eq('id', communityId)
         .single()
       
-      if (community) {
+      if (community && (community as any).member_count !== undefined) {
         await supabase
           .from('communities' as any)
-          .update({ member_count: (community.member_count || 0) + 1 } as any)
+          .update({ member_count: ((community as any).member_count || 0) + 1 } as any)
           .eq('id', communityId)
       }
 
@@ -240,7 +240,7 @@ export class CommunityService {
         return { success: false, error: error.message }
       }
 
-      return { success: true, post: data as CommunityPost }
+      return { success: true, post: data as any }
     } catch (error: any) {
       return { success: false, error: error.message }
     }
