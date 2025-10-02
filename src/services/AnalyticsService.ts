@@ -333,4 +333,37 @@ export class AnalyticsService {
       return { success: false, error: error.message };
     }
   }
+
+  // New enterprise-grade methods
+  static async getAgentAnalytics(agentId: string, metrics: string[] = ['all'], period: string = '24h') {
+    const { data, error } = await supabase.functions.invoke('analytics-aggregator', {
+      body: { agentId, metrics, period }
+    })
+    if (error) throw error
+    return data
+  }
+
+  static async analyzeSentiment(agentId: string, platform: string, texts: string[], period: string = '24h') {
+    const { data, error } = await supabase.functions.invoke('sentiment-analyzer', {
+      body: { agentId, platform, texts, period }
+    })
+    if (error) throw error
+    return data
+  }
+
+  static async detectTrends(agentId: string, priceHistory: any[]) {
+    const { data, error } = await supabase.functions.invoke('trend-detector', {
+      body: { agentId, priceHistory }
+    })
+    if (error) throw error
+    return data
+  }
+
+  static async queryAnalytics(query: string, params: any, useCache: boolean = true) {
+    const { data, error } = await supabase.functions.invoke('analytics-query', {
+      body: { query, params, useCache }
+    })
+    if (error) throw error
+    return data
+  }
 }

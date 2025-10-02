@@ -116,3 +116,18 @@ verify_jwt = false
 
 [functions.get-notification-stats]
 verify_jwt = false
+
+[functions.analytics-aggregator]
+verify_jwt = false
+
+[functions.sentiment-analyzer]
+verify_jwt = false
+
+[functions.trend-detector]
+verify_jwt = false
+
+[functions.anomaly-detector]
+verify_jwt = false
+
+[functions.analytics-query]
+verify_jwt = false
