@@ -131,3 +131,9 @@ verify_jwt = false
 
 [functions.kaito-sync]
 verify_jwt = false
+
+[functions.chain-analytics-sync]
+verify_jwt = false
+
+[functions.market-sentiment-sync]
+verify_jwt = false

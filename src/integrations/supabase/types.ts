@@ -1285,6 +1285,48 @@ export type Database = {
           },
         ]
       }
+      chain_metrics: {
+        Row: {
+          active_addresses_24h: number
+          avg_gas_price: number
+          block_time: number
+          chain: string
+          id: string
+          metadata: Json | null
+          timestamp: string
+          tps: number
+          transactions_24h: number
+          tvl: number
+          volume_24h: number
+        }
+        Insert: {
+          active_addresses_24h?: number
+          avg_gas_price?: number
+          block_time?: number
+          chain: string
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          tps?: number
+          transactions_24h?: number
+          tvl?: number
+          volume_24h?: number
+        }
+        Update: {
+          active_addresses_24h?: number
+          avg_gas_price?: number
+          block_time?: number
+          chain?: string
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          tps?: number
+          transactions_24h?: number
+          tvl?: number
+          volume_24h?: number
+        }
+        Relationships: []
+      }
       comment_likes: {
         Row: {
           comment_id: string
@@ -1686,6 +1728,36 @@ export type Database = {
           take_profit_percentage?: number | null
           trader_id?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      cross_chain_analytics: {
+        Row: {
+          chain_distribution: Json
+          dominant_chain: string | null
+          id: string
+          metadata: Json | null
+          timestamp: string
+          total_tvl: number
+          total_volume_24h: number
+        }
+        Insert: {
+          chain_distribution?: Json
+          dominant_chain?: string | null
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          total_tvl?: number
+          total_volume_24h?: number
+        }
+        Update: {
+          chain_distribution?: Json
+          dominant_chain?: string | null
+          id?: string
+          metadata?: Json | null
+          timestamp?: string
+          total_tvl?: number
+          total_volume_24h?: number
         }
         Relationships: []
       }
@@ -2330,6 +2402,48 @@ export type Database = {
           },
         ]
       }
+      liquidity_pools: {
+        Row: {
+          apy: number
+          chain: string
+          fees_24h: number
+          id: string
+          liquidity: number
+          metadata: Json | null
+          pair: string
+          timestamp: string
+          token_a_address: string | null
+          token_b_address: string | null
+          volume_24h: number
+        }
+        Insert: {
+          apy?: number
+          chain: string
+          fees_24h?: number
+          id?: string
+          liquidity?: number
+          metadata?: Json | null
+          pair: string
+          timestamp?: string
+          token_a_address?: string | null
+          token_b_address?: string | null
+          volume_24h?: number
+        }
+        Update: {
+          apy?: number
+          chain?: string
+          fees_24h?: number
+          id?: string
+          liquidity?: number
+          metadata?: Json | null
+          pair?: string
+          timestamp?: string
+          token_a_address?: string | null
+          token_b_address?: string | null
+          volume_24h?: number
+        }
+        Relationships: []
+      }
       login_attempts: {
         Row: {
           attempt_type: string
@@ -2506,6 +2620,102 @@ export type Database = {
           metadata?: Json | null
           severity?: string | null
           title?: string
+        }
+        Relationships: []
+      }
+      market_news: {
+        Row: {
+          category: string
+          content: string | null
+          created_at: string
+          id: string
+          impact_level: string | null
+          metadata: Json | null
+          published_at: string
+          related_chains: string[] | null
+          related_tokens: string[] | null
+          sentiment_score: number | null
+          source: string
+          summary: string
+          title: string
+          url: string | null
+        }
+        Insert: {
+          category: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          impact_level?: string | null
+          metadata?: Json | null
+          published_at: string
+          related_chains?: string[] | null
+          related_tokens?: string[] | null
+          sentiment_score?: number | null
+          source: string
+          summary: string
+          title: string
+          url?: string | null
+        }
+        Update: {
+          category?: string
+          content?: string | null
+          created_at?: string
+          id?: string
+          impact_level?: string | null
+          metadata?: Json | null
+          published_at?: string
+          related_chains?: string[] | null
+          related_tokens?: string[] | null
+          sentiment_score?: number | null
+          source?: string
+          summary?: string
+          title?: string
+          url?: string | null
+        }
+        Relationships: []
+      }
+      market_sentiment: {
+        Row: {
+          bearish_percentage: number | null
+          bullish_percentage: number | null
+          fear_greed_index: number | null
+          id: string
+          market_cap_change: number | null
+          metadata: Json | null
+          neutral_percentage: number | null
+          overall_sentiment: number
+          social_sentiment: string | null
+          timeframe: string
+          timestamp: string
+          volume_sentiment: string | null
+        }
+        Insert: {
+          bearish_percentage?: number | null
+          bullish_percentage?: number | null
+          fear_greed_index?: number | null
+          id?: string
+          market_cap_change?: number | null
+          metadata?: Json | null
+          neutral_percentage?: number | null
+          overall_sentiment: number
+          social_sentiment?: string | null
+          timeframe: string
+          timestamp?: string
+          volume_sentiment?: string | null
+        }
+        Update: {
+          bearish_percentage?: number | null
+          bullish_percentage?: number | null
+          fear_greed_index?: number | null
+          id?: string
+          market_cap_change?: number | null
+          metadata?: Json | null
+          neutral_percentage?: number | null
+          overall_sentiment?: number
+          social_sentiment?: string | null
+          timeframe?: string
+          timestamp?: string
+          volume_sentiment?: string | null
         }
         Relationships: []
       }
@@ -4570,6 +4780,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      token_metrics: {
+        Row: {
+          address: string
+          chain: string
+          holders: number
+          id: string
+          liquidity: number
+          market_cap: number
+          metadata: Json | null
+          name: string
+          price: number
+          price_change_24h: number
+          symbol: string
+          timestamp: string
+          transactions_24h: number
+          volume_24h: number
+        }
+        Insert: {
+          address: string
+          chain: string
+          holders?: number
+          id?: string
+          liquidity?: number
+          market_cap?: number
+          metadata?: Json | null
+          name: string
+          price?: number
+          price_change_24h?: number
+          symbol: string
+          timestamp?: string
+          transactions_24h?: number
+          volume_24h?: number
+        }
+        Update: {
+          address?: string
+          chain?: string
+          holders?: number
+          id?: string
+          liquidity?: number
+          market_cap?: number
+          metadata?: Json | null
+          name?: string
+          price?: number
+          price_change_24h?: number
+          symbol?: string
+          timestamp?: string
+          transactions_24h?: number
+          volume_24h?: number
+        }
+        Relationships: []
       }
       trader_profiles: {
         Row: {

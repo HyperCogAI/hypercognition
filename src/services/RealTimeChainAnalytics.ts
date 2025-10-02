@@ -40,28 +40,26 @@ export class RealTimeChainAnalytics {
   // Fetch live Solana chain metrics
   static async getSolanaMetrics(): Promise<ChainMetrics> {
     try {
-      // Query market_data_feeds with agents for Solana tokens
-      const { data: agents, error } = await supabase
-        .from('agents')
-        .select('id, symbol, chain')
-        .eq('chain', 'Solana')
-        .order('volume_24h', { ascending: false })
-        .limit(20);
+      const { data, error } = await supabase
+        .from('chain_metrics')
+        .select('*')
+        .eq('chain', 'solana')
+        .order('timestamp', { ascending: false })
+        .limit(1)
+        .single();
 
       if (error) throw error;
 
-      const volume24h = agents?.reduce((sum: number, agent: any) => sum + (agent.volume_24h || 0), 0) || 0;
-
       return {
         chain: 'solana',
-        tvl: volume24h * 2.5,
-        volume24h,
-        transactions24h: (agents?.length || 0) * 1000,
-        activeAddresses24h: (agents?.length || 0) * 250,
-        avgGasPrice: 0.00001,
-        blockTime: 0.4,
-        tps: 2500,
-        timestamp: new Date()
+        tvl: data?.tvl || 0,
+        volume24h: data?.volume_24h || 0,
+        transactions24h: data?.transactions_24h || 0,
+        activeAddresses24h: data?.active_addresses_24h || 0,
+        avgGasPrice: data?.avg_gas_price || 0.00001,
+        blockTime: data?.block_time || 0.4,
+        tps: data?.tps || 2500,
+        timestamp: new Date(data?.timestamp || Date.now())
       };
     } catch (error) {
       console.error('Error fetching Solana metrics:', error);
@@ -72,35 +70,26 @@ export class RealTimeChainAnalytics {
   // Fetch live EVM chain metrics (Ethereum, Base, Polygon)
   static async getEVMMetrics(chain: 'ethereum' | 'base' | 'polygon'): Promise<ChainMetrics> {
     try {
-      const chainName = chain === 'ethereum' ? 'Ethereum' : chain === 'base' ? 'Base' : 'Polygon';
-      
-      const { data: agents, error } = await supabase
-        .from('agents')
-        .select('id, symbol, chain, volume_24h')
-        .eq('chain', chainName)
-        .order('volume_24h', { ascending: false })
-        .limit(20);
+      const { data, error } = await supabase
+        .from('chain_metrics')
+        .select('*')
+        .eq('chain', chain)
+        .order('timestamp', { ascending: false })
+        .limit(1)
+        .single();
 
       if (error) throw error;
 
-      const volume24h = agents?.reduce((sum: number, agent: any) => sum + (agent.volume_24h || 0), 0) || 0;
-
-      const chainConfig = {
-        ethereum: { blockTime: 12, tps: 15, gasMultiplier: 1 },
-        base: { blockTime: 2, tps: 100, gasMultiplier: 0.01 },
-        polygon: { blockTime: 2, tps: 65, gasMultiplier: 0.01 }
-      }[chain];
-
       return {
         chain,
-        tvl: volume24h * 3,
-        volume24h,
-        transactions24h: (agents?.length || 0) * 800,
-        activeAddresses24h: (agents?.length || 0) * 200,
-        avgGasPrice: 0.00005 * chainConfig.gasMultiplier,
-        blockTime: chainConfig.blockTime,
-        tps: chainConfig.tps,
-        timestamp: new Date()
+        tvl: data?.tvl || 0,
+        volume24h: data?.volume_24h || 0,
+        transactions24h: data?.transactions_24h || 0,
+        activeAddresses24h: data?.active_addresses_24h || 0,
+        avgGasPrice: data?.avg_gas_price || 0,
+        blockTime: data?.block_time || 0,
+        tps: data?.tps || 0,
+        timestamp: new Date(data?.timestamp || Date.now())
       };
     } catch (error) {
       console.error(`Error fetching ${chain} metrics:`, error);
@@ -111,26 +100,26 @@ export class RealTimeChainAnalytics {
   // Get top tokens by volume across all chains
   static async getTopTokensByVolume(limit: number = 20): Promise<TokenMetrics[]> {
     try {
-      const { data: agents, error } = await supabase
-        .from('agents')
-        .select('id, symbol, name, chain, price, volume_24h, change_24h, market_cap')
+      const { data, error } = await supabase
+        .from('token_metrics')
+        .select('*')
         .order('volume_24h', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
 
-      return agents?.map((agent: any) => ({
-        address: agent.id || 'N/A',
-        symbol: agent.symbol || 'UNKNOWN',
-        name: agent.name || 'Unknown Token',
-        price: agent.price || 0,
-        priceChange24h: agent.change_24h || 0,
-        volume24h: agent.volume_24h || 0,
-        liquidity: (agent.volume_24h || 0) * 2,
-        marketCap: agent.market_cap || 0,
-        holders: Math.floor((agent.volume_24h || 0) / 100),
-        transactions24h: Math.floor((agent.volume_24h || 0) / 50),
-        chain: agent.chain || 'Unknown'
+      return data?.map((token: any) => ({
+        address: token.address,
+        symbol: token.symbol,
+        name: token.name,
+        price: token.price,
+        priceChange24h: token.price_change_24h,
+        volume24h: token.volume_24h,
+        liquidity: token.liquidity,
+        marketCap: token.market_cap,
+        holders: token.holders,
+        transactions24h: token.transactions_24h,
+        chain: token.chain
       })) || [];
     } catch (error) {
       console.error('Error fetching top tokens:', error);
@@ -142,9 +131,9 @@ export class RealTimeChainAnalytics {
   static async getLiquidityPools(chain?: string): Promise<any[]> {
     try {
       let query = supabase
-        .from('agents')
-        .select('id, symbol, chain, volume_24h, price')
-        .order('volume_24h', { ascending: false })
+        .from('liquidity_pools')
+        .select('*')
+        .order('liquidity', { ascending: false })
         .limit(50);
 
       if (chain) {
@@ -154,13 +143,13 @@ export class RealTimeChainAnalytics {
       const { data, error } = await query;
       if (error) throw error;
 
-      return data?.map((agent: any) => ({
-        pair: `${agent.symbol || 'TOKEN'}/USDC`,
-        liquidity: (agent.volume_24h || 0) * 2,
-        volume24h: agent.volume_24h || 0,
-        apy: Math.random() * 50 + 10,
-        fees24h: (agent.volume_24h || 0) * 0.003,
-        chain: agent.chain || 'Unknown'
+      return data?.map((pool: any) => ({
+        pair: pool.pair,
+        liquidity: pool.liquidity,
+        volume24h: pool.volume_24h,
+        apy: pool.apy,
+        fees24h: pool.fees_24h,
+        chain: pool.chain
       })) || [];
     } catch (error) {
       console.error('Error fetching liquidity pools:', error);
@@ -175,31 +164,22 @@ export class RealTimeChainAnalytics {
     chainDistribution: Array<{ chain: string; volume: number; percentage: number }>;
   }> {
     try {
-      const { data: allAgents, error } = await supabase
-        .from('agents')
-        .select('volume_24h, chain');
+      const { data, error } = await supabase
+        .from('cross_chain_analytics')
+        .select('*')
+        .order('timestamp', { ascending: false })
+        .limit(1)
+        .single();
 
       if (error) throw error;
 
-      const totalVolume24h = allAgents?.reduce((sum: number, agent: any) => sum + (agent.volume_24h || 0), 0) || 0;
-      
-      // Group by chain
-      const chainGroups = allAgents?.reduce((acc: any, agent: any) => {
-        const chain = agent.chain || 'Unknown';
-        if (!acc[chain]) acc[chain] = 0;
-        acc[chain] += agent.volume_24h || 0;
-        return acc;
-      }, {}) || {};
-
-      const chainDistribution = Object.entries(chainGroups).map(([chain, volume]) => ({
-        chain,
-        volume: volume as number,
-        percentage: ((volume as number) / totalVolume24h) * 100
-      })).sort((a, b) => b.volume - a.volume);
+      const chainDistribution = Array.isArray(data?.chain_distribution) 
+        ? data.chain_distribution as Array<{ chain: string; volume: number; percentage: number }>
+        : [];
 
       return {
-        totalTVL: totalVolume24h * 2.5,
-        totalVolume24h,
+        totalTVL: data?.total_tvl || 0,
+        totalVolume24h: data?.total_volume_24h || 0,
         chainDistribution
       };
     } catch (error) {
