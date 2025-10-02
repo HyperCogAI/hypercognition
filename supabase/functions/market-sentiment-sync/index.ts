@@ -250,10 +250,10 @@ serve(async (req) => {
           fear_greed_index: fearGreedIndex,
           bullish: bullishPercentage,
           bearish: bearishPercentage,
-          avg_change: avgChange,
+          neutral: neutralPercentage,
           social_sentiment: socialSentiment
         },
-        news_articles: newsArticles.length
+        news: newsArticles
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );

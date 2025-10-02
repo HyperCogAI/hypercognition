@@ -255,6 +255,27 @@ serve(async (req) => {
 
     console.log('[ChainSync] Sync completed successfully');
 
+    // Build data payload for clients expecting live data
+    const chainMetricsByChain = chainMetrics.reduce((acc: any, m: any) => {
+      acc[m.chain] = {
+        tvl: m.tvl,
+        volume_24h: m.volume_24h,
+        transactions_24h: m.transactions_24h,
+        active_addresses_24h: m.active_addresses_24h,
+        avg_gas_price: m.avg_gas_price,
+        block_time: m.block_time,
+        tps: m.tps,
+        timestamp: m.timestamp,
+      };
+      return acc;
+    }, {} as Record<string, any>);
+
+    const crossChain = {
+      totalTVL,
+      totalVolume24h: totalVolume,
+      chainDistribution,
+    };
+
     return new Response(
       JSON.stringify({ 
         success: true,
@@ -262,7 +283,11 @@ serve(async (req) => {
           chains: chainMetrics.length,
           tokens: tokenMetrics.length,
           pools: liquidityPools.length
-        }
+        },
+        solanaMetrics,
+        chainMetrics: chainMetricsByChain,
+        crossChain,
+        liquidityPools,
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     );
