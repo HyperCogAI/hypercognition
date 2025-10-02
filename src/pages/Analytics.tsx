@@ -1,10 +1,10 @@
 import React from 'react';
 import { EnterpriseChainAnalytics } from '@/components/analytics/EnterpriseChainAnalytics';
-import { AnalyticsTestPanel } from '@/components/analytics/AnalyticsTestPanel';
+
 import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
 import { KaitoInfluenceDashboard } from '@/components/analytics/KaitoInfluenceDashboard';
-import { KaitoTestPanel } from '@/components/analytics/KaitoTestPanel';
+
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Layers, TrendingUp, Newspaper, Sparkles } from 'lucide-react';
@@ -63,7 +63,6 @@ const Analytics = () => {
           </div>
           
           <TabsContent value="chains" className="animate-fade-in space-y-6">
-            <AnalyticsTestPanel />
             <EnterpriseChainAnalytics />
           </TabsContent>
           
@@ -73,7 +72,6 @@ const Analytics = () => {
           
           <TabsContent value="influence" className="animate-fade-in">
             <div className="space-y-6">
-              <KaitoTestPanel />
               <KaitoInfluenceDashboard />
             </div>
           </TabsContent>

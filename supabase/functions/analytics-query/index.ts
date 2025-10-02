@@ -100,13 +100,33 @@ serve(async (req) => {
   }
 })
 
+function mapPeriod(frontend: string): string {
+  switch ((frontend || '').toLowerCase()) {
+    case 'hourly':
+    case '1h':
+      return '1h'
+    case 'daily':
+    case '24h':
+      return '24h'
+    case 'weekly':
+    case '7d':
+      return '7d'
+    case 'monthly':
+    case '30d':
+      return '30d'
+    default:
+      return '24h'
+  }
+}
+
 async function getTopPerformers(client: any, params: any) {
   const { period = 'daily', limit = 10 } = params
+  const mapped = mapPeriod(period)
 
   const { data, error } = await client
     .from('agent_performance_metrics')
     .select('agent_id, total_profit, win_rate, total_volume, period')
-    .eq('period', period)
+    .eq('period', mapped)
     .order('total_profit', { ascending: false })
     .limit(limit)
 
@@ -118,12 +138,14 @@ async function getTopPerformers(client: any, params: any) {
 }
 
 async function getTrendingAgents(client: any, params: any) {
-  const { limit = 10 } = params
+  const { period = 'daily', limit = 10 } = params
+  const mapped = mapPeriod(period)
 
   const { data, error } = await client
-    .from('market_sentiment')
-    .select('agent_id, sentiment_score, mentions_count, created_at')
-    .order('mentions_count', { ascending: false })
+    .from('agent_performance_metrics')
+    .select('agent_id, total_volume, win_rate, total_trades, avg_roi, period')
+    .eq('period', mapped)
+    .order('total_volume', { ascending: false })
     .limit(limit)
 
   if (error) {
@@ -135,19 +157,23 @@ async function getTrendingAgents(client: any, params: any) {
 
 async function getMarketOverview(client: any, params: any) {
   const { period = 'daily' } = params
+  const mapped = mapPeriod(period)
 
   const { data: metricsData, error: metricsError } = await client
     .from('agent_performance_metrics')
     .select('total_volume, agent_id, total_trades')
-    .eq('period', period)
+    .eq('period', mapped)
 
   if (metricsError) {
     console.error('[AnalyticsQuery] Error fetching metrics data:', metricsError)
   }
 
-  const { data: sentimentData, error: sentError } = await client
+  const { data: sentimentRows, error: sentError } = await client
     .from('market_sentiment')
-    .select('sentiment_score, agent_id')
+    .select('overall_sentiment, fear_greed_index, timestamp')
+    .eq('timeframe', mapped)
+    .order('timestamp', { ascending: false })
+    .limit(10)
 
   if (sentError) {
     console.error('[AnalyticsQuery] Error fetching sentiment data:', sentError)
@@ -155,8 +181,8 @@ async function getMarketOverview(client: any, params: any) {
 
   const totalVolume = metricsData?.reduce((sum, d) => sum + (d.total_volume || 0), 0) || 0
   const totalTrades = metricsData?.reduce((sum, d) => sum + (d.total_trades || 0), 0) || 0
-  const avgSentiment = sentimentData && sentimentData.length > 0
-    ? sentimentData.reduce((sum, d) => sum + (d.sentiment_score || 0), 0) / sentimentData.length
+  const avgSentiment = sentimentRows && sentimentRows.length > 0
+    ? sentimentRows.reduce((sum: number, d: any) => sum + (d.overall_sentiment || 0), 0) / sentimentRows.length
     : 0
 
   return {
@@ -164,37 +190,39 @@ async function getMarketOverview(client: any, params: any) {
     total_trades: totalTrades,
     avg_sentiment: avgSentiment,
     active_agents: metricsData?.length || 0,
-    trending_agents: sentimentData?.length || 0,
-    period
+    trending_agents: metricsData?.length || 0,
+    period: mapped
   }
 }
 
 async function getSentimentTrends(client: any, params: any) {
-  const { agentId } = params
+  const { period = 'daily' } = params
+  const mapped = mapPeriod(period)
 
   const { data, error } = await client
     .from('market_sentiment')
-    .select('created_at, sentiment_score, sentiment_label')
-    .eq('agent_id', agentId)
-    .order('created_at', { ascending: true })
+    .select('timestamp, overall_sentiment, fear_greed_index, bullish_percentage, bearish_percentage, neutral_percentage')
+    .eq('timeframe', mapped)
+    .order('timestamp', { ascending: true })
     .limit(50)
 
   if (error) throw error
-  return data
+  return data || []
 }
 
 async function getVolumeLeaders(client: any, params: any) {
   const { period = 'daily', limit = 10 } = params
+  const mapped = mapPeriod(period)
 
   const { data, error } = await client
     .from('agent_performance_metrics')
     .select('agent_id, total_volume, total_trades, active_users')
-    .eq('period', period)
+    .eq('period', mapped)
     .order('total_volume', { ascending: false })
     .limit(limit)
 
   if (error) throw error
-  return data
+  return data || []
 }
 
 async function getAnomalyAlerts(client: any, params: any) {

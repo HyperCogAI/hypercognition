@@ -47,7 +47,7 @@ export class MarketNewsService {
       const { data, error } = await query;
       if (error) throw error;
 
-      return data?.map(news => ({
+      const mapped = (data || []).map(news => ({
         id: news.id,
         title: news.title,
         summary: news.summary,
@@ -61,7 +61,18 @@ export class MarketNewsService {
         relatedChains: news.related_chains,
         publishedAt: new Date(news.published_at),
         createdAt: new Date(news.created_at)
-      })) || [];
+      }))
+
+      // Deduplicate by title to avoid repeated articles
+      const uniqueByTitle: Record<string, boolean> = {}
+      const unique = mapped.filter(item => {
+        const key = (item.title || '').trim().toLowerCase()
+        if (uniqueByTitle[key]) return false
+        uniqueByTitle[key] = true
+        return true
+      })
+
+      return unique
     } catch (error) {
       console.error('Error fetching market news:', error);
       return [];

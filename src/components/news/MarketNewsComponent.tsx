@@ -52,14 +52,18 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
   };
 
   const getSentimentText = (score: number) => {
-    if (score > 0.3) return 'Bullish';
-    if (score < -0.3) return 'Bearish';
+    if (score > 0.6) return 'Extremely Bullish';
+    if (score > 0.15) return 'Bullish';
+    if (score < -0.6) return 'Extremely Bearish';
+    if (score < -0.15) return 'Bearish';
     return 'Neutral';
   };
 
   const getSentimentColor = (score: number) => {
-    if (score > 0.3) return 'text-green-500';
-    if (score < -0.3) return 'text-red-500';
+    if (score > 0.6) return 'text-green-600';
+    if (score > 0.15) return 'text-green-500';
+    if (score < -0.6) return 'text-red-600';
+    if (score < -0.15) return 'text-red-500';
     return 'text-yellow-500';
   };
 

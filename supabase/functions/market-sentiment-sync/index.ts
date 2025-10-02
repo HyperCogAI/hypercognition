@@ -18,8 +18,8 @@ serve(async (req) => {
 
     console.log('[SentimentSync] Starting market sentiment sync');
 
-    // Get recent market data with active status only
-    const { data: agents, error: agentsError } = await supabase
+    // Get recent market data, prefer active but fallback to top by volume
+    const { data: agentsActive, error: agentsError } = await supabase
       .from('agents')
       .select('price, change_24h, market_cap, volume_24h')
       .eq('status', 'active')
@@ -31,10 +31,28 @@ serve(async (req) => {
       throw agentsError;
     }
 
+    let agents = agentsActive || [];
+
+    // Fallback: include non-active agents if none are active
     if (!agents || agents.length === 0) {
-      console.log('[SentimentSync] No active agents found');
+      const { data: fallbackAgents, error: fallbackError } = await supabase
+        .from('agents')
+        .select('price, change_24h, market_cap, volume_24h')
+        .order('volume_24h', { ascending: false })
+        .limit(100);
+
+      if (fallbackError) {
+        console.error('[SentimentSync] Fallback error fetching agents:', fallbackError);
+        throw fallbackError;
+      }
+
+      agents = fallbackAgents || [];
+    }
+
+    if (!agents || agents.length === 0) {
+      console.log('[SentimentSync] No agents found (active or fallback)');
       return new Response(
-        JSON.stringify({ success: false, message: 'No active agents found' }),
+        JSON.stringify({ success: false, message: 'No agents found' }),
         { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       );
     }
