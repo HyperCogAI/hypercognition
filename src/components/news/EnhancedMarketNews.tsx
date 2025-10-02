@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { TrendingUp, TrendingDown, Clock, Search, Filter, Globe, Newspaper, AlertTriangle, ArrowRight } from "lucide-react"
 import { cn } from "@/lib/utils"
-import { MarketNewsService } from '@/services/MarketNewsService'
+import { RealMarketSentimentService } from '@/services/RealMarketSentimentService'
 import { Link } from "react-router-dom"
 
 interface NewsArticle {
@@ -34,19 +34,18 @@ const EnhancedMarketNews = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        // Fetch from new CryptoPanic-integrated service
-        const newsData = await MarketNewsService.getLatestNews(50);
+        const newsData = await RealMarketSentimentService.getMarketNews(50);
         const formattedNews: NewsArticle[] = newsData.map(item => ({
           id: item.id,
           title: item.title,
           summary: item.summary,
           source: item.source,
-          publishedAt: item.publishedAt.toISOString(),
-          category: item.category || "Market Analysis",
-          sentiment: (item.sentimentScore ?? 0) > 0.2 ? "positive" : (item.sentimentScore ?? 0) < -0.2 ? "negative" : "neutral",
-          impact: item.impactLevel || 'medium',
-          relatedAgents: item.relatedTokens || [],
-          url: item.url || ''
+          publishedAt: item.publishedAt,
+          category: "Market Analysis",
+          sentiment: item.sentiment > 0.2 ? "positive" : item.sentiment < -0.2 ? "negative" : "neutral",
+          impact: item.impact,
+          relatedAgents: [],
+          url: item.url
         }));
         setNews(formattedNews);
       } catch (error) {
@@ -55,12 +54,7 @@ const EnhancedMarketNews = () => {
         setLoading(false);
       }
     };
-    
     fetchNews();
-    
-    // Refresh news every 5 minutes
-    const interval = setInterval(fetchNews, 300000);
-    return () => clearInterval(interval);
   }, []);
 
   // Market alerts removed - was displaying mock data
