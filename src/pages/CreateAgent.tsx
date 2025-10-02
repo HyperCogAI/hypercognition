@@ -56,24 +56,28 @@ export const CreateAgent = () => {
 
   const handleSubmit = async () => {
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .insert([{
+      const { data, error } = await supabase.functions.invoke('create-agent', {
+        body: {
           name: agentData.name,
           symbol: agentData.symbol,
           description: agentData.description,
-          chain: agentData.chain,
+          category: agentData.category,
           avatar_url: agentData.avatar || null,
-          price: parseFloat(agentData.initialPrice) || 0.001,
-          market_cap: (parseFloat(agentData.initialSupply) || 1000000) * (parseFloat(agentData.initialPrice) || 0.001)
-        }])
-        .select()
-        .single()
+          features: agentData.features,
+          initial_supply: agentData.initialSupply,
+          initial_price: agentData.initialPrice,
+          chain: agentData.chain
+        }
+      })
 
       if (error) throw error
       
-      console.log("Agent created successfully:", data)
-      navigate(`/agent/${data.id}`)
+      if (data?.success) {
+        console.log("Agent created successfully:", data.agent)
+        navigate(`/agent/${data.agent.id}`)
+      } else {
+        throw new Error(data?.error || 'Failed to create agent')
+      }
     } catch (error) {
       console.error("Error creating agent:", error)
       // Could add toast notification here

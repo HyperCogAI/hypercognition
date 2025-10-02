@@ -245,6 +245,47 @@ export type Database = {
           },
         ]
       }
+      agent_creation_requests: {
+        Row: {
+          agent_data: Json
+          agent_id: string | null
+          created_at: string
+          creator_id: string
+          id: string
+          processed_at: string | null
+          rejection_reason: string | null
+          status: string
+        }
+        Insert: {
+          agent_data: Json
+          agent_id?: string | null
+          created_at?: string
+          creator_id: string
+          id?: string
+          processed_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+        }
+        Update: {
+          agent_data?: Json
+          agent_id?: string | null
+          created_at?: string
+          creator_id?: string
+          id?: string
+          processed_at?: string | null
+          rejection_reason?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_creation_requests_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_interactions: {
         Row: {
           agent_id: string
@@ -399,48 +440,66 @@ export type Database = {
       agents: {
         Row: {
           avatar_url: string | null
+          category: string | null
           chain: string
           change_24h: number
           created_at: string
+          creator_id: string | null
           description: string | null
+          features: Json | null
           id: string
+          initial_price: number | null
+          initial_supply: number | null
           logo_generated: boolean | null
           logo_style: string | null
           market_cap: number
           name: string
           price: number
+          status: string | null
           symbol: string
           updated_at: string
           volume_24h: number
         }
         Insert: {
           avatar_url?: string | null
+          category?: string | null
           chain?: string
           change_24h?: number
           created_at?: string
+          creator_id?: string | null
           description?: string | null
+          features?: Json | null
           id?: string
+          initial_price?: number | null
+          initial_supply?: number | null
           logo_generated?: boolean | null
           logo_style?: string | null
           market_cap?: number
           name: string
           price?: number
+          status?: string | null
           symbol: string
           updated_at?: string
           volume_24h?: number
         }
         Update: {
           avatar_url?: string | null
+          category?: string | null
           chain?: string
           change_24h?: number
           created_at?: string
+          creator_id?: string | null
           description?: string | null
+          features?: Json | null
           id?: string
+          initial_price?: number | null
+          initial_supply?: number | null
           logo_generated?: boolean | null
           logo_style?: string | null
           market_cap?: number
           name?: string
           price?: number
+          status?: string | null
           symbol?: string
           updated_at?: string
           volume_24h?: number
@@ -5011,6 +5070,15 @@ export type Database = {
       make_user_admin: {
         Args: { target_user_id?: string }
         Returns: undefined
+      }
+      validate_agent_creation: {
+        Args: {
+          agent_category: string
+          agent_description: string
+          agent_name: string
+          agent_symbol: string
+        }
+        Returns: Json
       }
       validate_and_sanitize_input: {
         Args: {
