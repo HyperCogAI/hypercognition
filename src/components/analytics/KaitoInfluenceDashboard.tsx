@@ -23,7 +23,7 @@ const XLogo = ({ className = "h-4 w-4" }: { className?: string }) => (
 );
 
 export const KaitoInfluenceDashboard = () => {
-  const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier, syncForUsername } = useKaitoAttention();
+  const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier, syncForUsernameAsync } = useKaitoAttention();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedAgents, setSearchedAgents] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
@@ -72,34 +72,46 @@ export const KaitoInfluenceDashboard = () => {
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
-    const username = searchQuery.trim();
-    
-    if (!username) return;
-    
+    const raw = searchQuery.trim();
+    const username = raw.replace(/^@+/, '').slice(0, 50);
+
+    if (!username || /[^A-Za-z0-9_]/.test(username)) {
+      console.warn('Invalid X username');
+      return;
+    }
+
     // Check if already exists in current data
     const exists = allAgents.some(
       agent => agent.twitter_username.toLowerCase() === username.toLowerCase()
     );
-    
+
     if (exists) {
-      // Just filter to show it
+      // Already loaded; filtering will show it
       return;
     }
-    
-    // Fetch from API
+
     setIsSearching(true);
     try {
-      await syncForUsername(username);
-      
-      // After sync, fetch the newly added data
-      const { data, error } = await supabase
-        .from('kaito_attention_scores')
-        .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
-        .eq('twitter_username', username)
-        .maybeSingle();
-      
-      if (data && !error) {
-        setSearchedAgents(prev => [...prev, data]);
+      // Trigger backend sync and wait for completion
+      await syncForUsernameAsync(username);
+
+      // Try to fetch newly upserted record with small retries
+      let fetched: any = null;
+      for (let i = 0; i < 5; i++) {
+        const { data, error } = await supabase
+          .from('kaito_attention_scores')
+          .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
+          .eq('twitter_username', username)
+          .maybeSingle();
+        if (data && !error) { fetched = data; break; }
+        await new Promise(r => setTimeout(r, 500));
+      }
+
+      if (fetched) {
+        setSearchedAgents(prev => {
+          const exists = prev.some(a => a.twitter_username.toLowerCase() === fetched.twitter_username.toLowerCase());
+          return exists ? prev : [...prev, fetched];
+        });
       }
     } catch (error) {
       console.error('Error searching for username:', error);

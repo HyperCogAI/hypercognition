@@ -77,6 +77,10 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
     syncMutation.mutate({ usernames: [username] });
   };
 
+  const syncForUsernameAsync = (username: string) => {
+    return syncMutation.mutateAsync({ usernames: [username] });
+  };
+
   const syncMultiple = (request: KaitoSyncRequest) => {
     syncMutation.mutate(request);
   };
@@ -97,6 +101,7 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
     needsRefresh,
     syncForAgent,
     syncForUsername,
+    syncForUsernameAsync,
     syncMultiple,
     formatYaps: KaitoService.formatYaps,
     getInfluenceTier: KaitoService.getInfluenceTier
