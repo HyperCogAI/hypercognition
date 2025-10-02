@@ -1,8 +1,9 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { ArrowLeft, Upload, Bot, Settings, Zap, Brain, AlertCircle } from "lucide-react"
 import DOMPurify from "dompurify"
+import { useAuth } from "@/contexts/AuthContext"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -18,9 +19,12 @@ import { Alert, AlertDescription } from "@/components/ui/alert"
 export const CreateAgent = () => {
   const navigate = useNavigate()
   const { toast } = useToast()
+  const { user, isLoading } = useAuth()
   const [step, setStep] = useState(1)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [errors, setErrors] = useState<string[]>([])
+  const [agentCreationCount, setAgentCreationCount] = useState(0)
+  const [isCheckingLimit, setIsCheckingLimit] = useState(true)
   const [agentData, setAgentData] = useState({
     name: "",
     symbol: "",
@@ -42,6 +46,32 @@ export const CreateAgent = () => {
     "Social Integration", "AI Learning", "Custom Strategies", "Portfolio Management",
     "Market Making", "Arbitrage", "Yield Farming", "Governance"
   ]
+
+  // Check user's agent creation count on mount
+  useEffect(() => {
+    const checkCreationLimit = async () => {
+      if (!user) {
+        setIsCheckingLimit(false)
+        return
+      }
+
+      try {
+        const { data, error } = await supabase.rpc('get_user_agent_count_today')
+        
+        if (error) {
+          console.error('Error checking creation limit:', error)
+        } else {
+          setAgentCreationCount(data || 0)
+        }
+      } catch (error) {
+        console.error('Failed to check creation limit:', error)
+      } finally {
+        setIsCheckingLimit(false)
+      }
+    }
+
+    checkCreationLimit()
+  }, [user])
 
   const handleNext = () => {
     if (step < 3) setStep(step + 1)
@@ -121,6 +151,22 @@ export const CreateAgent = () => {
     }
   }
 
+  // Show loading state
+  if (isLoading || isCheckingLimit) {
+    return (
+      <div className="container mx-auto px-4 py-20">
+        <div className="flex flex-col items-center justify-center gap-4">
+          <Bot className="h-16 w-16 text-primary animate-pulse" />
+          <p className="text-muted-foreground">Loading...</p>
+        </div>
+      </div>
+    )
+  }
+
+  // Check if user has reached daily limit
+  const hasReachedLimit = agentCreationCount >= 5
+  const remainingCreations = Math.max(0, 5 - agentCreationCount)
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl pt-6 md:pt-10">
       {/* Header */}
@@ -148,8 +194,23 @@ export const CreateAgent = () => {
           <Badge variant={step >= 3 ? "default" : "outline"} className="border-primary/30">
             3. Launch
           </Badge>
+          {user && (
+            <Badge variant="secondary" className="ml-auto">
+              {remainingCreations} creation{remainingCreations !== 1 ? 's' : ''} remaining today
+            </Badge>
+          )}
         </div>
       </div>
+
+      {/* Rate Limit Warning */}
+      {hasReachedLimit && (
+        <Alert variant="destructive" className="max-w-4xl mx-auto mb-6">
+          <AlertCircle className="h-4 w-4" />
+          <AlertDescription>
+            You've reached your daily limit of 5 agent creations. Please try again tomorrow.
+          </AlertDescription>
+        </Alert>
+      )}
 
       <div className="max-w-4xl mx-auto animate-fade-in">
         {/* Error Display */}
@@ -440,11 +501,20 @@ export const CreateAgent = () => {
                   variant="neon"
                   size="lg"
                   onClick={handleSubmit}
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || hasReachedLimit}
                   className="px-8"
                 >
                   <span className="text-white">
-                    {isSubmitting ? "Creating..." : "🚀 Launch Agent"}
+                    {isSubmitting ? (
+                      <>
+                        <Bot className="inline mr-2 h-4 w-4 animate-spin" />
+                        Creating...
+                      </>
+                    ) : hasReachedLimit ? (
+                      "Daily Limit Reached"
+                    ) : (
+                      "🚀 Launch Agent"
+                    )}
                   </span>
                 </CyberButton>
               </div>

@@ -5027,8 +5027,16 @@ export type Database = {
         Args: { developer_profile_id: string }
         Returns: Json
       }
+      get_user_agent_count_today: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
+        Returns: boolean
+      }
+      is_agent_creator: {
+        Args: { agent_id_param: string }
         Returns: boolean
       }
       is_compliance_officer: {
