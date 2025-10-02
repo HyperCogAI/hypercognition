@@ -24,13 +24,22 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   const [crossChainData, setCrossChainData] = useState<any>(null);
   const [liquidityPools, setLiquidityPools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
   const { toast } = useToast();
-  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(false); // Disable auto-sync, we'll control it manually
+  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(false);
 
-  const fetchData = async () => {
-    setIsLoading(true);
+  const fetchData = async (retryCount = 0) => {
+    const MAX_RETRIES = 2;
+    
     try {
-      const [solana, ethereum, base, bnb, tokens, crossChain, pools] = await Promise.all([
+      // Only show loading on first load or manual refresh
+      if (retryCount === 0 && !solanaMetrics) {
+        setIsLoading(true);
+      }
+      setHasError(false);
+
+      // Fetch data with individual error handling to prevent all data from being lost
+      const results = await Promise.allSettled([
         RealTimeChainAnalytics.getSolanaMetrics(),
         RealTimeChainAnalytics.getEVMMetrics('ethereum'),
         RealTimeChainAnalytics.getEVMMetrics('base'),
@@ -40,18 +49,45 @@ export const EnterpriseChainAnalytics: React.FC = () => {
         RealTimeChainAnalytics.getLiquidityPools()
       ]);
 
-      setSolanaMetrics(solana);
-      setEvmMetrics({ ethereum, base, bnb });
-      setTopTokens(tokens);
-      setCrossChainData(crossChain);
-      setLiquidityPools(pools);
+      // Only update state for successful fetches (stale-while-revalidate pattern)
+      if (results[0].status === 'fulfilled') setSolanaMetrics(results[0].value);
+      if (results[1].status === 'fulfilled' && results[2].status === 'fulfilled' && results[3].status === 'fulfilled') {
+        setEvmMetrics({
+          ethereum: results[1].value,
+          base: results[2].value,
+          bnb: results[3].value
+        });
+      }
+      if (results[4].status === 'fulfilled') setTopTokens(results[4].value);
+      if (results[5].status === 'fulfilled') setCrossChainData(results[5].value);
+      if (results[6].status === 'fulfilled') setLiquidityPools(results[6].value);
+
+      // Check if any critical fetches failed
+      const criticalFailures = results.slice(0, 4).filter(r => r.status === 'rejected');
+      if (criticalFailures.length > 0 && retryCount < MAX_RETRIES) {
+        console.warn(`Some fetches failed, retrying (${retryCount + 1}/${MAX_RETRIES})...`);
+        setTimeout(() => fetchData(retryCount + 1), 2000 * (retryCount + 1));
+        return;
+      }
+
+      if (criticalFailures.length > 0) {
+        console.error('Chain analytics fetch failures:', criticalFailures);
+        setHasError(true);
+      }
     } catch (error) {
       console.error('Error fetching chain analytics:', error);
-      toast({
-        title: "Error",
-        description: "Failed to fetch real-time chain analytics",
-        variant: "destructive"
-      });
+      setHasError(true);
+      
+      // Retry on error
+      if (retryCount < MAX_RETRIES) {
+        setTimeout(() => fetchData(retryCount + 1), 2000 * (retryCount + 1));
+      } else {
+        toast({
+          title: "Connection Issue",
+          description: "Some data may be outdated. Displaying cached data.",
+          variant: "default"
+        });
+      }
     } finally {
       setIsLoading(false);
     }
@@ -195,11 +231,13 @@ export const EnterpriseChainAnalytics: React.FC = () => {
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-foreground">Live API Data Active</span>
+              <div className={`w-3 h-3 rounded-full ${hasError ? 'bg-yellow-500' : 'bg-green-500 animate-pulse'}`}></div>
+              <span className="text-sm font-medium text-foreground">
+                {hasError ? 'Using Cached Data' : 'Live API Data Active'}
+              </span>
             </div>
             <div className="text-xs text-muted-foreground">
-              Helius (Solana) • CoinGecko (Prices) • Alternative.me (Sentiment)
+              Helius (Solana) • DefiLlama (TVL/Volume) • Alternative.me (Sentiment)
             </div>
           </div>
         </CardContent>
