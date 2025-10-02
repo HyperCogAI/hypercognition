@@ -94,14 +94,9 @@ export const RealPortfolioService = {
 
   async generatePerformanceHistory(userId: string, timeframe: string): Promise<PortfolioPerformanceData[]> {
     try {
-      // Fetch current market data from CoinGecko for realistic price movements
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false'
-      );
-
-      if (!response.ok) throw new Error('Failed to fetch market data');
-      
-      const marketData = await response.json();
+      // Fetch current market data from CoinGecko via centralized API
+      const { coinGeckoApi } = await import('@/lib/apis/coinGeckoApi');
+      const marketData = await coinGeckoApi.getTopCryptos(100);
       const holdings = await this.getPortfolioHoldings(userId);
       
       if (holdings.length === 0) return [];

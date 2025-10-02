@@ -7,17 +7,9 @@ import { useEffect, useState } from "react"
 
 export function DetailedPortfolioAnalytics() {
   const { holdings, portfolioValue, totalInvested, totalPnL, totalPnLPercent } = useRealPortfolio()
-  const [cryptoIds, setCryptoIds] = useState<string[]>([])
   
-  // Extract crypto IDs from holdings
-  useEffect(() => {
-    const ids = holdings
-      .map(h => h.agent?.name?.toLowerCase().replace(/\s+/g, '-'))
-      .filter(Boolean) as string[]
-    setCryptoIds(ids)
-  }, [holdings])
-
-  const { prices, isConnected } = useRealtimePrices({ cryptoIds })
+  // Disable real-time price updates - use portfolio data directly
+  const { prices, isConnected } = useRealtimePrices({ cryptoIds: [], autoStart: false })
 
   // Calculate portfolio metrics
   const calculateMetrics = () => {

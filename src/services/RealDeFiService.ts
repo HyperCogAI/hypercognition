@@ -62,14 +62,9 @@ export const RealDeFiService = {
 
   async generatePoolsFromMarketData(): Promise<DeFiPool[]> {
     try {
-      // Fetch real crypto prices from CoinGecko
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=20&page=1&sparkline=false'
-      );
-      
-      if (!response.ok) throw new Error('Failed to fetch market data');
-      
-      const marketData: CoingeckoPrice[] = await response.json();
+      // Fetch real crypto prices from CoinGecko via centralized API
+      const { coinGeckoApi } = await import('@/lib/apis/coinGeckoApi');
+      const marketData: CoingeckoPrice[] = await coinGeckoApi.getTopCryptos(20) as any;
       
       // Create DeFi pools based on top cryptocurrencies
       return [

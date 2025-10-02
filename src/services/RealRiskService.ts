@@ -205,14 +205,9 @@ export const RealRiskService = {
   // Helper methods
   async fetchMarketVolatilityData() {
     try {
-      // Fetch from CoinGecko or other market data provider
-      const response = await fetch(
-        'https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false'
-      );
-      
-      if (!response.ok) throw new Error('Failed to fetch market data');
-      
-      const data = await response.json();
+      // Fetch from CoinGecko via centralized API
+      const { coinGeckoApi } = await import('@/lib/apis/coinGeckoApi');
+      const data = await coinGeckoApi.getTopCryptos(100);
       
       return data.map((coin: any) => ({
         symbol: coin.symbol.toUpperCase(),
