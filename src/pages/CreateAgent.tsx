@@ -1,7 +1,7 @@
 import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
-import { ArrowLeft, Upload, Bot, Settings, Zap, Brain } from "lucide-react"
+import { ArrowLeft, Upload, Bot, Settings, Zap, Brain, AlertCircle } from "lucide-react"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -11,10 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
+import { useToast } from "@/hooks/use-toast"
+import { Alert, AlertDescription } from "@/components/ui/alert"
 
 export const CreateAgent = () => {
   const navigate = useNavigate()
+  const { toast } = useToast()
   const [step, setStep] = useState(1)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [errors, setErrors] = useState<string[]>([])
   const [agentData, setAgentData] = useState({
     name: "",
     symbol: "",
@@ -55,6 +60,9 @@ export const CreateAgent = () => {
   }
 
   const handleSubmit = async () => {
+    setIsSubmitting(true)
+    setErrors([])
+
     try {
       const { data, error } = await supabase.functions.invoke('create-agent', {
         body: {
@@ -70,17 +78,42 @@ export const CreateAgent = () => {
         }
       })
 
-      if (error) throw error
+      if (error) {
+        console.error("Edge function error:", error)
+        toast({
+          title: "Error",
+          description: error.message || "Failed to create agent. Please try again.",
+          variant: "destructive"
+        })
+        return
+      }
       
       if (data?.success) {
-        console.log("Agent created successfully:", data.agent)
+        toast({
+          title: "Success! 🚀",
+          description: `${data.agent.name} has been created successfully!`,
+        })
         navigate(`/agent/${data.agent.id}`)
+      } else if (data?.errors) {
+        setErrors(data.errors)
+        toast({
+          title: "Validation Error",
+          description: "Please fix the errors and try again.",
+          variant: "destructive"
+        })
       } else {
         throw new Error(data?.error || 'Failed to create agent')
       }
     } catch (error) {
       console.error("Error creating agent:", error)
-      // Could add toast notification here
+      const errorMessage = error instanceof Error ? error.message : "An unexpected error occurred"
+      toast({
+        title: "Error",
+        description: errorMessage,
+        variant: "destructive"
+      })
+    } finally {
+      setIsSubmitting(false)
     }
   }
 
@@ -115,6 +148,20 @@ export const CreateAgent = () => {
       </div>
 
       <div className="max-w-4xl mx-auto animate-fade-in">
+        {/* Error Display */}
+        {errors.length > 0 && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertCircle className="h-4 w-4" />
+            <AlertDescription>
+              <ul className="list-disc list-inside space-y-1">
+                {errors.map((error, index) => (
+                  <li key={index}>{error}</li>
+                ))}
+              </ul>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {/* Step 1: Basic Information */}
         {step === 1 && (
           <Card className="bg-card/30 border border-border/50 backdrop-blur-sm">
@@ -389,9 +436,12 @@ export const CreateAgent = () => {
                   variant="neon"
                   size="lg"
                   onClick={handleSubmit}
+                  disabled={isSubmitting}
                   className="px-8"
                 >
-                  <span className="text-white">🚀 Launch Agent</span>
+                  <span className="text-white">
+                    {isSubmitting ? "Creating..." : "🚀 Launch Agent"}
+                  </span>
                 </CyberButton>
               </div>
             </CardContent>

@@ -55,6 +55,25 @@ serve(async (req) => {
       )
     }
 
+    // Check rate limiting - max 5 agents per user per day
+    const { data: recentAgents, error: rateLimitError } = await supabaseAdmin
+      .from('agents')
+      .select('id')
+      .eq('creator_id', user.id)
+      .gte('created_at', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError)
+    } else if (recentAgents && recentAgents.length >= 5) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: 'You can only create 5 agents per day. Please try again later.'
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
     // Parse request body
     const body: CreateAgentRequest = await req.json()
 
