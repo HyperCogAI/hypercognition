@@ -4,7 +4,7 @@ import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, A
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
-import { birdeyeApi, SOLANA_TOKEN_ADDRESSES } from '@/lib/apis/birdeyeApi'
+import { coinGeckoApi } from '@/lib/apis/coinGeckoApi'
 
 interface SolanaPriceChartProps {
   token: any
@@ -20,35 +20,39 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
   const [currentPrice, setCurrentPrice] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Fetch real price history from Birdeye
+  // Fetch real price history from CoinGecko
   useEffect(() => {
     const fetchRealData = async () => {
-      if (!token?.symbol) return
+      if (!token?.id) return
       
       setLoading(true)
       let historyData: any[] = []
       
       try {
-        // Get token address for symbol
-        const tokenAddress = SOLANA_TOKEN_ADDRESSES[token.symbol.toUpperCase() as keyof typeof SOLANA_TOKEN_ADDRESSES]
+        // Map timeframes to days for CoinGecko
+        const daysMap: Record<string, number> = {
+          '1H': 1,
+          '4H': 1,
+          '1D': 1,
+          '1W': 7,
+          '1M': 30
+        }
         
-        if (tokenAddress) {
-          // Fetch historical data from Birdeye
-          const history = await birdeyeApi.getPriceHistory(tokenAddress, timeframe)
-          
-          if (history && history.length > 0) {
-            historyData = history.map((item, index) => ({
-              time: new Date(item.unixTime * 1000).toLocaleTimeString('en-US', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-              }),
-              price: item.value,
-              volume: Math.random() * 1000000 + 100000 // Volume not available in history endpoint
-            }))
-          }
+        // Fetch historical data from CoinGecko
+        const chartData = await coinGeckoApi.getMarketChart(token.id, daysMap[timeframe] || 1)
+        
+        if (chartData?.prices && chartData.prices.length > 0) {
+          historyData = chartData.prices.map(([timestamp, price]) => ({
+            time: new Date(timestamp).toLocaleTimeString('en-US', { 
+              hour: '2-digit', 
+              minute: '2-digit' 
+            }),
+            price: price,
+            volume: Math.random() * 1000000 + 100000
+          }))
         }
       } catch (error) {
-        console.error('Error fetching Birdeye data:', error)
+        console.error('Error fetching CoinGecko data:', error)
       }
       
       // Fallback: Generate realistic sample data based on current price
@@ -86,15 +90,12 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
   useEffect(() => {
     let mounted = true
     const load = async () => {
-      if (!token?.symbol) return
+      if (!token?.id) return
       
       try {
-        const tokenAddress = SOLANA_TOKEN_ADDRESSES[token.symbol.toUpperCase() as keyof typeof SOLANA_TOKEN_ADDRESSES]
-        if (tokenAddress) {
-          const priceData = await birdeyeApi.getTokenPrice(tokenAddress)
-          if (mounted && priceData?.value) {
-            setCurrentPrice(priceData.value)
-          }
+        const priceData = await coinGeckoApi.getCryptoById(token.id)
+        if (mounted && priceData?.current_price) {
+          setCurrentPrice(priceData.current_price)
         }
       } catch (error) {
         console.error('Error fetching live price:', error)

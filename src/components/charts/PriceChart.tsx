@@ -3,7 +3,6 @@ import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContai
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { supabase } from "@/integrations/supabase/client"
-import { birdeyeApi } from "@/lib/apis/birdeyeApi"
 import { coinGeckoApi } from "@/lib/apis/coinGeckoApi"
 
 interface PriceChartProps {
@@ -53,14 +52,14 @@ export const PriceChart = ({ agentId, symbol, currentPrice, change24h }: PriceCh
         const isUUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(agentId)
 
         if (isSolanaAddress) {
-          // Use Birdeye API for Solana addresses
-          const items = await birdeyeApi.getPriceHistory(agentId, '1D')
-          const formatted = (items || []).map(pt => ({
-            timestamp: new Date(pt.unixTime * 1000).toISOString(),
-            price: Number(pt.value),
+          // Use CoinGecko for Solana token chart data
+          const chartData = await coinGeckoApi.getMarketChart(agentId, 1)
+          const formatted = (chartData?.prices || []).map(([timestamp, price]) => ({
+            timestamp: new Date(timestamp).toISOString(),
+            price: Number(price),
             volume: 0,
             market_cap: 0,
-            time: new Date(pt.unixTime * 1000).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+            time: new Date(timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
           }))
           setPriceData(formatted.length ? formatted : generateFallback(currentPrice))
         } else if (isUUID) {

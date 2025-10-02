@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button'
 import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
-import { useRealPortfolio } from '@/hooks/useRealPortfolio'
+import { usePortfolioHoldings } from '@/hooks/usePortfolioHoldings'
 import { useUserBalance } from '@/hooks/useUserBalance'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
@@ -22,12 +22,14 @@ export default function Portfolio() {
   const { balance } = useUserBalance()
   const { 
     holdings, 
-    portfolioValue, 
-    totalInvested, 
-    totalPnL, 
-    totalPnLPercent,
-    loading: portfolioLoading 
-  } = useRealPortfolio()
+    summary,
+    isLoading: portfolioLoading 
+  } = usePortfolioHoldings()
+
+  const portfolioValue = summary?.totalValue || 0
+  const totalInvested = summary?.totalInvested || 0
+  const totalPnL = summary?.totalPnL || 0
+  const totalPnLPercent = summary?.totalPnLPercent || 0
 
   const isLoading = portfolioLoading
 
@@ -244,38 +246,32 @@ export default function Portfolio() {
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
-                      {holdings.map((holding, index) => {
-                        const currentValue = holding.quantity * parseFloat(holding.agent?.price?.toString() || '0')
-                        const pnl = currentValue - holding.total_invested
-                        const pnlPercentage = holding.total_invested > 0 ? (pnl / holding.total_invested) * 100 : 0
-
-                        return (
-                          <div key={index} className="flex items-center justify-between p-4 border border-primary/10 rounded-xl bg-gradient-to-r from-muted/30 to-muted/10 hover:shadow-md transition-all duration-200">
-                            <div className="flex items-center gap-4">
-                              <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
-                                <Wallet className="h-4 w-4 text-primary" />
-                              </div>
-                              <div>
-                                <p className="font-medium text-foreground">{holding.agent?.name}</p>
-                                <p className="text-sm text-muted-foreground">
-                                  {holding.quantity.toFixed(4)} {holding.agent?.symbol}
-                                </p>
-                              </div>
+                      {holdings.map((holding, index) => (
+                        <div key={holding.id} className="flex items-center justify-between p-4 border border-primary/10 rounded-xl bg-gradient-to-r from-muted/30 to-muted/10 hover:shadow-md transition-all duration-200">
+                          <div className="flex items-center gap-4">
+                            <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
+                              <Wallet className="h-4 w-4 text-primary" />
                             </div>
-                            <div className="text-right">
-                              <p className="font-medium text-foreground">{formatCurrency(currentValue)}</p>
-                              <div className="flex items-center gap-2">
-                                <span className={`text-sm font-medium ${pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
-                                  {formatCurrency(pnl)}
-                                </span>
-                                <Badge variant={pnl >= 0 ? 'default' : 'destructive'} className="text-xs">
-                                  {pnl >= 0 ? '+' : ''}{pnlPercentage.toFixed(2)}%
-                                </Badge>
-                              </div>
+                            <div>
+                              <p className="font-medium text-foreground">{holding.asset_name}</p>
+                              <p className="text-sm text-muted-foreground">
+                                {holding.quantity.toFixed(4)} {holding.asset_symbol}
+                              </p>
                             </div>
                           </div>
-                        )
-                      })}
+                          <div className="text-right">
+                            <p className="font-medium text-foreground">{formatCurrency(holding.current_value)}</p>
+                            <div className="flex items-center gap-2">
+                              <span className={`text-sm font-medium ${holding.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                                {formatCurrency(holding.unrealized_pnl)}
+                              </span>
+                              <Badge variant={holding.unrealized_pnl >= 0 ? 'default' : 'destructive'} className="text-xs">
+                                {holding.unrealized_pnl >= 0 ? '+' : ''}{((holding.unrealized_pnl / holding.total_invested) * 100).toFixed(2)}%
+                              </Badge>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
                     </div>
                   </CardContent>
                 </Card>

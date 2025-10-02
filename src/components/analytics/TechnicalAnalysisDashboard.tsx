@@ -10,32 +10,27 @@ import { TechnicalChart } from '@/components/charts/TechnicalChart';
 import { Search, TrendingUp, BarChart3, Activity, Zap } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useQuery } from '@tanstack/react-query';
-import { birdeyeApi } from '@/lib/apis/birdeyeApi';
+import { coinGeckoSolanaApi } from '@/lib/apis/coingeckoSolanaApi';
 
 export const TechnicalAnalysisDashboard: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');
   const [loading, setLoading] = useState(false);
 
-  // Fetch tokens from Birdeye
+  // Fetch tokens from CoinGecko Solana API
   const { data: agents = [], isLoading: agentsLoading } = useQuery({
     queryKey: ['tokens-technical'],
     queryFn: async () => {
-      const tokens = await birdeyeApi.getTokenList('v24hUSD', 'desc', 0, 20);
+      const tokens = await coinGeckoSolanaApi.getSolanaTokens();
       if (!tokens) return [];
       
-      return await Promise.all(
-        tokens.map(async (token) => {
-          const price = await birdeyeApi.getTokenPrice(token.address);
-          return {
-            id: token.address,
-            name: token.name,
-            symbol: token.symbol,
-            price: price?.value || 0,
-            change_24h: price?.priceChange24h || 0,
-            volume_24h: token.v24hUSD || 0,
-          };
-        })
-      );
+      return tokens.slice(0, 20).map(token => ({
+        id: token.id,
+        name: token.name,
+        symbol: token.symbol.toUpperCase(),
+        price: token.current_price,
+        change_24h: token.price_change_percentage_24h || 0,
+        volume_24h: token.total_volume || 0,
+      }));
     }
   });
 
