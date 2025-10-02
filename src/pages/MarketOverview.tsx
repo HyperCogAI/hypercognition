@@ -17,7 +17,7 @@ import { Button } from "@/components/ui/button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
-
+import { coinGeckoApi } from "@/lib/apis/coinGeckoApi"
 export default function MarketOverview() {
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState<FilterState>({
@@ -34,13 +34,14 @@ export default function MarketOverview() {
   })
 
   const { data: crypto } = useQuery({
-    queryKey: ["crypto-markets"],
-    queryFn: async () => {
-      const response = await fetch(
-        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&sparkline=false"
-      );
-      return response.json();
-    },
+    queryKey: ["coingecko-top", 100],
+    queryFn: () => coinGeckoApi.getTopCryptos(100),
+    staleTime: 30000,
+    gcTime: 300000,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(30000, 1000 * 2 ** attempt),
   })
 
   const filteredAndSortedCrypto = useMemo(() => {

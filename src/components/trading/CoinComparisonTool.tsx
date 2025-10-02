@@ -6,7 +6,7 @@ import { Badge } from "@/components/ui/badge";
 import { Search, X, TrendingUp, TrendingDown, ArrowRightLeft } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
-
+import { coinGeckoApi } from "@/lib/apis/coinGeckoApi";
 interface Crypto {
   id: string;
   name: string;
@@ -24,26 +24,23 @@ export const CoinComparisonTool = () => {
   const [searchQuery, setSearchQuery] = useState("");
 
   const { data: cryptos } = useQuery({
-    queryKey: ["crypto-search", searchQuery],
+    queryKey: ["coingecko-search", searchQuery],
     queryFn: async () => {
-      if (!searchQuery) return [];
-      const response = await fetch(
-        `https://api.coingecko.com/api/v3/search?query=${searchQuery}`
-      );
-      return response.json();
+      if (!searchQuery) return { coins: [] } as any;
+      return coinGeckoApi.searchCoins(searchQuery);
     },
     enabled: searchQuery.length > 2,
+    staleTime: 30000,
+    refetchOnWindowFocus: false,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(30000, 1000 * 2 ** attempt),
   });
 
   const addCoin = async (coinId: string) => {
     if (selectedCoins.length >= 4) return;
-    
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&ids=${coinId}`
-    );
-    const data = await response.json();
-    if (data[0]) {
-      setSelectedCoins([...selectedCoins, data[0]]);
+    const data = await coinGeckoApi.getCryptoById(coinId);
+    if (data) {
+      setSelectedCoins([...selectedCoins, data as any]);
       setSearchQuery("");
     }
   };

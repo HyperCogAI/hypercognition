@@ -3,17 +3,20 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 import { TrendingUp, TrendingDown, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { coinGeckoApi } from "@/lib/apis/coinGeckoApi";
 
 export const HistoricalPerformance = () => {
-  const { data: cryptos } = useQuery({
-    queryKey: ["crypto-markets"],
-    queryFn: async () => {
-      const response = await fetch(
-        "https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=50&sparkline=false"
-      );
-      return response.json();
-    },
+  const { data: topData } = useQuery({
+    queryKey: ["coingecko-top", 100],
+    queryFn: () => coinGeckoApi.getTopCryptos(100),
+    staleTime: 30000,
+    gcTime: 300000,
+    refetchInterval: 30000,
+    refetchOnWindowFocus: false,
+    retry: 2,
+    retryDelay: (attempt) => Math.min(30000, 1000 * 2 ** attempt),
   });
+  const cryptos = (topData as any[] | undefined)?.slice(0, 50) || [];
 
   // Simulate historical performance data (in production, fetch real historical data)
   const generatePerformanceData = (multiplier: number) => {
