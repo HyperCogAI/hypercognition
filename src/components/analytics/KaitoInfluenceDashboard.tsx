@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
-import { Sparkles, TrendingUp, Zap, RefreshCw, Search, Twitter } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchInput } from '@/components/ui/search-input';
@@ -13,6 +13,13 @@ const DEFAULT_USERNAMES = [
   'notgrubles','nlw','RyanSAdams','TrustlessState','SatoshiLite','roasbeef','PeterMcCormack','LynAldenContact','aeyakovenko','BanklessHQ',
   'TheCryptoLark','AltcoinDailyio','coinbureau','CryptoHayes','lightcrypto','kylesamani','0xQuit','punk6529','hasufl','bertcmiller'
 ];
+
+// X (formerly Twitter) logo component
+const XLogo = ({ className = "h-4 w-4" }: { className?: string }) => (
+  <svg viewBox="0 0 24 24" className={className} fill="currentColor" aria-label="X">
+    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+  </svg>
+);
 
 export const KaitoInfluenceDashboard = () => {
   const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier } = useKaitoAttention();
@@ -93,7 +100,7 @@ export const KaitoInfluenceDashboard = () => {
         
         <div className="mt-4">
           <SearchInput
-            placeholder="Search by Twitter username..."
+            placeholder="Search by X username..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             className="max-w-md"
@@ -149,7 +156,7 @@ export const KaitoInfluenceDashboard = () => {
                           className="text-muted-foreground hover:text-primary transition-colors"
                           aria-label={`Visit @${agent.twitter_username} on X`}
                         >
-                          <Twitter className="h-4 w-4" />
+                          <XLogo className="h-4 w-4" />
                         </a>
                       </div>
                       <div className="flex items-center gap-2 text-sm text-muted-foreground">
