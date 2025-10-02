@@ -83,13 +83,31 @@ serve(async (req) => {
     const agentDescription = body.description?.trim()
     const agentCategory = body.category?.trim()
 
-    // Validate using database function
+    // Validate avatar URL if provided
+    if (body.avatar_url) {
+      const { data: urlValidation, error: urlError } = await supabaseAdmin
+        .rpc('validate_url', { url_param: body.avatar_url })
+      
+      if (urlError || !urlValidation?.valid) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Invalid avatar URL', 
+            details: urlValidation?.error || 'URL validation failed'
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
+
+    // Validate using enhanced database function with comprehensive security checks
     const { data: validationResult, error: validationError } = await supabaseAdmin
-      .rpc('validate_agent_creation', {
+      .rpc('validate_agent_creation_enhanced', {
         agent_name: agentName,
         agent_symbol: agentSymbol,
         agent_description: agentDescription,
-        agent_category: agentCategory
+        agent_category: agentCategory,
+        avatar_url_param: body.avatar_url || null,
+        features_param: body.features
       })
 
     if (validationError) {
@@ -128,14 +146,6 @@ serve(async (req) => {
       )
     }
 
-    // Validate features
-    if (!Array.isArray(body.features) || body.features.length === 0) {
-      return new Response(
-        JSON.stringify({ error: 'At least one feature must be selected' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
     // Validate chain
     const validChains = ['base', 'ethereum', 'polygon', 'arbitrum']
     if (!validChains.includes(body.chain?.toLowerCase())) {
@@ -148,13 +158,17 @@ serve(async (req) => {
     // Calculate market cap
     const marketCap = initialSupply * initialPrice
 
-    // Create agent using service role to bypass RLS
+    // Use sanitized values from validation
+    const sanitizedName = validationResult.sanitized_name || agentName
+    const sanitizedDescription = validationResult.sanitized_description || agentDescription
+
+    // Create agent using service role to bypass RLS with sanitized data
     const { data: agent, error: createError } = await supabaseAdmin
       .from('agents')
       .insert({
-        name: agentName,
+        name: sanitizedName,
         symbol: agentSymbol,
-        description: agentDescription,
+        description: sanitizedDescription,
         category: agentCategory,
         avatar_url: body.avatar_url || null,
         features: body.features,
@@ -164,7 +178,7 @@ serve(async (req) => {
         price: initialPrice,
         market_cap: marketCap,
         creator_id: user.id,
-        status: 'active', // Auto-approve for now, can add moderation later
+        status: 'active',
         volume_24h: 0,
         change_24h: 0
       })

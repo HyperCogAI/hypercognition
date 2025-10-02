@@ -5080,6 +5080,17 @@ export type Database = {
         }
         Returns: Json
       }
+      validate_agent_creation_enhanced: {
+        Args: {
+          agent_category: string
+          agent_description: string
+          agent_name: string
+          agent_symbol: string
+          avatar_url_param?: string
+          features_param?: string[]
+        }
+        Returns: Json
+      }
       validate_and_sanitize_input: {
         Args: {
           allow_html?: boolean
@@ -5099,6 +5110,10 @@ export type Database = {
       }
       validate_password_strength: {
         Args: { password_param: string }
+        Returns: Json
+      }
+      validate_url: {
+        Args: { url_param: string }
         Returns: Json
       }
     }

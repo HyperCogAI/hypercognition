@@ -2,6 +2,7 @@ import { useState } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { ArrowLeft, Upload, Bot, Settings, Zap, Brain, AlertCircle } from "lucide-react"
+import DOMPurify from "dompurify"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -64,18 +65,21 @@ export const CreateAgent = () => {
     setErrors([])
 
     try {
+      // Sanitize all text inputs on client side for additional security
+      const sanitizedData = {
+        name: DOMPurify.sanitize(agentData.name.trim(), { ALLOWED_TAGS: [] }),
+        symbol: DOMPurify.sanitize(agentData.symbol.trim().toUpperCase(), { ALLOWED_TAGS: [] }),
+        description: DOMPurify.sanitize(agentData.description.trim(), { ALLOWED_TAGS: [] }),
+        category: DOMPurify.sanitize(agentData.category.trim(), { ALLOWED_TAGS: [] }),
+        avatar_url: agentData.avatar ? DOMPurify.sanitize(agentData.avatar.trim(), { ALLOWED_TAGS: [] }) : null,
+        features: agentData.features.map(f => DOMPurify.sanitize(f, { ALLOWED_TAGS: [] })),
+        initial_supply: agentData.initialSupply,
+        initial_price: agentData.initialPrice,
+        chain: agentData.chain
+      }
+
       const { data, error } = await supabase.functions.invoke('create-agent', {
-        body: {
-          name: agentData.name,
-          symbol: agentData.symbol,
-          description: agentData.description,
-          category: agentData.category,
-          avatar_url: agentData.avatar || null,
-          features: agentData.features,
-          initial_supply: agentData.initialSupply,
-          initial_price: agentData.initialPrice,
-          chain: agentData.chain
-        }
+        body: sanitizedData
       })
 
       if (error) {
