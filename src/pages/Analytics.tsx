@@ -1,15 +1,17 @@
 import React from 'react';
 import { EnterpriseChainAnalytics } from '@/components/analytics/EnterpriseChainAnalytics';
-
 import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
 import { KaitoInfluenceDashboard } from '@/components/analytics/KaitoInfluenceDashboard';
-
+import { FearGreedWidget } from '@/components/analytics/FearGreedWidget';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Layers, TrendingUp, Newspaper, Sparkles } from 'lucide-react';
+import { useMarketNewsData } from '@/hooks/useMarketNewsData';
 
 const Analytics = () => {
+  const { marketSentiment } = useMarketNewsData();
+
   return (
     <>
       <SEOHead
@@ -27,6 +29,18 @@ const Analytics = () => {
             Real-time Solana & EVM analytics with live chain metrics, cross-chain analysis, and market insights
           </p>
         </header>
+
+        {/* Fear & Greed Index Widget - Prominent Display */}
+        {marketSentiment && (
+          <FearGreedWidget
+            fearGreedIndex={marketSentiment.fearGreedIndex}
+            overallSentiment={marketSentiment.overallSentiment}
+            bullishPercentage={marketSentiment.bullishPercentage}
+            bearishPercentage={marketSentiment.bearishPercentage}
+            neutralPercentage={marketSentiment.neutralPercentage}
+            socialSentiment={marketSentiment.socialSentiment}
+          />
+        )}
         
         <Tabs defaultValue="chains" className="space-y-8">
           <div className="relative">
