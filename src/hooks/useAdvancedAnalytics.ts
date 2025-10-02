@@ -1,6 +1,7 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { AnalyticsService, AnalyticsEvent, PortfolioMetrics, TradingMetrics } from '@/services/AnalyticsService';
 import { useToast } from '@/hooks/use-toast';
+import { supabase } from '@/integrations/supabase/client';
 
 export const useAdvancedAnalytics = (
   period: 'hourly' | 'daily' | 'weekly' | 'monthly' = 'daily'
@@ -105,6 +106,43 @@ export const useAdvancedAnalytics = (
     }
   });
 
+  // Get trending agents
+  const { 
+    data: trendingAgents = [], 
+    isLoading: isLoadingTrending 
+  } = useQuery({
+    queryKey: ['trending-agents', period],
+    queryFn: () => AnalyticsService.getTrendingAgents(period),
+  });
+
+  // Get top performers
+  const { 
+    data: topPerformers = [], 
+    isLoading: isLoadingTopPerformers 
+  } = useQuery({
+    queryKey: ['top-performers', period],
+    queryFn: () => AnalyticsService.getTopPerformers(period),
+  });
+
+  // Get market overview
+  const { 
+    data: marketOverview, 
+    isLoading: isLoadingMarketOverview 
+  } = useQuery({
+    queryKey: ['market-overview', period],
+    queryFn: () => AnalyticsService.getMarketOverview(period),
+  });
+
+  // Get anomaly alerts
+  const { 
+    data: anomalyAlerts = [], 
+    isLoading: isLoadingAnomalies 
+  } = useQuery({
+    queryKey: ['anomaly-alerts'],
+    queryFn: () => AnalyticsService.getAnomalyAlerts(20),
+    refetchInterval: 60000, // Refresh every minute
+  });
+
   const trackEvent = (event: AnalyticsEvent) => {
     trackEventMutation.mutate(event);
   };
@@ -126,8 +164,16 @@ export const useAdvancedAnalytics = (
     tradingAnalytics,
     preferences,
     performanceSummary,
+    trendingAgents,
+    topPerformers,
+    marketOverview,
+    anomalyAlerts,
     isLoading: isLoadingPortfolio || isLoadingTrading || isLoadingPreferences,
     isLoadingSummary,
+    isLoadingTrending,
+    isLoadingTopPerformers,
+    isLoadingMarketOverview,
+    isLoadingAnomalies,
     trackEvent,
     updatePreferences,
     exportData,

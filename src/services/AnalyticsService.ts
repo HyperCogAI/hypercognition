@@ -366,4 +366,51 @@ export class AnalyticsService {
     if (error) throw error
     return data
   }
+
+  static async detectAnomalies(agentId: string, currentData: any, historicalData: any[]) {
+    const { data, error } = await supabase.functions.invoke('anomaly-detector', {
+      body: { agentId, currentData, historicalData }
+    })
+    if (error) throw error
+    return data
+  }
+
+  static async getTopPerformers(period: string = '24h', limit: number = 10) {
+    return this.queryAnalytics('top_performers', { period, limit })
+  }
+
+  static async getTrendingAgents(period: string = '24h', limit: number = 10) {
+    return this.queryAnalytics('trending_agents', { period, limit })
+  }
+
+  static async getMarketOverview(period: string = '24h') {
+    return this.queryAnalytics('market_overview', { period })
+  }
+
+  static async getSentimentTrends(agentId: string, period: string = '24h') {
+    return this.queryAnalytics('sentiment_trends', { agentId, period })
+  }
+
+  static async getVolumeLeaders(period: string = '24h', limit: number = 10) {
+    return this.queryAnalytics('volume_leaders', { period, limit })
+  }
+
+  static async getAnomalyAlerts(limit: number = 20) {
+    try {
+      // Query the anomaly_alerts table directly via the analytics-query function
+      const { data, error } = await supabase.functions.invoke('analytics-query', {
+        body: { 
+          query: 'anomaly_alerts',
+          params: { limit },
+          useCache: false 
+        }
+      });
+      
+      if (error) throw error;
+      return data?.data || [];
+    } catch (error) {
+      console.error('Error fetching anomaly alerts:', error);
+      return [];
+    }
+  }
 }

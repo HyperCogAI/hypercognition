@@ -60,6 +60,9 @@ serve(async (req) => {
       case 'volume_leaders':
         result = await getVolumeLeaders(supabaseClient, params)
         break
+      case 'anomaly_alerts':
+        result = await getAnomalyAlerts(supabaseClient, params)
+        break
       default:
         throw new Error(`Unknown query type: ${query}`)
     }
@@ -171,6 +174,20 @@ async function getVolumeLeaders(client: any, params: any) {
     .select('agent_id, total_volume, total_trades, unique_traders')
     .eq('period', period)
     .order('total_volume', { ascending: false })
+    .limit(limit)
+
+  if (error) throw error
+  return data
+}
+
+async function getAnomalyAlerts(client: any, params: any) {
+  const { limit = 20 } = params
+
+  const { data, error } = await client
+    .from('anomaly_alerts')
+    .select('*')
+    .in('status', ['new', 'acknowledged'])
+    .order('detected_at', { ascending: false })
     .limit(limit)
 
   if (error) throw error
