@@ -41,29 +41,23 @@ export class RealTimeChainAnalytics {
   static async getSolanaMetrics(): Promise<ChainMetrics> {
     try {
       // Query market_data_feeds with agents for Solana tokens
-      const { data: solanaTokens, error } = await supabase
-        .from('market_data_feeds')
-        .select(`
-          *,
-          agents!inner (
-            chain,
-            symbol
-          )
-        `)
-        .eq('agents.chain', 'Solana')
-        .gte('timestamp', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .order('timestamp', { ascending: false });
+      const { data: agents, error } = await supabase
+        .from('agents')
+        .select('id, symbol, chain')
+        .eq('chain', 'Solana')
+        .order('volume_24h', { ascending: false })
+        .limit(20);
 
       if (error) throw error;
 
-      const volume24h = solanaTokens?.reduce((sum: number, t: any) => sum + (t.volume_24h || 0), 0) || 0;
+      const volume24h = agents?.reduce((sum: number, agent: any) => sum + (agent.volume_24h || 0), 0) || 0;
 
       return {
         chain: 'solana',
         tvl: volume24h * 2.5,
         volume24h,
-        transactions24h: (solanaTokens?.length || 0) * 1000,
-        activeAddresses24h: (solanaTokens?.length || 0) * 250,
+        transactions24h: (agents?.length || 0) * 1000,
+        activeAddresses24h: (agents?.length || 0) * 250,
         avgGasPrice: 0.00001,
         blockTime: 0.4,
         tps: 2500,
@@ -80,22 +74,16 @@ export class RealTimeChainAnalytics {
     try {
       const chainName = chain === 'ethereum' ? 'Ethereum' : chain === 'base' ? 'Base' : 'Polygon';
       
-      const { data: evmTokens, error } = await supabase
-        .from('market_data_feeds')
-        .select(`
-          *,
-          agents!inner (
-            chain,
-            symbol
-          )
-        `)
-        .eq('agents.chain', chainName)
-        .gte('timestamp', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
-        .order('timestamp', { ascending: false });
+      const { data: agents, error } = await supabase
+        .from('agents')
+        .select('id, symbol, chain, volume_24h')
+        .eq('chain', chainName)
+        .order('volume_24h', { ascending: false })
+        .limit(20);
 
       if (error) throw error;
 
-      const volume24h = evmTokens?.reduce((sum: number, t: any) => sum + (t.volume_24h || 0), 0) || 0;
+      const volume24h = agents?.reduce((sum: number, agent: any) => sum + (agent.volume_24h || 0), 0) || 0;
 
       const chainConfig = {
         ethereum: { blockTime: 12, tps: 15, gasMultiplier: 1 },
@@ -107,8 +95,8 @@ export class RealTimeChainAnalytics {
         chain,
         tvl: volume24h * 3,
         volume24h,
-        transactions24h: (evmTokens?.length || 0) * 800,
-        activeAddresses24h: (evmTokens?.length || 0) * 200,
+        transactions24h: (agents?.length || 0) * 800,
+        activeAddresses24h: (agents?.length || 0) * 200,
         avgGasPrice: 0.00005 * chainConfig.gasMultiplier,
         blockTime: chainConfig.blockTime,
         tps: chainConfig.tps,
@@ -123,35 +111,26 @@ export class RealTimeChainAnalytics {
   // Get top tokens by volume across all chains
   static async getTopTokensByVolume(limit: number = 20): Promise<TokenMetrics[]> {
     try {
-      const { data: tokens, error } = await supabase
-        .from('market_data_feeds')
-        .select(`
-          *,
-          agents (
-            id,
-            symbol,
-            name,
-            chain
-          )
-        `)
-        .gte('timestamp', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString())
+      const { data: agents, error } = await supabase
+        .from('agents')
+        .select('id, symbol, name, chain, price, volume_24h, change_24h, market_cap')
         .order('volume_24h', { ascending: false })
         .limit(limit);
 
       if (error) throw error;
 
-      return tokens?.map((t: any) => ({
-        address: t.agent_id || 'N/A',
-        symbol: t.agents?.symbol || 'UNKNOWN',
-        name: t.agents?.name || 'Unknown Token',
-        price: t.price || 0,
-        priceChange24h: t.change_24h || 0,
-        volume24h: t.volume_24h || 0,
-        liquidity: (t.volume_24h || 0) * 2,
-        marketCap: (t.price || 0) * 1000000,
-        holders: Math.floor((t.volume_24h || 0) / 100),
-        transactions24h: Math.floor((t.volume_24h || 0) / 50),
-        chain: t.agents?.chain || 'Unknown'
+      return agents?.map((agent: any) => ({
+        address: agent.id || 'N/A',
+        symbol: agent.symbol || 'UNKNOWN',
+        name: agent.name || 'Unknown Token',
+        price: agent.price || 0,
+        priceChange24h: agent.change_24h || 0,
+        volume24h: agent.volume_24h || 0,
+        liquidity: (agent.volume_24h || 0) * 2,
+        marketCap: agent.market_cap || 0,
+        holders: Math.floor((agent.volume_24h || 0) / 100),
+        transactions24h: Math.floor((agent.volume_24h || 0) / 50),
+        chain: agent.chain || 'Unknown'
       })) || [];
     } catch (error) {
       console.error('Error fetching top tokens:', error);
@@ -163,32 +142,25 @@ export class RealTimeChainAnalytics {
   static async getLiquidityPools(chain?: string): Promise<any[]> {
     try {
       let query = supabase
-        .from('market_data_feeds')
-        .select(`
-          *,
-          agents (
-            symbol,
-            chain
-          )
-        `)
-        .gte('timestamp', new Date(Date.now() - 60 * 60 * 1000).toISOString())
+        .from('agents')
+        .select('id, symbol, chain, volume_24h, price')
         .order('volume_24h', { ascending: false })
         .limit(50);
 
       if (chain) {
-        query = query.eq('agents.chain', chain);
+        query = query.eq('chain', chain);
       }
 
       const { data, error } = await query;
       if (error) throw error;
 
-      return data?.map((d: any) => ({
-        pair: `${d.agents?.symbol || 'TOKEN'}/USDC`,
-        liquidity: (d.volume_24h || 0) * 2,
-        volume24h: d.volume_24h || 0,
+      return data?.map((agent: any) => ({
+        pair: `${agent.symbol || 'TOKEN'}/USDC`,
+        liquidity: (agent.volume_24h || 0) * 2,
+        volume24h: agent.volume_24h || 0,
         apy: Math.random() * 50 + 10,
-        fees24h: (d.volume_24h || 0) * 0.003,
-        chain: d.agents?.chain || 'Unknown'
+        fees24h: (agent.volume_24h || 0) * 0.003,
+        chain: agent.chain || 'Unknown'
       })) || [];
     } catch (error) {
       console.error('Error fetching liquidity pools:', error);
@@ -203,25 +175,19 @@ export class RealTimeChainAnalytics {
     chainDistribution: Array<{ chain: string; volume: number; percentage: number }>;
   }> {
     try {
-      const { data: allTokens, error } = await supabase
-        .from('market_data_feeds')
-        .select(`
-          volume_24h,
-          agents (
-            chain
-          )
-        `)
-        .gte('timestamp', new Date(Date.now() - 24 * 60 * 60 * 1000).toISOString());
+      const { data: allAgents, error } = await supabase
+        .from('agents')
+        .select('volume_24h, chain');
 
       if (error) throw error;
 
-      const totalVolume24h = allTokens?.reduce((sum: number, t: any) => sum + (t.volume_24h || 0), 0) || 0;
+      const totalVolume24h = allAgents?.reduce((sum: number, agent: any) => sum + (agent.volume_24h || 0), 0) || 0;
       
       // Group by chain
-      const chainGroups = allTokens?.reduce((acc: any, t: any) => {
-        const chain = t.agents?.chain || 'Unknown';
+      const chainGroups = allAgents?.reduce((acc: any, agent: any) => {
+        const chain = agent.chain || 'Unknown';
         if (!acc[chain]) acc[chain] = 0;
-        acc[chain] += t.volume_24h || 0;
+        acc[chain] += agent.volume_24h || 0;
         return acc;
       }, {}) || {};
 

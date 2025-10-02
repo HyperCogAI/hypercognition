@@ -40,18 +40,15 @@ serve(async (req) => {
     if (agentIds && Array.isArray(agentIds)) {
       const { data: agents, error } = await supabaseClient
         .from('agents')
-        .select('id, name, metadata')
+        .select('id, name, symbol')
         .in('id', agentIds);
 
       if (error) {
         console.error('Error fetching agents:', error);
       } else if (agents) {
-        // Extract Twitter usernames from metadata or use agent name as fallback
+        // Use agent name as Twitter username (agents table has no metadata column)
         usernameList = agents
-          .map(agent => {
-            const metadata = agent.metadata as any;
-            return metadata?.twitter_username || metadata?.social?.twitter || agent.name;
-          })
+          .map(agent => agent.name)
           .filter(Boolean);
       }
     }
@@ -101,12 +98,12 @@ serve(async (req) => {
         const yapsData: KaitoYapsResponse = await kaitoResponse.json();
         console.log(`Received Yaps data for ${username}:`, yapsData);
 
-        // Find associated agent if exists
+        // Find associated agent if exists (match by name or symbol)
         const { data: agent } = await supabaseClient
           .from('agents')
           .select('id')
-          .or(`name.ilike.%${username}%,metadata->>twitter_username.eq.${username}`)
-          .single();
+          .or(`name.ilike.%${username}%,symbol.ilike.%${username}%`)
+          .maybeSingle();
 
         // Upsert to database
         const { error: upsertError } = await supabaseClient
