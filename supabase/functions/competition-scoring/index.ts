@@ -30,13 +30,13 @@ serve(async (req) => {
 
     // Get competition details
     const { data: competition, error: compError } = await supabase
-      .from('trading_competitions')
+      .from('competitions')
       .select('*')
       .eq('id', competitionId)
-      .eq('is_active', true)
       .single();
 
-    if (compError || !competition) {
+    // Check if competition is active
+    if (compError || !competition || competition.status !== 'active') {
       console.error('Competition not found or inactive:', compError);
       return new Response(
         JSON.stringify({ error: 'Competition not found or inactive' }),
