@@ -32,6 +32,7 @@ const coreItems = [
 
 // Trading and investment items
 const tradingItems = [
+  { title: "Market Overview", url: "/market-overview", icon: TrendingUp },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Trading Signals", url: "/trading-signals", icon: Target },
 ]

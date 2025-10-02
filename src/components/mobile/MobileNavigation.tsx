@@ -21,7 +21,7 @@ const bottomNavItems = [
   { icon: Home, label: 'Home', path: '/', id: 'home' },
   { icon: Store, label: 'Market', path: '/marketplace', id: 'marketplace' },
   { icon: Plus, label: 'Create', path: '/create-agent', id: 'create-agent' },
-  { icon: TrendingUp, label: 'Trading', path: '/enhanced-trading', id: 'trading' },
+  { icon: TrendingUp, label: 'Trading', path: '/market-overview', id: 'trading' },
 ]
 
 // All navigation items organized by category (matching desktop sidebar exactly)
@@ -40,6 +40,7 @@ const navigationSections = [
   {
     title: "Trading",
     items: [
+      { icon: TrendingUp, label: 'Market Overview', path: '/market-overview', id: 'market-overview' },
       { icon: Wallet, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
       { icon: Target, label: 'Trading Signals', path: '/trading-signals', id: 'trading-signals' },
     ]

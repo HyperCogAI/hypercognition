@@ -177,7 +177,7 @@ const AppLayout = () => {
             <Route path="/solana-auth" element={<LazySolanaAuth />} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                 <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
-                <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+                <Route path="/enhanced-trading" element={<MarketOverview />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/market-overview" element={<MarketOverview />} />
@@ -277,7 +277,7 @@ const AppLayout = () => {
                   <Route path="/solana-auth" element={<LazySolanaAuth />} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
                   <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
-                  <Route path="/enhanced-trading" element={<EnhancedTrading />} />
+                  <Route path="/enhanced-trading" element={<MarketOverview />} />
                   <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
             <Route path="/real-time-market" element={<RealTimeMarketPage />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
