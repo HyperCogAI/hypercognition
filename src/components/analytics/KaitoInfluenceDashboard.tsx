@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
 import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
@@ -6,9 +6,25 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchInput } from '@/components/ui/search-input';
 
+const DEFAULT_USERNAMES = [
+  'VitalikButerin','cz_binance','brian_armstrong','saylor','APompliano','balajis','naval','aantonop','ErikVoorhees','TuurDemeester',
+  'cobie','ChainLinkGod','sassal0x','udiWertheimer','ercwl','hosseeb','iamDCinvestor','VanceSpencer','tarunchitra','haydenzadams',
+  'StaniKulechov','IOHK_Charles','garrytan','katie_haun','cdixon','fredwilson','BarrySilbert','elonmusk','jack','Melt_Dem',
+  'notgrubles','nlw','RyanSAdams','TrustlessState','SatoshiLite','roasbeef','PeterMcCormack','LynAldenContact','aeyakovenko','BanklessHQ',
+  'TheCryptoLark','AltcoinDailyio','coinbureau','CryptoHayes','lightcrypto','kylesamani','0xQuit','punk6529','hasufl','bertcmiller'
+];
+
 export const KaitoInfluenceDashboard = () => {
   const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier } = useKaitoAttention();
   const [searchQuery, setSearchQuery] = useState('');
+
+  // Auto-bootstrap: if list is sparse, sync a default set of influencers
+  useEffect(() => {
+    if (!isLoadingTop && topAgents.length < 10 && !isSyncing) {
+      const toSync = DEFAULT_USERNAMES.slice(0, 50);
+      syncMultiple({ usernames: toSync });
+    }
+  }, [isLoadingTop, topAgents.length, isSyncing, syncMultiple]);
 
   // Filter agents based on search query
   const filteredAgents = useMemo(() => {
@@ -21,8 +37,11 @@ export const KaitoInfluenceDashboard = () => {
   }, [topAgents, searchQuery]);
 
   const handleRefresh = () => {
-    // Sync top 50 agents
-    const usernames = topAgents.slice(0, 50).map(agent => agent.twitter_username);
+    // Sync top 50 agents or bootstrap defaults if list is small
+    const usernames = (topAgents.length >= 10
+      ? topAgents.slice(0, 50).map(agent => agent.twitter_username)
+      : DEFAULT_USERNAMES.slice(0, 50)
+    );
     syncMultiple({ usernames });
   };
 
