@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -12,7 +12,9 @@ import {
   Layers, ArrowUpDown, RefreshCw, Database
 } from 'lucide-react';
 import { RealTimeChainAnalytics, ChainMetrics, TokenMetrics } from '@/services/RealTimeChainAnalytics';
+import { useChainAnalyticsSync } from '@/hooks/useChainAnalyticsSync';
 import { useToast } from '@/hooks/use-toast';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export const EnterpriseChainAnalytics: React.FC = () => {
   const [selectedChain, setSelectedChain] = useState<'all' | 'solana' | 'ethereum' | 'base' | 'polygon'>('all');
@@ -23,6 +25,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   const [liquidityPools, setLiquidityPools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
+  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(true, 300000); // Sync every 5 minutes
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -90,10 +93,18 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   if (isLoading) {
     return (
       <div className="space-y-6">
+        <Card className="border-border/50 bg-card/50 backdrop-blur">
+          <CardHeader className="flex flex-row items-center justify-between">
+            <div className="space-y-2">
+              <Skeleton className="h-8 w-64" />
+              <Skeleton className="h-4 w-96" />
+            </div>
+          </CardHeader>
+        </Card>
         {Array.from({ length: 3 }).map((_, i) => (
-          <Card key={i} className="animate-pulse">
-            <CardHeader><div className="h-6 bg-muted rounded w-1/3"></div></CardHeader>
-            <CardContent><div className="h-64 bg-muted rounded"></div></CardContent>
+          <Card key={i} className="border-border/50 bg-card/50 backdrop-blur">
+            <CardHeader><Skeleton className="h-6 w-1/3" /></CardHeader>
+            <CardContent><Skeleton className="h-64 w-full" /></CardContent>
           </Card>
         ))}
       </div>
@@ -107,16 +118,25 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h2 className="text-2xl font-bold">Real-Time Chain Analytics</h2>
-          <p className="text-muted-foreground">Live cross-chain metrics and performance data</p>
-        </div>
-        <Button onClick={fetchData} disabled={isLoading} variant="outline">
-          <RefreshCw className={`h-4 w-4 mr-2 ${isLoading ? 'animate-spin' : ''}`} />
-          Refresh
-        </Button>
-      </div>
+      <Card className="border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl">
+        <CardHeader className="flex flex-row items-center justify-between pb-4">
+          <div>
+            <CardTitle className="text-2xl font-bold mb-2">Real-Time Chain Analytics</CardTitle>
+            <CardDescription className="text-base">
+              Live metrics across Solana, Ethereum, Base, and Polygon networks
+            </CardDescription>
+          </div>
+          <Button 
+            onClick={() => { fetchData(); syncAll(); }} 
+            disabled={isSyncing || isLoading}
+            size="sm"
+            className="gap-2"
+          >
+            <RefreshCw className={`h-4 w-4 ${(isSyncing || isLoading) ? 'animate-spin' : ''}`} />
+            {isSyncing ? 'Syncing...' : 'Refresh'}
+          </Button>
+        </CardHeader>
+      </Card>
 
       {/* Chain Overview */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">

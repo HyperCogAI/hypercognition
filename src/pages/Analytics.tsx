@@ -1,5 +1,6 @@
 import React from 'react';
 import { EnterpriseChainAnalytics } from '@/components/analytics/EnterpriseChainAnalytics';
+import { AnalyticsTestPanel } from '@/components/analytics/AnalyticsTestPanel';
 import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
 import { KaitoInfluenceDashboard } from '@/components/analytics/KaitoInfluenceDashboard';
@@ -61,7 +62,8 @@ const Analytics = () => {
             </TabsList>
           </div>
           
-          <TabsContent value="chains" className="animate-fade-in">
+          <TabsContent value="chains" className="animate-fade-in space-y-6">
+            <AnalyticsTestPanel />
             <EnterpriseChainAnalytics />
           </TabsContent>
           
