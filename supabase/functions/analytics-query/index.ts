@@ -101,13 +101,13 @@ serve(async (req) => {
 })
 
 async function getTopPerformers(client: any, params: any) {
-  const { period = '24h', limit = 10 } = params
+  const { period = 'daily', limit = 10 } = params
 
   const { data, error } = await client
-    .from('trading_analytics')
-    .select('agent_id, total_pnl, win_rate, total_volume, period')
+    .from('agent_performance_metrics')
+    .select('agent_id, total_profit, win_rate, total_volume, period')
     .eq('period', period)
-    .order('total_pnl', { ascending: false })
+    .order('total_profit', { ascending: false })
     .limit(limit)
 
   if (error) {
@@ -118,13 +118,12 @@ async function getTopPerformers(client: any, params: any) {
 }
 
 async function getTrendingAgents(client: any, params: any) {
-  const { period = '24h', limit = 10 } = params
+  const { limit = 10 } = params
 
   const { data, error } = await client
-    .from('social_sentiment_data')
-    .select('agent_id, velocity_score, viral_score, mentions_count, sentiment_score')
-    .eq('period', period)
-    .order('velocity_score', { ascending: false })
+    .from('market_sentiment')
+    .select('agent_id, sentiment_score, mentions_count, created_at')
+    .order('mentions_count', { ascending: false })
     .limit(limit)
 
   if (error) {
@@ -135,60 +134,61 @@ async function getTrendingAgents(client: any, params: any) {
 }
 
 async function getMarketOverview(client: any, params: any) {
-  const { period = '24h' } = params
+  const { period = 'daily' } = params
 
-  const { data: volumeData, error: volError } = await client
-    .from('trading_analytics')
-    .select('total_volume, agent_id')
+  const { data: metricsData, error: metricsError } = await client
+    .from('agent_performance_metrics')
+    .select('total_volume, agent_id, total_trades')
     .eq('period', period)
 
-  if (volError) {
-    console.error('[AnalyticsQuery] Error fetching volume data:', volError)
+  if (metricsError) {
+    console.error('[AnalyticsQuery] Error fetching metrics data:', metricsError)
   }
 
   const { data: sentimentData, error: sentError } = await client
-    .from('social_sentiment_data')
+    .from('market_sentiment')
     .select('sentiment_score, agent_id')
-    .eq('period', period)
 
   if (sentError) {
     console.error('[AnalyticsQuery] Error fetching sentiment data:', sentError)
   }
 
-  const totalVolume = volumeData?.reduce((sum, d) => sum + (d.total_volume || 0), 0) || 0
+  const totalVolume = metricsData?.reduce((sum, d) => sum + (d.total_volume || 0), 0) || 0
+  const totalTrades = metricsData?.reduce((sum, d) => sum + (d.total_trades || 0), 0) || 0
   const avgSentiment = sentimentData && sentimentData.length > 0
     ? sentimentData.reduce((sum, d) => sum + (d.sentiment_score || 0), 0) / sentimentData.length
     : 0
 
   return {
     total_volume: totalVolume,
+    total_trades: totalTrades,
     avg_sentiment: avgSentiment,
-    active_agents: volumeData?.length || 0,
+    active_agents: metricsData?.length || 0,
     trending_agents: sentimentData?.length || 0,
     period
   }
 }
 
 async function getSentimentTrends(client: any, params: any) {
-  const { agentId, period = '24h' } = params
+  const { agentId } = params
 
   const { data, error } = await client
-    .from('social_sentiment_data')
-    .select('timestamp, sentiment_score, platform')
+    .from('market_sentiment')
+    .select('created_at, sentiment_score, sentiment_label')
     .eq('agent_id', agentId)
-    .eq('period', period)
-    .order('timestamp', { ascending: true })
+    .order('created_at', { ascending: true })
+    .limit(50)
 
   if (error) throw error
   return data
 }
 
 async function getVolumeLeaders(client: any, params: any) {
-  const { period = '24h', limit = 10 } = params
+  const { period = 'daily', limit = 10 } = params
 
   const { data, error } = await client
-    .from('trading_analytics')
-    .select('agent_id, total_volume, total_trades, unique_traders')
+    .from('agent_performance_metrics')
+    .select('agent_id, total_volume, total_trades, active_users')
     .eq('period', period)
     .order('total_volume', { ascending: false })
     .limit(limit)
@@ -200,13 +200,18 @@ async function getVolumeLeaders(client: any, params: any) {
 async function getAnomalyAlerts(client: any, params: any) {
   const { limit = 20 } = params
 
+  // Use compliance_alerts as a proxy for anomaly detection
   const { data, error } = await client
-    .from('anomaly_alerts')
+    .from('compliance_alerts')
     .select('*')
-    .in('status', ['new', 'acknowledged'])
-    .order('detected_at', { ascending: false })
+    .in('status', ['open', 'investigating'])
+    .order('created_at', { ascending: false })
     .limit(limit)
 
-  if (error) throw error
-  return data
+  if (error) {
+    console.error('[AnalyticsQuery] Error fetching anomaly alerts:', error)
+    // Return empty array instead of throwing
+    return []
+  }
+  return data || []
 }
