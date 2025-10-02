@@ -52,10 +52,32 @@ serve(async (req) => {
 
     const body: ProcessTransactionRequest = await req.json()
 
+    // Check rate limiting
+    const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
+      .rpc('check_acp_rate_limit', {
+        user_id_param: user.id,
+        operation_type: 'create_transaction'
+      })
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError)
+    } else if (rateLimitCheck && typeof rateLimitCheck === 'object') {
+      const limitData = rateLimitCheck as any
+      if (!limitData.allowed) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Rate limit exceeded',
+            message: `Transaction limit reached. Please try again later.`
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
+
     // Validate input
-    if (!body.amount || body.amount <= 0) {
+    if (!body.amount || body.amount <= 0 || body.amount > 1000000) {
       return new Response(
-        JSON.stringify({ error: 'Amount must be greater than 0' }),
+        JSON.stringify({ error: 'Amount must be between 0 and $1,000,000' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -64,6 +86,20 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: 'Recipient user ID is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Verify recipient exists
+    const { data: recipientExists, error: recipientError } = await supabaseAdmin
+      .from('profiles')
+      .select('user_id')
+      .eq('user_id', body.to_user_id)
+      .single()
+
+    if (recipientError || !recipientExists) {
+      return new Response(
+        JSON.stringify({ error: 'Recipient user not found' }),
+        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 

@@ -52,36 +52,62 @@ serve(async (req) => {
 
     const body: CreateJobRequest = await req.json()
 
-    // Validate input
-    if (!body.title || body.title.trim().length < 5) {
+    // Check rate limiting
+    const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
+      .rpc('check_acp_rate_limit', {
+        user_id_param: user.id,
+        operation_type: 'create_job'
+      })
+
+    if (rateLimitError) {
+      console.error('Rate limit check error:', rateLimitError)
+    } else if (rateLimitCheck && typeof rateLimitCheck === 'object') {
+      const limitData = rateLimitCheck as any
+      if (!limitData.allowed) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Rate limit exceeded',
+            message: `You can only create ${limitData.limit} jobs per day. Please try again later.`
+          }),
+          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
+
+    // Validate using database function
+    const { data: validationResult, error: validationError } = await supabaseAdmin
+      .rpc('validate_acp_job', {
+        title_param: body.title?.trim(),
+        description_param: body.description?.trim(),
+        budget_param: body.budget
+      })
+
+    if (validationError) {
+      console.error('Validation error:', validationError)
       return new Response(
-        JSON.stringify({ error: 'Title must be at least 5 characters' }),
+        JSON.stringify({ error: 'Validation failed', details: validationError.message }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    if (!body.description || body.description.trim().length < 20) {
+    if (!validationResult.valid) {
       return new Response(
-        JSON.stringify({ error: 'Description must be at least 20 characters' }),
+        JSON.stringify({ 
+          error: 'Validation failed', 
+          errors: validationResult.errors 
+        }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    if (!body.budget || body.budget <= 0) {
-      return new Response(
-        JSON.stringify({ error: 'Budget must be greater than 0' }),
-        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Create job
+    // Create job with sanitized data
     const { data: job, error: createError } = await supabaseAdmin
       .from('acp_jobs')
       .insert({
         poster_id: user.id,
         agent_id: body.agent_id || null,
-        title: body.title.trim(),
-        description: body.description.trim(),
+        title: validationResult.sanitized_title,
+        description: validationResult.sanitized_description,
         category: body.category.trim(),
         budget: body.budget,
         currency: body.currency || 'USDC',

@@ -74,6 +74,59 @@ export function ACPDashboard() {
   useEffect(() => {
     if (user) {
       fetchDashboardData()
+      
+      // Set up realtime subscriptions for live updates
+      const servicesChannel = supabase
+        .channel('acp-services-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'acp_services',
+            filter: `creator_id=eq.${user.id}`
+          },
+          () => {
+            fetchDashboardData()
+          }
+        )
+        .subscribe()
+
+      const jobsChannel = supabase
+        .channel('acp-jobs-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'acp_jobs'
+          },
+          () => {
+            fetchDashboardData()
+          }
+        )
+        .subscribe()
+
+      const transactionsChannel = supabase
+        .channel('acp-transactions-changes')
+        .on(
+          'postgres_changes',
+          {
+            event: '*',
+            schema: 'public',
+            table: 'acp_transactions'
+          },
+          () => {
+            fetchDashboardData()
+          }
+        )
+        .subscribe()
+
+      return () => {
+        supabase.removeChannel(servicesChannel)
+        supabase.removeChannel(jobsChannel)
+        supabase.removeChannel(transactionsChannel)
+      }
     }
   }, [user])
 

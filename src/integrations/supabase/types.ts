@@ -5429,6 +5429,10 @@ export type Database = {
       }
     }
     Functions: {
+      check_acp_rate_limit: {
+        Args: { operation_type: string; user_id_param: string }
+        Returns: Json
+      }
       check_brute_force: {
         Args: {
           identifier_param: string
@@ -5549,6 +5553,23 @@ export type Database = {
       make_user_admin: {
         Args: { target_user_id?: string }
         Returns: undefined
+      }
+      validate_acp_job: {
+        Args: {
+          budget_param: number
+          description_param: string
+          title_param: string
+        }
+        Returns: Json
+      }
+      validate_acp_service: {
+        Args: {
+          category_param: string
+          description_param: string
+          price_param: number
+          title_param: string
+        }
+        Returns: Json
       }
       validate_agent_creation: {
         Args: {
