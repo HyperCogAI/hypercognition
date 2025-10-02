@@ -202,11 +202,12 @@ serve(async (req) => {
     const chainConfig: Record<string, { blockTime: number; tps: number; gas: number }> = {
       ethereum: { blockTime: 12, tps: 15, gas: 20 },
       base: { blockTime: 2, tps: 100, gas: 0.02 },
+      bnb: { blockTime: 3, tps: 160, gas: 3 },
       polygon: { blockTime: 2, tps: 65, gas: 0.02 },
     };
 
     const nowIso = new Date().toISOString();
-    const buildMetrics = (key: 'ethereum' | 'base' | 'polygon') => {
+    const buildMetrics = (key: 'ethereum' | 'base' | 'bnb' | 'polygon') => {
       const g = chainGroups[key] || { totalVolume: 0, totalMarketCap: 0, count: 0 };
       const cfg = chainConfig[key];
       return {
@@ -224,6 +225,7 @@ serve(async (req) => {
     const chainMetrics = {
       ethereum: buildMetrics('ethereum'),
       base: buildMetrics('base'),
+      bnb: buildMetrics('bnb'),
       polygon: buildMetrics('polygon'),
     };
 
