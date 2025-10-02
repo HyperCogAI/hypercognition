@@ -128,3 +128,6 @@ verify_jwt = false
 
 [functions.analytics-query]
 verify_jwt = false
+
+[functions.kaito-sync]
+verify_jwt = false
