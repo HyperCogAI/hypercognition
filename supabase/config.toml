@@ -137,3 +137,9 @@ verify_jwt = false
 
 [functions.market-sentiment-sync]
 verify_jwt = false
+
+[functions.price-data-sync]
+verify_jwt = false
+
+[functions.ai-agents-market]
+verify_jwt = false
