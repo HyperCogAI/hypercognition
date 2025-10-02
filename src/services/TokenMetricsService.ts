@@ -33,16 +33,16 @@ export class TokenMetricsService {
 
       const tokens = (data || []).map((agent: any, index: number) => ({
         address: agent.id || `token-${index}`,
-        symbol: agent.symbol || `AG${index + 1}`,
-        name: agent.name || `Agent ${index + 1}`,
-        price: agent.price || 0,
-        priceChange24h: agent.change_percent_24h || 0,
-        volume24h: agent.volume_24h || 0,
-        liquidity: agent.dex_liquidity || (agent.market_cap * 0.1) || 0,
-        marketCap: agent.market_cap || 0,
-        holders: agent.total_supply ? Math.floor(agent.total_supply / 1000) : 1000 + Math.floor(Math.random() * 9000),
-        transactions24h: Math.floor((agent.volume_24h || 50000) / (agent.price || 1)),
-        chain: agent.chain || 'Solana'
+        symbol: agent.symbol || '',
+        name: agent.name || '',
+        price: typeof agent.price === 'number' ? agent.price : 0,
+        priceChange24h: typeof agent.change_percent_24h === 'number' ? agent.change_percent_24h : 0,
+        volume24h: typeof agent.volume_24h === 'number' ? agent.volume_24h : 0,
+        liquidity: typeof agent.dex_liquidity === 'number' ? agent.dex_liquidity : 0,
+        marketCap: typeof agent.market_cap === 'number' ? agent.market_cap : 0,
+        holders: 0, // unknown
+        transactions24h: agent.price && agent.volume_24h ? Math.floor(agent.volume_24h / Math.max(agent.price, 1)) : 0,
+        chain: agent.dex_chain || agent.chain || 'Unknown'
       }));
 
       console.log(`[TokenMetrics] Fetched ${tokens.length} tokens from API`);
@@ -50,23 +50,11 @@ export class TokenMetricsService {
     } catch (error) {
       console.error('Error fetching top tokens from API:', error);
       
-      // Return fallback token data
-      return Array.from({ length: Math.min(limit, 10) }, (_, i) => ({
-        address: `fallback-${i}`,
-        symbol: `AI${i + 1}`,
-        name: `AI Agent ${i + 1}`,
-        price: 0.5 + Math.random() * 2,
-        priceChange24h: (Math.random() - 0.5) * 20,
-        volume24h: 100000 + Math.random() * 900000,
-        liquidity: 50000 + Math.random() * 450000,
-        marketCap: 1000000 + Math.random() * 9000000,
-        holders: 1000 + Math.floor(Math.random() * 9000),
-        transactions24h: 500 + Math.floor(Math.random() * 4500),
-        chain: ['Solana', 'Ethereum', 'Base', 'Polygon'][i % 4]
-      }));
+      // Do not fabricate data
+      return [];
     }
-  }
-
+    }
+  
   /**
    * Get tokens by specific chain from live AI agent market API
    */

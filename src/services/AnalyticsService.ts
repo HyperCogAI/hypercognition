@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { aiAgentMarketApi } from '@/lib/apis/aiAgentMarketApi';
 
 export interface AnalyticsEvent {
   event_type: string;

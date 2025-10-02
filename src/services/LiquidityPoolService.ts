@@ -27,15 +27,17 @@ export class LiquidityPoolService {
         throw error;
       }
 
-      // Transform AI agent data into liquidity pool format
-      const pools = (data || []).map((agent: any, index: number) => ({
-        pair: `${agent.symbol || `AG${index + 1}`}/USDC`,
-        liquidity: agent.dex_liquidity || (agent.market_cap * 0.1) || 50000 + Math.random() * 450000,
-        volume24h: agent.dex_volume_24h || agent.volume_24h || 10000 + Math.random() * 90000,
-        apy: 15 + Math.random() * 85, // 15-100% APY
-        fees24h: (agent.volume_24h || 50000) * 0.003, // 0.3% fee
-        chain: agent.chain || 'Solana'
-      }));
+      // Transform AI agent data into liquidity pool format using only real DEX data
+      const pools = (data || [])
+        .filter((agent: any) => typeof agent.dex_liquidity === 'number' && typeof agent.dex_volume_24h === 'number')
+        .map((agent: any) => ({
+          pair: agent.dex_name ? String(agent.dex_name) : `${agent.symbol}/USDC`,
+          liquidity: agent.dex_liquidity,
+          volume24h: agent.dex_volume_24h,
+          apy: 0, // No guessing — show 0 when unknown
+          fees24h: agent.dex_volume_24h * 0.003, // 0.3% fee assumption
+          chain: agent.dex_chain || agent.chain || 'Unknown'
+        }));
 
       const filteredPools = chain 
         ? pools.filter(pool => pool.chain.toLowerCase() === chain.toLowerCase())
@@ -46,20 +48,8 @@ export class LiquidityPoolService {
     } catch (error) {
       console.error('Error fetching liquidity pools from API:', error);
       
-      // Return fallback pool data
-      const chains = ['Solana', 'Ethereum', 'Base', 'Polygon'];
-      const fallbackPools = Array.from({ length: Math.min(limit, 20) }, (_, i) => ({
-        pair: `AI${i + 1}/USDC`,
-        liquidity: 50000 + Math.random() * 450000,
-        volume24h: 10000 + Math.random() * 90000,
-        apy: 15 + Math.random() * 85,
-        fees24h: (10000 + Math.random() * 90000) * 0.003,
-        chain: chains[i % chains.length]
-      }));
-
-      return chain 
-        ? fallbackPools.filter(pool => pool.chain.toLowerCase() === chain.toLowerCase())
-        : fallbackPools;
+      // Do not return mock data; surface empty to UI
+      return [];
     }
   }
 
@@ -80,15 +70,8 @@ export class LiquidityPoolService {
     } catch (error) {
       console.error('Error fetching top pools by APY from API:', error);
       
-      // Return fallback high-APY pool data
-      return Array.from({ length: Math.min(limit, 5) }, (_, i) => ({
-        pair: `HIGH${i + 1}/USDC`,
-        liquidity: 100000 + Math.random() * 400000,
-        volume24h: 20000 + Math.random() * 80000,
-        apy: 80 + Math.random() * 120, // High APY pools: 80-200%
-        fees24h: (20000 + Math.random() * 80000) * 0.003,
-        chain: ['Solana', 'Ethereum', 'Base', 'Polygon'][i % 4]
-      }));
+      // No mock fallback
+      return [];
     }
   }
 }
