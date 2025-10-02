@@ -6,6 +6,57 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Fetch real crypto news from CryptoPanic API
+async function fetchCryptoPanicNews(limit: number = 20, category?: string) {
+  const apiKey = Deno.env.get('CRYPTOPANIC_API_KEY');
+  
+  if (!apiKey) {
+    console.warn('[NewsSync] CRYPTOPANIC_API_KEY not configured, using fallback data');
+    return null;
+  }
+
+  try {
+    // CryptoPanic API - free tier supports 20 requests/day
+    let url = `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&public=true`;
+    
+    if (category && category !== 'all') {
+      url += `&filter=${category}`;
+    }
+    
+    const response = await fetch(url);
+
+    if (!response.ok) {
+      console.error(`[NewsSync] CryptoPanic API error: ${response.status}`);
+      return null;
+    }
+
+    const data = await response.json();
+    console.log(`[NewsSync] Fetched ${data.results?.length || 0} news articles from CryptoPanic`);
+    
+    // Transform CryptoPanic format to our format
+    const news = (data.results || []).slice(0, limit).map((item: any, index: number) => ({
+      id: `cryptopanic-${item.id || index}`,
+      title: item.title,
+      summary: item.title, // CryptoPanic doesn't provide separate summary
+      content: item.title,
+      source: item.source?.title || 'CryptoPanic',
+      url: item.url,
+      category: category || 'general',
+      sentiment_score: item.votes?.positive > item.votes?.negative ? 0.5 : -0.5,
+      impact_level: item.votes?.important ? 'high' : 'medium',
+      related_tokens: item.currencies?.map((c: any) => c.code) || [],
+      related_chains: ['Bitcoin', 'Ethereum', 'Solana'], // Default chains
+      published_at: item.published_at,
+      created_at: new Date().toISOString()
+    }));
+    
+    return news;
+  } catch (error) {
+    console.error('[NewsSync] Error fetching CryptoPanic news:', error);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -17,6 +68,37 @@ serve(async (req) => {
     const supabase = createClient(supabaseUrl, supabaseKey);
 
     console.log('[SentimentSync] Starting market sentiment sync');
+
+    const { returnData, action, limit, category, timeframe } = await req.json().catch(() => ({}));
+
+    // Handle news fetch request
+    if (action === 'getNews') {
+      const news = await fetchCryptoPanicNews(limit || 20, category);
+      
+      if (news && news.length > 0) {
+        return new Response(
+          JSON.stringify({ success: true, news }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+      
+      // Return fallback news if API fails
+      const fallbackNews = Array.from({ length: Math.min(limit || 5, 5) }, (_, i) => ({
+        id: `fallback-${i}`,
+        title: `Crypto Market Update ${i + 1}`,
+        summary: `Latest developments in cryptocurrency markets and blockchain technology`,
+        source: 'Market Analysis',
+        category: category || 'general',
+        sentiment_score: (Math.random() - 0.5) * 2,
+        impact_level: ['low', 'medium', 'high'][i % 3],
+        published_at: new Date(Date.now() - i * 3600000).toISOString()
+      }));
+      
+      return new Response(
+        JSON.stringify({ success: true, news: fallbackNews }),
+        { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
 
     // Get recent market data, prefer active but fallback to top by volume
     const { data: agentsActive, error: agentsError } = await supabase
