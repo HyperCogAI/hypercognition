@@ -24,7 +24,7 @@ export class ChainMetricsService {
         .eq('chain', 'solana')
         .order('timestamp', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -56,7 +56,7 @@ export class ChainMetricsService {
         .eq('chain', chain)
         .order('timestamp', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 
@@ -91,7 +91,7 @@ export class ChainMetricsService {
         .select('*')
         .order('timestamp', { ascending: false })
         .limit(1)
-        .single();
+        .maybeSingle();
 
       if (error) throw error;
 

@@ -162,6 +162,7 @@ serve(async (req) => {
           fear_greed_index: fearGreedData.value,
           sentiment_label: fearGreedData.classification.toLowerCase(),
           overall_sentiment: (fearGreedData.value - 50) / 50, // Normalize to -1 to 1
+          timeframe: '24h', // Required field
           metadata: {
             source: 'alternative.me',
             real_data: true,
