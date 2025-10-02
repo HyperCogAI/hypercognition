@@ -73,7 +73,7 @@ const SolanaTradingSignalsPage = lazy(() => import('./pages/SolanaTradingSignals
 const TutorialsHub = lazy(() => import('./pages/TutorialsHub'));
 
 // Lazy loaded components - Administrative
-const AdminDashboard = lazy(() => import('./pages/AdminDashboard'));
+const Admin = lazy(() => import('./pages/Admin'));
 const InstitutionalFeatures = lazy(() => import('./pages/InstitutionalFeatures'));
 const ComplianceRegulatory = lazy(() => import('./pages/ComplianceRegulatory'));
 const CustomerSupport = lazy(() => import('./pages/CustomerSupport'));
@@ -214,7 +214,7 @@ const AppLayout = () => {
                 <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                 <Route path="/advanced-notifications" element={<ProtectedRoute><AdvancedNotifications /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-                <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                 <Route path="/logo-generator" element={<LogoGenerator />} />
                 <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
                 <Route path="/compare" element={<AgentComparison />} />
@@ -299,7 +299,7 @@ const AppLayout = () => {
                    <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
                   <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                   <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
-                  <Route path="/admin" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+                  <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
                   <Route path="/logo-generator" element={<LogoGenerator />} />
                   <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
                   <Route path="/compare" element={<AgentComparison />} />
