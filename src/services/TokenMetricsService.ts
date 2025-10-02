@@ -23,7 +23,7 @@ export class TokenMetricsService {
       console.log('[TokenMetrics] Fetching top tokens from AI agent market API...');
       
       const { data, error } = await supabase.functions.invoke('ai-agents-market', {
-        body: { action: 'getTopAIAgents', limit }
+        body: { action: 'getTopAIAgents', limit, enrich: true }
       });
 
       if (error) {

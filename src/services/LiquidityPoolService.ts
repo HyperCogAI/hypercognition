@@ -19,7 +19,7 @@ export class LiquidityPoolService {
       
       // Use ai-agents-market edge function which includes DEXScreener data
       const { data, error } = await supabase.functions.invoke('ai-agents-market', {
-        body: { action: 'getTopAIAgents', limit }
+        body: { action: 'getTopAIAgents', limit, enrich: true }
       });
 
       if (error) {

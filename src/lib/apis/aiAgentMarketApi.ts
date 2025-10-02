@@ -55,7 +55,7 @@ class AIAgentMarketAPI {
       console.log('[AIAgentMarketAPI] Fetching top AI agents from CoinGecko...');
       
       const { data, error } = await supabase.functions.invoke('ai-agents-market', {
-        body: { action: 'getTopAIAgents', limit }
+        body: { action: 'getTopAIAgents', limit, enrich: true }
       });
 
       if (error) {
