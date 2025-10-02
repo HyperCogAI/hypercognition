@@ -69,6 +69,19 @@ async function fetchFearGreedIndex() {
   }
 }
 
+// Fetch TVL per chain from DefiLlama (public API)
+async function fetchDefiLlamaTVL(chain: 'ethereum' | 'base' | 'bsc'): Promise<number | null> {
+  try {
+    const res = await fetch(`https://api.llama.fi/tvl/${chain}`);
+    if (!res.ok) return null;
+    const tvl = await res.json();
+    return typeof tvl === 'number' ? tvl : (tvl?.tvl ?? null);
+  } catch (e) {
+    console.error('[PriceSync] DefiLlama TVL fetch error for', chain, e);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -199,6 +212,14 @@ serve(async (req) => {
       chainGroups[chain].count += 1;
     }
 
+    // Fetch real TVL from DefiLlama; fall back to synthetic aggregation
+    const [ethTVL, baseTVL, bscTVL] = await Promise.all([
+      fetchDefiLlamaTVL('ethereum'),
+      fetchDefiLlamaTVL('base'),
+      fetchDefiLlamaTVL('bsc'),
+    ]);
+    const realTVL: Record<string, number | null> = { ethereum: ethTVL, base: baseTVL, bnb: bscTVL };
+
     const chainConfig: Record<string, { blockTime: number; tps: number; gas: number }> = {
       ethereum: { blockTime: 12, tps: 15, gas: 20 },
       base: { blockTime: 2, tps: 100, gas: 0.02 },
@@ -211,7 +232,7 @@ serve(async (req) => {
       const g = chainGroups[key] || { totalVolume: 0, totalMarketCap: 0, count: 0 };
       const cfg = chainConfig[key];
       return {
-        tvl: g.totalMarketCap * 1.5,
+        tvl: (realTVL as any)[key] ?? g.totalMarketCap * 1.5,
         volume_24h: g.totalVolume,
         transactions_24h: Math.max(1, g.count) * 800,
         active_addresses_24h: Math.max(1, g.count) * 200,
