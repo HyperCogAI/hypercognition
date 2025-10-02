@@ -2175,6 +2175,68 @@ export type Database = {
         }
         Relationships: []
       }
+      kaito_attention_scores: {
+        Row: {
+          agent_id: string | null
+          created_at: string | null
+          id: string
+          metadata: Json | null
+          twitter_user_id: string | null
+          twitter_username: string
+          updated_at: string | null
+          yaps_12m: number | null
+          yaps_24h: number | null
+          yaps_30d: number | null
+          yaps_3m: number | null
+          yaps_48h: number | null
+          yaps_6m: number | null
+          yaps_7d: number | null
+          yaps_all: number | null
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          twitter_user_id?: string | null
+          twitter_username: string
+          updated_at?: string | null
+          yaps_12m?: number | null
+          yaps_24h?: number | null
+          yaps_30d?: number | null
+          yaps_3m?: number | null
+          yaps_48h?: number | null
+          yaps_6m?: number | null
+          yaps_7d?: number | null
+          yaps_all?: number | null
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string | null
+          id?: string
+          metadata?: Json | null
+          twitter_user_id?: string | null
+          twitter_username?: string
+          updated_at?: string | null
+          yaps_12m?: number | null
+          yaps_24h?: number | null
+          yaps_30d?: number | null
+          yaps_3m?: number | null
+          yaps_48h?: number | null
+          yaps_6m?: number | null
+          yaps_7d?: number | null
+          yaps_all?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "kaito_attention_scores_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       kyc_verifications: {
         Row: {
           address_line1: string | null

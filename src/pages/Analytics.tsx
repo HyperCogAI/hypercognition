@@ -2,9 +2,10 @@ import React from 'react';
 import { EnterpriseChainAnalytics } from '@/components/analytics/EnterpriseChainAnalytics';
 import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
+import { KaitoInfluenceDashboard } from '@/components/analytics/KaitoInfluenceDashboard';
 import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BarChart3, Layers, TrendingUp, Newspaper } from 'lucide-react';
+import { BarChart3, Layers, TrendingUp, Newspaper, Sparkles } from 'lucide-react';
 
 const Analytics = () => {
   return (
@@ -35,7 +36,7 @@ const Analytics = () => {
         
         <Tabs defaultValue="chains" className="space-y-8">
           <div className="relative">
-            <TabsList className="grid w-full grid-cols-3 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl shadow-lg">
+            <TabsList className="grid w-full grid-cols-4 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl shadow-lg">
               <TabsTrigger 
                 value="chains" 
                 className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-2"
@@ -49,6 +50,13 @@ const Analytics = () => {
               >
                 <TrendingUp className="h-4 w-4" />
                 <span>AI Agents</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="influence" 
+                className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-2"
+              >
+                <Sparkles className="h-4 w-4" />
+                <span>Social Influence</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="news" 
@@ -66,6 +74,10 @@ const Analytics = () => {
           
           <TabsContent value="agents" className="animate-fade-in">
             <AdvancedAnalyticsDashboard />
+          </TabsContent>
+          
+          <TabsContent value="influence" className="animate-fade-in">
+            <KaitoInfluenceDashboard />
           </TabsContent>
           
           <TabsContent value="news" className="animate-fade-in">
