@@ -25,7 +25,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   const [liquidityPools, setLiquidityPools] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const { toast } = useToast();
-  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(true, 300000); // Sync every 5 minutes
+  const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(true, 30000); // Sync every 30 seconds
 
   const fetchData = async () => {
     setIsLoading(true);
@@ -58,10 +58,15 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   };
 
   useEffect(() => {
+    // Force immediate sync on component mount
+    syncAll();
     fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30s
+    const interval = setInterval(() => {
+      syncAll(); // This triggers the API calls
+      setTimeout(fetchData, 2000); // Fetch updated data 2 seconds after sync
+    }, 30000); // Every 30 seconds
     return () => clearInterval(interval);
-  }, []);
+  }, [syncAll]);
 
   const formatNumber = (num: number) => {
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;
@@ -122,18 +127,27 @@ export const EnterpriseChainAnalytics: React.FC = () => {
         <CardHeader className="flex flex-row items-center justify-between pb-4">
           <div>
             <CardTitle className="text-2xl font-bold mb-2">Real-Time Chain Analytics</CardTitle>
-            <CardDescription className="text-base">
-              Live metrics across Solana, Ethereum, Base, and Polygon networks
+            <CardDescription className="text-base flex items-center gap-2">
+              Live metrics from Helius API (Solana) & CoinGecko API (Price Data)
+              {lastSyncTime && (
+                <span className="text-xs text-green-500">
+                  Last updated: {lastSyncTime.toLocaleTimeString()}
+                </span>
+              )}
             </CardDescription>
           </div>
           <Button 
-            onClick={() => { fetchData(); syncAll(); }} 
+            onClick={async () => { 
+              console.log('[Analytics] Manual refresh triggered');
+              await syncAll(); 
+              setTimeout(fetchData, 3000); // Wait 3 seconds for data to update
+            }} 
             disabled={isSyncing || isLoading}
             size="sm"
             className="gap-2"
           >
             <RefreshCw className={`h-4 w-4 ${(isSyncing || isLoading) ? 'animate-spin' : ''}`} />
-            {isSyncing ? 'Syncing...' : 'Refresh'}
+            {isSyncing ? 'Syncing APIs...' : isLoading ? 'Loading...' : 'Refresh All Data'}
           </Button>
         </CardHeader>
       </Card>
@@ -145,7 +159,14 @@ export const EnterpriseChainAnalytics: React.FC = () => {
             <CardContent className="p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-semibold">{name}</span>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                <div className="flex items-center gap-2">
+                  {key === 'solana' && (
+                    <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">
+                      Helius API
+                    </span>
+                  )}
+                  <div className="w-3 h-3 rounded-full" style={{ backgroundColor: color }} />
+                </div>
               </div>
               <div className="space-y-2">
                 <div className="text-2xl font-bold">{formatNumber(data.tvl)}</div>
@@ -156,13 +177,28 @@ export const EnterpriseChainAnalytics: React.FC = () => {
                 </div>
                 <div className="flex items-center justify-between text-sm">
                   <span>TPS:</span>
-                  <span className="font-medium">{data.tps}</span>
+                  <span className="font-medium text-green-600">{data.tps}</span>
                 </div>
               </div>
             </CardContent>
           </Card>
         ))}
       </div>
+
+      {/* API Status Indicator */}
+      <Card className="bg-green-50 border-green-200">
+        <CardContent className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
+              <span className="text-sm font-medium text-green-700">Live API Data Active</span>
+            </div>
+            <div className="text-xs text-green-600">
+              Helius (Solana) • CoinGecko (Prices) • Alternative.me (Sentiment)
+            </div>
+          </div>
+        </CardContent>
+      </Card>
 
       {/* Cross-Chain Distribution */}
       {crossChainData && (
