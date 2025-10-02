@@ -271,7 +271,7 @@ export const createAgentSchema = z.object({
   symbol: agentSymbolSchema,
   description: descriptionSchema,
   initialPrice: priceSchema,
-  chain: z.enum(["ethereum", "polygon", "arbitrum", "optimism"], {
+  chain: z.enum(["ethereum", "bnb", "arbitrum", "optimism"], {
     errorMap: () => ({ message: "Please select a valid chain" })
   }),
   tradingStrategy: z.enum(["conservative", "moderate", "aggressive"], {

@@ -389,7 +389,7 @@ export const CreateAgent = () => {
                   <SelectContent>
                     <SelectItem value="base">Base</SelectItem>
                     <SelectItem value="ethereum">Ethereum</SelectItem>
-                    <SelectItem value="polygon">Polygon</SelectItem>
+                    <SelectItem value="bnb">BNB Chain</SelectItem>
                     <SelectItem value="arbitrum">Arbitrum</SelectItem>
                   </SelectContent>
                 </Select>
