@@ -5467,6 +5467,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      check_signal_rate_limit: {
+        Args: { user_id_param: string }
+        Returns: Json
+      }
       cleanup_expired_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -5627,6 +5631,17 @@ export type Database = {
       }
       validate_password_strength: {
         Args: { password_param: string }
+        Returns: Json
+      }
+      validate_trading_signal: {
+        Args: {
+          confidence_param: number
+          entry_price_param: number
+          reasoning_param?: string
+          signal_type_param: string
+          stop_loss_param?: number
+          target_price_param?: number
+        }
         Returns: Json
       }
       validate_url: {
