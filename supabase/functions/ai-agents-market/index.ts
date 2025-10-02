@@ -99,9 +99,9 @@ serve(async (req) => {
   }
 
   try {
-    const { action, limit = 100, id, days = 30 } = await req.json();
+    const { action, limit = 100, id, days = 30, enrich = false } = await req.json();
 
-    console.log('[AI-Market] Request:', { action, limit, id, days });
+    console.log('[AI-Market] Request:', { action, limit, id, days, enrich });
 
     // Fetch AI & Big Data category tokens from CoinGecko
     if (action === 'getTopAIAgents') {
@@ -119,52 +119,68 @@ serve(async (req) => {
       }
 
       const data = await response.json();
-      
-      // Transform CoinGecko data to our format and enrich with DEXScreener + DefiLlama data
-      const agents = await Promise.all(data.map(async (coin: any) => {
-        // Fetch DEXScreener and DefiLlama data in parallel
-        const [dexData, llamaData] = await Promise.all([
-          getDEXScreenerData(undefined, coin.symbol),
-          getDefiLlamaData(coin.symbol, coin.id)
-        ]);
-        
-        return {
-          id: coin.id,
-          name: coin.name,
-          symbol: coin.symbol.toUpperCase(),
-          price: coin.current_price || 0,
-          market_cap: coin.market_cap || 0,
-          volume_24h: coin.total_volume || 0,
-          change_24h: coin.price_change_24h || 0,
-          change_percent_24h: coin.price_change_percentage_24h || 0,
-          change_percent_7d: coin.price_change_percentage_7d_in_currency || 0,
-          high_24h: coin.high_24h || 0,
-          low_24h: coin.low_24h || 0,
-          circulating_supply: coin.circulating_supply || 0,
-          total_supply: coin.total_supply || 0,
-          rank: coin.market_cap_rank || 0,
-          avatar_url: coin.image || '',
-          chain: 'Multi-Chain',
-          category: 'AI & Big Data',
-          // DEXScreener enrichment
-          dex_liquidity: dexData?.dexLiquidity || 0,
-          dex_volume_24h: dexData?.dexVolume24h || 0,
-          dex_price_usd: dexData?.dexPriceUsd || 0,
-          dex_chain: dexData?.dexChain || '',
-          fdv: dexData?.fdv || coin.fully_diluted_valuation || 0,
-          // DefiLlama enrichment
-          tvl: llamaData?.tvl || 0,
-          chain_tvls: llamaData?.chainTvls || {},
-          mcap_tvl_ratio: llamaData?.mcaptvl || 0,
-          defi_category: llamaData?.category || '',
-          chains: llamaData?.chains || [],
-          protocol_slug: llamaData?.protocolSlug || '',
-          twitter: llamaData?.twitter || '',
-          website: llamaData?.url || ''
-        };
+
+      // PERFORMANCE NOTE:
+      // Full enrichment (DEXScreener + DefiLlama per coin) frequently exceeds Edge CPU time
+      // for larger lists. By default we return a "lite" list (CoinGecko only). If the caller
+      // explicitly requests enrich=true, we only enrich the first 8 items to stay within limits.
+
+      let agents: any[] = data.map((coin: any) => ({
+        id: coin.id,
+        name: coin.name,
+        symbol: coin.symbol.toUpperCase(),
+        price: coin.current_price || 0,
+        market_cap: coin.market_cap || 0,
+        volume_24h: coin.total_volume || 0,
+        change_24h: coin.price_change_24h || 0,
+        change_percent_24h: coin.price_change_percentage_24h || 0,
+        change_percent_7d: coin.price_change_percentage_7d_in_currency || 0,
+        high_24h: coin.high_24h || 0,
+        low_24h: coin.low_24h || 0,
+        circulating_supply: coin.circulating_supply || 0,
+        total_supply: coin.total_supply || 0,
+        rank: coin.market_cap_rank || 0,
+        avatar_url: coin.image || '',
+        chain: 'Multi-Chain',
+        category: 'AI & Big Data'
       }));
 
-      console.log('[AI-Market] Fetched:', agents.length, 'AI tokens with DEX + DeFi data');
+      if (enrich) {
+        const enrichCount = Math.min(8, agents.length);
+        const enriched = await Promise.all(
+          agents.slice(0, enrichCount).map(async (a) => {
+            try {
+              const [dexData, llamaData] = await Promise.all([
+                getDEXScreenerData(undefined, a.symbol),
+                getDefiLlamaData(a.symbol, a.id)
+              ]);
+              return {
+                ...a,
+                // DEXScreener enrichment
+                dex_liquidity: dexData?.dexLiquidity || 0,
+                dex_volume_24h: dexData?.dexVolume24h || 0,
+                dex_price_usd: dexData?.dexPriceUsd || 0,
+                dex_chain: dexData?.dexChain || '',
+                fdv: dexData?.fdv || 0,
+                // DefiLlama enrichment
+                tvl: llamaData?.tvl || 0,
+                chain_tvls: llamaData?.chainTvls || {},
+                mcap_tvl_ratio: llamaData?.mcaptvl || 0,
+                defi_category: llamaData?.category || '',
+                chains: llamaData?.chains || [],
+                protocol_slug: llamaData?.protocolSlug || '',
+                twitter: llamaData?.twitter || '',
+                website: llamaData?.url || ''
+              };
+            } catch (_) {
+              return a;
+            }
+          })
+        );
+        agents = [...enriched, ...agents.slice(enrichCount)];
+      }
+
+      console.log('[AI-Market] Fetched:', agents.length, 'AI tokens (lite=', !enrich, ')');
 
       return new Response(JSON.stringify(agents), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

@@ -46,11 +46,20 @@ export const useAnalytics = () => {
       setIsLoading(true)
       
       // Fetch real AI agent market data
-      const [agents, marketStats, priceHistory] = await Promise.all([
+      // Fetch agents and market stats first, then pick a real agent for price history
+      const [agents, marketStats] = await Promise.all([
         aiAgentMarketApi.getTopAIAgents(20),
-        aiAgentMarketApi.getMarketStats(),
-        aiAgentMarketApi.getAIAgentPriceHistory('virtual', 30)
+        aiAgentMarketApi.getMarketStats()
       ])
+
+      // Pick a valid agent id for price history (fallback to trending or a known id)
+      let targetId = agents[0]?.id
+      if (!targetId) {
+        const trending = await aiAgentMarketApi.getTrendingAIAgents()
+        targetId = trending[0]?.id || 'the-graph'
+      }
+
+      const priceHistory = await aiAgentMarketApi.getAIAgentPriceHistory(targetId, 30)
       
       // Transform agent data to match our interface
       const transformedAgents = agents.map(agent => ({
