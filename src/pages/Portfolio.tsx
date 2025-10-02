@@ -13,7 +13,8 @@ import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
 import { PortfolioOptimizer } from '@/components/portfolio/PortfolioOptimizer'
 import { PortfolioPerformanceDashboard } from '@/components/portfolio/PortfolioPerformanceDashboard'
 import { SolanaPortfolioCard } from '@/components/portfolio/SolanaPortfolioCard'
-import { Wallet, TrendingUp, BarChart3, Target, Plus, DollarSign } from 'lucide-react'
+import { DetailedPortfolioAnalytics } from '@/components/portfolio/DetailedPortfolioAnalytics'
+import { Wallet, TrendingUp, BarChart3, Target, Plus, DollarSign, Activity } from 'lucide-react'
 import { Link } from 'react-router-dom'
 
 export default function Portfolio() {
@@ -165,8 +166,16 @@ export default function Portfolio() {
             </div>
 
             {/* Portfolio Tabs */}
-            <Tabs defaultValue="performance" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-2 md:grid-cols-5 bg-gradient-to-r from-muted to-muted/50 p-1 rounded-xl">
+            <Tabs defaultValue="detailed" className="space-y-6">
+              <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-gradient-to-r from-muted to-muted/50 p-1 rounded-xl">
+                <TabsTrigger 
+                  value="detailed" 
+                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
+                >
+                  <Activity className="h-4 w-4" />
+                  <span className="hidden sm:inline">Detailed</span>
+                  <span className="sm:hidden">Live</span>
+                </TabsTrigger>
                 <TabsTrigger 
                   value="performance" 
                   className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
@@ -208,6 +217,10 @@ export default function Portfolio() {
                   <span className="sm:hidden">SOL</span>
                 </TabsTrigger>
               </TabsList>
+
+              <TabsContent value="detailed">
+                <DetailedPortfolioAnalytics />
+              </TabsContent>
 
               <TabsContent value="performance">
                 <PortfolioPerformanceDashboard />

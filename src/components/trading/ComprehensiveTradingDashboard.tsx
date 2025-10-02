@@ -13,6 +13,9 @@ import { useIsMobile } from "@/hooks/useMediaQuery"
 import { ProfessionalPriceChart } from "@/components/charts/ProfessionalPriceChart"
 import { useState } from "react"
 import { QuickAddToPortfolio } from "@/components/trading/QuickAddToPortfolio"
+import { QuickTradeModal } from "@/components/trading/QuickTradeModal"
+import { useRealtimePrices } from "@/hooks/useRealtimePrices"
+import { useEffect } from "react"
 
 export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: { limit?: number; searchQuery?: string }) {
   const navigate = useNavigate();
@@ -28,7 +31,13 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
   const [selectedCrypto, setSelectedCrypto] = useState<any>(null)
   const [portfolioCrypto, setPortfolioCrypto] = useState<any>(null)
   const [showPortfolioDialog, setShowPortfolioDialog] = useState(false)
+  const [showTradeModal, setShowTradeModal] = useState(false)
+  const [tradeModalCrypto, setTradeModalCrypto] = useState<any>(null)
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useCryptoWatchlist()
+
+  // Get crypto IDs for real-time price updates
+  const cryptoIds = crypto.slice(0, limit).map((c: any) => c.id)
+  const { prices: realtimePrices, isConnected } = useRealtimePrices({ cryptoIds })
 
   const handleWatchlistToggle = async (coin: any, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -47,14 +56,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
 
   const handleTrade = (coin: any, e: React.MouseEvent) => {
     e.stopPropagation()
-    navigate('/exchange-trading', { 
-      state: { 
-        selectedCrypto: coin.id,
-        symbol: coin.symbol,
-        name: coin.name,
-        price: coin.current_price
-      } 
-    });
+    setTradeModalCrypto(coin)
+    setShowTradeModal(true)
   }
 
   const formatPrice = (price: number) => {
@@ -216,6 +219,11 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
             <div>
               <CardTitle className="flex items-center gap-2">
                 Live Market Data
+                {isConnected && (
+                  <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 animate-pulse">
+                    Live
+                  </Badge>
+                )}
                 <Badge variant="outline" className="text-xs">
                   {crypto.length} Assets
                 </Badge>
@@ -241,18 +249,27 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
 
             {/* Top Cryptocurrencies */}
             <TabsContent value="top" className="space-y-3">
-              {filteredCrypto.length === 0 ? (
+                {filteredCrypto.length === 0 ? (
                 <div className="text-center py-8 text-muted-foreground">
                   No cryptocurrencies found matching "{searchQuery}"
                 </div>
               ) : (
-                filteredCrypto.slice(0, limit).map((token, index) => (
+                filteredCrypto.slice(0, limit).map((token, index) => {
+                  // Get real-time price if available
+                  const realtimePrice = realtimePrices.get(token.id)
+                  const displayPrice = realtimePrice?.current_price || token.current_price
+                  const priceChange = realtimePrice?.price_change_percentage_24h || token.price_change_percentage_24h
+                  
+                  return (
                 <div 
                   key={token.id}
                   onClick={() => setSelectedCrypto(token)}
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
+                    {/* Real-time indicator */}
+                    <div className={`w-2 h-2 rounded-full ${realtimePrice ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
+                    
                     <Button
                       variant="ghost"
                       size="sm"
@@ -296,9 +313,9 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   </div>
                   <div className={isMobile ? "text-right" : "flex items-center gap-8 text-right"}>
                     <div>
-                      <div className="font-semibold">{formatPrice(token.current_price)}</div>
-                      <div className={`text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {token.price_change_percentage_24h >= 0 ? '+' : ''}{token.price_change_percentage_24h.toFixed(2)}%
+                      <div className="font-semibold">{formatPrice(displayPrice)}</div>
+                      <div className={`text-sm ${priceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)}%
                       </div>
                     </div>
                     {!isMobile && (
@@ -315,7 +332,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                     )}
                   </div>
                 </div>
-              )))}
+              )}))}
             </TabsContent>
 
             {/* Top Gainers */}
@@ -448,6 +465,15 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
           open={showPortfolioDialog}
           onOpenChange={setShowPortfolioDialog}
           crypto={portfolioCrypto}
+        />
+      )}
+
+      {/* Quick Trade Modal */}
+      {tradeModalCrypto && (
+        <QuickTradeModal
+          open={showTradeModal}
+          onOpenChange={setShowTradeModal}
+          crypto={tradeModalCrypto}
         />
       )}
     </div>
