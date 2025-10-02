@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { EnterpriseChainAnalytics } from '@/components/analytics/EnterpriseChainAnalytics';
 import { SolanaAnalyticsDashboard } from '@/components/analytics/SolanaAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
@@ -8,6 +8,7 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Layers, TrendingUp, Newspaper, Sparkles } from 'lucide-react';
 import { useMarketNewsData } from '@/hooks/useMarketNewsData';
+import EnhancedMarketNews from '@/components/news/EnhancedMarketNews';
 
 const Analytics = () => {
   const { marketSentiment } = useMarketNewsData();
@@ -91,7 +92,7 @@ const Analytics = () => {
           </TabsContent>
           
           <TabsContent value="news" className="animate-fade-in">
-            <MarketNewsComponent />
+            <EnhancedMarketNews />
           </TabsContent>
         </Tabs>
         </main>
