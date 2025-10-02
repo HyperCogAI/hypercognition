@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchInput } from '@/components/ui/search-input';
 import { supabase } from '@/integrations/supabase/client';
+import { useToast } from '@/hooks/use-toast';
 
 const DEFAULT_USERNAMES = [
   'VitalikButerin','cz_binance','brian_armstrong','saylor','APompliano','balajis','naval','aantonop','ErikVoorhees','TuurDemeester',
@@ -28,6 +29,7 @@ export const KaitoInfluenceDashboard = () => {
   const [searchedAgents, setSearchedAgents] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const autoSyncedRef = useRef(false);
+  const { toast } = useToast();
 
   // Auto-bootstrap: if list is sparse, sync a default set of influencers
   useEffect(() => {
@@ -77,6 +79,7 @@ export const KaitoInfluenceDashboard = () => {
 
     if (!username || /[^A-Za-z0-9_]/.test(username)) {
       console.warn('Invalid X username');
+      toast({ title: 'Invalid username', description: 'Use only letters, numbers, or underscore.', variant: 'destructive' });
       return;
     }
 
@@ -95,16 +98,16 @@ export const KaitoInfluenceDashboard = () => {
       // Trigger backend sync and wait for completion
       await syncForUsernameAsync(username);
 
-      // Try to fetch newly upserted record with small retries
+      // Try to fetch newly upserted record with retries and backoff
       let fetched: any = null;
-      for (let i = 0; i < 5; i++) {
+      for (let i = 0; i < 12; i++) {
         const { data, error } = await supabase
           .from('kaito_attention_scores')
           .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
-          .eq('twitter_username', username)
+          .ilike('twitter_username', username)
           .maybeSingle();
         if (data && !error) { fetched = data; break; }
-        await new Promise(r => setTimeout(r, 500));
+        await new Promise(r => setTimeout(r, Math.min(1500, 300 + i * 200)));
       }
 
       if (fetched) {
@@ -112,9 +115,16 @@ export const KaitoInfluenceDashboard = () => {
           const exists = prev.some(a => a.twitter_username.toLowerCase() === fetched.twitter_username.toLowerCase());
           return exists ? prev : [...prev, fetched];
         });
+      } else {
+        toast({
+          title: 'User not found',
+          description: `Could not fetch Kaito stats for @${username}. Try again later.`,
+          variant: 'destructive',
+        });
       }
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error searching for username:', error);
+      toast({ title: 'Fetch failed', description: error?.message || 'Kaito sync failed. Please try again later.', variant: 'destructive' });
     } finally {
       setIsSearching(false);
     }
