@@ -109,7 +109,6 @@ export class KaitoService {
       const { data, error } = await supabase
         .from('kaito_attention_scores')
         .select('*')
-        .not('agent_id', 'is', null)
         .order(field, { ascending: false })
         .limit(limit);
 

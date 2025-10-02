@@ -2229,6 +2229,13 @@ export type Database = {
         }
         Relationships: [
           {
+            foreignKeyName: "kaito_attention_scores_agent_fk"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
             foreignKeyName: "kaito_attention_scores_agent_id_fkey"
             columns: ["agent_id"]
             isOneToOne: false

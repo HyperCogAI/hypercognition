@@ -12,26 +12,18 @@ const Analytics = () => {
   return (
     <>
       <SEOHead
-        title="Enterprise Analytics - Real-Time Web3 Insights"
+        title="Analytics - Real-Time Web3 Insights"
         description="Advanced real-time analytics for Solana, Ethereum, Base, and Polygon. Enterprise-grade chain metrics, cross-chain analysis, and live market data."
         keywords="web3 analytics, solana analytics, ethereum analytics, real-time blockchain data, defi analytics, cross-chain metrics"
       />
       
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="min-h-screen bg-background">
+        <main className="container mx-auto px-6 py-8 space-y-8">
         {/* Header */}
-        <header className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-xl bg-gradient-to-br from-primary/20 to-primary-glow/20 border border-primary/30">
-              <BarChart3 className="h-7 w-7 text-primary" />
-            </div>
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-primary to-primary-glow bg-clip-text text-transparent">
-              Enterprise Analytics
-            </h1>
-          </div>
-          
-          <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-            Real-time <span className="text-primary font-semibold">Solana & EVM</span> analytics with live chain metrics, 
-            cross-chain analysis, and institutional-grade market insights
+        <header className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">Analytics</h1>
+          <p className="text-muted-foreground">
+            Real-time Solana & EVM analytics with live chain metrics, cross-chain analysis, and market insights
           </p>
         </header>
         
@@ -88,6 +80,7 @@ const Analytics = () => {
             <MarketNewsComponent />
           </TabsContent>
         </Tabs>
+        </main>
       </div>
     </>
   );

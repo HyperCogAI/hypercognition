@@ -123,7 +123,7 @@ serve(async (req) => {
             metadata: { raw_response: yapsData },
             updated_at: new Date().toISOString()
           }, {
-            onConflict: 'agent_id,twitter_username'
+            onConflict: 'twitter_username'
           });
 
         if (upsertError) {
