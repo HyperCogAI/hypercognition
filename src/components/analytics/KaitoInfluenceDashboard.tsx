@@ -1,12 +1,24 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
-import { Sparkles, TrendingUp, Zap, RefreshCw } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { SearchInput } from '@/components/ui/search-input';
 
 export const KaitoInfluenceDashboard = () => {
   const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier } = useKaitoAttention();
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Filter agents based on search query
+  const filteredAgents = useMemo(() => {
+    if (!searchQuery.trim()) return topAgents;
+    
+    const query = searchQuery.toLowerCase();
+    return topAgents.filter(agent => 
+      agent.twitter_username.toLowerCase().includes(query)
+    );
+  }, [topAgents, searchQuery]);
 
   const handleRefresh = () => {
     // Sync top 20 agents
@@ -43,7 +55,7 @@ export const KaitoInfluenceDashboard = () => {
               Social Influence Rankings
             </CardTitle>
             <CardDescription>
-              Powered by Kaito AI • Real-time attention metrics
+              Powered by Kaito AI • Showing top {topAgents.length} influencers
             </CardDescription>
           </div>
           <Button
@@ -56,17 +68,36 @@ export const KaitoInfluenceDashboard = () => {
             Sync
           </Button>
         </div>
+        
+        <div className="mt-4">
+          <SearchInput
+            placeholder="Search by Twitter username..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="max-w-md"
+          />
+        </div>
       </CardHeader>
       <CardContent>
-        {topAgents.length === 0 ? (
+        {filteredAgents.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
-            <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-30" />
-            <p>No attention data available yet</p>
-            <p className="text-sm mt-1">Sync agents to see their social influence</p>
+            {topAgents.length === 0 ? (
+              <>
+                <Sparkles className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No attention data available yet</p>
+                <p className="text-sm mt-1">Sync agents to see their social influence</p>
+              </>
+            ) : (
+              <>
+                <Search className="h-12 w-12 mx-auto mb-3 opacity-30" />
+                <p>No influencers match your search</p>
+                <p className="text-sm mt-1">Try a different username</p>
+              </>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
-            {topAgents.map((agent, index) => {
+            {filteredAgents.map((agent, index) => {
               const influenceTier = getInfluenceTier(agent.yaps_30d);
               const yaps30d = formatYaps(agent.yaps_30d);
               const yaps7d = formatYaps(agent.yaps_7d);
