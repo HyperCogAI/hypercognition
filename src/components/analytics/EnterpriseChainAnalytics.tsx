@@ -191,14 +191,14 @@ export const EnterpriseChainAnalytics: React.FC = () => {
       </div>
 
       {/* API Status Indicator */}
-      <Card className="bg-green-50 border-green-200">
+      <Card className="bg-card/50 border-border/50">
         <CardContent className="p-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-              <span className="text-sm font-medium text-green-700">Live API Data Active</span>
+              <span className="text-sm font-medium text-foreground">Live API Data Active</span>
             </div>
-            <div className="text-xs text-green-600">
+            <div className="text-xs text-muted-foreground">
               Helius (Solana) • CoinGecko (Prices) • Alternative.me (Sentiment)
             </div>
           </div>
