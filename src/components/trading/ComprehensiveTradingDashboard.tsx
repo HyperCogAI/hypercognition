@@ -276,7 +276,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
                           onClick={(e) => handleAddToPortfolio(token, e)}
                           title="Add to Portfolio"
                         >
@@ -285,7 +285,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-7 w-7"
+                          className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
                           onClick={(e) => handleTrade(token, e)}
                           title="Trade Now"
                         >
