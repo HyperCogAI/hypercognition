@@ -10,6 +10,7 @@ import { Switch } from '@/components/ui/switch';
 import { Textarea } from '@/components/ui/textarea';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { useTradingSignals } from '@/hooks/useTradingSignals';
+import { useToast } from '@/hooks/use-toast';
 import { 
   TrendingUp, 
   TrendingDown, 
@@ -24,7 +25,8 @@ import {
   AlertTriangle,
   Shield,
   Clock,
-  RefreshCw
+  RefreshCw,
+  Sparkles
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -85,12 +87,11 @@ const CreateAlertDialog: React.FC<CreateAlertDialogProps> = ({ isOpen, onClose, 
               <SelectTrigger>
                 <SelectValue />
               </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="price_above">Price Above</SelectItem>
-                <SelectItem value="price_below">Price Below</SelectItem>
-                <SelectItem value="volume_spike">Volume Spike</SelectItem>
-                <SelectItem value="change_percent">Change Percentage</SelectItem>
-              </SelectContent>
+                 <SelectContent>
+                  <SelectItem value="price_above">Price Above</SelectItem>
+                  <SelectItem value="price_below">Price Below</SelectItem>
+                  <SelectItem value="percent_change">Percent Change</SelectItem>
+                </SelectContent>
             </Select>
           </div>
           <div className="space-y-2">
@@ -123,141 +124,17 @@ interface CreateSignalDialogProps {
   onSubmit: (data: any) => void;
 }
 
+// Note: This component is no longer used - AI signal generation is used instead
 const CreateSignalDialog: React.FC<CreateSignalDialogProps> = ({ isOpen, onClose, onSubmit }) => {
-  const [formData, setFormData] = useState({
-    agent_id: '',
-    signal_type: 'buy',
-    price: '',
-    target_price: '',
-    stop_loss_price: '',
-    confidence_level: '7',
-    time_horizon: 'short',
-    reasoning: '',
-    is_premium: false
-  });
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onSubmit({
-      ...formData,
-      price: parseFloat(formData.price),
-      target_price: formData.target_price ? parseFloat(formData.target_price) : undefined,
-      stop_loss_price: formData.stop_loss_price ? parseFloat(formData.stop_loss_price) : undefined,
-      confidence_level: parseInt(formData.confidence_level)
-    });
-    onClose();
-    setFormData({
-      agent_id: '',
-      signal_type: 'buy',
-      price: '',
-      target_price: '',
-      stop_loss_price: '',
-      confidence_level: '7',
-      time_horizon: 'short',
-      reasoning: '',
-      is_premium: false
-    });
-  };
-
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-md">
-        <DialogHeader>
-          <DialogTitle>Create Trading Signal</DialogTitle>
-          <DialogDescription>
-            Share your trading insights with the community
-          </DialogDescription>
-        </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="signal_type">Signal Type</Label>
-              <Select value={formData.signal_type} onValueChange={(value) => setFormData({ ...formData, signal_type: value })}>
-                <SelectTrigger>
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="buy">Buy</SelectItem>
-                  <SelectItem value="sell">Sell</SelectItem>
-                  <SelectItem value="hold">Hold</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="price">Current Price</Label>
-              <Input
-                id="price"
-                type="number"
-                step="0.01"
-                placeholder="0.00"
-                value={formData.price}
-                onChange={(e) => setFormData({ ...formData, price: e.target.value })}
-                required
-              />
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="target_price">Target Price</Label>
-              <Input
-                id="target_price"
-                type="number"
-                step="0.01"
-                placeholder="Optional"
-                value={formData.target_price}
-                onChange={(e) => setFormData({ ...formData, target_price: e.target.value })}
-              />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="stop_loss_price">Stop Loss</Label>
-              <Input
-                id="stop_loss_price"
-                type="number"
-                step="0.01"
-                placeholder="Optional"
-                value={formData.stop_loss_price}
-                onChange={(e) => setFormData({ ...formData, stop_loss_price: e.target.value })}
-              />
-            </div>
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="confidence_level">Confidence Level ({formData.confidence_level}/10)</Label>
-            <Input
-              id="confidence_level"
-              type="range"
-              min="1"
-              max="10"
-              value={formData.confidence_level}
-              onChange={(e) => setFormData({ ...formData, confidence_level: e.target.value })}
-            />
-          </div>
-          <div className="space-y-2">
-            <Label htmlFor="reasoning">Analysis & Reasoning</Label>
-            <Textarea
-              id="reasoning"
-              placeholder="Explain your analysis and reasoning for this signal..."
-              value={formData.reasoning}
-              onChange={(e) => setFormData({ ...formData, reasoning: e.target.value })}
-              rows={3}
-              required
-            />
-          </div>
-          <DialogFooter>
-            <Button type="button" variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button type="submit">Publish Signal</Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
-  );
+  return null;
 };
 
 export const TradingSignalsPanel: React.FC = () => {
-  const { signals, alerts, stats, isLoading, createPriceAlert, toggleAlert, deleteAlert, createTradingSignal, refreshData } = useTradingSignals();
+  const { signals, alerts, stats, isLoading, createPriceAlert, toggleAlert, deleteAlert, generateAISignal, refreshData } = useTradingSignals();
+  const { toast } = useToast();
   const [showCreateAlert, setShowCreateAlert] = useState(false);
-  const [showCreateSignal, setShowCreateSignal] = useState(false);
+  const [selectedAgentForSignal, setSelectedAgentForSignal] = useState<string>('');
+  const [showAIDialog, setShowAIDialog] = useState(false);
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -294,10 +171,22 @@ export const TradingSignalsPanel: React.FC = () => {
     }
   };
 
-  const getConfidenceBadge = (level: number) => {
-    if (level >= 8) return <Badge className="bg-green-500">High</Badge>;
-    if (level >= 6) return <Badge variant="secondary">Medium</Badge>;
-    return <Badge variant="outline">Low</Badge>;
+  const getConfidenceBadge = (confidence: number) => {
+    if (confidence >= 80) return <Badge className="bg-green-500">High ({confidence}%)</Badge>;
+    if (confidence >= 60) return <Badge variant="secondary">Medium ({confidence}%)</Badge>;
+    return <Badge variant="outline">Low ({confidence}%)</Badge>;
+  };
+
+  const handleGenerateSignal = async (agentId: string) => {
+    if (!agentId) {
+      toast({
+        title: "Error",
+        description: "Please enter an agent ID",
+        variant: "destructive",
+      });
+      return;
+    }
+    await generateAISignal(agentId);
   };
 
   if (isLoading) {
@@ -397,11 +286,11 @@ export const TradingSignalsPanel: React.FC = () => {
         </TabsList>
 
         <TabsContent value="signals" className="space-y-4">
-          <div className="flex items-center justify-between">
+           <div className="flex items-center justify-between">
             <h3 className="text-lg font-semibold">Latest Trading Signals</h3>
-            <Button onClick={() => setShowCreateSignal(true)} size="sm">
-              <Plus className="h-4 w-4 mr-2" />
-              Create Signal
+            <Button onClick={() => setShowAIDialog(true)} size="sm">
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate AI Signal
             </Button>
           </div>
 
@@ -417,14 +306,13 @@ export const TradingSignalsPanel: React.FC = () => {
                           {signal.signal_type}
                         </span>
                         <span className="font-medium">{signal.agent?.symbol || 'AGENT'}</span>
-                        {getConfidenceBadge(signal.confidence_level)}
-                        {signal.is_premium && <Badge variant="outline">Premium</Badge>}
+                        {getConfidenceBadge(signal.confidence)}
                       </div>
                       
                       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
                         <div>
                           <span className="text-muted-foreground">Price: </span>
-                          <span className="font-medium">{formatCurrency(signal.price)}</span>
+                          <span className="font-medium">{formatCurrency(signal.entry_price)}</span>
                         </div>
                         {signal.target_price && (
                           <div>
@@ -432,15 +320,15 @@ export const TradingSignalsPanel: React.FC = () => {
                             <span className="font-medium">{formatCurrency(signal.target_price)}</span>
                           </div>
                         )}
-                        {signal.stop_loss_price && (
+                        {signal.stop_loss && (
                           <div>
                             <span className="text-muted-foreground">Stop Loss: </span>
-                            <span className="font-medium">{formatCurrency(signal.stop_loss_price)}</span>
+                            <span className="font-medium">{formatCurrency(signal.stop_loss)}</span>
                           </div>
                         )}
                         <div>
-                          <span className="text-muted-foreground">Horizon: </span>
-                          <span className="font-medium capitalize">{signal.time_horizon}</span>
+                          <span className="text-muted-foreground">Timeframe: </span>
+                          <span className="font-medium capitalize">{signal.timeframe}</span>
                         </div>
                       </div>
 
@@ -454,10 +342,6 @@ export const TradingSignalsPanel: React.FC = () => {
                         <div className="flex items-center gap-1">
                           <Heart className="h-3 w-3" />
                           {signal.likes_count}
-                        </div>
-                        <div className="flex items-center gap-1">
-                          <MessageCircle className="h-3 w-3" />
-                          {signal.comments_count}
                         </div>
                         <div className="flex items-center gap-1">
                           <Clock className="h-3 w-3" />
@@ -567,15 +451,15 @@ export const TradingSignalsPanel: React.FC = () => {
 
             <Card>
               <CardHeader>
-                <CardTitle>Create Trading Signal</CardTitle>
+                <CardTitle>Generate AI Trading Signal</CardTitle>
                 <CardDescription>
-                  Share your analysis and trading insights with the community
+                  Let AI analyze market data and generate trading signals
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <Button onClick={() => setShowCreateSignal(true)} className="w-full">
-                  <Target className="h-4 w-4 mr-2" />
-                  Create Trading Signal
+                <Button onClick={() => setShowAIDialog(true)} className="w-full">
+                  <Sparkles className="h-4 w-4 mr-2" />
+                  Generate AI Signal
                 </Button>
               </CardContent>
             </Card>
@@ -590,11 +474,36 @@ export const TradingSignalsPanel: React.FC = () => {
         onSubmit={createPriceAlert}
       />
 
-      <CreateSignalDialog
-        isOpen={showCreateSignal}
-        onClose={() => setShowCreateSignal(false)}
-        onSubmit={createTradingSignal}
-      />
+      <Dialog open={showAIDialog} onOpenChange={setShowAIDialog}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Generate AI Trading Signal</DialogTitle>
+            <DialogDescription>
+              Enter an agent ID to generate an AI-powered trading signal (10 per day)
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="agent-id">Agent ID</Label>
+              <Input
+                id="agent-id"
+                placeholder="Enter agent ID"
+                value={selectedAgentForSignal}
+                onChange={(e) => setSelectedAgentForSignal(e.target.value)}
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowAIDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => handleGenerateSignal(selectedAgentForSignal)}>
+              <Sparkles className="h-4 w-4 mr-2" />
+              Generate Signal
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };

@@ -202,7 +202,7 @@ export const TradingSignalsManager: React.FC = () => {
                             {signal.signal_type.toUpperCase()}
                           </Badge>
                           <Badge variant="outline">
-                            Confidence: {signal.confidence_level}/10
+                            Confidence: {signal.confidence}%
                           </Badge>
                         </div>
                         <p className="text-sm text-muted-foreground">
@@ -211,9 +211,9 @@ export const TradingSignalsManager: React.FC = () => {
                       </div>
                     </div>
                     <div className="text-right">
-                      <p className="font-semibold">${signal.price}</p>
+                      <p className="font-semibold">${signal.entry_price}</p>
                       <p className="text-sm text-muted-foreground">
-                        {signal.time_horizon}
+                        {signal.timeframe}
                       </p>
                     </div>
                   </div>
@@ -225,10 +225,10 @@ export const TradingSignalsManager: React.FC = () => {
                         <span className="font-medium">${signal.target_price}</span>
                       </div>
                     )}
-                    {signal.stop_loss_price && (
+                    {signal.stop_loss && (
                       <div>
                         <span className="text-muted-foreground">Stop Loss: </span>
-                        <span className="font-medium">${signal.stop_loss_price}</span>
+                        <span className="font-medium">${signal.stop_loss}</span>
                       </div>
                     )}
                     <div>
@@ -245,7 +245,6 @@ export const TradingSignalsManager: React.FC = () => {
                     <div className="flex items-center gap-4 text-sm text-muted-foreground">
                       <span>👍 {signal.likes_count}</span>
                       <span>👁 {signal.views_count}</span>
-                      <span>💬 {signal.comments_count}</span>
                       <span>By: {signal.user_profile?.display_name}</span>
                     </div>
                     {autoTrading && (

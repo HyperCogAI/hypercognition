@@ -3940,7 +3940,15 @@ export type Database = {
           signal_id?: string
           user_id?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "signal_interactions_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "trading_signals"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       signal_likes: {
         Row: {
@@ -3961,15 +3969,7 @@ export type Database = {
           signal_id?: string
           user_id?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "signal_likes_signal_id_fkey"
-            columns: ["signal_id"]
-            isOneToOne: false
-            referencedRelation: "trading_signals"
-            referencedColumns: ["id"]
-          },
-        ]
+        Relationships: []
       }
       social_activities: {
         Row: {
@@ -4836,59 +4836,76 @@ export type Database = {
       trading_signals: {
         Row: {
           agent_id: string
-          comments_count: number
-          confidence_level: number | null
+          confidence: number
           created_at: string
+          entry_price: number
           expires_at: string | null
           id: string
-          is_premium: boolean
           likes_count: number
-          price: number
-          reasoning: string | null
+          metadata: Json | null
+          reasoning: string
+          shares_count: number
           signal_type: string
-          stop_loss_price: number | null
+          status: string
+          stop_loss: number | null
           target_price: number | null
-          time_horizon: string | null
+          timeframe: string
+          triggered_at: string | null
+          updated_at: string
           user_id: string
           views_count: number
         }
         Insert: {
           agent_id: string
-          comments_count?: number
-          confidence_level?: number | null
+          confidence: number
           created_at?: string
+          entry_price: number
           expires_at?: string | null
           id?: string
-          is_premium?: boolean
           likes_count?: number
-          price: number
-          reasoning?: string | null
+          metadata?: Json | null
+          reasoning: string
+          shares_count?: number
           signal_type: string
-          stop_loss_price?: number | null
+          status?: string
+          stop_loss?: number | null
           target_price?: number | null
-          time_horizon?: string | null
+          timeframe?: string
+          triggered_at?: string | null
+          updated_at?: string
           user_id: string
           views_count?: number
         }
         Update: {
           agent_id?: string
-          comments_count?: number
-          confidence_level?: number | null
+          confidence?: number
           created_at?: string
+          entry_price?: number
           expires_at?: string | null
           id?: string
-          is_premium?: boolean
           likes_count?: number
-          price?: number
-          reasoning?: string | null
+          metadata?: Json | null
+          reasoning?: string
+          shares_count?: number
           signal_type?: string
-          stop_loss_price?: number | null
+          status?: string
+          stop_loss?: number | null
           target_price?: number | null
-          time_horizon?: string | null
+          timeframe?: string
+          triggered_at?: string | null
+          updated_at?: string
           user_id?: string
           views_count?: number
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "trading_signals_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       transactions: {
         Row: {

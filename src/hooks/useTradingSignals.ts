@@ -8,28 +8,29 @@ export interface TradingSignal {
   agent_id: string;
   user_id: string;
   signal_type: 'buy' | 'sell' | 'hold';
-  price: number;
+  confidence: number; // 0-100
+  entry_price: number;
   target_price?: number;
-  stop_loss_price?: number;
-  confidence_level: number; // 1-10
-  time_horizon: string;
+  stop_loss?: number;
   reasoning: string;
+  timeframe: string;
+  status: 'active' | 'expired' | 'triggered' | 'cancelled';
+  likes_count: number;
+  shares_count: number;
+  views_count: number;
   created_at: string;
   expires_at?: string;
-  is_premium: boolean;
-  likes_count: number;
-  views_count: number;
-  comments_count: number;
   agent?: {
+    id: string;
     name: string;
     symbol: string;
     price: number;
     change_24h: number;
+    avatar_url?: string;
   };
   user_profile?: {
     display_name: string;
     avatar_url?: string;
-    is_verified: boolean;
   };
 }
 
@@ -37,7 +38,7 @@ export interface PriceAlert {
   id: string;
   agent_id: string;
   user_id: string;
-  alert_type: 'price_above' | 'price_below' | 'volume_spike' | 'change_percent';
+  alert_type: 'price_above' | 'price_below' | 'percent_change';
   target_value: number;
   current_value?: number;
   is_active: boolean;
@@ -71,50 +72,76 @@ export const useTradingSignals = () => {
       setIsLoading(true);
       setError(null);
 
-      // Fetch real trading signals
+      // Fetch trading signals with agent data
       const { data: signalsData, error } = await supabase
         .from('trading_signals')
-        .select('*')
+        .select(`
+          *,
+          agents!inner (
+            id,
+            name,
+            symbol,
+            price,
+            change_24h,
+            avatar_url
+          )
+        `)
+        .eq('status', 'active')
         .order('created_at', { ascending: false })
         .limit(20);
 
       if (error) throw error;
 
       const transformedSignals: TradingSignal[] = (signalsData || []).map(signal => ({
-        ...signal,
+        id: signal.id,
+        agent_id: signal.agent_id,
+        user_id: signal.user_id,
         signal_type: signal.signal_type as 'buy' | 'sell' | 'hold',
-        agent: {
-          name: `Agent ${signal.agent_id?.slice(-4) || 'Unknown'}`,
-          symbol: signal.agent_id ? `AG-${signal.agent_id.slice(-4).toUpperCase()}` : 'UNKNOWN',
-          price: signal.price,
-          change_24h: Math.random() * 10 - 5 // Random for demo
-        },
+        confidence: signal.confidence,
+        entry_price: signal.entry_price,
+        target_price: signal.target_price,
+        stop_loss: signal.stop_loss,
+        reasoning: signal.reasoning,
+        timeframe: signal.timeframe,
+        status: signal.status as 'active' | 'expired' | 'triggered' | 'cancelled',
+        likes_count: signal.likes_count,
+        shares_count: signal.shares_count,
+        views_count: signal.views_count,
+        created_at: signal.created_at,
+        expires_at: signal.expires_at,
+        agent: signal.agents ? {
+          id: signal.agents.id,
+          name: signal.agents.name,
+          symbol: signal.agents.symbol,
+          price: signal.agents.price,
+          change_24h: signal.agents.change_24h,
+          avatar_url: signal.agents.avatar_url
+        } : undefined,
         user_profile: {
-          display_name: `Trader ${signal.user_id.slice(0, 8)}`,
-          is_verified: signal.is_premium
+          display_name: 'Trader',
+          avatar_url: undefined
         }
       }));
 
       setSignals(transformedSignals);
 
-      // Calculate real stats from database
+      // Calculate stats
       const { count: totalSignals } = await supabase
         .from('trading_signals')
-        .select('*', { count: 'exact', head: true });
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'active');
 
-      // Get signals with success metrics
       const { data: allSignals } = await supabase
         .from('trading_signals')
-        .select('signal_type, confidence_level, likes_count');
+        .select('confidence, likes_count, status')
+        .eq('status', 'active');
 
       const successfulSignals = (allSignals || []).filter(s => 
-        (s.signal_type === 'buy' && s.confidence_level >= 7) || 
-        (s.signal_type === 'sell' && s.confidence_level >= 7) ||
-        s.likes_count > 20
+        s.confidence >= 70 || s.likes_count > 20
       ).length;
 
       const avgAccuracy = allSignals?.length 
-        ? (allSignals.reduce((acc, s) => acc + s.confidence_level, 0) / allSignals.length) * 10
+        ? allSignals.reduce((acc, s) => acc + s.confidence, 0) / allSignals.length
         : 0;
 
       const realStats: SignalStats = {
@@ -122,7 +149,7 @@ export const useTradingSignals = () => {
         successfulSignals,
         successRate: totalSignals ? Math.round((successfulSignals / totalSignals) * 100 * 10) / 10 : 0,
         avgAccuracy: Math.round(avgAccuracy * 10) / 10,
-        totalProfit: successfulSignals * 234.50, // Estimated profit per successful signal
+        totalProfit: successfulSignals * 234.50,
         recentSignals: transformedSignals.slice(0, 5)
       };
 
@@ -155,7 +182,7 @@ export const useTradingSignals = () => {
 
       const transformedAlerts: PriceAlert[] = (alertsData || []).map(alert => ({
         ...alert,
-        alert_type: alert.alert_type as 'price_above' | 'price_below' | 'volume_spike' | 'change_percent'
+        alert_type: alert.alert_type as 'price_above' | 'price_below' | 'percent_change'
       }));
 
       setAlerts(transformedAlerts);
@@ -272,71 +299,59 @@ export const useTradingSignals = () => {
     }
   }, [user?.id, toast, fetchAlerts]);
 
-  const createTradingSignal = useCallback(async (signalData: {
-    agent_id: string;
-    signal_type: 'buy' | 'sell' | 'hold';
-    price: number;
-    target_price?: number;
-    stop_loss_price?: number;
-    confidence_level: number;
-    time_horizon: string;
-    reasoning: string;
-    is_premium?: boolean;
-  }) => {
+  const generateAISignal = useCallback(async (agentId: string) => {
     if (!user?.id) {
       toast({
         title: "Authentication Required",
-        description: "Please log in to create trading signals",
+        description: "Please log in to generate signals",
         variant: "destructive",
       });
       return false;
     }
 
     try {
-      const { data, error } = await supabase
-        .from('trading_signals')
-        .insert({
-          ...signalData,
-          user_id: user.id
-        })
-        .select('*')
-        .single();
+      setIsLoading(true);
+      
+      const { data, error } = await supabase.functions.invoke('generate-trading-signal', {
+        body: { agentId, userId: user.id }
+      });
 
       if (error) throw error;
 
+      if (!data.success) {
+        throw new Error(data.error || 'Failed to generate signal');
+      }
+
       toast({
         title: "Success",
-        description: "Trading signal published successfully",
+        description: `AI signal generated! ${data.remaining_signals} signals remaining today.`,
       });
 
-      const newSignal: TradingSignal = {
-        ...data,
-        signal_type: data.signal_type as 'buy' | 'sell' | 'hold',
-        agent: {
-          name: `Agent ${data.agent_id?.slice(-4) || 'Unknown'}`,
-          symbol: data.agent_id ? `AG-${data.agent_id.slice(-4).toUpperCase()}` : 'UNKNOWN',
-          price: data.price,
-          change_24h: 0
-        },
-        user_profile: {
-          display_name: user.email?.split('@')[0] || 'Anonymous',
-          is_verified: false
-        }
-      };
-
-      setSignals(prev => [newSignal, ...prev]);
+      // Refresh signals to show the new one
+      await fetchSignals();
       return true;
 
-    } catch (err) {
-      console.error('Error creating trading signal:', err);
-      toast({
-        title: "Error",
-        description: "Failed to create trading signal",
-        variant: "destructive",
-      });
+    } catch (err: any) {
+      console.error('Error generating AI signal:', err);
+      
+      if (err.message?.includes('Rate limit')) {
+        toast({
+          title: "Rate Limit Reached",
+          description: "You've reached your daily limit of 10 AI-generated signals. Try again tomorrow.",
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Error",
+          description: err.message || "Failed to generate AI signal",
+          variant: "destructive",
+        });
+      }
       return false;
+    } finally {
+      setIsLoading(false);
     }
-  }, [user?.id, toast]);
+  }, [user?.id, toast, fetchSignals]);
 
   // Set up real-time subscriptions
   useEffect(() => {
@@ -397,7 +412,7 @@ export const useTradingSignals = () => {
     createPriceAlert,
     toggleAlert,
     deleteAlert,
-    createTradingSignal,
+    generateAISignal,
     refreshData: () => {
       fetchSignals();
       fetchAlerts();
