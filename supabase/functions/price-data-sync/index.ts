@@ -68,17 +68,47 @@ async function fetchFearGreedIndex() {
     return null;
   }
 }
-
-// Fetch TVL per chain from DefiLlama (public API)
-async function fetchDefiLlamaTVL(chain: 'ethereum' | 'base' | 'bsc'): Promise<number | null> {
+// Fetch comprehensive chain data from DefiLlama
+async function fetchDefiLlamaChainData(chain: 'ethereum' | 'base' | 'bsc') {
   try {
-    const res = await fetch(`https://api.llama.fi/tvl/${chain}`);
-    if (!res.ok) return null;
-    const tvl = await res.json();
-    return typeof tvl === 'number' ? tvl : (tvl?.tvl ?? null);
+    // Fetch TVL
+    const tvlRes = await fetch(`https://api.llama.fi/tvl/${chain}`);
+    const tvl = tvlRes.ok ? await tvlRes.json() : null;
+    
+    // Fetch DEX volume (24h)
+    const dexRes = await fetch(`https://api.llama.fi/overview/dexs/${chain}?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true&dataType=dailyVolume`);
+    const dexData = dexRes.ok ? await dexRes.json() : null;
+    
+    // Fetch chain overview for additional stats
+    const overviewRes = await fetch('https://api.llama.fi/v2/chains');
+    const chainsData = overviewRes.ok ? await overviewRes.json() : null;
+    
+    let chainOverview = null;
+    if (chainsData) {
+      const chainName = chain === 'bsc' ? 'BSC' : chain.charAt(0).toUpperCase() + chain.slice(1);
+      chainOverview = chainsData.find((c: any) => 
+        c.name?.toLowerCase() === chainName.toLowerCase() || 
+        c.gecko_id?.toLowerCase() === chain.toLowerCase()
+      );
+    }
+    
+    const result = {
+      tvl: typeof tvl === 'number' ? tvl : (tvl?.tvl ?? null),
+      volume24h: dexData?.totalVolume ?? dexData?.total24h ?? null,
+      protocols: chainOverview?.protocols ?? null,
+      mcaptvl: chainOverview?.mcaptvl ?? null,
+    };
+    
+    console.log(`[PriceSync] DefiLlama data for ${chain}:`, {
+      tvl: result.tvl,
+      volume24h: result.volume24h,
+      protocols: result.protocols
+    });
+    
+    return result;
   } catch (e) {
-    console.error('[PriceSync] DefiLlama TVL fetch error for', chain, e);
-    return null;
+    console.error('[PriceSync] DefiLlama fetch error for', chain, e);
+    return { tvl: null, volume24h: null, protocols: null, mcaptvl: null };
   }
 }
 
@@ -212,13 +242,18 @@ serve(async (req) => {
       chainGroups[chain].count += 1;
     }
 
-    // Fetch real TVL from DefiLlama; fall back to synthetic aggregation
-    const [ethTVL, baseTVL, bscTVL] = await Promise.all([
-      fetchDefiLlamaTVL('ethereum'),
-      fetchDefiLlamaTVL('base'),
-      fetchDefiLlamaTVL('bsc'),
+    // Fetch real chain data from DefiLlama APIs
+    const [ethData, baseData, bscData] = await Promise.all([
+      fetchDefiLlamaChainData('ethereum'),
+      fetchDefiLlamaChainData('base'),
+      fetchDefiLlamaChainData('bsc'),
     ]);
-    const realTVL: Record<string, number | null> = { ethereum: ethTVL, base: baseTVL, bnb: bscTVL };
+    
+    const realChainData: Record<string, any> = { 
+      ethereum: ethData, 
+      base: baseData, 
+      bnb: bscData 
+    };
 
     const chainConfig: Record<string, { blockTime: number; tps: number; gas: number }> = {
       ethereum: { blockTime: 12, tps: 15, gas: 20 },
@@ -231,14 +266,18 @@ serve(async (req) => {
     const buildMetrics = (key: 'ethereum' | 'base' | 'bnb' | 'polygon') => {
       const g = chainGroups[key] || { totalVolume: 0, totalMarketCap: 0, count: 0 };
       const cfg = chainConfig[key];
+      const realData = realChainData[key] || {};
+      
       return {
-        tvl: (realTVL as any)[key] ?? g.totalMarketCap * 1.5,
-        volume_24h: g.totalVolume,
+        tvl: realData.tvl ?? (g.totalMarketCap * 1.5),
+        volume_24h: realData.volume24h ?? g.totalVolume,
         transactions_24h: Math.max(1, g.count) * 800,
         active_addresses_24h: Math.max(1, g.count) * 200,
         avg_gas_price: cfg.gas,
         block_time: cfg.blockTime,
         tps: cfg.tps,
+        protocols_count: realData.protocols ?? null,
+        mcap_tvl_ratio: realData.mcaptvl ?? null,
         timestamp: nowIso,
       };
     };
@@ -257,7 +296,10 @@ serve(async (req) => {
           agents_updated: updates.length,
           real_data_sources: {
             coingecko: !!coinGeckoData,
-            fear_greed: !!fearGreedData
+            fear_greed: !!fearGreedData,
+            defillama_ethereum: !!(ethData.tvl || ethData.volume24h),
+            defillama_base: !!(baseData.tvl || baseData.volume24h),
+            defillama_bnb: !!(bscData.tvl || bscData.volume24h),
           }
         },
         chainMetrics,

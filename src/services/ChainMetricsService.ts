@@ -10,6 +10,8 @@ export interface ChainMetrics {
   blockTime: number;
   tps: number;
   timestamp: Date;
+  protocolsCount?: number | null;
+  mcapTvlRatio?: number | null;
 }
 
 export class ChainMetricsService {
@@ -94,7 +96,9 @@ export class ChainMetricsService {
         avgGasPrice: chainData.avg_gas_price || 20,
         blockTime: chainData.block_time || 12,
         tps: chainData.tps || fallbacks[chain].tps,
-        timestamp: new Date()
+        timestamp: new Date(),
+        protocolsCount: chainData.protocols_count || null,
+        mcapTvlRatio: chainData.mcap_tvl_ratio || null,
       };
     } catch (error) {
       console.error(`Error fetching live ${chain} metrics:`, error);
@@ -115,7 +119,9 @@ export class ChainMetricsService {
         avgGasPrice: 20,
         blockTime: 12,
         tps: fallbacks[chain].tps,
-        timestamp: new Date()
+        timestamp: new Date(),
+        protocolsCount: null,
+        mcapTvlRatio: null,
       };
     }
   }
