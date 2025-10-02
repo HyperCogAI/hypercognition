@@ -19,13 +19,31 @@ export interface Notification {
 }
 
 export interface NotificationPreferences {
-  email_notifications_enabled: boolean
-  push_notifications_enabled: boolean
-  price_alerts_enabled: boolean
-  portfolio_updates_enabled: boolean
-  social_updates_enabled: boolean
-  market_news_enabled: boolean
+  id?: string
+  user_id?: string
+  // Channel preferences
+  email_enabled: boolean
+  push_enabled: boolean
+  sms_enabled: boolean
+  in_app_enabled: boolean
+  // Category preferences
+  price_alerts: boolean
+  order_updates: boolean
+  portfolio_updates: boolean
+  social_updates: boolean
+  marketing_updates: boolean
+  security_alerts: boolean
+  // Timing preferences
+  quiet_hours_start?: string | null
+  quiet_hours_end?: string | null
+  timezone: string
+  // Batching preferences
+  batch_notifications: boolean
+  batch_interval_minutes: number
+  // Thresholds
   min_price_change_percent: number
+  created_at?: string
+  updated_at?: string
 }
 
 export function useNotificationSystem() {
@@ -78,12 +96,19 @@ export function useNotificationSystem() {
           .from('notification_preferences')
           .insert({
             user_id: user.id,
-            email_notifications_enabled: true,
-            push_notifications_enabled: true,
-            price_alerts_enabled: true,
-            portfolio_updates_enabled: true,
-            social_updates_enabled: true,
-            market_news_enabled: true,
+            email_enabled: true,
+            push_enabled: true,
+            sms_enabled: false,
+            in_app_enabled: true,
+            price_alerts: true,
+            order_updates: true,
+            portfolio_updates: true,
+            social_updates: true,
+            marketing_updates: false,
+            security_alerts: true,
+            timezone: 'UTC',
+            batch_notifications: false,
+            batch_interval_minutes: 60,
             min_price_change_percent: 5
           })
           .select()

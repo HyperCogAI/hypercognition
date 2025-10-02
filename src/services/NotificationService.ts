@@ -2,13 +2,31 @@ import { supabase } from '@/integrations/supabase/client'
 import { DatabaseService } from './DatabaseService'
 
 export interface NotificationPreferences {
-  price_alerts_enabled: boolean
-  portfolio_updates_enabled: boolean
-  market_news_enabled: boolean
-  social_updates_enabled: boolean
-  email_notifications_enabled: boolean
-  push_notifications_enabled: boolean
+  id?: string
+  user_id?: string
+  // Channel preferences
+  email_enabled: boolean
+  push_enabled: boolean
+  sms_enabled: boolean
+  in_app_enabled: boolean
+  // Category preferences
+  price_alerts: boolean
+  order_updates: boolean
+  portfolio_updates: boolean
+  social_updates: boolean
+  marketing_updates: boolean
+  security_alerts: boolean
+  // Timing preferences
+  quiet_hours_start?: string | null
+  quiet_hours_end?: string | null
+  timezone: string
+  // Batching preferences
+  batch_notifications: boolean
+  batch_interval_minutes: number
+  // Thresholds
   min_price_change_percent: number
+  created_at?: string
+  updated_at?: string
 }
 
 export interface PriceAlert {
@@ -41,12 +59,19 @@ export class NotificationService {
     // Return defaults if no preferences found
     if (!data) {
       const defaults: NotificationPreferences = {
-        price_alerts_enabled: true,
-        portfolio_updates_enabled: true,
-        market_news_enabled: true,
-        social_updates_enabled: true,
-        email_notifications_enabled: false,
-        push_notifications_enabled: true,
+        email_enabled: true,
+        push_enabled: true,
+        sms_enabled: false,
+        in_app_enabled: true,
+        price_alerts: true,
+        order_updates: true,
+        portfolio_updates: true,
+        social_updates: true,
+        marketing_updates: false,
+        security_alerts: true,
+        timezone: 'UTC',
+        batch_notifications: false,
+        batch_interval_minutes: 60,
         min_price_change_percent: 5.0
       }
       
@@ -56,12 +81,21 @@ export class NotificationService {
     }
 
     return {
-      price_alerts_enabled: data.price_alerts_enabled ?? true,
-      portfolio_updates_enabled: data.portfolio_updates_enabled ?? true,
-      market_news_enabled: data.market_news_enabled ?? true,
-      social_updates_enabled: data.social_updates_enabled ?? true,
-      email_notifications_enabled: data.email_notifications_enabled ?? false,
-      push_notifications_enabled: data.push_notifications_enabled ?? true,
+      email_enabled: (data as any).email_enabled ?? data.email_notifications_enabled ?? true,
+      push_enabled: (data as any).push_enabled ?? data.push_notifications_enabled ?? true,
+      sms_enabled: (data as any).sms_enabled ?? false,
+      in_app_enabled: (data as any).in_app_enabled ?? true,
+      price_alerts: (data as any).price_alerts ?? data.price_alerts_enabled ?? true,
+      order_updates: (data as any).order_updates ?? true,
+      portfolio_updates: (data as any).portfolio_updates ?? data.portfolio_updates_enabled ?? true,
+      social_updates: (data as any).social_updates ?? data.social_updates_enabled ?? true,
+      marketing_updates: (data as any).marketing_updates ?? false,
+      security_alerts: (data as any).security_alerts ?? true,
+      quiet_hours_start: (data as any).quiet_hours_start ?? undefined,
+      quiet_hours_end: (data as any).quiet_hours_end ?? undefined,
+      timezone: (data as any).timezone ?? 'UTC',
+      batch_notifications: (data as any).batch_notifications ?? false,
+      batch_interval_minutes: (data as any).batch_interval_minutes ?? 60,
       min_price_change_percent: data.min_price_change_percent ?? 5.0
     }
   }
@@ -150,7 +184,7 @@ export class NotificationService {
   static async sendPriceAlertNotification(userId: string, alert: PriceAlert, currentPrice: number) {
     const preferences = await this.getUserPreferences(userId)
     
-    if (!preferences.price_alerts_enabled) return
+    if (!preferences.price_alerts) return
 
     let message = ''
     switch (alert.alert_type) {
@@ -192,7 +226,7 @@ export class NotificationService {
   }) {
     const preferences = await this.getUserPreferences(userId)
     
-    if (!preferences.portfolio_updates_enabled) return
+    if (!preferences.portfolio_updates) return
 
     let title = 'Portfolio Update'
     let message = ''
@@ -238,7 +272,8 @@ export class NotificationService {
   }) {
     const preferences = await this.getUserPreferences(userId)
     
-    if (!preferences.market_news_enabled) return
+    // Market news would fall under portfolio_updates category
+    if (!preferences.portfolio_updates) return
 
     await DatabaseService.createNotification(userId, {
       type: 'market_news',
@@ -259,7 +294,7 @@ export class NotificationService {
   }) {
     const preferences = await this.getUserPreferences(userId)
     
-    if (!preferences.social_updates_enabled) return
+    if (!preferences.social_updates) return
 
     let title = 'Social Update'
     let message = ''
