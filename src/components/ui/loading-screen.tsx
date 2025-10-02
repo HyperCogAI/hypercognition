@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import hyperLogo from '@/assets/HyperCognition2.png'
+import hyperLogo from '@/assets/Hyper_Cognition_logo3large-5.png'
 import { Progress } from '@/components/ui/progress'
 
 interface LoadingScreenProps {
