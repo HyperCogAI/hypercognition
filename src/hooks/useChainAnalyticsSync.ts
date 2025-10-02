@@ -67,11 +67,42 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
     }
   };
 
+  const syncPriceData = async () => {
+    if (isSyncing) return;
+    
+    setIsSyncing(true);
+    try {
+      console.log('[PriceSync] Starting price data sync...');
+      
+      const { data, error } = await supabase.functions.invoke('price-data-sync', {
+        body: {}
+      });
+
+      if (error) throw error;
+
+      console.log('[PriceSync] Sync completed:', data);
+      setLastSyncTime(new Date());
+      
+      return data;
+    } catch (error) {
+      console.error('[PriceSync] Error:', error);
+      toast({
+        title: "Sync Error",
+        description: "Failed to sync price data",
+        variant: "destructive"
+      });
+      throw error;
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const syncAll = async () => {
     try {
       await Promise.all([
         syncChainAnalytics(),
-        syncMarketSentiment()
+        syncMarketSentiment(),
+        syncPriceData()
       ]);
       
       toast({
@@ -98,6 +129,7 @@ export function useChainAnalyticsSync(autoSync: boolean = true, intervalMs: numb
   return {
     syncChainAnalytics,
     syncMarketSentiment,
+    syncPriceData,
     syncAll,
     isSyncing,
     lastSyncTime
