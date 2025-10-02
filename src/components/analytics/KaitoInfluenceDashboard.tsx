@@ -20,11 +20,12 @@ export const KaitoInfluenceDashboard = () => {
 
   // Auto-bootstrap: if list is sparse, sync a default set of influencers
   useEffect(() => {
-    if (!isLoadingTop && topAgents.length < 10 && !isSyncing) {
+    if (!isLoadingTop && topAgents.length < 5 && !isSyncing) {
+      console.log('Auto-syncing influencers, current count:', topAgents.length);
       const toSync = DEFAULT_USERNAMES.slice(0, 50);
       syncMultiple({ usernames: toSync });
     }
-  }, [isLoadingTop, topAgents.length, isSyncing, syncMultiple]);
+  }, [isLoadingTop, topAgents.length, isSyncing]);
 
   // Filter agents based on search query
   const filteredAgents = useMemo(() => {

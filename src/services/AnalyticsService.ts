@@ -103,7 +103,8 @@ export class AnalyticsService {
         .eq('user_id', user.id)
         .eq('period', period)
         .order('period_start', { ascending: false })
-        .limit(limit);
+        .limit(limit)
+        .abortSignal(AbortSignal.timeout(5000));
 
       if (error) throw error;
       return (data || []) as any[];
@@ -132,7 +133,8 @@ export class AnalyticsService {
         .eq('user_id', user.id)
         .eq('period', period)
         .order('period_start', { ascending: false })
-        .limit(limit);
+        .limit(limit)
+        .abortSignal(AbortSignal.timeout(5000));
 
       if (agentId) {
         query = query.eq('agent_id', agentId);
@@ -362,7 +364,7 @@ export class AnalyticsService {
 
   static async queryAnalytics(query: string, params: any, useCache: boolean = true) {
     const { data, error } = await supabase.functions.invoke('analytics-query', {
-      body: { query, params, useCache }
+      body: { query, params, useCache, cacheTtl: 300000 }
     })
     if (error) throw error
     return data
