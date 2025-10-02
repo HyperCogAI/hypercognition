@@ -101,3 +101,9 @@ verify_jwt = true
 
 [functions.acp-process-transaction]
 verify_jwt = true
+
+[functions.generate-trading-signal]
+verify_jwt = true
+
+[functions.process-price-alert]
+verify_jwt = false
