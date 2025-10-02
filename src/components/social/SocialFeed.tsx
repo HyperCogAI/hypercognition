@@ -77,9 +77,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike, onFollow, onUnfollow,
   };
 
   return (
-    <Card className="mb-8 border border-border/50 bg-gradient-to-br from-background/90 to-background/60 backdrop-blur-sm hover:shadow-2xl hover:shadow-primary/5 transition-all duration-500 group overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-r from-primary/0 via-primary/5 to-accent/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-      <CardHeader className="pb-4 relative z-10">
+    <Card className="mb-6 hover:shadow-lg transition-shadow">
+      <CardHeader className="pb-4">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-3">
             <Avatar className="h-10 w-10">
@@ -132,7 +131,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onLike, onFollow, onUnfollow,
         </div>
       </CardHeader>
       
-      <CardContent className="space-y-6 relative z-10">
+      <CardContent className="space-y-6">
         {/* Post Content */}
         <div className="prose prose-sm max-w-none">
           <p className="text-foreground whitespace-pre-wrap">{post.content}</p>
@@ -242,71 +241,15 @@ export const SocialFeed = () => {
   };
 
   return (
-    <div className="space-y-12">
-      {/* Social Stats - Placeholder */}
-      <div className="space-y-6">
-        <div className="text-center">
-          <h3 className="text-2xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent mb-2">
-            Community Overview
-          </h3>
-          <p className="text-muted-foreground">Your social trading statistics</p>
-        </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-        <Card className="group border border-border/50 bg-gradient-to-br from-primary/5 to-primary/10 backdrop-blur-sm hover:border-primary/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary/10">
-          <CardContent className="p-8 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/0 to-primary/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative z-10">
-              <p className="text-4xl font-black text-primary mb-2">{stats.totalPosts}</p>
-              <p className="text-sm text-muted-foreground font-semibold tracking-wide uppercase">Posts</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="group border border-border/50 bg-gradient-to-br from-accent/5 to-accent/10 backdrop-blur-sm hover:border-accent/30 transition-all duration-500 hover:shadow-2xl hover:shadow-accent/10">
-          <CardContent className="p-8 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-accent/0 to-accent/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative z-10">
-              <p className="text-4xl font-black text-accent mb-2">{stats.totalFollowing}</p>
-              <p className="text-sm text-muted-foreground font-semibold tracking-wide uppercase">Following</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="group border border-border/50 bg-gradient-to-br from-primary-glow/5 to-primary-glow/10 backdrop-blur-sm hover:border-primary-glow/30 transition-all duration-500 hover:shadow-2xl hover:shadow-primary-glow/10">
-          <CardContent className="p-8 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary-glow/0 to-primary-glow/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative z-10">
-              <p className="text-4xl font-black text-primary-glow mb-2">{stats.totalFollowers}</p>
-              <p className="text-sm text-muted-foreground font-semibold tracking-wide uppercase">Followers</p>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="group border border-border/50 bg-gradient-to-br from-red-500/5 to-pink-500/10 backdrop-blur-sm hover:border-red-500/30 transition-all duration-500 hover:shadow-2xl hover:shadow-red-500/10">
-          <CardContent className="p-8 text-center relative overflow-hidden">
-            <div className="absolute inset-0 bg-gradient-to-br from-red-500/0 to-pink-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-            <div className="relative z-10">
-              <p className="text-4xl font-black bg-gradient-to-r from-red-500 to-pink-500 bg-clip-text text-transparent mb-2">{stats.totalLikes}</p>
-              <p className="text-sm text-muted-foreground font-semibold tracking-wide uppercase">Likes</p>
-            </div>
-          </CardContent>
-        </Card>
-        </div>
-      </div>
-
+    <div className="space-y-6">
       {/* Create Post */}
-      <Card className="border border-border/50 bg-gradient-to-br from-background/95 to-background/80 backdrop-blur-md shadow-2xl shadow-primary/5">
+      <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-4">
-            <div className="relative">
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-primary-glow/20 rounded-xl blur"></div>
-              <div className="relative p-3 rounded-xl bg-gradient-to-r from-primary/10 to-primary-glow/10 border border-primary/20">
-                <Send className="h-5 w-5 text-primary" />
-              </div>
-            </div>
-            <div>
-              <h3 className="text-xl font-bold">Share Your Insights</h3>
-              <p className="text-sm text-muted-foreground font-normal">What's your take on the market?</p>
-            </div>
+          <CardTitle className="flex items-center gap-2">
+            <Send className="h-5 w-5 text-primary" />
+            Share Your Insights
           </CardTitle>
-          <CardDescription className="ml-16">
+          <CardDescription>
             Share trading insights, market analysis, or connect with the community
           </CardDescription>
         </CardHeader>
@@ -349,8 +292,8 @@ export const SocialFeed = () => {
       </Card>
 
       {/* Posts Feed */}
-      <div>
-        <h2 className="text-xl font-semibold mb-4">Community Feed</h2>
+      <div className="space-y-4">
+        <h2 className="text-xl font-semibold">Community Feed</h2>
         
         {isLoading ? (
           <div className="space-y-4">
