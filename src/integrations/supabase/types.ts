@@ -2684,6 +2684,7 @@ export type Database = {
           metadata: Json | null
           neutral_percentage: number | null
           overall_sentiment: number
+          sentiment_label: string | null
           social_sentiment: string | null
           timeframe: string
           timestamp: string
@@ -2698,6 +2699,7 @@ export type Database = {
           metadata?: Json | null
           neutral_percentage?: number | null
           overall_sentiment: number
+          sentiment_label?: string | null
           social_sentiment?: string | null
           timeframe: string
           timestamp?: string
@@ -2712,6 +2714,7 @@ export type Database = {
           metadata?: Json | null
           neutral_percentage?: number | null
           overall_sentiment?: number
+          sentiment_label?: string | null
           social_sentiment?: string | null
           timeframe?: string
           timestamp?: string
