@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useAuth } from '@/contexts/AuthContext'
 import { portfolioService, PortfolioHolding, PortfolioTransaction } from '@/services/PortfolioService'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { toast } from '@/components/ui/use-toast'
+import { toast } from '@/hooks/use-toast'
 
 export function usePortfolioHoldings() {
   const { user } = useAuth()

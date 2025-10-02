@@ -31,7 +31,7 @@ export class LiquidityPoolService {
       const pools = (data || [])
         .filter((agent: any) => typeof agent.dex_liquidity === 'number' && typeof agent.dex_volume_24h === 'number')
         .map((agent: any) => ({
-          pair: agent.dex_name ? String(agent.dex_name) : `${agent.symbol}/USDC`,
+          pair: (agent.dex_pair || agent.dex_name) ? String(agent.dex_pair || agent.dex_name) : `${agent.symbol}/USDC`,
           liquidity: agent.dex_liquidity,
           volume24h: agent.dex_volume_24h,
           apy: 0, // No guessing — show 0 when unknown

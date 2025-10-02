@@ -1,6 +1,6 @@
 import React from 'react';
 import { EnterpriseChainAnalytics } from '@/components/analytics/EnterpriseChainAnalytics';
-import AdvancedAnalyticsDashboard from '@/components/analytics/AdvancedAnalyticsDashboard';
+import { SolanaAnalyticsDashboard } from '@/components/analytics/SolanaAnalyticsDashboard';
 import { MarketNewsComponent } from '@/components/news/MarketNewsComponent';
 import { KaitoInfluenceDashboard } from '@/components/analytics/KaitoInfluenceDashboard';
 import { FearGreedWidget } from '@/components/analytics/FearGreedWidget';
@@ -81,7 +81,7 @@ const Analytics = () => {
           </TabsContent>
           
           <TabsContent value="agents" className="animate-fade-in">
-            <AdvancedAnalyticsDashboard />
+            <SolanaAnalyticsDashboard />
           </TabsContent>
           
           <TabsContent value="influence" className="animate-fade-in">

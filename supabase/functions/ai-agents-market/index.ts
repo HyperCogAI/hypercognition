@@ -161,6 +161,8 @@ serve(async (req) => {
                 dex_volume_24h: dexData?.dexVolume24h || 0,
                 dex_price_usd: dexData?.dexPriceUsd || 0,
                 dex_chain: dexData?.dexChain || '',
+                dex_name: dexData?.dexName || '',
+                dex_pair: dexData?.dexPair || '',
                 fdv: dexData?.fdv || 0,
                 // DefiLlama enrichment
                 tvl: llamaData?.tvl || 0,
