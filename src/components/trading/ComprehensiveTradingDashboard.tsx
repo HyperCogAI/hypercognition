@@ -35,11 +35,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
   const [tradeModalCrypto, setTradeModalCrypto] = useState<any>(null)
   const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useCryptoWatchlist()
 
-  // Disable real-time updates to avoid API spam - data already refreshes from useRealMarketData
-  const { prices: realtimePrices, isConnected } = useRealtimePrices({ 
-    cryptoIds: [], 
-    autoStart: false 
-  })
+  // Show live indicator if data was updated in last 60 seconds
+  const isLive = lastUpdated ? (Date.now() - lastUpdated.getTime() < 60000) : false
 
   const handleWatchlistToggle = async (coin: any, e: React.MouseEvent) => {
     e.stopPropagation()
@@ -221,7 +218,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
             <div>
               <CardTitle className="flex items-center gap-2">
                 Live Market Data
-                {isConnected && (
+                {isLive && (
                   <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 animate-pulse">
                     Live
                   </Badge>
@@ -256,12 +253,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   No cryptocurrencies found matching "{searchQuery}"
                 </div>
               ) : (
-                filteredCrypto.slice(0, limit).map((token, index) => {
-                  // Get real-time price if available
-                  const realtimePrice = realtimePrices.get(token.id)
-                  const displayPrice = realtimePrice?.current_price || token.current_price
-                  const priceChange = realtimePrice?.price_change_percentage_24h || token.price_change_percentage_24h
-                  
+                filteredCrypto.slice(0, limit).map((token, index) => {                  
                   return (
                 <div 
                   key={token.id}
@@ -269,8 +261,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    {/* Real-time indicator */}
-                    <div className={`w-2 h-2 rounded-full ${realtimePrice ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
+                    {/* Live indicator */}
+                    <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
                     
                     <Button
                       variant="ghost"
@@ -315,9 +307,9 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   </div>
                   <div className={isMobile ? "text-right" : "flex items-center gap-8 text-right"}>
                     <div>
-                      <div className="font-semibold">{formatPrice(displayPrice)}</div>
-                      <div className={`text-sm ${priceChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {priceChange >= 0 ? '+' : ''}{priceChange.toFixed(2)}%
+                      <div className="font-semibold">{formatPrice(token.current_price)}</div>
+                      <div className={`text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {token.price_change_percentage_24h >= 0 ? '+' : ''}{token.price_change_percentage_24h.toFixed(2)}%
                       </div>
                     </div>
                     {!isMobile && (
