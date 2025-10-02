@@ -97,13 +97,16 @@ export const KaitoInfluenceDashboard = () => {
           </div>
         ) : (
           <div className="space-y-3">
-            {filteredAgents.map((agent, index) => {
+            {filteredAgents.map((agent) => {
               const influenceTier = getInfluenceTier(agent.yaps_30d);
               const yaps30d = formatYaps(agent.yaps_30d);
               const yaps7d = formatYaps(agent.yaps_7d);
               const change = agent.yaps_7d > 0 
                 ? ((agent.yaps_30d - agent.yaps_7d) / agent.yaps_7d * 100).toFixed(1)
                 : 0;
+              
+              // Find original rank in the full list
+              const originalRank = topAgents.findIndex(a => a.id === agent.id) + 1;
 
               return (
                 <div
@@ -112,7 +115,7 @@ export const KaitoInfluenceDashboard = () => {
                 >
                   <div className="flex items-center gap-4">
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold">
-                      {index + 1}
+                      #{originalRank}
                     </div>
                     <div>
                       <div className="font-semibold">@{agent.twitter_username}</div>
