@@ -6,6 +6,53 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper to fetch DEXScreener data for a token
+async function getDEXScreenerData(tokenAddress?: string, searchQuery?: string) {
+  try {
+    let url = '';
+    
+    if (tokenAddress) {
+      // Search by token address
+      url = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`;
+    } else if (searchQuery) {
+      // Search by query
+      url = `https://api.dexscreener.com/latest/dex/search/?q=${encodeURIComponent(searchQuery)}`;
+    } else {
+      return null;
+    }
+
+    const response = await fetch(url);
+    if (!response.ok) return null;
+
+    const data = await response.json();
+    
+    // Get the best pair (highest liquidity)
+    const pairs = data.pairs || [];
+    if (pairs.length === 0) return null;
+
+    const bestPair = pairs.reduce((best: any, current: any) => {
+      const bestLiq = best?.liquidity?.usd || 0;
+      const currentLiq = current?.liquidity?.usd || 0;
+      return currentLiq > bestLiq ? current : best;
+    }, pairs[0]);
+
+    return {
+      dexLiquidity: bestPair.liquidity?.usd || 0,
+      dexVolume24h: bestPair.volume?.h24 || 0,
+      dexPriceUsd: parseFloat(bestPair.priceUsd || '0'),
+      dexPriceChange24h: bestPair.priceChange?.h24 || 0,
+      dexPair: bestPair.pairAddress,
+      dexName: bestPair.dexId,
+      dexChain: bestPair.chainId,
+      fdv: bestPair.fdv || 0,
+      pairCreatedAt: bestPair.pairCreatedAt
+    };
+  } catch (error) {
+    console.error('[DEXScreener] Error:', error);
+    return null;
+  }
+}
+
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
     return new Response(null, { headers: corsHeaders });
@@ -33,28 +80,39 @@ serve(async (req) => {
 
       const data = await response.json();
       
-      // Transform CoinGecko data to our format
-      const agents = data.map((coin: any) => ({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        price: coin.current_price || 0,
-        market_cap: coin.market_cap || 0,
-        volume_24h: coin.total_volume || 0,
-        change_24h: coin.price_change_24h || 0,
-        change_percent_24h: coin.price_change_percentage_24h || 0,
-        change_percent_7d: coin.price_change_percentage_7d_in_currency || 0,
-        high_24h: coin.high_24h || 0,
-        low_24h: coin.low_24h || 0,
-        circulating_supply: coin.circulating_supply || 0,
-        total_supply: coin.total_supply || 0,
-        rank: coin.market_cap_rank || 0,
-        avatar_url: coin.image || '',
-        chain: 'Multi-Chain',
-        category: 'AI & Big Data'
+      // Transform CoinGecko data to our format and enrich with DEXScreener data
+      const agents = await Promise.all(data.map(async (coin: any) => {
+        // Try to get DEXScreener data for additional liquidity info
+        const dexData = await getDEXScreenerData(undefined, coin.symbol);
+        
+        return {
+          id: coin.id,
+          name: coin.name,
+          symbol: coin.symbol.toUpperCase(),
+          price: coin.current_price || 0,
+          market_cap: coin.market_cap || 0,
+          volume_24h: coin.total_volume || 0,
+          change_24h: coin.price_change_24h || 0,
+          change_percent_24h: coin.price_change_percentage_24h || 0,
+          change_percent_7d: coin.price_change_percentage_7d_in_currency || 0,
+          high_24h: coin.high_24h || 0,
+          low_24h: coin.low_24h || 0,
+          circulating_supply: coin.circulating_supply || 0,
+          total_supply: coin.total_supply || 0,
+          rank: coin.market_cap_rank || 0,
+          avatar_url: coin.image || '',
+          chain: 'Multi-Chain',
+          category: 'AI & Big Data',
+          // DEXScreener enrichment
+          dex_liquidity: dexData?.dexLiquidity || 0,
+          dex_volume_24h: dexData?.dexVolume24h || 0,
+          dex_price_usd: dexData?.dexPriceUsd || 0,
+          dex_chain: dexData?.dexChain || '',
+          fdv: dexData?.fdv || coin.fully_diluted_valuation || 0
+        };
       }));
 
-      console.log('[AI-Market] Fetched:', agents.length, 'AI tokens');
+      console.log('[AI-Market] Fetched:', agents.length, 'AI tokens with DEX data');
 
       return new Response(JSON.stringify(agents), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -154,6 +212,9 @@ serve(async (req) => {
 
       const coin = await response.json();
       
+      // Try to get DEXScreener data
+      const dexData = await getDEXScreenerData(undefined, coin.symbol);
+      
       const agent = {
         id: coin.id,
         name: coin.name,
@@ -170,10 +231,18 @@ serve(async (req) => {
         rank: coin.market_cap_rank || 0,
         avatar_url: coin.image?.large || '',
         chain: 'Multi-Chain',
-        category: 'AI & Big Data'
+        category: 'AI & Big Data',
+        description: coin.description?.en || '',
+        // DEXScreener enrichment
+        dex_liquidity: dexData?.dexLiquidity || 0,
+        dex_volume_24h: dexData?.dexVolume24h || 0,
+        dex_price_usd: dexData?.dexPriceUsd || 0,
+        dex_chain: dexData?.dexChain || '',
+        dex_name: dexData?.dexName || '',
+        fdv: dexData?.fdv || coin.market_data?.fully_diluted_valuation?.usd || 0
       };
 
-      console.log('[AI-Market] Agent:', agent.name);
+      console.log('[AI-Market] Agent:', agent.name, 'with DEX data');
 
       return new Response(JSON.stringify(agent), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

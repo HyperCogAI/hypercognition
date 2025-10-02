@@ -24,6 +24,13 @@ interface AIAgentMarketData {
   rank?: number
   circulating_supply?: number
   total_supply?: number
+  // DEXScreener data
+  dex_liquidity?: number
+  dex_volume_24h?: number
+  dex_price_usd?: number
+  dex_chain?: string
+  dex_name?: string
+  fdv?: number
 }
 
 interface AIAgentPriceHistory {
