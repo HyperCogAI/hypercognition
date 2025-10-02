@@ -4,21 +4,26 @@ interface AIAgentMarketData {
   id: string
   symbol: string
   name: string
-  description: string
+  description?: string
   price: number
   change_24h: number
   change_percent_24h: number
+  change_percent_7d?: number
   volume_24h: number
   market_cap: number
   high_24h: number
   low_24h: number
   category: string
-  blockchain: string
-  launch_date: string
-  performance_score: number
-  total_trades: number
-  active_users: number
+  blockchain?: string
+  chain?: string
+  launch_date?: string
+  performance_score?: number
+  total_trades?: number
+  active_users?: number
   avatar_url?: string
+  rank?: number
+  circulating_supply?: number
+  total_supply?: number
 }
 
 interface AIAgentPriceHistory {
@@ -31,75 +36,43 @@ interface AIAgentPriceHistory {
 class AIAgentMarketAPI {
   async getTopAIAgents(limit: number = 100): Promise<AIAgentMarketData[]> {
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('*')
-        .eq('status', 'active')
-        .order('market_cap', { ascending: false })
-        .limit(limit)
+      console.log('[AIAgentMarketAPI] Fetching top AI agents from CoinGecko...');
+      
+      const { data, error } = await supabase.functions.invoke('ai-agents-market', {
+        body: { action: 'getTopAIAgents', limit }
+      });
 
-      if (error) throw error
+      if (error) {
+        console.error('[AIAgentMarketAPI] Edge function error:', error);
+        throw error;
+      }
 
-      return (data || []).map(agent => ({
-        id: agent.id,
-        symbol: agent.symbol,
-        name: agent.name,
-        description: agent.description || '',
-        price: agent.price,
-        change_24h: agent.change_24h,
-        change_percent_24h: agent.change_24h,
-        volume_24h: agent.volume_24h,
-        market_cap: agent.market_cap,
-        high_24h: agent.price * 1.1,
-        low_24h: agent.price * 0.9,
-        category: agent.category || 'Trading',
-        blockchain: agent.chain,
-        launch_date: agent.created_at,
-        performance_score: 85,
-        total_trades: 0,
-        active_users: 0,
-        avatar_url: agent.avatar_url
-      }))
+      console.log('[AIAgentMarketAPI] Fetched', data?.length || 0, 'AI agents');
+      return data || [];
     } catch (error) {
-      console.error('Error fetching AI agents from database:', error)
-      return []
+      console.error('[AIAgentMarketAPI] Error fetching top AI agents:', error);
+      return [];
     }
   }
 
   async getAIAgentById(id: string): Promise<AIAgentMarketData | null> {
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('*')
-        .eq('id', id)
-        .eq('status', 'active')
-        .single()
+      console.log('[AIAgentMarketAPI] Fetching agent by ID:', id);
+      
+      const { data, error } = await supabase.functions.invoke('ai-agents-market', {
+        body: { action: 'getAIAgentById', id }
+      });
 
-      if (error) throw error
-
-      return {
-        id: data.id,
-        symbol: data.symbol,
-        name: data.name,
-        description: data.description || '',
-        price: data.price,
-        change_24h: data.change_24h,
-        change_percent_24h: data.change_24h,
-        volume_24h: data.volume_24h,
-        market_cap: data.market_cap,
-        high_24h: data.price * 1.1,
-        low_24h: data.price * 0.9,
-        category: data.category || 'Trading',
-        blockchain: data.chain,
-        launch_date: data.created_at,
-        performance_score: 85,
-        total_trades: 0,
-        active_users: 0,
-        avatar_url: data.avatar_url
+      if (error) {
+        console.error('[AIAgentMarketAPI] Edge function error:', error);
+        throw error;
       }
+
+      console.log('[AIAgentMarketAPI] Fetched agent:', data?.name);
+      return data || null;
     } catch (error) {
-      console.error('Error fetching AI agent from database:', error)
-      return null
+      console.error('[AIAgentMarketAPI] Error fetching AI agent by ID:', error);
+      return null;
     }
   }
 
@@ -135,76 +108,49 @@ class AIAgentMarketAPI {
 
   async searchAIAgents(query: string): Promise<AIAgentMarketData[]> {
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('*')
-        .eq('status', 'active')
-        .or(`name.ilike.%${query}%,symbol.ilike.%${query}%`)
-        .order('market_cap', { ascending: false })
-        .limit(20)
+      console.log('[AIAgentMarketAPI] Searching AI agents:', query);
+      
+      const { data, error } = await supabase.functions.invoke('ai-agents-market', {
+        body: { action: 'searchAIAgents' }
+      });
 
-      if (error) throw error
+      if (error) {
+        console.error('[AIAgentMarketAPI] Edge function error:', error);
+        throw error;
+      }
 
-      return (data || []).map(agent => ({
-        id: agent.id,
-        symbol: agent.symbol,
-        name: agent.name,
-        description: agent.description || '',
-        price: agent.price,
-        change_24h: agent.change_24h,
-        change_percent_24h: agent.change_24h,
-        volume_24h: agent.volume_24h,
-        market_cap: agent.market_cap,
-        high_24h: agent.price * 1.1,
-        low_24h: agent.price * 0.9,
-        category: agent.category || 'Trading',
-        blockchain: agent.chain,
-        launch_date: agent.created_at,
-        performance_score: 85,
-        total_trades: 0,
-        active_users: 0,
-        avatar_url: agent.avatar_url
-      }))
+      // Client-side filtering
+      const filtered = (data || []).filter((agent: AIAgentMarketData) =>
+        agent.name.toLowerCase().includes(query.toLowerCase()) ||
+        agent.symbol.toLowerCase().includes(query.toLowerCase())
+      ).slice(0, 20);
+
+      console.log('[AIAgentMarketAPI] Found', filtered.length, 'matching agents');
+      return filtered;
     } catch (error) {
-      console.error('Error searching AI agents:', error)
-      return []
+      console.error('[AIAgentMarketAPI] Error searching AI agents:', error);
+      return [];
     }
   }
 
   async getTrendingAIAgents(): Promise<AIAgentMarketData[]> {
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('*')
-        .eq('status', 'active')
-        .order('change_24h', { ascending: false })
-        .limit(10)
+      console.log('[AIAgentMarketAPI] Fetching trending AI agents...');
+      
+      const { data, error } = await supabase.functions.invoke('ai-agents-market', {
+        body: { action: 'getTrendingAIAgents' }
+      });
 
-      if (error) throw error
+      if (error) {
+        console.error('[AIAgentMarketAPI] Edge function error:', error);
+        throw error;
+      }
 
-      return (data || []).map(agent => ({
-        id: agent.id,
-        symbol: agent.symbol,
-        name: agent.name,
-        description: agent.description || '',
-        price: agent.price,
-        change_24h: agent.change_24h,
-        change_percent_24h: agent.change_24h,
-        volume_24h: agent.volume_24h,
-        market_cap: agent.market_cap,
-        high_24h: agent.price * 1.1,
-        low_24h: agent.price * 0.9,
-        category: agent.category || 'Trading',
-        blockchain: agent.chain,
-        launch_date: agent.created_at,
-        performance_score: 85,
-        total_trades: 0,
-        active_users: 0,
-        avatar_url: agent.avatar_url
-      }))
+      console.log('[AIAgentMarketAPI] Fetched', data?.length || 0, 'trending agents');
+      return data || [];
     } catch (error) {
-      console.error('Error fetching trending AI agents:', error)
-      return []
+      console.error('[AIAgentMarketAPI] Error fetching trending AI agents:', error);
+      return [];
     }
   }
 
@@ -215,31 +161,32 @@ class AIAgentMarketAPI {
     avgChange24h: number
   }> {
     try {
-      const { data, error } = await supabase
-        .from('agents')
-        .select('market_cap, volume_24h, change_24h')
-        .eq('status', 'active')
-
-      if (error) throw error
-
-      const agents = data || []
+      console.log('[AIAgentMarketAPI] Fetching market stats...');
       
-      return {
-        totalMarketCap: agents.reduce((sum, agent) => sum + (agent.market_cap || 0), 0),
-        totalVolume24h: agents.reduce((sum, agent) => sum + (agent.volume_24h || 0), 0),
-        activeAgents: agents.length,
-        avgChange24h: agents.length > 0 
-          ? agents.reduce((sum, agent) => sum + (agent.change_24h || 0), 0) / agents.length 
-          : 0
+      const { data, error } = await supabase.functions.invoke('ai-agents-market', {
+        body: { action: 'getMarketStats' }
+      });
+
+      if (error) {
+        console.error('[AIAgentMarketAPI] Edge function error:', error);
+        throw error;
       }
+
+      console.log('[AIAgentMarketAPI] Market stats:', data);
+      return data || {
+        totalMarketCap: 0,
+        totalVolume24h: 0,
+        activeAgents: 0,
+        avgChange24h: 0
+      };
     } catch (error) {
-      console.error('Error fetching market stats from database:', error)
+      console.error('[AIAgentMarketAPI] Error fetching market stats:', error);
       return {
         totalMarketCap: 0,
         totalVolume24h: 0,
         activeAgents: 0,
         avgChange24h: 0
-      }
+      };
     }
   }
 }
