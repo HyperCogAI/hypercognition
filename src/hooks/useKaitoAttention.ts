@@ -27,7 +27,7 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   // Fetch top agents by attention
   const { data: topAgents = [], isLoading: isLoadingTop } = useQuery({
     queryKey: ['kaito-attention', 'top'],
-    queryFn: () => KaitoService.getTopAgentsByAttention(20, '30d'),
+    queryFn: () => KaitoService.getTopAgentsByAttention(50, '30d'),
     staleTime: 30 * 60 * 1000, // 30 minutes
     refetchInterval: 30 * 60 * 1000
   });

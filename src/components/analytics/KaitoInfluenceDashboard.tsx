@@ -21,8 +21,8 @@ export const KaitoInfluenceDashboard = () => {
   }, [topAgents, searchQuery]);
 
   const handleRefresh = () => {
-    // Sync top 20 agents
-    const usernames = topAgents.slice(0, 20).map(agent => agent.twitter_username);
+    // Sync top 50 agents
+    const usernames = topAgents.slice(0, 50).map(agent => agent.twitter_username);
     syncMultiple({ usernames });
   };
 
