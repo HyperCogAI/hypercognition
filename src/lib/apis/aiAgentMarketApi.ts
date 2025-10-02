@@ -1,3 +1,5 @@
+import { supabase } from '@/integrations/supabase/client'
+
 interface AIAgentMarketData {
   id: string
   symbol: string
@@ -27,138 +29,182 @@ interface AIAgentPriceHistory {
 }
 
 class AIAgentMarketAPI {
-  private baseUrl = 'https://api.virtuals.io/api/v1' // Virtuals Protocol API
-  private fallbackUrl = 'https://api.ai16z.com/v1' // AI16Z API as fallback
-  
-  private async fetchWithFallback<T>(endpoint: string): Promise<T> {
-    try {
-      // Try Virtuals Protocol first
-      const response = await fetch(`${this.baseUrl}${endpoint}`)
-      if (response.ok) {
-        return response.json()
-      }
-    } catch (error) {
-      console.warn('Virtuals API failed, trying fallback:', error)
-    }
-
-    try {
-      // Try AI16Z as fallback
-      const response = await fetch(`${this.fallbackUrl}${endpoint}`)
-      if (response.ok) {
-        return response.json()
-      }
-    } catch (error) {
-      console.warn('AI16Z API failed, using mock data:', error)
-    }
-
-    // Return mock data if both APIs fail
-    return this.getMockData(endpoint) as T
-  }
-
-  private getMockData(endpoint: string): any {
-    if (endpoint.includes('/agents')) {
-      return this.generateMockAgents()
-    }
-    if (endpoint.includes('/price-history')) {
-      return this.generateMockPriceHistory()
-    }
-    return {}
-  }
-
-  private generateMockAgents(): AIAgentMarketData[] {
-    const agentNames = [
-      'VIRTUAL', 'AI16Z', 'GOAT', 'ZEREBRO', 'AIXBT', 'LUNA', 'FARTCOIN',
-      'MOODENG', 'PNUT', 'ACT', 'GNON', 'CENTS', 'OPUS', 'GRIFFAIN',
-      'ELIZA', 'MEME', 'PIPPIN', 'FOREST', 'RIF', 'URO'
-    ]
-
-    return agentNames.map((name, index) => ({
-      id: `agent_${name.toLowerCase()}`,
-      symbol: name,
-      name: `${name} AI Agent`,
-      description: `Advanced AI trading agent specializing in ${name.toLowerCase()} strategies`,
-      price: Math.random() * 100 + 0.1,
-      change_24h: (Math.random() - 0.5) * 10,
-      change_percent_24h: (Math.random() - 0.5) * 20,
-      volume_24h: Math.random() * 10000000,
-      market_cap: Math.random() * 1000000000,
-      high_24h: Math.random() * 120 + 80,
-      low_24h: Math.random() * 80 + 20,
-      category: ['DeFi', 'Trading', 'NFT', 'GameFi', 'Social'][index % 5],
-      blockchain: ['Ethereum', 'Solana', 'Base', 'Arbitrum'][index % 4],
-      launch_date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-      performance_score: Math.random() * 100,
-      total_trades: Math.floor(Math.random() * 10000),
-      active_users: Math.floor(Math.random() * 5000),
-      avatar_url: `https://api.dicebear.com/7.x/bottts/svg?seed=${name}`
-    }))
-  }
-
-  private generateMockPriceHistory(): AIAgentPriceHistory[] {
-    const history: AIAgentPriceHistory[] = []
-    const now = Date.now()
-    
-    for (let i = 30; i >= 0; i--) {
-      const timestamp = new Date(now - i * 24 * 60 * 60 * 1000).toISOString()
-      history.push({
-        timestamp,
-        price: Math.random() * 50 + 10,
-        volume: Math.random() * 1000000,
-        market_cap: Math.random() * 100000000
-      })
-    }
-    
-    return history
-  }
-
   async getTopAIAgents(limit: number = 100): Promise<AIAgentMarketData[]> {
     try {
-      const data = await this.fetchWithFallback<AIAgentMarketData[]>('/agents/top')
-      return data.slice(0, limit)
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('status', 'active')
+        .order('market_cap', { ascending: false })
+        .limit(limit)
+
+      if (error) throw error
+
+      return (data || []).map(agent => ({
+        id: agent.id,
+        symbol: agent.symbol,
+        name: agent.name,
+        description: agent.description || '',
+        price: agent.price,
+        change_24h: agent.change_24h,
+        change_percent_24h: agent.change_24h,
+        volume_24h: agent.volume_24h,
+        market_cap: agent.market_cap,
+        high_24h: agent.price * 1.1,
+        low_24h: agent.price * 0.9,
+        category: agent.category || 'Trading',
+        blockchain: agent.chain,
+        launch_date: agent.created_at,
+        performance_score: 85,
+        total_trades: 0,
+        active_users: 0,
+        avatar_url: agent.avatar_url
+      }))
     } catch (error) {
-      console.error('Error fetching AI agents:', error)
-      return this.generateMockAgents().slice(0, limit)
+      console.error('Error fetching AI agents from database:', error)
+      return []
     }
   }
 
   async getAIAgentById(id: string): Promise<AIAgentMarketData | null> {
     try {
-      return await this.fetchWithFallback<AIAgentMarketData>(`/agents/${id}`)
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('id', id)
+        .eq('status', 'active')
+        .single()
+
+      if (error) throw error
+
+      return {
+        id: data.id,
+        symbol: data.symbol,
+        name: data.name,
+        description: data.description || '',
+        price: data.price,
+        change_24h: data.change_24h,
+        change_percent_24h: data.change_24h,
+        volume_24h: data.volume_24h,
+        market_cap: data.market_cap,
+        high_24h: data.price * 1.1,
+        low_24h: data.price * 0.9,
+        category: data.category || 'Trading',
+        blockchain: data.chain,
+        launch_date: data.created_at,
+        performance_score: 85,
+        total_trades: 0,
+        active_users: 0,
+        avatar_url: data.avatar_url
+      }
     } catch (error) {
-      console.error('Error fetching AI agent:', error)
-      const mockAgents = this.generateMockAgents()
-      return mockAgents.find(agent => agent.id === id) || null
+      console.error('Error fetching AI agent from database:', error)
+      return null
     }
   }
 
   async getAIAgentPriceHistory(id: string, days: number = 30): Promise<AIAgentPriceHistory[]> {
     try {
-      return await this.fetchWithFallback<AIAgentPriceHistory[]>(`/agents/${id}/price-history?days=${days}`)
+      const { data: agent } = await supabase
+        .from('agents')
+        .select('price, market_cap, volume_24h, created_at')
+        .eq('id', id)
+        .single()
+
+      if (!agent) return []
+
+      // Generate historical data based on current values (placeholder)
+      const history: AIAgentPriceHistory[] = []
+      const now = Date.now()
+      
+      for (let i = days; i >= 0; i--) {
+        history.push({
+          timestamp: new Date(now - i * 24 * 60 * 60 * 1000).toISOString(),
+          price: agent.price,
+          volume: agent.volume_24h,
+          market_cap: agent.market_cap
+        })
+      }
+      
+      return history
     } catch (error) {
-      console.error('Error fetching price history:', error)
-      return this.generateMockPriceHistory()
+      console.error('Error fetching price history from database:', error)
+      return []
     }
   }
 
   async searchAIAgents(query: string): Promise<AIAgentMarketData[]> {
     try {
-      return await this.fetchWithFallback<AIAgentMarketData[]>(`/agents/search?q=${encodeURIComponent(query)}`)
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('status', 'active')
+        .or(`name.ilike.%${query}%,symbol.ilike.%${query}%`)
+        .order('market_cap', { ascending: false })
+        .limit(20)
+
+      if (error) throw error
+
+      return (data || []).map(agent => ({
+        id: agent.id,
+        symbol: agent.symbol,
+        name: agent.name,
+        description: agent.description || '',
+        price: agent.price,
+        change_24h: agent.change_24h,
+        change_percent_24h: agent.change_24h,
+        volume_24h: agent.volume_24h,
+        market_cap: agent.market_cap,
+        high_24h: agent.price * 1.1,
+        low_24h: agent.price * 0.9,
+        category: agent.category || 'Trading',
+        blockchain: agent.chain,
+        launch_date: agent.created_at,
+        performance_score: 85,
+        total_trades: 0,
+        active_users: 0,
+        avatar_url: agent.avatar_url
+      }))
     } catch (error) {
       console.error('Error searching AI agents:', error)
-      const mockAgents = this.generateMockAgents()
-      return mockAgents.filter(agent => 
-        agent.name.toLowerCase().includes(query.toLowerCase()) ||
-        agent.symbol.toLowerCase().includes(query.toLowerCase())
-      )
+      return []
     }
   }
 
   async getTrendingAIAgents(): Promise<AIAgentMarketData[]> {
     try {
-      return await this.fetchWithFallback<AIAgentMarketData[]>('/agents/trending')
+      const { data, error } = await supabase
+        .from('agents')
+        .select('*')
+        .eq('status', 'active')
+        .order('change_24h', { ascending: false })
+        .limit(10)
+
+      if (error) throw error
+
+      return (data || []).map(agent => ({
+        id: agent.id,
+        symbol: agent.symbol,
+        name: agent.name,
+        description: agent.description || '',
+        price: agent.price,
+        change_24h: agent.change_24h,
+        change_percent_24h: agent.change_24h,
+        volume_24h: agent.volume_24h,
+        market_cap: agent.market_cap,
+        high_24h: agent.price * 1.1,
+        low_24h: agent.price * 0.9,
+        category: agent.category || 'Trading',
+        blockchain: agent.chain,
+        launch_date: agent.created_at,
+        performance_score: 85,
+        total_trades: 0,
+        active_users: 0,
+        avatar_url: agent.avatar_url
+      }))
     } catch (error) {
       console.error('Error fetching trending AI agents:', error)
-      return this.generateMockAgents().slice(0, 10)
+      return []
     }
   }
 
@@ -169,21 +215,30 @@ class AIAgentMarketAPI {
     avgChange24h: number
   }> {
     try {
-      const agents = await this.getTopAIAgents(100)
+      const { data, error } = await supabase
+        .from('agents')
+        .select('market_cap, volume_24h, change_24h')
+        .eq('status', 'active')
+
+      if (error) throw error
+
+      const agents = data || []
       
       return {
-        totalMarketCap: agents.reduce((sum, agent) => sum + agent.market_cap, 0),
-        totalVolume24h: agents.reduce((sum, agent) => sum + agent.volume_24h, 0),
+        totalMarketCap: agents.reduce((sum, agent) => sum + (agent.market_cap || 0), 0),
+        totalVolume24h: agents.reduce((sum, agent) => sum + (agent.volume_24h || 0), 0),
         activeAgents: agents.length,
-        avgChange24h: agents.reduce((sum, agent) => sum + agent.change_percent_24h, 0) / agents.length
+        avgChange24h: agents.length > 0 
+          ? agents.reduce((sum, agent) => sum + (agent.change_24h || 0), 0) / agents.length 
+          : 0
       }
     } catch (error) {
-      console.error('Error fetching market stats:', error)
+      console.error('Error fetching market stats from database:', error)
       return {
-        totalMarketCap: 5000000000,
-        totalVolume24h: 250000000,
-        activeAgents: 50,
-        avgChange24h: 5.2
+        totalMarketCap: 0,
+        totalVolume24h: 0,
+        activeAgents: 0,
+        avgChange24h: 0
       }
     }
   }
