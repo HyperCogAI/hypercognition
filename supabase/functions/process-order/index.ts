@@ -1,299 +1,261 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts"
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
-};
-
-interface OrderRequest {
-  agent_id: string;
-  type: 'market' | 'limit';
-  side: 'buy' | 'sell';
-  amount: number;
-  price?: number;
-  time_in_force?: 'GTC' | 'IOC' | 'FOK' | 'DAY';
 }
 
 serve(async (req) => {
   if (req.method === 'OPTIONS') {
-    return new Response(null, { headers: corsHeaders });
+    return new Response(null, { headers: corsHeaders })
   }
 
   try {
     const supabaseClient = createClient(
       Deno.env.get('SUPABASE_URL') ?? '',
-      Deno.env.get('SUPABASE_ANON_KEY') ?? '',
-      {
-        global: { headers: { Authorization: req.headers.get('Authorization')! } }
-      }
-    );
+      Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
+    )
 
-    // Get authenticated user
-    const { data: { user }, error: authError } = await supabaseClient.auth.getUser();
-    
+    const authHeader = req.headers.get('Authorization')
+    if (!authHeader) {
+      return new Response(JSON.stringify({ error: 'No authorization header' }), {
+        status: 401,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    }
+
+    const token = authHeader.replace('Bearer ', '')
+    const { data: { user }, error: authError } = await supabaseClient.auth.getUser(token)
+
     if (authError || !user) {
       return new Response(JSON.stringify({ error: 'Unauthorized' }), {
         status: 401,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
     }
 
-    const orderData: OrderRequest = await req.json();
-    console.log('Processing order:', { user_id: user.id, ...orderData });
+    const { orderId, action } = await req.json()
+    console.log(`[ProcessOrder] User ${user.id} - Action: ${action}, Order: ${orderId}`)
 
-    // Validate required fields
-    if (!orderData.agent_id || !orderData.type || !orderData.side || !orderData.amount) {
-      return new Response(JSON.stringify({ 
-        error: 'Missing required fields: agent_id, type, side, amount' 
-      }), {
-        status: 400,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
+    const { data: order, error: orderError } = await supabaseClient
+      .from('orders')
+      .select('*')
+      .eq('id', orderId)
+      .eq('user_id', user.id)
+      .single()
+
+    if (orderError || !order) {
+      return new Response(JSON.stringify({ error: 'Order not found' }), {
+        status: 404,
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
     }
 
-    // For market orders, get current price. For limit orders, use provided price.
-    let execution_price = orderData.price || 0;
-    
-    if (orderData.type === 'market') {
-      const { data: agent, error: agentError } = await supabaseClient
-        .from('agents')
-        .select('price')
-        .eq('id', orderData.agent_id)
-        .single();
-
-      if (agentError || !agent) {
-        return new Response(JSON.stringify({ error: 'Agent not found' }), {
-          status: 404,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-
-      execution_price = parseFloat(agent.price);
-    }
-
-    // Calculate total amount and fees
-    const total_amount = orderData.amount * execution_price;
-    const fee_rate = 0.001; // 0.1% fee
-    const fees = total_amount * fee_rate;
-    const net_amount = orderData.side === 'buy' ? total_amount + fees : total_amount - fees;
-
-    // Check user balance for buy orders
-    if (orderData.side === 'buy') {
+    if (action === 'execute') {
       const { data: balance } = await supabaseClient
         .from('user_balances')
         .select('available_balance')
         .eq('user_id', user.id)
-        .eq('currency', 'USD')
-        .single();
+        .maybeSingle()
 
-      if (!balance || balance.available_balance < net_amount) {
+      const { data: agent } = await supabaseClient
+        .from('agents')
+        .select('name, symbol, price')
+        .eq('id', order.agent_id)
+        .single()
+
+      if (!agent) {
+        return new Response(JSON.stringify({ error: 'Agent not found' }), {
+          status: 404,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
+
+      const executionPrice = order.type === 'market' ? agent.price : (order.price || 0)
+      const totalCost = order.amount * executionPrice + (order.fees || 0)
+
+      if (order.side === 'buy' && balance && balance.available_balance < totalCost) {
         return new Response(JSON.stringify({ 
           error: 'Insufficient balance',
-          required: net_amount,
-          available: balance?.available_balance || 0
+          required: totalCost,
+          available: balance.available_balance 
         }), {
           status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-    }
-
-    // For sell orders, check if user has sufficient holdings
-    if (orderData.side === 'sell') {
-      const { data: holding } = await supabaseClient
-        .from('user_holdings')
-        .select('quantity')
-        .eq('user_id', user.id)
-        .eq('agent_id', orderData.agent_id)
-        .single();
-
-      if (!holding || holding.quantity < orderData.amount) {
-        return new Response(JSON.stringify({ 
-          error: 'Insufficient holdings',
-          required: orderData.amount,
-          available: holding?.quantity || 0
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-        });
-      }
-    }
-
-    // Create order record
-    const { data: order, error: orderError } = await supabaseClient
-      .from('orders')
-      .insert({
-        user_id: user.id,
-        agent_id: orderData.agent_id,
-        type: orderData.type,
-        side: orderData.side,
-        amount: orderData.amount,
-        price: orderData.price,
-        status: 'filled', // For demo, we'll instantly fill orders
-        filled_amount: orderData.amount,
-        average_fill_price: execution_price,
-        fees: fees,
-        time_in_force: orderData.time_in_force || 'GTC'
-      })
-      .select()
-      .single();
-
-    if (orderError) {
-      console.error('Order creation error:', orderError);
-      return new Response(JSON.stringify({ error: 'Failed to create order' }), {
-        status: 500,
-        headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-      });
-    }
-
-    console.log('Order created:', order.id);
-
-    // Execute the trade by updating balances and holdings
-    await executeTradeSettlement(supabaseClient, user.id, order, orderData, execution_price, fees);
-
-    return new Response(JSON.stringify({ 
-      success: true, 
-      order: order,
-      execution_price,
-      fees,
-      net_amount 
-    }), {
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-
-  } catch (error) {
-    console.error('Process order error:', error);
-    return new Response(JSON.stringify({ error: error.message }), {
-      status: 500,
-      headers: { ...corsHeaders, 'Content-Type': 'application/json' },
-    });
-  }
-});
-
-async function executeTradeSettlement(
-  supabaseClient: any,
-  user_id: string,
-  order: any,
-  orderData: OrderRequest,
-  execution_price: number,
-  fees: number
-) {
-  const total_amount = orderData.amount * execution_price;
-
-  try {
-    if (orderData.side === 'buy') {
-      // Update user balance (subtract payment + fees)
-      await supabaseClient
-        .from('user_balances')
-        .update({ 
-          available_balance: supabaseClient.raw(`available_balance - ${total_amount + fees}`)
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
         })
-        .eq('user_id', user_id)
-        .eq('currency', 'USD');
-
-      // Update or create holdings
-      const { data: existingHolding } = await supabaseClient
-        .from('user_holdings')
-        .select('*')
-        .eq('user_id', user_id)
-        .eq('agent_id', orderData.agent_id)
-        .single();
-
-      if (existingHolding) {
-        // Update existing holding with weighted average price
-        const new_quantity = existingHolding.quantity + orderData.amount;
-        const new_total_invested = existingHolding.total_invested + total_amount;
-        const new_average_price = new_total_invested / new_quantity;
-
-        await supabaseClient
-          .from('user_holdings')
-          .update({
-            quantity: new_quantity,
-            average_buy_price: new_average_price,
-            total_invested: new_total_invested
-          })
-          .eq('id', existingHolding.id);
-      } else {
-        // Create new holding
-        await supabaseClient
-          .from('user_holdings')
-          .insert({
-            user_id: user_id,
-            agent_id: orderData.agent_id,
-            quantity: orderData.amount,
-            average_buy_price: execution_price,
-            total_invested: total_amount
-          });
       }
 
-    } else { // sell
-      // Update user balance (add proceeds - fees)
       await supabaseClient
-        .from('user_balances')
-        .update({ 
-          available_balance: supabaseClient.raw(`available_balance + ${total_amount - fees}`)
+        .from('orders')
+        .update({
+          status: 'filled',
+          filled_amount: order.amount,
+          average_fill_price: executionPrice,
+          updated_at: new Date().toISOString()
         })
-        .eq('user_id', user_id)
-        .eq('currency', 'USD');
+        .eq('id', orderId)
 
-      // Update holdings
-      const { data: holding } = await supabaseClient
-        .from('user_holdings')
-        .select('*')
-        .eq('user_id', user_id)
-        .eq('agent_id', orderData.agent_id)
-        .single();
+      const { data: trade } = await supabaseClient
+        .from('trades')
+        .insert({
+          user_id: user.id,
+          order_id: orderId,
+          agent_id: order.agent_id,
+          side: order.side,
+          quantity: order.amount,
+          price: executionPrice,
+          total_amount: order.amount * executionPrice,
+          fees: order.fees || 0
+        })
+        .select()
+        .single()
 
-      if (holding) {
-        const new_quantity = holding.quantity - orderData.amount;
-        const realized_pnl = (execution_price - holding.average_buy_price) * orderData.amount;
-        
-        if (new_quantity <= 0) {
-          // Delete holding if quantity becomes zero or negative
+      if (order.side === 'buy') {
+        const { data: existing } = await supabaseClient
+          .from('portfolio_holdings')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('asset_id', order.agent_id)
+          .eq('asset_type', 'agent')
+          .maybeSingle()
+
+        if (existing) {
+          const newQuantity = parseFloat(existing.quantity) + order.amount
+          const newTotalInvested = parseFloat(existing.total_invested) + (order.amount * executionPrice) + (order.fees || 0)
+          const newAverageBuyPrice = newTotalInvested / newQuantity
+
           await supabaseClient
-            .from('user_holdings')
-            .delete()
-            .eq('id', holding.id);
-        } else {
-          // Update holding
-          const remaining_invested = holding.total_invested * (new_quantity / holding.quantity);
-          
-          await supabaseClient
-            .from('user_holdings')
+            .from('portfolio_holdings')
             .update({
-              quantity: new_quantity,
-              total_invested: remaining_invested,
-              realized_pnl: holding.realized_pnl + realized_pnl
+              quantity: newQuantity,
+              average_buy_price: newAverageBuyPrice,
+              total_invested: newTotalInvested,
+              current_value: newQuantity * executionPrice,
+              last_updated: new Date().toISOString()
             })
-            .eq('id', holding.id);
+            .eq('id', existing.id)
+        } else {
+          await supabaseClient
+            .from('portfolio_holdings')
+            .insert({
+              user_id: user.id,
+              asset_id: order.agent_id,
+              asset_type: 'agent',
+              asset_name: agent.name,
+              asset_symbol: agent.symbol,
+              quantity: order.amount,
+              average_buy_price: executionPrice,
+              total_invested: (order.amount * executionPrice) + (order.fees || 0),
+              current_value: order.amount * executionPrice,
+              unrealized_pnl: 0,
+              realized_pnl: 0
+            })
+        }
+
+        if (balance) {
+          await supabaseClient
+            .from('user_balances')
+            .update({
+              available_balance: balance.available_balance - totalCost
+            })
+            .eq('user_id', user.id)
+        }
+      } else {
+        const { data: holding } = await supabaseClient
+          .from('portfolio_holdings')
+          .select('*')
+          .eq('user_id', user.id)
+          .eq('asset_id', order.agent_id)
+          .eq('asset_type', 'agent')
+          .maybeSingle()
+
+        if (holding && parseFloat(holding.quantity) >= order.amount) {
+          const newQuantity = parseFloat(holding.quantity) - order.amount
+          const proportionSold = order.amount / parseFloat(holding.quantity)
+          const costBasis = parseFloat(holding.total_invested) * proportionSold
+          const saleProceeds = (order.amount * executionPrice) - (order.fees || 0)
+          const realizedPnl = saleProceeds - costBasis
+
+          if (newQuantity === 0) {
+            await supabaseClient
+              .from('portfolio_holdings')
+              .delete()
+              .eq('id', holding.id)
+          } else {
+            await supabaseClient
+              .from('portfolio_holdings')
+              .update({
+                quantity: newQuantity,
+                total_invested: parseFloat(holding.total_invested) - costBasis,
+                realized_pnl: parseFloat(holding.realized_pnl) + realizedPnl,
+                current_value: newQuantity * executionPrice,
+                last_updated: new Date().toISOString()
+              })
+              .eq('id', holding.id)
+          }
+
+          if (balance) {
+            await supabaseClient
+              .from('user_balances')
+              .update({
+                available_balance: balance.available_balance + saleProceeds
+              })
+              .eq('user_id', user.id)
+          }
         }
       }
+
+      await supabaseClient
+        .from('notifications')
+        .insert({
+          user_id: user.id,
+          type: 'order_filled',
+          category: 'trading',
+          priority: 'medium',
+          title: 'Order Filled',
+          message: `Your ${order.side} order for ${order.amount} units has been filled at $${executionPrice.toFixed(4)}`,
+          data: { order_id: orderId, trade_id: trade?.id }
+        })
+
+      console.log(`[ProcessOrder] Order ${orderId} executed successfully`)
+
+      return new Response(JSON.stringify({ 
+        success: true, 
+        order: { ...order, status: 'filled' },
+        trade 
+      }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
+    } else if (action === 'cancel') {
+      await supabaseClient
+        .from('orders')
+        .update({
+          status: 'cancelled',
+          updated_at: new Date().toISOString()
+        })
+        .eq('id', orderId)
+
+      console.log(`[ProcessOrder] Order ${orderId} cancelled`)
+
+      return new Response(JSON.stringify({ success: true }), {
+        headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+      })
     }
 
-    // Create transaction record
-    await supabaseClient
-      .from('transactions')
-      .insert({
-        user_id: user_id,
-        agent_id: orderData.agent_id,
-        order_id: order.id,
-        type: orderData.side,
-        quantity: orderData.amount,
-        price: execution_price,
-        total_amount: total_amount,
-        fees: fees,
-        status: 'completed',
-        metadata: {
-          order_type: orderData.type,
-          time_in_force: orderData.time_in_force
-        }
-      });
-
-    console.log('Trade settlement completed for order:', order.id);
+    return new Response(JSON.stringify({ error: 'Invalid action' }), {
+      status: 400,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
 
   } catch (error) {
-    console.error('Trade settlement error:', error);
-    throw new Error('Failed to settle trade: ' + error.message);
+    console.error('[ProcessOrder] Error:', error)
+    return new Response(JSON.stringify({ 
+      error: 'Internal server error',
+      details: error.message 
+    }), {
+      status: 500,
+      headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+    })
   }
-}
+})
