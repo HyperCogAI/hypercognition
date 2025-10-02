@@ -6,7 +6,7 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Fetch real Solana network stats from Helius
+// Fetch real Solana network stats from Helius RPC
 async function fetchSolanaMetrics() {
   const apiKey = Deno.env.get('HELIUS_API_KEY');
   
@@ -22,23 +22,56 @@ async function fetchSolanaMetrics() {
   }
 
   try {
-    // Get Solana network performance metrics
-    const response = await fetch(`https://api.helius.xyz/v0/network/metrics?api-key=${apiKey}`);
+    // Use Helius RPC endpoint to get recent performance samples
+    const rpcUrl = `https://mainnet.helius-rpc.com/?api-key=${apiKey}`;
+    
+    const response = await fetch(rpcUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '2.0',
+        id: 1,
+        method: 'getRecentPerformanceSamples',
+        params: [10] // Get last 10 samples
+      })
+    });
     
     if (!response.ok) {
-      console.error(`[ChainSync] Helius API error: ${response.status}`);
-      throw new Error(`Helius API returned ${response.status}`);
+      console.error(`[ChainSync] Helius RPC error: ${response.status}`);
+      throw new Error(`Helius RPC returned ${response.status}`);
     }
 
     const data = await response.json();
-    console.log('[ChainSync] Real Solana metrics fetched from Helius');
+    
+    if (data.error) {
+      console.error('[ChainSync] Helius RPC error:', data.error);
+      throw new Error(data.error.message);
+    }
+
+    console.log('[ChainSync] Real Solana metrics fetched from Helius RPC');
+
+    // Calculate averages from performance samples
+    const samples = data.result || [];
+    if (samples.length === 0) {
+      throw new Error('No performance samples returned');
+    }
+
+    const avgNumTransactions = samples.reduce((sum: number, s: any) => sum + s.numTransactions, 0) / samples.length;
+    const avgSamplePeriodSecs = samples.reduce((sum: number, s: any) => sum + s.samplePeriodSecs, 0) / samples.length;
+    const avgSlotDuration = avgSamplePeriodSecs / samples.length;
+    const tps = avgNumTransactions / avgSamplePeriodSecs;
+
+    // Estimate 24h transactions (TPS * seconds in a day)
+    const transactions24h = Math.floor(tps * 86400);
 
     return {
-      tps: data.tps || 2500,
-      blockTime: data.block_time || 0.4,
-      activeAddresses: data.active_addresses_24h || 450000,
-      transactions24h: data.transactions_24h || 28800000,
-      avgGasPrice: data.avg_fee || 0.00001
+      tps: Math.floor(tps),
+      blockTime: Number(avgSlotDuration.toFixed(2)),
+      activeAddresses: 450000, // Not available from this endpoint, using estimate
+      transactions24h: transactions24h,
+      avgGasPrice: 0.00001 // Average Solana fee, static for now
     };
   } catch (error) {
     console.error('[ChainSync] Error fetching Helius data:', error);

@@ -16,26 +16,28 @@ async function fetchCoinGeckoPrices(symbols: string[]) {
   }
 
   try {
-    // CoinGecko API expects comma-separated coin IDs
-    // For demo purposes, we'll use popular coins as reference
-    const coinIds = 'bitcoin,ethereum,solana,polygon,chainlink,uniswap,aave,compound';
+    // CoinGecko Pro API endpoint (use demo API for free tier)
+    const coinIds = 'bitcoin,ethereum,solana,polygon-ecosystem-token,chainlink,uniswap,aave,compound-governance-token';
     
-    const response = await fetch(
-      `https://api.coingecko.com/api/v3/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`,
-      {
-        headers: {
-          'x-cg-demo-api-key': apiKey
-        }
+    // Use demo API (free tier) - adjust endpoint based on your plan
+    const baseUrl = 'https://api.coingecko.com/api/v3';
+    const endpoint = `${baseUrl}/simple/price?ids=${coinIds}&vs_currencies=usd&include_24hr_change=true&include_24hr_vol=true&include_market_cap=true`;
+    
+    const response = await fetch(endpoint, {
+      headers: {
+        'x-cg-demo-api-key': apiKey,
+        'Accept': 'application/json'
       }
-    );
+    });
 
     if (!response.ok) {
-      console.error(`[PriceSync] CoinGecko API error: ${response.status}`);
+      const errorText = await response.text();
+      console.error(`[PriceSync] CoinGecko API error ${response.status}:`, errorText);
       return null;
     }
 
     const data = await response.json();
-    console.log('[PriceSync] Real price data fetched from CoinGecko');
+    console.log('[PriceSync] Real price data fetched from CoinGecko:', Object.keys(data).length, 'coins');
     return data;
   } catch (error) {
     console.error('[PriceSync] Error fetching CoinGecko data:', error);
