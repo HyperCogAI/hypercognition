@@ -14,6 +14,473 @@ export type Database = {
   }
   public: {
     Tables: {
+      acp_contracts: {
+        Row: {
+          agent_id: string | null
+          blockchain_address: string | null
+          contract_hash: string | null
+          contract_type: string
+          created_at: string
+          deliverables: Json | null
+          end_date: string | null
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          milestones: Json | null
+          party_a_id: string
+          party_b_id: string | null
+          payment_terms: Json
+          service_id: string | null
+          signed_by_a_at: string | null
+          signed_by_b_at: string | null
+          start_date: string | null
+          status: string
+          terms: Json
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          blockchain_address?: string | null
+          contract_hash?: string | null
+          contract_type: string
+          created_at?: string
+          deliverables?: Json | null
+          end_date?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          milestones?: Json | null
+          party_a_id: string
+          party_b_id?: string | null
+          payment_terms: Json
+          service_id?: string | null
+          signed_by_a_at?: string | null
+          signed_by_b_at?: string | null
+          start_date?: string | null
+          status?: string
+          terms: Json
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          blockchain_address?: string | null
+          contract_hash?: string | null
+          contract_type?: string
+          created_at?: string
+          deliverables?: Json | null
+          end_date?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          milestones?: Json | null
+          party_a_id?: string
+          party_b_id?: string | null
+          payment_terms?: Json
+          service_id?: string | null
+          signed_by_a_at?: string | null
+          signed_by_b_at?: string | null
+          start_date?: string | null
+          status?: string
+          terms?: Json
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acp_contracts_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_contracts_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "acp_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_contracts_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "acp_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      acp_job_bids: {
+        Row: {
+          agent_id: string | null
+          bid_amount: number
+          bidder_id: string
+          created_at: string
+          currency: string
+          delivery_time_hours: number | null
+          id: string
+          job_id: string
+          metadata: Json | null
+          proposal: string
+          status: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          bid_amount: number
+          bidder_id: string
+          created_at?: string
+          currency?: string
+          delivery_time_hours?: number | null
+          id?: string
+          job_id: string
+          metadata?: Json | null
+          proposal: string
+          status?: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          bid_amount?: number
+          bidder_id?: string
+          created_at?: string
+          currency?: string
+          delivery_time_hours?: number | null
+          id?: string
+          job_id?: string
+          metadata?: Json | null
+          proposal?: string
+          status?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acp_job_bids_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_job_bids_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "acp_jobs"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      acp_jobs: {
+        Row: {
+          agent_id: string | null
+          assignee_id: string | null
+          bids_count: number | null
+          budget: number
+          cancelled_at: string | null
+          category: string
+          completed_at: string | null
+          created_at: string
+          currency: string
+          deadline: string | null
+          deliverables: Json | null
+          description: string
+          id: string
+          metadata: Json | null
+          poster_id: string
+          requirements: Json | null
+          status: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          assignee_id?: string | null
+          bids_count?: number | null
+          budget: number
+          cancelled_at?: string | null
+          category: string
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          deadline?: string | null
+          deliverables?: Json | null
+          description: string
+          id?: string
+          metadata?: Json | null
+          poster_id: string
+          requirements?: Json | null
+          status?: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          assignee_id?: string | null
+          bids_count?: number | null
+          budget?: number
+          cancelled_at?: string | null
+          category?: string
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          deadline?: string | null
+          deliverables?: Json | null
+          description?: string
+          id?: string
+          metadata?: Json | null
+          poster_id?: string
+          requirements?: Json | null
+          status?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acp_jobs_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      acp_reviews: {
+        Row: {
+          agent_id: string | null
+          created_at: string
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          rating: number
+          response_at: string | null
+          response_text: string | null
+          review_text: string | null
+          reviewee_id: string | null
+          reviewer_id: string
+          service_id: string | null
+          transaction_id: string | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          rating: number
+          response_at?: string | null
+          response_text?: string | null
+          review_text?: string | null
+          reviewee_id?: string | null
+          reviewer_id: string
+          service_id?: string | null
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string | null
+          created_at?: string
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          rating?: number
+          response_at?: string | null
+          response_text?: string | null
+          review_text?: string | null
+          reviewee_id?: string | null
+          reviewer_id?: string
+          service_id?: string | null
+          transaction_id?: string | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acp_reviews_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_reviews_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "acp_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_reviews_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "acp_services"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_reviews_transaction_id_fkey"
+            columns: ["transaction_id"]
+            isOneToOne: false
+            referencedRelation: "acp_transactions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      acp_services: {
+        Row: {
+          agent_id: string
+          category: string
+          created_at: string
+          creator_id: string | null
+          currency: string
+          delivery_time_hours: number | null
+          description: string
+          features: Json | null
+          id: string
+          metadata: Json | null
+          price: number
+          rating: number | null
+          requirements: Json | null
+          status: string
+          title: string
+          total_orders: number | null
+          updated_at: string
+        }
+        Insert: {
+          agent_id: string
+          category: string
+          created_at?: string
+          creator_id?: string | null
+          currency?: string
+          delivery_time_hours?: number | null
+          description: string
+          features?: Json | null
+          id?: string
+          metadata?: Json | null
+          price?: number
+          rating?: number | null
+          requirements?: Json | null
+          status?: string
+          title: string
+          total_orders?: number | null
+          updated_at?: string
+        }
+        Update: {
+          agent_id?: string
+          category?: string
+          created_at?: string
+          creator_id?: string | null
+          currency?: string
+          delivery_time_hours?: number | null
+          description?: string
+          features?: Json | null
+          id?: string
+          metadata?: Json | null
+          price?: number
+          rating?: number | null
+          requirements?: Json | null
+          status?: string
+          title?: string
+          total_orders?: number | null
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acp_services_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      acp_transactions: {
+        Row: {
+          agent_id: string | null
+          amount: number
+          blockchain: string | null
+          completed_at: string | null
+          created_at: string
+          currency: string
+          escrow_until: string | null
+          fee: number | null
+          from_user_id: string | null
+          id: string
+          job_id: string | null
+          metadata: Json | null
+          payment_method: string | null
+          processed_at: string | null
+          service_id: string | null
+          status: string
+          to_user_id: string | null
+          transaction_hash: string | null
+          transaction_type: string
+        }
+        Insert: {
+          agent_id?: string | null
+          amount: number
+          blockchain?: string | null
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          escrow_until?: string | null
+          fee?: number | null
+          from_user_id?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          payment_method?: string | null
+          processed_at?: string | null
+          service_id?: string | null
+          status?: string
+          to_user_id?: string | null
+          transaction_hash?: string | null
+          transaction_type: string
+        }
+        Update: {
+          agent_id?: string | null
+          amount?: number
+          blockchain?: string | null
+          completed_at?: string | null
+          created_at?: string
+          currency?: string
+          escrow_until?: string | null
+          fee?: number | null
+          from_user_id?: string | null
+          id?: string
+          job_id?: string | null
+          metadata?: Json | null
+          payment_method?: string | null
+          processed_at?: string | null
+          service_id?: string | null
+          status?: string
+          to_user_id?: string | null
+          transaction_hash?: string | null
+          transaction_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "acp_transactions_agent_id_fkey"
+            columns: ["agent_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_transactions_job_id_fkey"
+            columns: ["job_id"]
+            isOneToOne: false
+            referencedRelation: "acp_jobs"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_transactions_service_id_fkey"
+            columns: ["service_id"]
+            isOneToOne: false
+            referencedRelation: "acp_services"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       admin_2fa_secrets: {
         Row: {
           backup_codes: string[] | null
@@ -5018,6 +5485,10 @@ export type Database = {
           window_minutes?: number
         }
         Returns: boolean
+      }
+      get_acp_dashboard_stats: {
+        Args: { user_id_param: string }
+        Returns: Json
       }
       get_current_user_admin_role: {
         Args: Record<PropertyKey, never>
