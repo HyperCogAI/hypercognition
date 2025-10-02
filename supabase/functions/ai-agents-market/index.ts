@@ -6,6 +6,46 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper to fetch DefiLlama data for a token
+async function getDefiLlamaData(tokenSymbol: string, coinGeckoId?: string) {
+  try {
+    // First try to get protocol data by name/symbol
+    const protocolsResponse = await fetch('https://api.llama.fi/protocols');
+    if (!protocolsResponse.ok) return null;
+
+    const protocols = await protocolsResponse.json();
+    
+    // Find matching protocol (case-insensitive)
+    const matchedProtocol = protocols.find((p: any) => 
+      p.name.toLowerCase().includes(tokenSymbol.toLowerCase()) ||
+      p.symbol?.toLowerCase() === tokenSymbol.toLowerCase() ||
+      p.gecko_id === coinGeckoId
+    );
+
+    if (!matchedProtocol) return null;
+
+    // Get detailed protocol data
+    const detailResponse = await fetch(`https://api.llama.fi/protocol/${matchedProtocol.slug}`);
+    if (!detailResponse.ok) return null;
+
+    const detail = await detailResponse.json();
+
+    return {
+      tvl: detail.tvl || matchedProtocol.tvl || 0,
+      chainTvls: detail.chainTvls || {},
+      mcaptvl: detail.mcaptvl || 0,
+      category: detail.category || matchedProtocol.category || '',
+      chains: detail.chains || matchedProtocol.chains || [],
+      protocolSlug: matchedProtocol.slug,
+      twitter: detail.twitter || '',
+      url: detail.url || ''
+    };
+  } catch (error) {
+    console.error('[DefiLlama] Error:', error);
+    return null;
+  }
+}
+
 // Helper to fetch DEXScreener data for a token
 async function getDEXScreenerData(tokenAddress?: string, searchQuery?: string) {
   try {
@@ -80,10 +120,13 @@ serve(async (req) => {
 
       const data = await response.json();
       
-      // Transform CoinGecko data to our format and enrich with DEXScreener data
+      // Transform CoinGecko data to our format and enrich with DEXScreener + DefiLlama data
       const agents = await Promise.all(data.map(async (coin: any) => {
-        // Try to get DEXScreener data for additional liquidity info
-        const dexData = await getDEXScreenerData(undefined, coin.symbol);
+        // Fetch DEXScreener and DefiLlama data in parallel
+        const [dexData, llamaData] = await Promise.all([
+          getDEXScreenerData(undefined, coin.symbol),
+          getDefiLlamaData(coin.symbol, coin.id)
+        ]);
         
         return {
           id: coin.id,
@@ -108,11 +151,20 @@ serve(async (req) => {
           dex_volume_24h: dexData?.dexVolume24h || 0,
           dex_price_usd: dexData?.dexPriceUsd || 0,
           dex_chain: dexData?.dexChain || '',
-          fdv: dexData?.fdv || coin.fully_diluted_valuation || 0
+          fdv: dexData?.fdv || coin.fully_diluted_valuation || 0,
+          // DefiLlama enrichment
+          tvl: llamaData?.tvl || 0,
+          chain_tvls: llamaData?.chainTvls || {},
+          mcap_tvl_ratio: llamaData?.mcaptvl || 0,
+          defi_category: llamaData?.category || '',
+          chains: llamaData?.chains || [],
+          protocol_slug: llamaData?.protocolSlug || '',
+          twitter: llamaData?.twitter || '',
+          website: llamaData?.url || ''
         };
       }));
 
-      console.log('[AI-Market] Fetched:', agents.length, 'AI tokens with DEX data');
+      console.log('[AI-Market] Fetched:', agents.length, 'AI tokens with DEX + DeFi data');
 
       return new Response(JSON.stringify(agents), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
@@ -212,8 +264,11 @@ serve(async (req) => {
 
       const coin = await response.json();
       
-      // Try to get DEXScreener data
-      const dexData = await getDEXScreenerData(undefined, coin.symbol);
+      // Fetch DEXScreener and DefiLlama data in parallel
+      const [dexData, llamaData] = await Promise.all([
+        getDEXScreenerData(undefined, coin.symbol),
+        getDefiLlamaData(coin.symbol, coin.id)
+      ]);
       
       const agent = {
         id: coin.id,
@@ -239,10 +294,19 @@ serve(async (req) => {
         dex_price_usd: dexData?.dexPriceUsd || 0,
         dex_chain: dexData?.dexChain || '',
         dex_name: dexData?.dexName || '',
-        fdv: dexData?.fdv || coin.market_data?.fully_diluted_valuation?.usd || 0
+        fdv: dexData?.fdv || coin.market_data?.fully_diluted_valuation?.usd || 0,
+        // DefiLlama enrichment
+        tvl: llamaData?.tvl || 0,
+        chain_tvls: llamaData?.chainTvls || {},
+        mcap_tvl_ratio: llamaData?.mcaptvl || 0,
+        defi_category: llamaData?.category || '',
+        chains: llamaData?.chains || [],
+        protocol_slug: llamaData?.protocolSlug || '',
+        twitter: llamaData?.twitter || '',
+        website: llamaData?.url || ''
       };
 
-      console.log('[AI-Market] Agent:', agent.name, 'with DEX data');
+      console.log('[AI-Market] Agent:', agent.name, 'with DEX + DeFi data');
 
       return new Response(JSON.stringify(agent), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

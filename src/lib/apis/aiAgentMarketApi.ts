@@ -31,6 +31,15 @@ interface AIAgentMarketData {
   dex_chain?: string
   dex_name?: string
   fdv?: number
+  // DefiLlama data
+  tvl?: number
+  chain_tvls?: Record<string, number>
+  mcap_tvl_ratio?: number
+  defi_category?: string
+  chains?: string[]
+  protocol_slug?: string
+  twitter?: string
+  website?: string
 }
 
 interface AIAgentPriceHistory {
