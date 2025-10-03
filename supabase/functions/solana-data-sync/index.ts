@@ -96,27 +96,38 @@ serve(async (req) => {
             // If no DEX pairs found, try Jupiter as fallback
             if (solanaPairs.length === 0) {
               const jupiterPrice = jupiterPrices[token.mint_address]
-              if (!jupiterPrice) {
-                throw new Error('No trading data found on DEXScreener or Jupiter')
+              if (jupiterPrice) {
+                const price = parseFloat(jupiterPrice.price || '0')
+                if (isFinite(price) && price > 0) {
+                  // Get logo from Jupiter token list or existing
+                  const jupiterToken = jupiterTokens[token.mint_address]
+                  const logoUrl = jupiterToken?.logoURI || token.image_url || null
+
+                  return {
+                    token,
+                    price,
+                    change24h: 0, // Jupiter API v2 doesn't provide 24h change
+                    volume24h: 0,
+                    marketCap: 0,
+                    logoUrl,
+                  }
+                }
               }
               
-              const price = parseFloat(jupiterPrice.price || '0')
-              if (!isFinite(price) || price <= 0) {
-                throw new Error('Invalid Jupiter price')
-              }
-
-              // Get logo from Jupiter token list or existing
+              // Still update logo even if no price data
               const jupiterToken = jupiterTokens[token.mint_address]
-              const logoUrl = jupiterToken?.logoURI || token.image_url || null
-
-              return {
-                token,
-                price,
-                change24h: 0, // Jupiter API v2 doesn't provide 24h change
-                volume24h: 0,
-                marketCap: 0,
-                logoUrl,
+              if (jupiterToken?.logoURI && !token.image_url) {
+                return {
+                  token,
+                  price: 0,
+                  change24h: 0,
+                  volume24h: 0,
+                  marketCap: 0,
+                  logoUrl: jupiterToken.logoURI,
+                }
               }
+              
+              throw new Error('No trading data found on DEXScreener or Jupiter')
             }
 
             // Prefer pairs where our token is the base; otherwise handle inverse (quote) pairs by inverting price
