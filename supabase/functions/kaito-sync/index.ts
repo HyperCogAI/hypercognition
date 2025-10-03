@@ -82,32 +82,63 @@ serve(async (req) => {
     // Rate limit: 100 calls per 5 minutes = ~3 seconds between calls to be safe
     const delayBetweenCalls = 3000;
 
-    async function fetchKaitoWithRetry(username: string, retries = 2): Promise<KaitoYapsResponse> {
-      const url = `https://api.kaito.ai/api/v1/yaps?username=${encodeURIComponent(username)}`;
+    async function fetchKaitoWithRetry(username: string, retries = 4): Promise<KaitoYapsResponse> {
+      const base = username.replace(/^@+/, '');
+      const candidates = [base, '@' + base, base.toLowerCase()];
       let attempt = 0;
       let lastErr: any = null;
       while (attempt <= retries) {
+        const candidate = candidates[attempt % candidates.length];
         try {
-          const resp = await fetch(url, { signal: AbortSignal.timeout(7000) });
+          const url = `https://api.kaito.ai/api/v1/yaps?username=${encodeURIComponent(candidate)}`;
+          const resp = await fetch(url, {
+            headers: {
+              'accept': 'application/json',
+              'cache-control': 'no-cache',
+            },
+            signal: AbortSignal.timeout(10000)
+          });
+
           if (!resp.ok) throw new Error(`API returned ${resp.status}`);
+
+          const contentType = resp.headers.get('content-type') || '';
           const raw = await resp.text();
+          if (!raw || raw.trim() === '') {
+            throw new Error('Empty response from Kaito');
+          }
+
           let json: any;
           try {
-            json = JSON.parse(raw);
+            // Prefer JSON when possible
+            json = contentType.includes('application/json') ? JSON.parse(raw) : JSON.parse(raw);
           } catch (e) {
-            console.error('Kaito JSON parse error. Body snippet:', raw?.slice(0, 200));
+            console.error('Kaito JSON parse error. Body snippet:', raw.slice(0, 200));
             throw new Error('Invalid JSON from Kaito');
           }
-          if (!json?.username) throw new Error('Missing username in Kaito response');
-          return json as KaitoYapsResponse;
+
+          // Normalize potential field variations from the API
+          const normalized: KaitoYapsResponse = {
+            user_id: json.user_id ?? json.userId ?? json.id,
+            username: (json.username ?? json.user_name ?? json.handle ?? candidate).replace(/^@+/, ''),
+            yaps_all: json.yaps_all ?? json.yapsAll ?? json.total ?? 0,
+            yaps_l24h: json.yaps_l24h ?? json.yaps24h ?? json.l24h ?? 0,
+            yaps_l48h: json.yaps_l48h ?? json.yaps48h ?? json.l48h ?? 0,
+            yaps_l7d: json.yaps_l7d ?? json.yaps7d ?? json.l7d ?? 0,
+            yaps_l30d: json.yaps_l30d ?? json.yaps30d ?? json.l30d ?? 0,
+            yaps_l3m: json.yaps_l3m ?? json.yaps3m ?? 0,
+            yaps_l6m: json.yaps_l6m ?? json.yaps6m ?? 0,
+            yaps_l12m: json.yaps_l12m ?? json.yaps12m ?? 0,
+          };
+
+          if (!normalized.username) throw new Error('Missing username in Kaito response');
+          return normalized;
         } catch (e) {
           lastErr = e;
-          if (attempt < retries) {
-            await new Promise(r => setTimeout(r, (attempt + 1) * 1000));
-            attempt++;
-            continue;
-          }
-          throw lastErr;
+          // Exponential backoff with jitter
+          const delay = Math.min(5000, 500 + attempt * 750);
+          await new Promise(r => setTimeout(r, delay));
+          attempt++;
+          continue;
         }
       }
       throw lastErr ?? new Error('Unknown fetch error');
@@ -116,7 +147,7 @@ serve(async (req) => {
     for (const username of usernameList) {
       try {
         // Fetch from Kaito API with retries and timeout
-        const yapsData = await fetchKaitoWithRetry(username, 2);
+        const yapsData = await fetchKaitoWithRetry(username, 4);
         console.log(`Received Yaps data for ${username}:`, yapsData);
 
         // Find associated agent if exists (match by name or symbol)
