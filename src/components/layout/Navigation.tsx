@@ -38,42 +38,10 @@ export function Navigation() {
             />
           </div>
 
-          {/* Desktop Navigation */}
-          <div className="hidden md:flex items-center gap-8">
-            {navItems.map((item) => (
-              <a
-                key={item.name}
-                href={item.href}
-                className="text-sm text-muted-foreground hover:text-foreground transition-colors relative group"
-              >
-                {item.name}
-                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
-              </a>
-            ))}
-          </div>
-
           {/* Desktop Right Section */}
-          <div className="hidden md:flex items-center gap-4">
+          <div className="hidden md:flex items-center gap-4 ml-auto">
             <ThemeToggle />
-            {!isLoading && (
-              user ? (
-                <UserMenu />
-              ) : (
-                <>
-                  <Link to="/auth">
-                    <CyberButton variant="outline" size="sm">
-                      <LogIn className="h-4 w-4" />
-                      Sign In
-                    </CyberButton>
-                  </Link>
-                  <Link to="/auth?mode=signup">
-                    <CyberButton variant="neon" size="sm">
-                      <span className="text-white">Get Started</span>
-                    </CyberButton>
-                  </Link>
-                </>
-              )
-            )}
+            {!isLoading && user && <UserMenu />}
             <div className="flex items-center gap-2">
               <NetworkSelectorButton />
               <UnifiedWalletButton />
