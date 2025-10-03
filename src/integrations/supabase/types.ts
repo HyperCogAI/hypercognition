@@ -4080,6 +4080,89 @@ export type Database = {
         }
         Relationships: []
       }
+      referral_conversions: {
+        Row: {
+          created_at: string | null
+          credited_at: string | null
+          id: string
+          metadata: Json | null
+          referral_code: string
+          referred_user_id: string
+          referrer_id: string
+          reward_amount: number | null
+          status: string
+        }
+        Insert: {
+          created_at?: string | null
+          credited_at?: string | null
+          id?: string
+          metadata?: Json | null
+          referral_code: string
+          referred_user_id: string
+          referrer_id: string
+          reward_amount?: number | null
+          status?: string
+        }
+        Update: {
+          created_at?: string | null
+          credited_at?: string | null
+          id?: string
+          metadata?: Json | null
+          referral_code?: string
+          referred_user_id?: string
+          referrer_id?: string
+          reward_amount?: number | null
+          status?: string
+        }
+        Relationships: []
+      }
+      referral_rewards: {
+        Row: {
+          amount: number
+          conversion_id: string | null
+          created_at: string | null
+          currency: string | null
+          id: string
+          metadata: Json | null
+          paid_at: string | null
+          reward_type: string
+          status: string
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          conversion_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          reward_type: string
+          status?: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          conversion_id?: string | null
+          created_at?: string | null
+          currency?: string | null
+          id?: string
+          metadata?: Json | null
+          paid_at?: string | null
+          reward_type?: string
+          status?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "referral_rewards_conversion_id_fkey"
+            columns: ["conversion_id"]
+            isOneToOne: false
+            referencedRelation: "referral_conversions"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       referrals: {
         Row: {
           claimed_at: string | null
@@ -5860,6 +5943,36 @@ export type Database = {
         }
         Relationships: []
       }
+      user_referrals: {
+        Row: {
+          created_at: string | null
+          id: string
+          referral_code: string
+          total_earnings: number | null
+          total_referrals: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          referral_code: string
+          total_earnings?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          referral_code?: string
+          total_earnings?: number | null
+          total_referrals?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_relationships: {
         Row: {
           created_at: string
@@ -6072,6 +6185,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      generate_referral_code: {
+        Args: Record<PropertyKey, never>
+        Returns: string
+      }
       get_acp_dashboard_stats: {
         Args: { user_id_param: string }
         Returns: Json
@@ -6083,6 +6200,16 @@ export type Database = {
       get_developer_public_stats: {
         Args: { developer_profile_id: string }
         Returns: Json
+      }
+      get_referral_leaderboard: {
+        Args: { limit_count?: number }
+        Returns: {
+          rank: number
+          referral_code: string
+          total_earnings: number
+          total_referrals: number
+          user_id: string
+        }[]
       }
       get_user_agent_count_today: {
         Args: Record<PropertyKey, never>
@@ -6139,6 +6266,10 @@ export type Database = {
       make_user_admin: {
         Args: { target_user_id?: string }
         Returns: undefined
+      }
+      process_referral_conversion: {
+        Args: { p_referral_code: string; p_referred_user_id: string }
+        Returns: Json
       }
       validate_acp_job: {
         Args: {

@@ -3,162 +3,215 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 import { useAuth } from '@/contexts/AuthContext';
 
-export interface ReferralCode {
+export interface UserReferral {
   id: string;
-  code: string;
-  uses_count: number;
-  max_uses?: number;
-  reward_percentage: number;
-  is_active: boolean;
-  expires_at?: string;
+  user_id: string;
+  referral_code: string;
+  total_referrals: number;
+  total_earnings: number;
+  created_at: string;
+  updated_at: string;
 }
 
-export interface Referral {
+export interface ReferralConversion {
   id: string;
   referrer_id: string;
-  referred_id: string;
+  referred_user_id: string;
   referral_code: string;
+  status: 'pending' | 'completed' | 'credited';
   reward_amount: number;
-  reward_claimed: boolean;
   created_at: string;
-  claimed_at?: string;
+  credited_at?: string;
+  metadata: any;
+}
+
+export interface ReferralReward {
+  id: string;
+  user_id: string;
+  conversion_id?: string;
+  reward_type: string;
+  amount: number;
+  currency: string;
+  status: 'pending' | 'paid' | 'cancelled';
+  created_at: string;
+  paid_at?: string;
+  metadata: any;
+}
+
+export interface LeaderboardEntry {
+  user_id: string;
+  referral_code: string;
+  total_referrals: number;
+  total_earnings: number;
+  rank: number;
 }
 
 export const useReferrals = () => {
-  const [referralCodes, setReferralCodes] = useState<ReferralCode[]>([]);
-  const [referrals, setReferrals] = useState<Referral[]>([]);
-  const [totalEarnings, setTotalEarnings] = useState(0);
+  const [userReferral, setUserReferral] = useState<UserReferral | null>(null);
+  const [conversions, setConversions] = useState<ReferralConversion[]>([]);
+  const [rewards, setRewards] = useState<ReferralReward[]>([]);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardEntry[]>([]);
   const [loading, setLoading] = useState(true);
   const { toast } = useToast();
   const { user } = useAuth();
 
-  const fetchReferralCodes = async () => {
+  const fetchUserReferral = async () => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
-        .from('referral_codes')
+        .from('user_referrals')
         .select('*')
         .eq('user_id', user.id)
-        .order('created_at', { ascending: false });
+        .single();
 
-      if (error) throw error;
-      setReferralCodes(data || []);
+      if (error) {
+        // User doesn't have a referral code yet, it will be created automatically
+        if (error.code === 'PGRST116') {
+          return;
+        }
+        throw error;
+      }
+
+      setUserReferral(data);
     } catch (error) {
-      console.error('Error fetching referral codes:', error);
+      console.error('Error fetching user referral:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch referral codes",
+        description: "Failed to fetch referral data",
         variant: "destructive",
       });
     }
   };
 
-  const fetchReferrals = async () => {
+  const fetchConversions = async () => {
     if (!user) return;
 
     try {
       const { data, error } = await supabase
-        .from('referrals')
+        .from('referral_conversions')
         .select('*')
         .eq('referrer_id', user.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
-      setReferrals(data || []);
-
-      // Calculate total earnings
-      const total = data?.reduce((sum, referral) => {
-        return sum + (referral.reward_claimed ? referral.reward_amount : 0);
-      }, 0) || 0;
-      setTotalEarnings(total);
+      setConversions((data || []).map(d => ({
+        ...d,
+        status: d.status as 'pending' | 'completed' | 'credited'
+      })));
     } catch (error) {
-      console.error('Error fetching referrals:', error);
+      console.error('Error fetching conversions:', error);
       toast({
         title: "Error",
-        description: "Failed to fetch referrals",
+        description: "Failed to fetch referral conversions",
         variant: "destructive",
       });
     }
   };
 
-  const generateReferralCode = async (maxUses?: number, rewardPercentage: number = 5) => {
+  const fetchRewards = async () => {
     if (!user) return;
 
     try {
-      const code = `REF${Date.now().toString(36).toUpperCase()}`;
-      
-      const { error } = await supabase
-        .from('referral_codes')
-        .insert({
-          user_id: user.id,
-          code,
-          max_uses: maxUses,
-          reward_percentage: rewardPercentage
+      const { data, error } = await supabase
+        .from('referral_rewards')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false });
+
+      if (error) throw error;
+      setRewards((data || []).map(d => ({
+        ...d,
+        status: d.status as 'pending' | 'paid' | 'cancelled'
+      })));
+    } catch (error) {
+      console.error('Error fetching rewards:', error);
+      toast({
+        title: "Error",
+        description: "Failed to fetch rewards",
+        variant: "destructive",
+      });
+    }
+  };
+
+  const fetchLeaderboard = async () => {
+    try {
+      const { data, error } = await supabase
+        .rpc('get_referral_leaderboard', { limit_count: 10 });
+
+      if (error) throw error;
+      setLeaderboard(data || []);
+    } catch (error) {
+      console.error('Error fetching leaderboard:', error);
+    }
+  };
+
+  const applyReferralCode = async (referralCode: string) => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please sign in to use a referral code",
+        variant: "destructive",
+      });
+      return { success: false };
+    }
+
+    try {
+      const { data, error } = await supabase
+        .rpc('process_referral_conversion', {
+          p_referred_user_id: user.id,
+          p_referral_code: referralCode
         });
 
       if (error) throw error;
 
-      toast({
-        title: "Success",
-        description: "Referral code generated successfully",
-      });
+      const result = data as { success: boolean; error?: string; reward_amount?: number; conversion_id?: string };
 
-      await fetchReferralCodes();
-      return code;
-    } catch (error) {
-      console.error('Error generating referral code:', error);
+      if (result.success) {
+        toast({
+          title: "Success",
+          description: `Referral code applied! You've earned $${result.reward_amount}`,
+        });
+        await refetch();
+        return { success: true, data: result };
+      } else {
+        toast({
+          title: "Error",
+          description: result.error || "Failed to apply referral code",
+          variant: "destructive",
+        });
+        return { success: false, error: result.error };
+      }
+    } catch (error: any) {
+      console.error('Error applying referral code:', error);
       toast({
         title: "Error",
-        description: "Failed to generate referral code",
+        description: error.message || "Failed to apply referral code",
         variant: "destructive",
       });
+      return { success: false, error: error.message };
     }
   };
 
-  const deactivateReferralCode = async (codeId: string) => {
+  const claimReward = async (rewardId: string) => {
     try {
       const { error } = await supabase
-        .from('referral_codes')
-        .update({ is_active: false })
-        .eq('id', codeId);
-
-      if (error) throw error;
-
-      toast({
-        title: "Success",
-        description: "Referral code deactivated",
-      });
-
-      await fetchReferralCodes();
-    } catch (error) {
-      console.error('Error deactivating referral code:', error);
-      toast({
-        title: "Error",
-        description: "Failed to deactivate referral code",
-        variant: "destructive",
-      });
-    }
-  };
-
-  const claimReward = async (referralId: string) => {
-    try {
-      const { error } = await supabase
-        .from('referrals')
+        .from('referral_rewards')
         .update({
-          reward_claimed: true,
-          claimed_at: new Date().toISOString()
+          status: 'paid',
+          paid_at: new Date().toISOString()
         })
-        .eq('id', referralId);
+        .eq('id', rewardId)
+        .eq('user_id', user?.id);
 
       if (error) throw error;
 
       toast({
         title: "Success",
-        description: "Referral reward claimed successfully",
+        description: "Reward claimed successfully",
       });
 
-      await fetchReferrals();
+      await fetchRewards();
     } catch (error) {
       console.error('Error claiming reward:', error);
       toast({
@@ -169,64 +222,36 @@ export const useReferrals = () => {
     }
   };
 
-  const validateReferralCode = async (code: string) => {
-    try {
-      const { data, error } = await supabase
-        .from('referral_codes')
-        .select('*')
-        .eq('code', code)
-        .eq('is_active', true)
-        .single();
-
-      if (error) throw error;
-
-      // Check if code is still valid
-      if (data.max_uses && data.uses_count >= data.max_uses) {
-        return { valid: false, reason: 'Code has reached maximum uses' };
-      }
-
-      if (data.expires_at && new Date(data.expires_at) < new Date()) {
-        return { valid: false, reason: 'Code has expired' };
-      }
-
-      return { valid: true, code: data };
-    } catch (error) {
-      return { valid: false, reason: 'Invalid referral code' };
-    }
+  const refetch = async () => {
+    if (!user) return;
+    
+    setLoading(true);
+    await Promise.all([
+      fetchUserReferral(),
+      fetchConversions(),
+      fetchRewards(),
+      fetchLeaderboard()
+    ]);
+    setLoading(false);
   };
 
   useEffect(() => {
-    const loadData = async () => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-
-      setLoading(true);
-      await Promise.all([
-        fetchReferralCodes(),
-        fetchReferrals()
-      ]);
+    if (!user) {
       setLoading(false);
-    };
+      return;
+    }
 
-    loadData();
+    refetch();
   }, [user]);
 
   return {
-    referralCodes,
-    referrals,
-    totalEarnings,
+    userReferral,
+    conversions,
+    rewards,
+    leaderboard,
     loading,
-    generateReferralCode,
-    deactivateReferralCode,
+    applyReferralCode,
     claimReward,
-    validateReferralCode,
-    refetch: () => {
-      if (user) {
-        fetchReferralCodes();
-        fetchReferrals();
-      }
-    }
+    refetch
   };
 };
