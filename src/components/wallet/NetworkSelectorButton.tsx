@@ -18,7 +18,7 @@ const networks = [
   { id: 'solana' as NetworkType, name: 'Solana', logo: solanaLogo },
 ]
 
-const hoverColor = '210 100% 50%' // RGB(0, 135, 255) = #0087FF
+const hoverColor = '220 22% 12%' // Slightly lighter than menu background (220 22% 6%)
 
 export const NetworkSelectorButton = () => {
   const { selectedNetwork, setNetwork } = useNetworkSelector()
