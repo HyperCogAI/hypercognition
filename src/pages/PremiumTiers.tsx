@@ -240,7 +240,7 @@ const PremiumTiers = () => {
                 
                 <Button 
                   className="w-full mt-4" 
-                  variant={tier.popular ? "default" : "outline"}
+                  variant="default"
                   size="lg"
                 >
                   {tier.name === "Basic" ? "Get Started Free" : `Upgrade to ${tier.name}`}
