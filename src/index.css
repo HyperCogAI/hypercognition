@@ -54,6 +54,7 @@
     --border: 220 10% 15%;
     --input: 0 0% 6%;
     --ring: 220 100% 60%;
+    --menu-surface: 0 0% 4%;
 
     /* Design Tokens */
     --radius: 0.75rem;
@@ -117,6 +118,7 @@
     --border: 222 20% 20%;
     --input: 222 25% 12%;
     --ring: 195 100% 50%;
+    --menu-surface: 0 0% 4%;
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;

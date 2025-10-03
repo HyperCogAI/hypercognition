@@ -33,7 +33,7 @@ export const NetworkSelectorButton = () => {
           </GradientBorderButton>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 bg-[#0a0a0a] border-white/20 z-50">
+      <DropdownMenuContent align="end" className="w-48 bg-[hsl(var(--menu-surface))] border-white/20 z-50">
         {networks.map((network) => (
           <DropdownMenuItem 
             key={network.id}
