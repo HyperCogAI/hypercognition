@@ -11,6 +11,8 @@ import { PerformanceMonitor } from '@/components/ui/performance-monitor'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { Bell, Search } from 'lucide-react'
+import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
+import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode
@@ -109,7 +111,7 @@ export function ResponsiveLayout({
           <AppSidebar />
           <SidebarInset className="flex-1">
             {/* Desktop Header */}
-            <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+            <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
               
@@ -144,6 +146,10 @@ export function ResponsiveLayout({
                   <Search className="h-4 w-4" />
                 </Button>
                 <ThemeToggle />
+                <div className="flex items-center gap-2">
+                  <UnifiedWalletButton />
+                  <NetworkSelectorButton />
+                </div>
               </div>
             </header>
 
