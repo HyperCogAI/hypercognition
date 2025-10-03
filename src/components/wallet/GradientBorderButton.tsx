@@ -12,7 +12,7 @@ export const GradientBorderButton = ({ children, className, ...props }: Gradient
       {/* Animated gradient ring */}
       <span
         aria-hidden
-        className="pointer-events-none absolute inset-0 rounded-full p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-[gradientShift_2.5s_linear_infinite] shadow-[0_0_12px_hsl(var(--primary)/0.35)]"
+        className="pointer-events-none absolute inset-0 rounded-full p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift shadow-[0_0_12px_hsl(var(--primary)/0.35)]"
         style={{
           WebkitMask:
             "linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0)",
