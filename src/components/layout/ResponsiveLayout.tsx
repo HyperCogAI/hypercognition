@@ -56,6 +56,28 @@ export function ResponsiveLayout({
     return breadcrumbs
   }
 
+  // Desktop toolbar that adapts to sidebar width
+  const DesktopToolbar: React.FC = () => {
+    const { state } = useSidebar()
+    const leftPad = state === 'expanded' ? 'var(--sidebar-width)' : 'var(--sidebar-width-icon)'
+
+    return (
+      <header className="fixed top-0 left-0 right-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+        <div
+          className="flex h-16 items-center gap-4"
+          style={{ paddingLeft: `calc(${leftPad} + 0.5rem)`, paddingRight: '0.5rem' }}
+        >
+          <SidebarTrigger />
+          <div className="flex items-center gap-3 ml-auto">
+            <NetworkSelectorButton />
+            <UnifiedWalletButton />
+            <ThemeToggle />
+          </div>
+        </div>
+      </header>
+    )
+  }
+
   // Mobile-first layout without sidebar
   if (isMobile) {
     return (
@@ -110,17 +132,7 @@ export function ResponsiveLayout({
         <div className="flex min-h-screen w-full">
           <AppSidebar />
           <SidebarInset className="flex-1">
-            {/* Desktop Toolbar */}
-            <header className="fixed top-0 left-0 right-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-              <div className="flex h-16 items-center gap-4 px-2 peer-data-[state=expanded]:pl-[calc(var(--sidebar-width)+theme(spacing.2))] peer-data-[state=collapsed]:pl-[calc(var(--sidebar-width-icon)+theme(spacing.2))]">
-                <SidebarTrigger />
-                <div className="flex items-center gap-3 ml-auto pr-2">
-                  <NetworkSelectorButton />
-                  <UnifiedWalletButton />
-                  <ThemeToggle />
-                </div>
-              </div>
-            </header>
+            <DesktopToolbar />
             
             {/* Desktop Content */}
             <main className="flex-1 overflow-hidden pt-16">
