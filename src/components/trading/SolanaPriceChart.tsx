@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { Badge } from "@/components/ui/badge"
@@ -18,6 +18,7 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
   const [timeframe, setTimeframe] = useState<'1H' | '4H' | '1D' | '1W'>('1D')
   const [chartData, setChartData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const attemptedSyncRef = useRef(false)
 
   // Fetch price history from Supabase
   const fetchPriceHistory = useCallback(async () => {
@@ -55,7 +56,32 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
         }))
         setChartData(formatted)
       } else {
-        // Generate fallback data based on current price
+        // Try a one-time background sync via edge function, then refetch
+        if (!attemptedSyncRef.current) {
+          attemptedSyncRef.current = true
+          try {
+            await supabase.functions.invoke('solana-data-sync')
+            await new Promise((r) => setTimeout(r, 1500))
+            const { data: retryData } = await supabase
+              .from('solana_price_history')
+              .select('price, volume, timestamp')
+              .eq('mint_address', token.mint_address)
+              .gte('timestamp', startTime.toISOString())
+              .order('timestamp', { ascending: true })
+            if (retryData && retryData.length > 0) {
+              const formatted2 = retryData.map((item: any) => ({
+                time: new Date(item.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+                price: Number(item.price),
+                volume: Number(item.volume)
+              }))
+              setChartData(formatted2)
+              return
+            }
+          } catch (e) {
+            console.warn('Background sync failed:', e)
+          }
+        }
+        // Fallback mock data if no history yet
         generateFallbackData()
       }
     } catch (error) {
