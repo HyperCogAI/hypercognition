@@ -53,14 +53,17 @@ export const UnifiedWalletButton = () => {
     }
   }, [connectEvm, connectSol])
 
-  const isConnected = selectedNetwork === 'evm' ? evmConnected : solConnected
-  const isConnecting = selectedNetwork === 'evm' ? evmConnecting : solConnecting
-  const address = selectedNetwork === 'evm' ? evmAddress : solAddress
-  const connectWallet = selectedNetwork === 'evm' ? connectEvm : connectSol
-  const disconnectWallet = selectedNetwork === 'evm' ? disconnectEvm : disconnectSol
+  // Determine if selected network is EVM or Solana
+  const isEvmNetwork = selectedNetwork === 'base' || selectedNetwork === 'ethereum' || selectedNetwork === 'bnb'
+  
+  const isConnected = isEvmNetwork ? evmConnected : solConnected
+  const isConnecting = isEvmNetwork ? evmConnecting : solConnecting
+  const address = isEvmNetwork ? evmAddress : solAddress
+  const connectWallet = isEvmNetwork ? connectEvm : connectSol
+  const disconnectWallet = isEvmNetwork ? disconnectEvm : disconnectSol
 
   const formatAddress = (addr: string) => {
-    if (selectedNetwork === 'solana') {
+    if (!isEvmNetwork) {
       return formatSolAddress(addr)
     }
     return `${addr.slice(0, 6)}...${addr.slice(-4)}`
@@ -69,7 +72,7 @@ export const UnifiedWalletButton = () => {
   if (!isConnected) {
     const inIframe = typeof window !== 'undefined' && window.top !== window.self
     if (inIframe) {
-      const param = selectedNetwork === 'evm' ? 'w3m-connect' : 'solana-connect'
+      const param = isEvmNetwork ? 'w3m-connect' : 'solana-connect'
       let href = '#'
       try {
         const url = new URL(window.location.href)

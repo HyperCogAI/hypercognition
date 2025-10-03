@@ -1,6 +1,6 @@
 import { create } from 'zustand'
 
-type NetworkType = 'evm' | 'solana'
+export type NetworkType = 'base' | 'ethereum' | 'bnb' | 'solana'
 
 interface NetworkStore {
   selectedNetwork: NetworkType
@@ -8,6 +8,6 @@ interface NetworkStore {
 }
 
 export const useNetworkSelector = create<NetworkStore>((set) => ({
-  selectedNetwork: 'evm',
+  selectedNetwork: 'base',
   setNetwork: (network) => set({ selectedNetwork: network }),
 }))
