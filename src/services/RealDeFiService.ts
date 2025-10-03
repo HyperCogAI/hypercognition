@@ -66,7 +66,7 @@ export const RealDeFiService = {
       const { coinGeckoApi } = await import('@/lib/apis/coinGeckoApi');
       const marketData: CoingeckoPrice[] = await coinGeckoApi.getTopCryptos(20) as any;
       
-      // Popular DeFi pools based on major platforms like PineappleDex
+      // Popular DeFi pools rewarding HCG (HyperCognition token)
       return [
         {
           id: 'eth-usdc-lp',
@@ -74,7 +74,7 @@ export const RealDeFiService = {
           type: 'liquidity_mining' as const,
           base_token: 'ETH',
           quote_token: 'USDC', 
-          rewards_token: 'PAPPLE',
+          rewards_token: 'HCG',
           tvl: 125000000 + (Math.random() * 25000000),
           apy: 12.5 + (Math.random() * 3),
           is_active: true,
@@ -87,7 +87,7 @@ export const RealDeFiService = {
           type: 'liquidity_mining' as const,
           base_token: 'WBTC',
           quote_token: 'ETH',
-          rewards_token: 'PAPPLE',
+          rewards_token: 'HCG',
           tvl: 95000000 + (Math.random() * 20000000),
           apy: 14.2 + (Math.random() * 4),
           is_active: true,
@@ -100,7 +100,7 @@ export const RealDeFiService = {
           type: 'yield_farming' as const,
           base_token: 'USDC',
           quote_token: 'USDT',
-          rewards_token: 'PAPPLE',
+          rewards_token: 'HCG',
           tvl: 180000000 + (Math.random() * 30000000),
           apy: 8.5 + (Math.random() * 2),
           is_active: true,
@@ -113,7 +113,7 @@ export const RealDeFiService = {
           type: 'liquidity_mining' as const,
           base_token: 'ETH',
           quote_token: 'USDT',
-          rewards_token: 'PAPPLE',
+          rewards_token: 'HCG',
           tvl: 110000000 + (Math.random() * 22000000),
           apy: 13.8 + (Math.random() * 3.5),
           is_active: true,
@@ -126,7 +126,7 @@ export const RealDeFiService = {
           type: 'yield_farming' as const,
           base_token: 'DAI',
           quote_token: 'USDC',
-          rewards_token: 'PAPPLE',
+          rewards_token: 'HCG',
           tvl: 85000000 + (Math.random() * 15000000),
           apy: 9.2 + (Math.random() * 2.5),
           is_active: true,
