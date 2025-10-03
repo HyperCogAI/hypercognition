@@ -29,100 +29,137 @@ serve(async (req) => {
       throw tokensError
     }
 
-    console.log(`[SolanaSync] Fetching data for ${tokens.length} tokens`)
+    console.log(`[SolanaSync] Fetching data for ${tokens.length} tokens in parallel`)
+
+    // Batch tokens into groups of 5 for parallel processing
+    const batchSize = 5
+    const tokenBatches = []
+    for (let i = 0; i < tokens.length; i += batchSize) {
+      tokenBatches.push(tokens.slice(i, i + batchSize))
+    }
 
     let successCount = 0
     let errorCount = 0
+    const updates: any[] = []
+    const priceHistory: any[] = []
 
-    // Fetch data from DEXScreener for each token using mint address
-    for (const token of tokens) {
-      try {
-        // Use token address endpoint for more accurate data
-        const dexUrl = `https://api.dexscreener.com/latest/dex/tokens/${token.mint_address}`
-        console.log(`[SolanaSync] Fetching ${token.symbol} from DEXScreener...`)
-        
-        const response = await fetch(dexUrl)
-        
-        if (!response.ok) {
-          console.error(`[SolanaSync] DEXScreener API error for ${token.symbol}: ${response.status}`)
-          errorCount++
-          continue
-        }
+    // Process batches in parallel
+    for (const batch of tokenBatches) {
+      const batchResults = await Promise.allSettled(
+        batch.map(async (token) => {
+          try {
+            const dexUrl = `https://api.dexscreener.com/latest/dex/tokens/${token.mint_address}`
+            const response = await fetch(dexUrl, {
+              headers: { 'Accept': 'application/json' }
+            })
+            
+            if (!response.ok) {
+              throw new Error(`API error: ${response.status}`)
+            }
 
-        const data = await response.json()
-        
-        // Find the best Solana pair (highest liquidity)
-        const solanaPairs = data.pairs?.filter((p: any) => p.chainId === 'solana') || []
-        
-        if (solanaPairs.length === 0) {
-          console.log(`[SolanaSync] No Solana pairs found for ${token.symbol}`)
-          errorCount++
-          continue
-        }
+            const data = await response.json()
+            const solanaPairs = data.pairs?.filter((p: any) => p.chainId === 'solana') || []
+            
+            if (solanaPairs.length === 0) {
+              throw new Error('No Solana pairs found')
+            }
 
-        // Sort by liquidity and take the top pair
-        const bestPair = solanaPairs.sort((a: any, b: any) => 
-          (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
-        )[0]
+            // Get best pair by liquidity
+            const bestPair = solanaPairs.sort((a: any, b: any) => 
+              (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
+            )[0]
 
-        const price = parseFloat(bestPair.priceUsd || '0')
-        const change24h = parseFloat(bestPair.priceChange?.h24 || '0')
-        const volume24h = parseFloat(bestPair.volume?.h24 || '0')
-        const marketCap = parseFloat(bestPair.fdv || '0') // Use FDV as market cap
-        const liquidity = parseFloat(bestPair.liquidity?.usd || '0')
+            return {
+              token,
+              price: parseFloat(bestPair.priceUsd || '0'),
+              change24h: parseFloat(bestPair.priceChange?.h24 || '0'),
+              volume24h: parseFloat(bestPair.volume?.h24 || '0'),
+              marketCap: parseFloat(bestPair.fdv || '0'),
+            }
+          } catch (error) {
+            console.error(`[SolanaSync] Error for ${token.symbol}:`, error)
+            throw error
+          }
+        })
+      )
 
-        console.log(`[SolanaSync] ${token.symbol}: $${price}, 24h: ${change24h}%, Vol: $${volume24h}`)
-
-        // Update token with DEXScreener data
-        const { error: updateError } = await supabaseClient
-          .from('solana_tokens')
-          .update({
+      // Process results
+      batchResults.forEach((result, index) => {
+        if (result.status === 'fulfilled') {
+          const { token, price, change24h, volume24h, marketCap } = result.value
+          successCount++
+          
+          updates.push({
+            mint_address: token.mint_address,
             price,
             change_24h: change24h,
             volume_24h: volume24h,
             market_cap: marketCap,
             updated_at: new Date().toISOString()
           })
-          .eq('mint_address', token.mint_address)
 
-        if (updateError) {
-          console.error(`[SolanaSync] Error updating ${token.symbol}:`, updateError)
-          errorCount++
-          continue
-        }
-
-        // Insert price history
-        await supabaseClient
-          .from('solana_price_history')
-          .insert({
+          priceHistory.push({
             mint_address: token.mint_address,
             price,
             volume_24h: volume24h,
             market_cap: marketCap
           })
+          
+          console.log(`[SolanaSync] ✓ ${token.symbol}: $${price}, ${change24h.toFixed(2)}%`)
+        } else {
+          errorCount++
+        }
+      })
 
-        successCount++
-        
-        // Rate limit - wait 400ms between requests to respect API limits
-        await new Promise(resolve => setTimeout(resolve, 400))
-      } catch (error) {
-        console.error(`[SolanaSync] Error fetching data for ${token.symbol}:`, error)
-        errorCount++
+      // Small delay between batches to respect rate limits
+      if (tokenBatches.indexOf(batch) < tokenBatches.length - 1) {
+        await new Promise(resolve => setTimeout(resolve, 200))
       }
     }
 
-    // Clean up old price history (keep last 7 days)
-    await supabaseClient
+    // Batch update all tokens
+    if (updates.length > 0) {
+      console.log(`[SolanaSync] Updating ${updates.length} tokens in database...`)
+      
+      // Update each token (Supabase doesn't support bulk upsert easily)
+      await Promise.all(
+        updates.map(update => 
+          supabaseClient
+            .from('solana_tokens')
+            .update({
+              price: update.price,
+              change_24h: update.change_24h,
+              volume_24h: update.volume_24h,
+              market_cap: update.market_cap,
+              updated_at: update.updated_at
+            })
+            .eq('mint_address', update.mint_address)
+        )
+      )
+
+      // Batch insert price history
+      if (priceHistory.length > 0) {
+        await supabaseClient
+          .from('solana_price_history')
+          .insert(priceHistory)
+      }
+    }
+
+    // Clean up old price history (keep last 7 days) - async, don't wait
+    supabaseClient
       .from('solana_price_history')
       .delete()
       .lt('timestamp', new Date(Date.now() - 7 * 24 * 60 * 60 * 1000).toISOString())
+      .then(() => console.log('[SolanaSync] Old price history cleaned'))
 
-    console.log('[SolanaSync] Sync completed successfully')
+    console.log(`[SolanaSync] ✅ Sync completed: ${successCount} successful, ${errorCount} failed`)
 
     return new Response(
       JSON.stringify({ 
         success: true, 
-        tokensUpdated: tokens.length,
+        tokensUpdated: successCount,
+        tokensFailed: errorCount,
+        totalTokens: tokens.length,
         timestamp: new Date().toISOString()
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
