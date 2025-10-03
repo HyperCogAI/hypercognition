@@ -18,7 +18,7 @@ import { Badge } from "@/components/ui/badge"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
-import { WalletSection } from "@/components/wallet/WalletSection"
+
 
 // Core navigation items
 const coreItems = [
@@ -112,12 +112,6 @@ export function AppSidebar() {
           </div>
         </div>
 
-        {/* User Menu Section */}
-        <div className="p-4 border-b border-border/30">
-          <div className="flex items-center justify-start gap-3">
-            <WalletSection />
-          </div>
-        </div>
 
         {/* Core Navigation */}
         <SidebarGroup>
