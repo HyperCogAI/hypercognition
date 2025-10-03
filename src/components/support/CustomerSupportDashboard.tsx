@@ -29,7 +29,8 @@ import {
   Calendar,
   Tag,
   Paperclip,
-  Users
+  Users,
+  Headphones
 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -137,7 +138,8 @@ export const CustomerSupportDashboard = () => {
       {/* Header */}
       <div className="text-center md:text-left">
         <div className="mb-6 md:mb-8">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 flex items-center justify-center md:justify-start gap-3">
+            <Headphones className="h-8 w-8 md:h-10 md:w-10 text-primary" />
             Customer Support
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto md:mx-0">
