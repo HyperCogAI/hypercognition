@@ -1878,6 +1878,51 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_evm_tokens: {
+        Row: {
+          chain_id: number
+          chain_name: string | null
+          created_at: string
+          decimals: number
+          id: string
+          is_verified: boolean | null
+          logo_uri: string | null
+          name: string
+          symbol: string
+          token_address: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chain_id: number
+          chain_name?: string | null
+          created_at?: string
+          decimals?: number
+          id?: string
+          is_verified?: boolean | null
+          logo_uri?: string | null
+          name: string
+          symbol: string
+          token_address: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chain_id?: number
+          chain_name?: string | null
+          created_at?: string
+          decimals?: number
+          id?: string
+          is_verified?: boolean | null
+          logo_uri?: string | null
+          name?: string
+          symbol?: string
+          token_address?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       custom_solana_tokens: {
         Row: {
           created_at: string
@@ -1992,6 +2037,84 @@ export type Database = {
           id?: string
           ip_address?: unknown | null
           user_agent?: string | null
+        }
+        Relationships: []
+      }
+      dex_swaps: {
+        Row: {
+          chain_id: number
+          chain_name: string | null
+          completed_at: string | null
+          created_at: string
+          estimated_gas: string | null
+          failure_reason: string | null
+          from_amount: number
+          from_token_address: string
+          from_token_decimals: number
+          from_token_symbol: string
+          id: string
+          metadata: Json | null
+          price_impact_percentage: number | null
+          quote_data: Json | null
+          slippage_percentage: number | null
+          status: string
+          to_amount: number
+          to_token_address: string
+          to_token_decimals: number
+          to_token_symbol: string
+          transaction_hash: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          chain_id: number
+          chain_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          estimated_gas?: string | null
+          failure_reason?: string | null
+          from_amount: number
+          from_token_address: string
+          from_token_decimals?: number
+          from_token_symbol: string
+          id?: string
+          metadata?: Json | null
+          price_impact_percentage?: number | null
+          quote_data?: Json | null
+          slippage_percentage?: number | null
+          status?: string
+          to_amount: number
+          to_token_address: string
+          to_token_decimals?: number
+          to_token_symbol: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          chain_id?: number
+          chain_name?: string | null
+          completed_at?: string | null
+          created_at?: string
+          estimated_gas?: string | null
+          failure_reason?: string | null
+          from_amount?: number
+          from_token_address?: string
+          from_token_decimals?: number
+          from_token_symbol?: string
+          id?: string
+          metadata?: Json | null
+          price_impact_percentage?: number | null
+          quote_data?: Json | null
+          slippage_percentage?: number | null
+          status?: string
+          to_amount?: number
+          to_token_address?: string
+          to_token_decimals?: number
+          to_token_symbol?: string
+          transaction_hash?: string | null
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -5964,6 +6087,10 @@ export type Database = {
       get_user_agent_count_today: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      get_user_dex_stats: {
+        Args: { user_id_param: string }
+        Returns: Json
       }
       is_admin: {
         Args: Record<PropertyKey, never>

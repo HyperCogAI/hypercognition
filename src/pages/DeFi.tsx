@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SearchInput } from '@/components/ui/search-input';
 import { ArrowLeft, Coins, Lock, TrendingUp, Zap, Repeat } from 'lucide-react';
 import { EVMDEX } from '@/components/evm/EVMDEX';
+import { EVMSwapHistory } from '@/components/evm/EVMSwapHistory';
+import { useEVMSwap } from '@/hooks/useEVMSwap';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo } from 'react';
 import { RealDeFiService } from '@/services/RealDeFiService';
@@ -21,6 +23,7 @@ const DeFi = () => {
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const { toast } = useToast();
+  const { swapHistory } = useEVMSwap();
 
   useEffect(() => {
     loadDeFiData();
@@ -190,7 +193,10 @@ const DeFi = () => {
           </TabsList>
 
           <TabsContent value="dex" className="mt-6">
-            <EVMDEX />
+            <div className="grid gap-6 lg:grid-cols-2">
+              <EVMDEX />
+              <EVMSwapHistory swaps={swapHistory} />
+            </div>
           </TabsContent>
 
           <TabsContent value="pools" className="mt-6">

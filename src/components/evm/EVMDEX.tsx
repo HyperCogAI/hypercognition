@@ -55,7 +55,7 @@ export const EVMDEX = () => {
   const { address, chain } = useAccount();
   const { connectWallet, isConnected } = useWallet();
   const { toast } = useToast();
-  const { getQuote, executeSwap, quote, isLoadingQuote, isSwapping } = useEVMSwap();
+  const { getQuote, executeSwap, quote, isLoadingQuote, isSwapping, swapHistory, fetchSwapHistory } = useEVMSwap();
 
   const [tokens, setTokens] = useState<Token[]>([]);
   const [fromToken, setFromToken] = useState<Address | ''>('');
@@ -67,7 +67,7 @@ export const EVMDEX = () => {
   const [showAddToken, setShowAddToken] = useState(false);
   const [customTokenAddress, setCustomTokenAddress] = useState('');
 
-  // Load tokens for current chain
+  // Load tokens for current chain and fetch swap history
   useEffect(() => {
     if (chain?.id) {
       const popularTokens = POPULAR_TOKENS[chain.id] || [];
@@ -79,8 +79,13 @@ export const EVMDEX = () => {
         setFromToken(popularTokens[0].address);
         setToToken(popularTokens[1].address);
       }
+      
+      // Fetch swap history
+      if (isConnected) {
+        fetchSwapHistory();
+      }
     }
-  }, [chain?.id]);
+  }, [chain?.id, isConnected]);
 
   const selectedFromToken = useMemo(() => 
     tokens.find(t => t.address.toLowerCase() === fromToken.toLowerCase()),
@@ -125,10 +130,18 @@ export const EVMDEX = () => {
   };
 
   const handleSwap = async () => {
-    if (!fromToken || !toToken || !fromAmount || !selectedFromToken) return;
+    if (!fromToken || !toToken || !fromAmount || !selectedFromToken || !selectedToToken) return;
 
     try {
-      await executeSwap(fromToken as Address, toToken as Address, fromAmount, selectedFromToken.decimals, slippage);
+      await executeSwap(
+        fromToken as Address, 
+        toToken as Address, 
+        fromAmount, 
+        selectedFromToken.decimals, 
+        slippage,
+        selectedFromToken.symbol,
+        selectedToToken.symbol
+      );
       setFromAmount('');
       setToAmount('');
     } catch (error) {
