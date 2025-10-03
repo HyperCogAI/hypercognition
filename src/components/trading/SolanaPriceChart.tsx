@@ -1,130 +1,107 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
-import { coinGeckoApi } from '@/lib/apis/coinGeckoApi'
+import { supabase } from '@/integrations/supabase/client'
 
 interface SolanaPriceChartProps {
   token: any
   className?: string
 }
 
-export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({ 
+const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({ 
   token, 
   className = "" 
 }) => {
   const [timeframe, setTimeframe] = useState<'1H' | '4H' | '1D' | '1W'>('1D')
   const [chartData, setChartData] = useState<any[]>([])
-  const [currentPrice, setCurrentPrice] = useState<number | null>(null)
   const [loading, setLoading] = useState(false)
 
-  // Fetch real price history from CoinGecko
-  useEffect(() => {
-    const fetchRealData = async () => {
-      if (!token?.id) return
+  // Fetch price history from Supabase
+  const fetchPriceHistory = useCallback(async () => {
+    if (!token?.mint_address) return
+    
+    setLoading(true)
+    try {
+      // Calculate time range
+      const now = new Date()
+      let hoursAgo = 24 // Default 1D
+      if (timeframe === '1H') hoursAgo = 1
+      else if (timeframe === '4H') hoursAgo = 4
+      else if (timeframe === '1W') hoursAgo = 168
       
-      setLoading(true)
-      let historyData: any[] = []
+      const startTime = new Date(now.getTime() - hoursAgo * 60 * 60 * 1000)
       
-      try {
-        // Map timeframes to days for CoinGecko
-        const daysMap: Record<string, number> = {
-          '1H': 1,
-          '4H': 1,
-          '1D': 1,
-          '1W': 7,
-          '1M': 30
-        }
-        
-        // Fetch historical data from CoinGecko
-        const chartData = await coinGeckoApi.getMarketChart(token.id, daysMap[timeframe] || 1)
-        
-        if (chartData?.prices && chartData.prices.length > 0) {
-          historyData = chartData.prices.map(([timestamp, price]) => ({
-            time: new Date(timestamp).toLocaleTimeString('en-US', { 
-              hour: '2-digit', 
-              minute: '2-digit' 
-            }),
-            price: price,
-            volume: Math.random() * 1000000 + 100000
-          }))
-        }
-      } catch (error) {
-        console.error('Error fetching CoinGecko data:', error)
+      // Fetch from database
+      const { data, error } = await supabase
+        .from('solana_price_history')
+        .select('price, volume_24h, timestamp')
+        .eq('mint_address', token.mint_address)
+        .gte('timestamp', startTime.toISOString())
+        .order('timestamp', { ascending: true })
+      
+      if (error) throw error
+      
+      if (data && data.length > 0) {
+        const formatted = data.map((item: any) => ({
+          time: new Date(item.timestamp).toLocaleTimeString('en-US', { 
+            hour: '2-digit', 
+            minute: '2-digit' 
+          }),
+          price: Number(item.price),
+          volume: Number(item.volume_24h)
+        }))
+        setChartData(formatted)
+      } else {
+        // Generate fallback data based on current price
+        generateFallbackData()
       }
-      
-      // Fallback: Generate realistic sample data based on current price
-      if (historyData.length === 0) {
-        const basePrice = token?.price || 50
-        const volatility = 0.02
-        const dataPoints = timeframe === '1H' ? 60 : timeframe === '4H' ? 24 : timeframe === '1D' ? 24 : 30
-        
-        historyData = Array.from({ length: dataPoints }, (_, i) => {
-          const timeVariation = Math.sin(i / dataPoints * Math.PI * 2) * 0.1
-          const randomVariation = (Math.random() - 0.5) * volatility
-          const price = basePrice * (1 + timeVariation + randomVariation)
-          
-          return {
-            time: timeframe === '1H' 
-              ? `${String(i).padStart(2, '0')}:00`
-              : timeframe === '4H'
-              ? `${String(Math.floor(i * 4)).padStart(2, '0')}:00`
-              : timeframe === '1D'
-              ? `${String(i).padStart(2, '0')}:00`
-              : `Day ${i + 1}`,
-            price: Number(price.toFixed(6)),
-            volume: Math.random() * 1000000 + 100000
-          }
-        })
-      }
-      
-      setChartData(historyData)
+    } catch (error) {
+      console.error('Error fetching price history:', error)
+      generateFallbackData()
+    } finally {
       setLoading(false)
     }
+  }, [token?.mint_address, timeframe])
+
+  const generateFallbackData = useCallback(() => {
+    const basePrice = token?.price || 0
+    if (!basePrice) return
     
-    fetchRealData()
-  }, [token?.id, token?.symbol, token?.price, timeframe])
+    const dataPoints = timeframe === '1H' ? 12 : timeframe === '4H' ? 16 : timeframe === '1D' ? 24 : 30
+    const data = Array.from({ length: dataPoints }, (_, i) => {
+      const variation = (Math.random() - 0.5) * 0.02
+      const price = basePrice * (1 + variation)
+      
+      return {
+        time: timeframe === '1H' || timeframe === '4H' || timeframe === '1D'
+          ? `${String(i).padStart(2, '0')}:00`
+          : `Day ${i + 1}`,
+        price: Number(price.toFixed(6)),
+        volume: (token?.volume_24h || 0) / dataPoints
+      }
+    })
+    setChartData(data)
+  }, [token?.price, token?.volume_24h, timeframe])
 
   useEffect(() => {
-    let mounted = true
-    const load = async () => {
-      if (!token?.id) return
-      
-      try {
-        const priceData = await coinGeckoApi.getCryptoById(token.id)
-        if (mounted && priceData?.current_price) {
-          setCurrentPrice(priceData.current_price)
-        }
-      } catch (error) {
-        console.error('Error fetching live price:', error)
-      }
-    }
-    load()
-    const id = setInterval(load, 15000)
-    return () => {
-      mounted = false
-      clearInterval(id)
-    }
-  }, [token?.symbol])
+    fetchPriceHistory()
+  }, [fetchPriceHistory])
 
-  const isPositive = token?.change_24h >= 0
-  const priceColor = isPositive ? '#10b981' : '#ef4444'
+  const isPositive = useMemo(() => (token?.change_24h || 0) >= 0, [token?.change_24h])
+  const priceColor = useMemo(() => isPositive ? '#10b981' : '#ef4444', [isPositive])
 
-  const formatPrice = (value: number) => {
+  const formatPrice = useCallback((value: number) => {
     return `$${value.toFixed(4)}`
-  }
+  }, [])
 
-  const formatVolume = (value: number) => {
-    if (value >= 1000000) {
-      return `${(value / 1000000).toFixed(1)}M`
-    }
-    if (value >= 1000) {
-      return `${(value / 1000).toFixed(1)}K`
-    }
+  const formatVolume = useCallback((value: number) => {
+    if (value >= 1000000) return `${(value / 1000000).toFixed(1)}M`
+    if (value >= 1000) return `${(value / 1000).toFixed(1)}K`
     return value.toFixed(0)
-  }
+  }, [])
 
   return (
     <Card className={`bg-gradient-to-br from-purple-500/10 to-blue-500/10 border-purple-500/20 ${className}`}>
@@ -136,13 +113,11 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
               {token?.name} Price Chart
             </CardTitle>
             <div className="text-muted-foreground flex items-center gap-2 mt-1">
-              <span>${(currentPrice ?? token?.price ?? 0).toFixed(4)}</span>
-              <span className="inline-flex">
-                <Badge variant={isPositive ? "default" : "destructive"} className="flex items-center gap-1">
-                  {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
-                  {isPositive ? '+' : ''}{token?.change_24h?.toFixed(2)}%
-                </Badge>
-              </span>
+              <span>${(token?.price ?? 0).toFixed(4)}</span>
+              <Badge variant={isPositive ? "default" : "destructive"} className="flex items-center gap-1">
+                {isPositive ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
+                {isPositive ? '+' : ''}{(token?.change_24h || 0).toFixed(2)}%
+              </Badge>
             </div>
           </div>
           <div className="flex gap-2 mb-4">
@@ -248,11 +223,11 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
             <div className="space-y-1">
               <p className="text-muted-foreground">24h High</p>
-              <p className="font-semibold">${((currentPrice ?? token?.price ?? 0) * 1.05).toFixed(4)}</p>
+              <p className="font-semibold">${((token?.price ?? 0) * 1.05).toFixed(4)}</p>
             </div>
             <div className="space-y-1">
               <p className="text-muted-foreground">24h Low</p>
-              <p className="font-semibold">${((currentPrice ?? token?.price ?? 0) * 0.95).toFixed(4)}</p>
+              <p className="font-semibold">${((token?.price ?? 0) * 0.95).toFixed(4)}</p>
             </div>
             <div className="space-y-1">
               <p className="text-muted-foreground">24h Volume</p>
@@ -268,3 +243,6 @@ export const SolanaPriceChart: React.FC<SolanaPriceChartProps> = ({
     </Card>
   )
 }
+
+// Memoize to prevent unnecessary re-renders
+export const SolanaPriceChart = React.memo(SolanaPriceChartComponent)

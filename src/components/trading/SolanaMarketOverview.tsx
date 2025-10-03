@@ -1,10 +1,10 @@
+import React, { useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
 import { TrendingUp, TrendingDown, Activity, DollarSign, RefreshCw } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
-import { useState } from "react"
 import { useToast } from "@/hooks/use-toast"
 
 export const SolanaMarketOverview = () => {
@@ -12,7 +12,7 @@ export const SolanaMarketOverview = () => {
   const [isSyncing, setIsSyncing] = useState(false)
   const { toast } = useToast()
 
-  const handleManualSync = async () => {
+  const handleManualSync = useCallback(async () => {
     setIsSyncing(true)
     try {
       const { error } = await supabase.functions.invoke('solana-data-sync')
@@ -38,23 +38,23 @@ export const SolanaMarketOverview = () => {
     } finally {
       setTimeout(() => setIsSyncing(false), 3000)
     }
-  }
+  }, [fetchTokens, toast])
 
-  const formatCurrency = (value: number) => {
+  const formatCurrency = useCallback((value: number) => {
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',
       minimumFractionDigits: 2,
       maximumFractionDigits: 6
     }).format(value)
-  }
+  }, [])
 
-  const formatMarketCap = (value: number) => {
+  const formatMarketCap = useCallback((value: number) => {
     if (value >= 1e9) return `$${(value / 1e9).toFixed(2)}B`
     if (value >= 1e6) return `$${(value / 1e6).toFixed(2)}M`
     if (value >= 1e3) return `$${(value / 1e3).toFixed(2)}K`
     return `$${value.toFixed(2)}`
-  }
+  }, [])
 
   if (isLoading) {
     return (

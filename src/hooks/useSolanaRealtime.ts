@@ -86,55 +86,8 @@ export const useSolanaRealtime = () => {
     }
   }, [])
 
-  // Generate mock data when API fails
-  const generateMockTokens = (): SolanaToken[] => {
-    const mockTokens = [
-      {
-        id: 'solana',
-        mint_address: 'So11111111111111111111111111111111111111112',
-        name: 'Solana',
-        symbol: 'SOL',
-        description: 'Solana native token',
-        image_url: '/placeholder.svg',
-        decimals: 9,
-        price: 165.42,
-        market_cap: 77500000000,
-        volume_24h: 2800000000,
-        change_24h: 2.34,
-        is_active: true
-      },
-      {
-        id: 'bonk',
-        mint_address: 'DezXAZ8z7PnrnRJjz3wXBoRgixCa6xjnB7YaB1pPB263',
-        name: 'Bonk',
-        symbol: 'BONK',
-        description: 'Community meme coin',
-        image_url: '/placeholder.svg',
-        decimals: 5,
-        price: 0.00002845,
-        market_cap: 1800000000,
-        volume_24h: 180000000,
-        change_24h: -4.21,
-        is_active: true
-      },
-      {
-        id: 'jupiter',
-        mint_address: 'JUPyiwrYJFskUPiHa7hkeR8VUtAeFoSYbKedZNsDvCN',
-        name: 'Jupiter',
-        symbol: 'JUP',
-        description: 'DEX aggregator token',
-        image_url: '/placeholder.svg',
-        decimals: 6,
-        price: 0.987,
-        market_cap: 1320000000,
-        volume_24h: 85000000,
-        change_24h: 1.87,
-        is_active: true
-      }
-    ]
-    
-    return mockTokens
-  }
+
+  // Generate mock data removed - using real data only
 
   useEffect(() => {
     // Initial fetch
