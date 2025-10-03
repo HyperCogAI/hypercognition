@@ -28,13 +28,13 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   const { data: topAgents = [], isLoading: isLoadingTop } = useQuery({
     queryKey: ['kaito-attention', 'top'],
     queryFn: async (): Promise<KaitoAttentionScore[]> => {
-      const primary = await KaitoService.getTopAgentsByAttention(50, '30d');
-      if ((primary?.length || 0) >= 50) return primary || [];
-      const fallback = await KaitoService.getTopAgentsByAttention(50, 'all');
+      const primary = await KaitoService.getTopAgentsByAttention(100, '30d');
+      if ((primary?.length || 0) >= 100) return primary || [];
+      const fallback = await KaitoService.getTopAgentsByAttention(100, 'all');
       const seen = new Set((primary || []).map(a => a.twitter_username));
       const merged: KaitoAttentionScore[] = [...(primary || [])];
       for (const a of fallback || []) {
-        if (merged.length >= 50) break;
+        if (merged.length >= 100) break;
         if (!seen.has(a.twitter_username)) {
           seen.add(a.twitter_username);
           merged.push(a);
