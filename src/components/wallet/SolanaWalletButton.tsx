@@ -56,7 +56,7 @@ export const SolanaWalletButton = () => {
       return (
         <div className="w-full flex flex-col gap-2">
           <div className="relative rounded-full w-[130px] p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-[gradientShift_2.5s_linear_infinite] shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
-            <a href={href} target="_top" aria-label="Connect Solana wallet (open in full window)" className="inline-flex items-center justify-center gap-2 w-full h-8 rounded-full bg-black/60 hover:bg-black/70 text-white text-xs font-medium">
+            <a href={href} target="_top" aria-label="Connect Solana wallet (open in full window)" className="inline-flex items-center justify-center gap-2 w-full h-8 rounded-full bg-black/90 hover:bg-black/95 text-white text-xs font-medium">
               <Wallet className="h-4 w-4 text-white" />
               <span className="text-white">Connect SOL</span>
             </a>
