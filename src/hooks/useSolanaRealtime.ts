@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import { supabase } from '@/integrations/supabase/client'
 
-interface SolanaToken {
+export interface SolanaToken {
   id: string
   mint_address: string
   name: string

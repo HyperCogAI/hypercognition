@@ -2,12 +2,16 @@ import React, { useState, useCallback } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
-import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
+import { useSolanaRealtime, type SolanaToken } from "@/hooks/useSolanaRealtime"
 import { TrendingUp, TrendingDown, Activity, DollarSign, RefreshCw } from "lucide-react"
 import { supabase } from "@/integrations/supabase/client"
 import { useToast } from "@/hooks/use-toast"
 
-export const SolanaMarketOverview = () => {
+interface SolanaMarketOverviewProps {
+  onTokenSelect?: (token: SolanaToken) => void
+}
+
+export const SolanaMarketOverview = ({ onTokenSelect }: SolanaMarketOverviewProps) => {
   const { tokens, isLoading, fetchTokens } = useSolanaRealtime()
   const [isSyncing, setIsSyncing] = useState(false)
   const { toast } = useToast()
@@ -103,6 +107,7 @@ export const SolanaMarketOverview = () => {
           <div 
             key={token.id} 
             className="flex items-center justify-between p-3 bg-background/50 rounded-lg hover:bg-background/70 transition-colors cursor-pointer"
+            onClick={() => onTokenSelect?.(token)}
           >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-blue-500 rounded-full flex items-center justify-center">

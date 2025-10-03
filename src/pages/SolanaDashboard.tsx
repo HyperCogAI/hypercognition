@@ -1,3 +1,4 @@
+import { useState, useMemo } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SolanaPortfolioCard } from "@/components/portfolio/SolanaPortfolioCard"
@@ -10,14 +11,25 @@ import { Button } from "@/components/ui/button"
 import { TrendingUp, Activity, Zap, DollarSign, BarChart3 } from "lucide-react"
 import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
 import { useSolanaWallet } from "@/hooks/useSolanaWallet"
+import type { SolanaToken } from "@/hooks/useSolanaRealtime"
 
 const SolanaDashboard = () => {
   const { tokens, isLoading } = useSolanaRealtime()
   const { isConnected } = useSolanaWallet()
+  const [selectedToken, setSelectedToken] = useState<SolanaToken | null>(null)
 
   const topTokens = tokens.slice(0, 3)
   const totalMarketCap = tokens.reduce((sum, token) => sum + token.market_cap, 0)
   const totalVolume = tokens.reduce((sum, token) => sum + token.volume_24h, 0)
+
+  // Find Solana token by symbol, fallback to first token
+  const defaultToken = useMemo(() => {
+    const solToken = tokens.find(t => t.symbol === 'SOL')
+    return solToken || tokens[0] || null
+  }, [tokens])
+
+  // Use selected token or default to SOL
+  const chartToken = selectedToken || defaultToken
 
   return (
     <div className="min-h-screen bg-background p-6 space-y-6">
@@ -132,9 +144,9 @@ const SolanaDashboard = () => {
 
         <TabsContent value="overview" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <SolanaMarketOverview />
-            {topTokens.length > 0 && (
-              <SolanaPriceChart token={topTokens[0]} />
+            <SolanaMarketOverview onTokenSelect={setSelectedToken} />
+            {chartToken && (
+              <SolanaPriceChart token={chartToken} />
             )}
           </div>
         </TabsContent>
