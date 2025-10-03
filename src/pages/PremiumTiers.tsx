@@ -242,8 +242,9 @@ const PremiumTiers = () => {
                   className="w-full mt-4" 
                   variant="default"
                   size="lg"
+                  disabled={tier.name === "Elite"}
                 >
-                  {tier.name === "Basic" ? "Get Started Free" : `Upgrade to ${tier.name}`}
+                  {tier.name === "Basic" ? "Get Started Free" : tier.name === "Elite" ? "Coming Soon" : `Upgrade to ${tier.name}`}
                 </Button>
               </CardContent>
             </Card>
