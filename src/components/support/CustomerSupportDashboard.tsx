@@ -569,13 +569,27 @@ export const CustomerSupportDashboard = () => {
                   </Button>
                 </div>
 
-                <div className="mt-8 text-sm text-muted-foreground">
-                  <p>Our support team is available 24/7 to help you with:</p>
-                  <div className="grid grid-cols-2 gap-2 mt-3 text-left max-w-md mx-auto">
-                    <div>• Technical issues</div>
-                    <div>• Account setup</div>
-                    <div>• Trading questions</div>
-                    <div>• Billing inquiries</div>
+                <div className="mt-8 max-w-md mx-auto">
+                  <p className="text-sm font-medium text-foreground mb-4">
+                    Our support team is available 24/7 to help you with:
+                  </p>
+                  <div className="grid grid-cols-2 gap-3">
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+                      <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm">Technical issues</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+                      <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm">Account setup</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+                      <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm">Trading questions</span>
+                    </div>
+                    <div className="flex items-center gap-2 p-3 rounded-lg bg-muted/50 border border-border/50">
+                      <CheckCircle className="h-4 w-4 text-primary flex-shrink-0" />
+                      <span className="text-sm">Billing inquiries</span>
+                    </div>
                   </div>
                 </div>
               </div>
