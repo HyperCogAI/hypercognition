@@ -4,7 +4,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileNavigation } from '@/components/mobile/MobileNavigation'
 import { Navigation } from '@/components/layout/Navigation'
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarInset, SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { PerformanceMonitor } from '@/components/ui/performance-monitor'
@@ -111,10 +111,10 @@ export function ResponsiveLayout({
           <AppSidebar />
           <SidebarInset className="flex-1">
             {/* Desktop Toolbar */}
-            <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-md">
-              <div className="flex h-16 items-center px-6 gap-4">
+            <header className="fixed top-0 left-0 right-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+              <div className="flex h-16 items-center gap-4 px-2 peer-data-[state=expanded]:pl-[calc(var(--sidebar-width)+theme(spacing.2))] peer-data-[state=collapsed]:pl-[calc(var(--sidebar-width-icon)+theme(spacing.2))]">
                 <SidebarTrigger />
-                <div className="flex items-center gap-4 ml-auto">
+                <div className="flex items-center gap-3 ml-auto pr-2">
                   <NetworkSelectorButton />
                   <UnifiedWalletButton />
                   <ThemeToggle />
