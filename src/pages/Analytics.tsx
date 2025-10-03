@@ -8,10 +8,17 @@ import { SEOHead } from '@/components/seo/SEOHead';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BarChart3, Layers, TrendingUp, Newspaper, Sparkles } from 'lucide-react';
 import { useMarketNewsData } from '@/hooks/useMarketNewsData';
+import { useChainAnalyticsSync } from '@/hooks/useChainAnalyticsSync';
 import EnhancedMarketNews from '@/components/news/EnhancedMarketNews';
 
 const Analytics = () => {
   const { marketSentiment } = useMarketNewsData();
+  const { syncAll } = useChainAnalyticsSync(false);
+
+  // Sync all data once when Analytics page loads
+  useEffect(() => {
+    syncAll();
+  }, [syncAll]);
 
   return (
     <>

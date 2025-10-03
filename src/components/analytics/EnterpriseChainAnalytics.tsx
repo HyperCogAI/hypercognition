@@ -28,17 +28,11 @@ export const EnterpriseChainAnalytics: React.FC = () => {
   const { toast } = useToast();
   const { syncAll, isSyncing, lastSyncTime } = useChainAnalyticsSync(false);
 
-  const fetchData = async (retryCount = 0) => {
-    const MAX_RETRIES = 2;
-    
+  const fetchData = async () => {
     try {
-      // Only show loading on first load or manual refresh
-      if (retryCount === 0 && !solanaMetrics) {
-        setIsLoading(true);
-      }
       setHasError(false);
 
-      // Fetch data with individual error handling to prevent all data from being lost
+      // Fetch all data in parallel from database (already synced)
       const results = await Promise.allSettled([
         RealTimeChainAnalytics.getSolanaMetrics(),
         RealTimeChainAnalytics.getEVMMetrics('ethereum'),
@@ -49,7 +43,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
         RealTimeChainAnalytics.getLiquidityPools()
       ]);
 
-      // Only update state for successful fetches (stale-while-revalidate pattern)
+      // Update state for successful fetches
       if (results[0].status === 'fulfilled') setSolanaMetrics(results[0].value);
       if (results[1].status === 'fulfilled' && results[2].status === 'fulfilled' && results[3].status === 'fulfilled') {
         setEvmMetrics({
@@ -62,53 +56,28 @@ export const EnterpriseChainAnalytics: React.FC = () => {
       if (results[5].status === 'fulfilled') setCrossChainData(results[5].value);
       if (results[6].status === 'fulfilled') setLiquidityPools(results[6].value);
 
-      // Check if any critical fetches failed
       const criticalFailures = results.slice(0, 4).filter(r => r.status === 'rejected');
-      if (criticalFailures.length > 0 && retryCount < MAX_RETRIES) {
-        console.warn(`Some fetches failed, retrying (${retryCount + 1}/${MAX_RETRIES})...`);
-        setTimeout(() => fetchData(retryCount + 1), 2000 * (retryCount + 1));
-        return;
-      }
-
       if (criticalFailures.length > 0) {
-        console.error('Chain analytics fetch failures:', criticalFailures);
         setHasError(true);
       }
     } catch (error) {
       console.error('Error fetching chain analytics:', error);
       setHasError(true);
-      
-      // Retry on error
-      if (retryCount < MAX_RETRIES) {
-        setTimeout(() => fetchData(retryCount + 1), 2000 * (retryCount + 1));
-      } else {
-        toast({
-          title: "Connection Issue",
-          description: "Some data may be outdated. Displaying cached data.",
-          variant: "default"
-        });
-      }
     } finally {
       setIsLoading(false);
     }
   };
 
   useEffect(() => {
-    // Sync data from APIs, then fetch from database
-    const syncAndFetch = async () => {
-      await syncAll();
-      await fetchData();
-    };
-
-    // Initial sync and fetch
-    syncAndFetch();
+    // Just fetch from database - data is already synced by Analytics page
+    fetchData();
     
-    // Set up interval - sync APIs and fetch data every 60 seconds
-    const interval = setInterval(syncAndFetch, 60000);
+    // Refresh every 30 seconds (no sync needed)
+    const interval = setInterval(fetchData, 30000);
     
     return () => clearInterval(interval);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []); // Empty deps array is intentional - we only want this to run once on mount
+  }, []);
 
   const formatNumber = (num: number) => {
     if (num >= 1e9) return `$${(num / 1e9).toFixed(2)}B`;

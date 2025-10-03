@@ -28,6 +28,10 @@ export const SolanaAnalyticsDashboard = () => {
       }
     };
     fetchEnhancedData();
+    
+    // Refresh every 30 seconds
+    const interval = setInterval(fetchEnhancedData, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // Calculate analytics data with enhanced metrics
