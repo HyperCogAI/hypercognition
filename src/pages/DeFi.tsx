@@ -6,7 +6,9 @@ import { StakingDashboard } from '@/components/defi/StakingDashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SearchInput } from '@/components/ui/search-input';
-import { ArrowLeft, Coins, Lock, TrendingUp, Zap } from 'lucide-react';
+import { ArrowLeft, Coins, Lock, TrendingUp, Zap, Repeat } from 'lucide-react';
+import { EVMDEX } from '@/components/evm/EVMDEX';
+import { SolanaDEX } from '@/components/solana/SolanaDEX';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo } from 'react';
 import { RealDeFiService } from '@/services/RealDeFiService';
@@ -168,21 +170,32 @@ const DeFi = () => {
         </div>
 
         {/* Tabs */}
-        <Tabs defaultValue="pools" className="w-full">
-          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-3 gap-1 scrollbar-hide">
+        <Tabs defaultValue="dex" className="w-full">
+          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-5 gap-1 scrollbar-hide">
+            <TabsTrigger value="dex" className="flex-shrink-0 gap-2">
+              <Repeat className="h-4 w-4" />
+              <span>DEX</span>
+            </TabsTrigger>
             <TabsTrigger value="pools" className="flex-shrink-0 gap-2">
               <TrendingUp className="h-4 w-4" />
-              <span>Liquidity Pools</span>
+              <span>Pools</span>
             </TabsTrigger>
             <TabsTrigger value="positions" className="flex-shrink-0 gap-2">
               <Coins className="h-4 w-4" />
-              <span>My Positions</span>
+              <span>Positions</span>
             </TabsTrigger>
             <TabsTrigger value="staking" className="flex-shrink-0 gap-2">
               <Lock className="h-4 w-4" />
               <span>Staking</span>
             </TabsTrigger>
           </TabsList>
+
+          <TabsContent value="dex" className="mt-6">
+            <div className="grid gap-6 md:grid-cols-2">
+              <EVMDEX />
+              <SolanaDEX />
+            </div>
+          </TabsContent>
 
           <TabsContent value="pools" className="mt-6">
             <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
