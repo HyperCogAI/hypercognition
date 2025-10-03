@@ -361,15 +361,19 @@ export function SocialNetwork() {
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <div>
-              <div className="text-2xl font-bold text-green-500">+24.5%</div>
+              <div className="text-2xl font-bold text-green-500">
+                {monthlyReturn !== null ? `${monthlyReturn > 0 ? '+' : ''}${monthlyReturn.toFixed(1)}%` : '—'}
+              </div>
               <div className="text-sm text-muted-foreground">30D Return</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-500">78%</div>
+              <div className="text-2xl font-bold text-blue-500">
+                {winRate !== null ? `${Math.round(winRate)}%` : '—'}
+              </div>
               <div className="text-sm text-muted-foreground">Win Rate</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-500">156</div>
+              <div className="text-2xl font-bold text-purple-500">{totalTrades}</div>
               <div className="text-sm text-muted-foreground">Total Trades</div>
             </div>
           </CardContent>
