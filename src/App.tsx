@@ -8,7 +8,7 @@ import { WagmiProvider } from 'wagmi'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { config, WALLETCONNECT_PROJECT_ID } from './config/wagmi'
 import { ConnectionProvider, WalletProvider, WalletModalProvider, wallets, endpoint } from './config/solana'
-import { SidebarProvider } from "@/components/ui/sidebar"
+import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
@@ -241,6 +241,11 @@ const AppLayout = () => {
       <div className="min-h-screen flex w-full">
         <AppSidebar />
         <div className="flex-1 flex flex-col">
+          {!isACPPage && (
+            <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
+              <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
+            </div>
+          )}
           <main className="flex-1 relative">
             <ErrorBoundary level="page" name="Desktop App">
               <Suspense fallback={

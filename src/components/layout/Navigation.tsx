@@ -4,10 +4,7 @@ import { useAuth } from "@/contexts/AuthContext"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { WalletSection } from "@/components/wallet/WalletSection"
-import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
-import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
-import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Menu, X, Bot, Zap, LogIn } from "lucide-react"
 import newLogo from "@/assets/new-logo.png"
 
@@ -27,16 +24,54 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="md:hidden fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/20">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo - Mobile Only */}
+          {/* Logo */}
           <div className="flex items-center gap-3">
             <img 
               src={newLogo} 
               alt="HyperCognition" 
               className="h-8 w-auto"
             />
+          </div>
+
+          {/* Desktop Navigation */}
+          <div className="hidden md:flex items-center gap-8">
+            {navItems.map((item) => (
+              <a
+                key={item.name}
+                href={item.href}
+                className="text-sm text-muted-foreground hover:text-foreground transition-colors relative group"
+              >
+                {item.name}
+                <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary group-hover:w-full transition-all duration-300" />
+              </a>
+            ))}
+          </div>
+
+          {/* Desktop Auth */}
+          <div className="hidden md:flex items-center gap-4">
+            <ThemeToggle />
+            {!isLoading && (
+              user ? (
+                <UserMenu />
+              ) : (
+                <>
+                  <Link to="/auth">
+                    <CyberButton variant="outline" size="sm">
+                      <LogIn className="h-4 w-4" />
+                      Sign In
+                    </CyberButton>
+                  </Link>
+                  <Link to="/auth?mode=signup">
+                    <CyberButton variant="neon" size="sm">
+                      <span className="text-white">Get Started</span>
+                    </CyberButton>
+                  </Link>
+                </>
+              )
+            )}
           </div>
 
           {/* Mobile Menu Button */}

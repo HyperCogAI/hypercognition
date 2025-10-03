@@ -4,15 +4,13 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileNavigation } from '@/components/mobile/MobileNavigation'
 import { Navigation } from '@/components/layout/Navigation'
-import { SidebarProvider, SidebarInset, SidebarTrigger, useSidebar } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { PerformanceMonitor } from '@/components/ui/performance-monitor'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { Bell, Search } from 'lucide-react'
-import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
-import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode
@@ -54,28 +52,6 @@ export function ResponsiveLayout({
     })
 
     return breadcrumbs
-  }
-
-  // Desktop toolbar that adapts to sidebar width
-  const DesktopToolbar: React.FC = () => {
-    const { state } = useSidebar()
-    const leftPad = state === 'expanded' ? 'var(--sidebar-width)' : 'var(--sidebar-width-icon)'
-
-    return (
-      <header className="fixed top-0 left-0 right-0 z-30 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
-        <div
-          className="flex h-16 items-center gap-4"
-          style={{ paddingLeft: `calc(${leftPad} + 0.5rem)`, paddingRight: '0.5rem' }}
-        >
-          <SidebarTrigger />
-          <div className="flex items-center gap-3 ml-auto">
-            <NetworkSelectorButton />
-            <UnifiedWalletButton />
-            <ThemeToggle />
-          </div>
-        </div>
-      </header>
-    )
   }
 
   // Mobile-first layout without sidebar
@@ -132,10 +108,47 @@ export function ResponsiveLayout({
         <div className="flex min-h-screen w-full">
           <AppSidebar />
           <SidebarInset className="flex-1">
-            <DesktopToolbar />
-            
+            {/* Desktop Header */}
+            <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+              <SidebarTrigger className="-ml-1" />
+              <Separator orientation="vertical" className="mr-2 h-4" />
+              
+              {showBreadcrumb && (
+                <Breadcrumb>
+                  <BreadcrumbList>
+                    {getBreadcrumbFromPath().map((crumb, index) => (
+                      <React.Fragment key={crumb.href}>
+                        <BreadcrumbItem className="hidden md:block">
+                          {crumb.isLast ? (
+                            <BreadcrumbPage>{crumb.label}</BreadcrumbPage>
+                          ) : (
+                            <BreadcrumbLink href={crumb.href}>
+                              {crumb.label}
+                            </BreadcrumbLink>
+                          )}
+                        </BreadcrumbItem>
+                        {index < getBreadcrumbFromPath().length - 1 && (
+                          <BreadcrumbSeparator className="hidden md:block" />
+                        )}
+                      </React.Fragment>
+                    ))}
+                  </BreadcrumbList>
+                </Breadcrumb>
+              )}
+
+              <div className="ml-auto flex items-center gap-2">
+                {showPerformanceMonitor && (
+                  <PerformanceMonitor showDetails={false} />
+                )}
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <Search className="h-4 w-4" />
+                </Button>
+                <ThemeToggle />
+              </div>
+            </header>
+
             {/* Desktop Content */}
-            <main className="flex-1 overflow-hidden pt-16">
+            <main className="flex-1 overflow-hidden">
               <div className="container max-w-screen-2xl p-6">
                 {children}
               </div>

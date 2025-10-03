@@ -6,7 +6,6 @@ import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { generateWebsiteStructuredData, generateOrganizationStructuredData } from '@/components/seo/StructuredData'
 import { cn } from '@/lib/utils'
-import { Navigation } from '@/components/layout/Navigation'
 
 // Lazy load components for better performance
 const EnhancedHero = lazy(() => import('@/components/sections/EnhancedHero').then(m => ({ default: m.EnhancedHero })))
@@ -184,8 +183,7 @@ export function OptimizedHomeLayout() {
         structuredData={structuredData}
       />
       
-      <Navigation />
-      <main className="pt-16 md:pt-0 space-y-8 md:space-y-12 lg:space-y-16">
+      <main className="space-y-8 md:space-y-12 lg:space-y-16">
         {/* Hero Section with Priority Loading */}
         <Suspense fallback={<HeroSkeleton />}>
           <EnhancedHero />
