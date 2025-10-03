@@ -31,10 +31,28 @@ serve(async (req) => {
 
     console.log(`[SolanaSync] Fetching data for ${tokens.length} tokens in parallel`)
 
-    // Fetch Jupiter prices as fallback
+    // Fetch Jupiter token list with logos
     const mintAddresses = tokens.map(t => t.mint_address)
+    let jupiterTokens: Record<string, any> = {}
+    try {
+      console.log('[SolanaSync] Fetching Jupiter token metadata...')
+      const jupiterTokensResponse = await fetch('https://tokens.jup.ag/tokens?tags=verified')
+      if (jupiterTokensResponse.ok) {
+        const tokensList = await jupiterTokensResponse.json()
+        // Create lookup map by mint address
+        tokensList.forEach((token: any) => {
+          jupiterTokens[token.address] = token
+        })
+        console.log(`[SolanaSync] Loaded ${Object.keys(jupiterTokens).length} Jupiter tokens with metadata`)
+      }
+    } catch (error) {
+      console.warn('[SolanaSync] Jupiter tokens fetch failed:', error)
+    }
+
+    // Fetch Jupiter prices as fallback
     let jupiterPrices: Record<string, any> = {}
     try {
+      console.log('[SolanaSync] Fetching Jupiter prices...')
       const jupiterUrl = `https://api.jup.ag/price/v2?ids=${mintAddresses.join(',')}`
       const jupiterResponse = await fetch(jupiterUrl)
       if (jupiterResponse.ok) {
@@ -43,7 +61,7 @@ serve(async (req) => {
         console.log(`[SolanaSync] Fetched Jupiter prices for ${Object.keys(jupiterPrices).length} tokens`)
       }
     } catch (error) {
-      console.warn('[SolanaSync] Jupiter API fallback failed:', error)
+      console.warn('[SolanaSync] Jupiter price API failed:', error)
     }
 
     // Batch tokens into groups of 5 for parallel processing
@@ -87,13 +105,17 @@ serve(async (req) => {
                 throw new Error('Invalid Jupiter price')
               }
 
+              // Get logo from Jupiter token list or existing
+              const jupiterToken = jupiterTokens[token.mint_address]
+              const logoUrl = jupiterToken?.logoURI || token.image_url || null
+
               return {
                 token,
                 price,
                 change24h: 0, // Jupiter API v2 doesn't provide 24h change
                 volume24h: 0,
                 marketCap: 0,
-                logoUrl: token.image_url || null,
+                logoUrl,
               }
             }
 
@@ -126,10 +148,17 @@ serve(async (req) => {
               throw new Error('Computed invalid price')
             }
 
-            // Extract logo URL from pair info, fallback to existing logo
-            const newLogoUrl = isBase 
+            // Extract logo URL from multiple sources with priority:
+            // 1. DexScreener pair info
+            // 2. DexScreener token info
+            // 3. Jupiter token list
+            // 4. Existing database logo
+            const dexLogo = isBase 
               ? (selectedPair.info?.imageUrl || selectedPair.baseToken?.imageUrl)
               : (selectedPair.info?.imageUrl || selectedPair.quoteToken?.imageUrl)
+            
+            const jupiterToken = jupiterTokens[token.mint_address]
+            const logoUrl = dexLogo || jupiterToken?.logoURI || token.image_url || null
 
             return {
               token,
@@ -137,7 +166,7 @@ serve(async (req) => {
               change24h,
               volume24h,
               marketCap,
-              logoUrl: newLogoUrl || token.image_url || null,
+              logoUrl,
             }
           } catch (error) {
             console.error(`[SolanaSync] Error for ${token.symbol}:`, error)
