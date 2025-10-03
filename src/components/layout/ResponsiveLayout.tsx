@@ -4,7 +4,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileNavigation } from '@/components/mobile/MobileNavigation'
 import { Navigation } from '@/components/layout/Navigation'
-import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { PerformanceMonitor } from '@/components/ui/performance-monitor'
@@ -112,9 +112,6 @@ export function ResponsiveLayout({
           <SidebarInset className="flex-1">
             {/* Desktop Header */}
             <header className="flex h-16 shrink-0 items-center gap-2 border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
-              
               {showBreadcrumb && (
                 <Breadcrumb>
                   <BreadcrumbList>
@@ -145,7 +142,6 @@ export function ResponsiveLayout({
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <Search className="h-4 w-4" />
                 </Button>
-                <ThemeToggle />
                 <div className="flex items-center gap-2">
                   <NetworkSelectorButton />
                   <UnifiedWalletButton />

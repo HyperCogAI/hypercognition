@@ -7,6 +7,7 @@ import { WalletSection } from "@/components/wallet/WalletSection"
 import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
 import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
+import { SidebarTrigger } from "@/components/ui/sidebar"
 import { Menu, X, Bot, Zap, LogIn } from "lucide-react"
 import newLogo from "@/assets/new-logo.png"
 
@@ -29,8 +30,13 @@ export function Navigation() {
     <nav className="fixed md:relative top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-3">
+          {/* Sidebar Toggle - Desktop Left */}
+          <div className="hidden md:block">
+            <SidebarTrigger />
+          </div>
+
+          {/* Logo - Mobile Only */}
+          <div className="flex md:hidden items-center gap-3">
             <img 
               src={newLogo} 
               alt="HyperCognition" 
@@ -40,7 +46,6 @@ export function Navigation() {
 
           {/* Desktop Right Section */}
           <div className="hidden md:flex items-center gap-4 ml-auto">
-            <ThemeToggle />
             {!isLoading && user && <UserMenu />}
             <div className="flex items-center gap-2">
               <NetworkSelectorButton />
