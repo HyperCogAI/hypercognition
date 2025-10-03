@@ -139,7 +139,7 @@ export const CustomerSupportDashboard = () => {
       <div className="text-center md:text-left">
         <div className="mb-6 md:mb-8">
           <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white mb-4 flex items-center justify-center md:justify-start gap-3">
-            <Headphones className="h-8 w-8 md:h-10 md:w-10 text-primary" />
+            <Headphones className="h-8 w-8 md:h-10 md:w-10 text-white" />
             Customer Support
           </h1>
           <p className="text-base md:text-lg text-muted-foreground max-w-3xl mx-auto md:mx-0">
