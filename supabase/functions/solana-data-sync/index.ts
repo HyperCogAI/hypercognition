@@ -36,14 +36,34 @@ serve(async (req) => {
     let jupiterTokens: Record<string, any> = {}
     try {
       console.log('[SolanaSync] Fetching Jupiter token metadata...')
-      const jupiterTokensResponse = await fetch('https://tokens.jup.ag/tokens?tags=verified')
-      if (jupiterTokensResponse.ok) {
-        const tokensList = await jupiterTokensResponse.json()
+      const jupiterUrls = [
+        'https://tokens.jup.ag/tokens?tags=verified',
+        'https://token.jup.ag/tokens?tags=verified'
+      ]
+      let tokensList: any[] = []
+      for (const url of jupiterUrls) {
+        try {
+          const resp = await fetch(url)
+          if (resp.ok) {
+            const list = await resp.json()
+            if (Array.isArray(list) && list.length) {
+              tokensList = list
+              console.log(`[SolanaSync] Loaded Jupiter tokens from ${url}`)
+              break
+            }
+          }
+        } catch (e) {
+          console.warn(`[SolanaSync] Jupiter tokens URL failed: ${url}`, e)
+        }
+      }
+      if (tokensList.length) {
         // Create lookup map by mint address
         tokensList.forEach((token: any) => {
           jupiterTokens[token.address] = token
         })
         console.log(`[SolanaSync] Loaded ${Object.keys(jupiterTokens).length} Jupiter tokens with metadata`)
+      } else {
+        console.warn('[SolanaSync] Jupiter tokens unavailable - proceeding with fallback logos only')
       }
     } catch (error) {
       console.warn('[SolanaSync] Jupiter tokens fetch failed:', error)
@@ -101,7 +121,7 @@ serve(async (req) => {
                 if (isFinite(price) && price > 0) {
                   // Get logo from Jupiter token list or existing
                   const jupiterToken = jupiterTokens[token.mint_address]
-                  const logoUrl = jupiterToken?.logoURI || token.image_url || null
+                  const logoUrl = jupiterToken?.logoURI || token.image_url || `https://dd.dexscreener.com/ds-data/tokens/solana/${token.mint_address}.png`
 
                   return {
                     token,
@@ -114,16 +134,13 @@ serve(async (req) => {
                 }
               }
               
-              // Still update logo even if no price data
-              const jupiterToken = jupiterTokens[token.mint_address]
-              if (jupiterToken?.logoURI && !token.image_url) {
+              // Still update logo even if no price data (logo-only update)
+              const fallbackLogo = (jupiterTokens[token.mint_address]?.logoURI) || `https://dd.dexscreener.com/ds-data/tokens/solana/${token.mint_address}.png`
+              if ((!token.image_url || token.image_url === '') && fallbackLogo) {
                 return {
                   token,
-                  price: 0,
-                  change24h: 0,
-                  volume24h: 0,
-                  marketCap: 0,
-                  logoUrl: jupiterToken.logoURI,
+                  logoUrl: fallbackLogo,
+                  logoOnly: true,
                 }
               }
               
@@ -169,7 +186,7 @@ serve(async (req) => {
               : (selectedPair.info?.imageUrl || selectedPair.quoteToken?.imageUrl)
             
             const jupiterToken = jupiterTokens[token.mint_address]
-            const logoUrl = dexLogo || jupiterToken?.logoURI || token.image_url || null
+            const logoUrl = dexLogo || jupiterToken?.logoURI || token.image_url || `https://dd.dexscreener.com/ds-data/tokens/solana/${token.mint_address}.png`
 
             return {
               token,
@@ -189,28 +206,39 @@ serve(async (req) => {
       // Process results
       batchResults.forEach((result, index) => {
         if (result.status === 'fulfilled') {
-          const { token, price, change24h, volume24h, marketCap, logoUrl } = result.value
+          const { token, price, change24h, volume24h, marketCap, logoUrl, logoOnly } = result.value as any
           successCount++
-          
-          updates.push({
-            mint_address: token.mint_address,
-            price,
-            change_24h: change24h,
-            volume_24h: volume24h,
-            market_cap: marketCap,
-            image_url: logoUrl,
-            updated_at: new Date().toISOString()
-          })
 
-          priceHistory.push({
-            token_id: token.id,
-            mint_address: token.mint_address,
-            price,
-            volume: volume24h,
-            market_cap: marketCap
-          })
-          
-          console.log(`[SolanaSync] ✓ ${token.symbol}: $${price}, ${change24h.toFixed(2)}%`)
+          if (logoOnly) {
+            // Only update the logo and timestamp, don't overwrite price fields
+            updates.push({
+              mint_address: token.mint_address,
+              image_url: logoUrl,
+              updated_at: new Date().toISOString(),
+              __partial: true,
+            })
+            console.log(`[SolanaSync] ✓ Logo updated for ${token.symbol}`)
+          } else {
+            updates.push({
+              mint_address: token.mint_address,
+              price,
+              change_24h: change24h,
+              volume_24h: volume24h,
+              market_cap: marketCap,
+              image_url: logoUrl,
+              updated_at: new Date().toISOString()
+            })
+
+            priceHistory.push({
+              token_id: token.id,
+              mint_address: token.mint_address,
+              price,
+              volume: volume24h,
+              market_cap: marketCap
+            })
+            
+            console.log(`[SolanaSync] ✓ ${token.symbol}: $${price}, ${change24h.toFixed(2)}%`)
+          }
         } else {
           errorCount++
         }
@@ -228,19 +256,22 @@ serve(async (req) => {
       
       // Update each token (Supabase doesn't support bulk upsert easily)
       await Promise.all(
-        updates.map(update => 
-          supabaseClient
+        updates.map(update => {
+          const payload: any = update.__partial
+            ? { image_url: update.image_url, updated_at: update.updated_at }
+            : {
+                price: update.price,
+                change_24h: update.change_24h,
+                volume_24h: update.volume_24h,
+                market_cap: update.market_cap,
+                image_url: update.image_url,
+                updated_at: update.updated_at,
+              }
+          return supabaseClient
             .from('solana_tokens')
-            .update({
-              price: update.price,
-              change_24h: update.change_24h,
-              volume_24h: update.volume_24h,
-              market_cap: update.market_cap,
-              image_url: update.image_url,
-              updated_at: update.updated_at
-            })
+            .update(payload)
             .eq('mint_address', update.mint_address)
-        )
+        })
       )
 
       // Batch insert price history
