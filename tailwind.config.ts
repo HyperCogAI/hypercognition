@@ -157,7 +157,7 @@ export default {
         "stagger-in": "stagger-in 0.5s ease-out forwards",
         "bounce-in": "bounce-in 0.6s ease-out",
          "glow-pulse": "glow-pulse 2s ease-in-out infinite",
-         "gradient-shift": "gradientShift 2.5s linear infinite",
+         "gradient-shift": "gradientShift 4s linear infinite",
          "enter": "fade-in 0.3s ease-out, scale-in 0.2s ease-out",
          "exit": "fade-out 0.3s ease-out, scale-out 0.2s ease-out",
       },
