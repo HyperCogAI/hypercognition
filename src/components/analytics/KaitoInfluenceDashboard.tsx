@@ -37,7 +37,7 @@ export const KaitoInfluenceDashboard = () => {
       autoSyncedRef.current = true;
       console.log('Auto-syncing influencers, current count:', topAgents.length);
       const toSync = DEFAULT_USERNAMES.slice(0, 50);
-      syncMultiple({ usernames: toSync, fetchLeaderboard: true });
+      syncMultiple({ usernames: toSync });
     }
   }, [isLoadingTop, isSyncing, topAgents.length]);
 
@@ -69,7 +69,7 @@ export const KaitoInfluenceDashboard = () => {
       ? topAgents.slice(0, 50).map(agent => agent.twitter_username)
       : DEFAULT_USERNAMES.slice(0, 50)
     );
-    syncMultiple({ usernames, fetchLeaderboard: true });
+    syncMultiple({ usernames });
   };
 
   const handleSearch = async (e: React.FormEvent) => {
@@ -101,9 +101,9 @@ export const KaitoInfluenceDashboard = () => {
       // Try to fetch newly upserted record with retries and backoff
       let fetched: any = null;
       for (let i = 0; i < 12; i++) {
-      const { data, error } = await supabase
+        const { data, error } = await supabase
           .from('kaito_attention_scores')
-          .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, rank_30d, created_at, updated_at, metadata')
+          .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
           .ilike('twitter_username', username)
           .maybeSingle();
         if (data && !error) { fetched = data; break; }
@@ -247,8 +247,8 @@ export const KaitoInfluenceDashboard = () => {
                 ? ((agent.yaps_30d - agent.yaps_7d) / agent.yaps_7d * 100).toFixed(1)
                 : 0;
               
-              // Use the real Kaito rank or show "Not ranked"
-              const displayRank = agent.rank_30d;
+              // Find original rank in the full list
+              const originalRank = allAgents.findIndex(a => a.id === agent.id) + 1;
 
               return (
                 <div
@@ -256,8 +256,8 @@ export const KaitoInfluenceDashboard = () => {
                   className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
-                      {displayRank ? `#${displayRank}` : '—'}
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold">
+                      #{originalRank}
                     </div>
                     <div>
                       <div className="flex items-center gap-2">

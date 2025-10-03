@@ -2253,7 +2253,6 @@ export type Database = {
           created_at: string | null
           id: string
           metadata: Json | null
-          rank_30d: number | null
           twitter_user_id: string | null
           twitter_username: string
           updated_at: string | null
@@ -2271,7 +2270,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           metadata?: Json | null
-          rank_30d?: number | null
           twitter_user_id?: string | null
           twitter_username: string
           updated_at?: string | null
@@ -2289,7 +2287,6 @@ export type Database = {
           created_at?: string | null
           id?: string
           metadata?: Json | null
-          rank_30d?: number | null
           twitter_user_id?: string | null
           twitter_username?: string
           updated_at?: string | null

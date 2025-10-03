@@ -28,9 +28,19 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   const { data: topAgents = [], isLoading: isLoadingTop } = useQuery({
     queryKey: ['kaito-attention', 'top'],
     queryFn: async (): Promise<KaitoAttentionScore[]> => {
-      const scores = await KaitoService.getTopAgentsByAttention(50, '30d');
-      console.log('Top agents fetched with rankings:', scores);
-      return scores || [];
+      const primary = await KaitoService.getTopAgentsByAttention(50, '30d');
+      if ((primary?.length || 0) >= 50) return primary || [];
+      const fallback = await KaitoService.getTopAgentsByAttention(50, 'all');
+      const seen = new Set((primary || []).map(a => a.twitter_username));
+      const merged: KaitoAttentionScore[] = [...(primary || [])];
+      for (const a of fallback || []) {
+        if (merged.length >= 50) break;
+        if (!seen.has(a.twitter_username)) {
+          seen.add(a.twitter_username);
+          merged.push(a);
+        }
+      }
+      return merged;
     },
     staleTime: 10 * 60 * 1000, // 10 minutes
     gcTime: 60 * 60 * 1000, // 1 hour
@@ -64,12 +74,13 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   };
 
   const syncForUsername = (username: string) => {
-    syncMutation.mutate({ usernames: [username], fetchLeaderboard: true });
+    syncMutation.mutate({ usernames: [username] });
   };
 
   const syncForUsernameAsync = (username: string) => {
-    return syncMutation.mutateAsync({ usernames: [username], fetchLeaderboard: true });
+    return syncMutation.mutateAsync({ usernames: [username] });
   };
+
   const syncMultiple = (request: KaitoSyncRequest) => {
     syncMutation.mutate(request);
   };

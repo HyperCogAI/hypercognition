@@ -13,7 +13,6 @@ export interface KaitoAttentionScore {
   yaps_6m: number;
   yaps_12m: number;
   yaps_all: number;
-  rank_30d: number | null;
   metadata: any;
   created_at: string;
   updated_at: string;
@@ -22,8 +21,7 @@ export interface KaitoAttentionScore {
 export interface KaitoSyncRequest {
   agentIds?: string[];
   usernames?: string[];
-  mode?: 'on-demand' | 'scheduled' | 'leaderboard';
-  fetchLeaderboard?: boolean;
+  mode?: 'on-demand' | 'scheduled';
 }
 
 export interface KaitoSyncResult {
@@ -110,10 +108,10 @@ export class KaitoService {
       
       const { data, error } = await supabase
         .from('kaito_attention_scores')
-        .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, rank_30d, created_at, updated_at, metadata')
+        .select('id, agent_id, twitter_user_id, twitter_username, yaps_24h, yaps_48h, yaps_7d, yaps_30d, yaps_3m, yaps_6m, yaps_12m, yaps_all, created_at, updated_at, metadata')
         .not(field, 'is', null)
         .gt(field, 0)
-        .order('rank_30d', { ascending: true, nullsFirst: false })
+        .order(field, { ascending: false })
         .limit(limit);
 
       if (error) throw error;
