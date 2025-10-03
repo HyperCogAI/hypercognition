@@ -93,12 +93,18 @@ serve(async (req) => {
               throw new Error('Computed invalid price')
             }
 
+            // Extract logo URL from pair info
+            const logoUrl = isBase 
+              ? (selectedPair.info?.imageUrl || selectedPair.baseToken?.imageUrl)
+              : (selectedPair.info?.imageUrl || selectedPair.quoteToken?.imageUrl)
+
             return {
               token,
               price,
               change24h,
               volume24h,
               marketCap,
+              logoUrl: logoUrl || null,
             }
           } catch (error) {
             console.error(`[SolanaSync] Error for ${token.symbol}:`, error)
@@ -110,7 +116,7 @@ serve(async (req) => {
       // Process results
       batchResults.forEach((result, index) => {
         if (result.status === 'fulfilled') {
-          const { token, price, change24h, volume24h, marketCap } = result.value
+          const { token, price, change24h, volume24h, marketCap, logoUrl } = result.value
           successCount++
           
           updates.push({
@@ -119,6 +125,7 @@ serve(async (req) => {
             change_24h: change24h,
             volume_24h: volume24h,
             market_cap: marketCap,
+            image_url: logoUrl,
             updated_at: new Date().toISOString()
           })
 
@@ -155,6 +162,7 @@ serve(async (req) => {
               change_24h: update.change_24h,
               volume_24h: update.volume_24h,
               market_cap: update.market_cap,
+              image_url: update.image_url,
               updated_at: update.updated_at
             })
             .eq('mint_address', update.mint_address)

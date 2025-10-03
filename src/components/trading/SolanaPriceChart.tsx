@@ -56,32 +56,38 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
         }))
         setChartData(formatted)
       } else {
-        // Try a one-time background sync via edge function, then refetch
+        // No data found - trigger sync once then retry
         if (!attemptedSyncRef.current) {
           attemptedSyncRef.current = true
-          try {
-            await supabase.functions.invoke('solana-data-sync')
-            await new Promise((r) => setTimeout(r, 1500))
-            const { data: retryData } = await supabase
-              .from('solana_price_history')
-              .select('price, volume, timestamp')
-              .eq('mint_address', token.mint_address)
-              .gte('timestamp', startTime.toISOString())
-              .order('timestamp', { ascending: true })
-            if (retryData && retryData.length > 0) {
-              const formatted2 = retryData.map((item: any) => ({
-                time: new Date(item.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
-                price: Number(item.price),
-                volume: Number(item.volume)
-              }))
-              setChartData(formatted2)
-              return
-            }
-          } catch (e) {
-            console.warn('Background sync failed:', e)
+          console.log('[Chart] No price history found, triggering background sync...')
+          
+          // Trigger sync in background
+          supabase.functions.invoke('solana-data-sync').catch(e => 
+            console.warn('[Chart] Sync trigger failed:', e)
+          )
+          
+          // Wait 2 seconds then retry query
+          await new Promise((r) => setTimeout(r, 2000))
+          const { data: retryData } = await supabase
+            .from('solana_price_history')
+            .select('price, volume, timestamp')
+            .eq('mint_address', token.mint_address)
+            .gte('timestamp', startTime.toISOString())
+            .order('timestamp', { ascending: true })
+          
+          if (retryData && retryData.length > 0) {
+            console.log('[Chart] Found data after sync:', retryData.length, 'points')
+            const formatted2 = retryData.map((item: any) => ({
+              time: new Date(item.timestamp).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }),
+              price: Number(item.price),
+              volume: Number(item.volume)
+            }))
+            setChartData(formatted2)
+            return
           }
         }
-        // Fallback mock data if no history yet
+        
+        console.log('[Chart] Using fallback data')
         generateFallbackData()
       }
     } catch (error) {
@@ -111,6 +117,11 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
     })
     setChartData(data)
   }, [token?.price, token?.volume_24h, timeframe])
+
+  // Reset sync ref when token changes
+  useEffect(() => {
+    attemptedSyncRef.current = false
+  }, [token?.mint_address])
 
   useEffect(() => {
     fetchPriceHistory()
@@ -261,7 +272,9 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
             </div>
             <div className="space-y-1">
               <p className="text-muted-foreground">Market Cap</p>
-              <p className="font-semibold">${formatVolume(token?.market_cap || 0)}</p>
+              <p className="font-semibold">
+                {token?.market_cap > 0 ? formatVolume(token.market_cap) : 'N/A'}
+              </p>
             </div>
           </div>
         </div>
