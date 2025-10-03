@@ -6,7 +6,8 @@ import { Input } from "@/components/ui/input"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
 import { AgentCard } from "@/components/agents/AgentCard"
-import { useWallet } from "@/hooks/useWallet"
+import { useAuth } from "@/contexts/AuthContext"
+import { SEOHead } from "@/components/seo/SEOHead"
 
 interface FavoriteAgent {
   id: string
@@ -22,28 +23,46 @@ interface FavoriteAgent {
 
 export default function Favorites() {
   const navigate = useNavigate()
-  const { isConnected } = useWallet()
+  const { user } = useAuth()
   const [favorites, setFavorites] = useState<FavoriteAgent[]>([])
   const [searchTerm, setSearchTerm] = useState("")
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    if (isConnected) {
+    if (user) {
       fetchFavorites()
     } else {
       setLoading(false)
     }
-  }, [isConnected])
+  }, [user])
 
   const fetchFavorites = async () => {
+    if (!user) return
+    
     try {
-      const { data: userFavorites } = await supabase
+      const { data: userFavorites, error } = await supabase
         .from('user_favorites')
         .select(`
           agent_id,
-          agents (*)
+          agents (
+            id,
+            name,
+            symbol,
+            avatar_url,
+            price,
+            change_24h,
+            market_cap,
+            volume_24h,
+            chain
+          )
         `)
+        .eq('user_id', user.id)
         .order('created_at', { ascending: false })
+
+      if (error) {
+        console.error('Error fetching favorites:', error)
+        return
+      }
 
       if (userFavorites) {
         const favoriteAgents = userFavorites
@@ -74,27 +93,40 @@ export default function Favorites() {
     agent.symbol.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
-  if (!isConnected) {
+  if (!user) {
     return (
-      <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
-        <Card className="w-full max-w-md mx-4">
-          <CardContent className="pt-6 text-center space-y-4">
-            <Star className="h-12 w-12 mx-auto text-yellow-400" />
-            <h2 className="text-xl font-semibold">Connect Your Wallet</h2>
-            <p className="text-muted-foreground">
-              Connect your wallet to view and manage your favorite AI agents
-            </p>
-            <Button onClick={() => navigate("/")} className="w-full">
-              Go Back to Marketplace
-            </Button>
-          </CardContent>
-        </Card>
-      </div>
+      <>
+        <SEOHead
+          title="My Favorites - HyperCognition"
+          description="Manage your favorite AI agents and track their performance"
+          keywords="favorites, AI agents, cryptocurrency, trading"
+        />
+        <div className="min-h-screen bg-background text-foreground flex items-center justify-center">
+          <Card className="w-full max-w-md mx-4">
+            <CardContent className="pt-6 text-center space-y-4">
+              <Star className="h-12 w-12 mx-auto text-yellow-400" />
+              <h2 className="text-xl font-semibold">Sign In Required</h2>
+              <p className="text-muted-foreground">
+                Please sign in to view and manage your favorite AI agents
+              </p>
+              <Button onClick={() => navigate("/")} className="w-full">
+                Go Back to Marketplace
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
+      </>
     )
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <>
+      <SEOHead
+        title="My Favorites - AI Agent Marketplace | HyperCognition"
+        description="View and manage your favorite AI agents. Track performance, market cap, and price changes of your preferred trading agents."
+        keywords="favorite AI agents, agent tracking, cryptocurrency favorites, AI trading agents"
+      />
+      <div className="min-h-screen bg-background text-foreground">
       <div className="container mx-auto px-4 py-8 space-y-8">
         {/* Header */}
         <header className="text-center space-y-4">
@@ -257,5 +289,6 @@ export default function Favorites() {
         )}
       </div>
     </div>
+    </>
   )
 }
