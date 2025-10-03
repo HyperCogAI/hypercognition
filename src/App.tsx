@@ -19,6 +19,8 @@ import { MobileToolbar } from "@/components/mobile/MobileToolbar"
 import { useIsMobile } from "@/hooks/use-mobile"
 import { LoadingScreen } from "@/components/ui/loading-screen"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
+import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
+import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
@@ -242,9 +244,13 @@ const AppLayout = () => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           {!isACPPage && (
-            <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg">
-              <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
-            </div>
+              <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2 shadow-lg flex items-center gap-2">
+                <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
+                <div className="ml-auto flex items-center gap-2">
+                  <NetworkSelectorButton />
+                  <UnifiedWalletButton />
+                </div>
+              </div>
           )}
           <main className="flex-1 relative">
             <ErrorBoundary level="page" name="Desktop App">
