@@ -143,3 +143,12 @@ verify_jwt = false
 
 [functions.ai-agents-market]
 verify_jwt = false
+
+[functions.create-support-ticket]
+verify_jwt = true
+
+[functions.reply-support-ticket]
+verify_jwt = true
+
+[functions.update-support-ticket]
+verify_jwt = true
