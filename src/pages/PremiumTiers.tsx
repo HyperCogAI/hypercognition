@@ -151,22 +151,20 @@ const PremiumTiers = () => {
         keywords="trading plans, premium features, AI trading subscription, pro trading tools, elite trading"
       />
       
-      <div className="container mx-auto px-3 md:px-4 py-8 md:py-16">
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
         {/* Hero Section */}
-        <div className="text-center mb-12 md:mb-16 space-y-6 md:space-y-8 max-w-4xl mx-auto">
-          <div className="space-y-4 md:space-y-6">
-            <h1 className="text-3xl md:text-5xl lg:text-6xl font-bold text-foreground leading-tight">
-              Choose Your Trading Plan
-            </h1>
-            <p className="text-lg md:text-xl lg:text-2xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-              Unlock the full potential of AI trading with our premium features and tools
-            </p>
-          </div>
+        <div className="text-center mb-8 md:mb-12 space-y-4 md:space-y-6">
+          <h1 className="text-2xl md:text-4xl font-bold text-foreground">
+            Choose Your Trading Plan
+          </h1>
+          <p className="text-base md:text-xl text-muted-foreground max-w-2xl mx-auto">
+            Unlock the full potential of AI trading with our premium features and tools
+          </p>
           
           {/* Billing Toggle */}
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4 md:gap-6 pt-4 md:pt-6">
-            <div className="flex items-center gap-4 bg-muted/50 rounded-full px-6 py-3">
-              <span className={`text-base font-medium transition-colors ${!isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-3 md:gap-4">
+            <div className="flex items-center gap-3">
+              <span className={`text-sm ${!isAnnual ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
                 Monthly
               </span>
               <Switch
@@ -174,13 +172,13 @@ const PremiumTiers = () => {
                 onCheckedChange={setIsAnnual}
                 className="data-[state=checked]:bg-primary"
               />
-              <span className={`text-base font-medium transition-colors ${isAnnual ? 'text-foreground' : 'text-muted-foreground'}`}>
+              <span className={`text-sm ${isAnnual ? 'text-foreground font-medium' : 'text-muted-foreground'}`}>
                 Annual
               </span>
             </div>
             {isAnnual && (
-              <Badge variant="secondary" className="text-sm px-4 py-2 animate-in fade-in slide-in-from-top-2">
-                💰 Save up to 20%
+              <Badge variant="secondary" className="text-xs px-2 py-1">
+                Save up to 20%
               </Badge>
             )}
           </div>
