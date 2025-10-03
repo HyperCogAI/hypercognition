@@ -17,6 +17,14 @@ interface KaitoYapsResponse {
   yaps_l3m: number;
   yaps_l6m: number;
   yaps_l12m: number;
+  rank_30d?: number;
+}
+
+interface KaitoLeaderboardEntry {
+  user_id: string;
+  username: string;
+  yaps_30d: number;
+  rank: number;
 }
 
 serve(async (req) => {
@@ -30,9 +38,9 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     );
 
-    const { agentIds, usernames, mode = 'on-demand' } = await req.json();
+    const { agentIds, usernames, mode = 'on-demand', fetchLeaderboard = false } = await req.json();
     
-    console.log('Kaito sync started', { agentIds, usernames, mode });
+    console.log('Kaito sync started', { agentIds, usernames, mode, fetchLeaderboard });
 
     let usernameList: string[] = [];
 
@@ -78,6 +86,39 @@ serve(async (req) => {
       failed: [],
       skipped: []
     };
+
+    // Fetch leaderboard first to get rankings
+    let leaderboardMap = new Map<string, number>();
+    if (fetchLeaderboard || mode === 'leaderboard') {
+      try {
+        console.log('Fetching Kaito leaderboard for rankings...');
+        const leaderboardUrl = 'https://api.kaito.ai/api/v1/leaderboard?period=30d&limit=500';
+        const leaderboardResp = await fetch(leaderboardUrl, {
+          headers: {
+            'accept': 'application/json',
+            'cache-control': 'no-cache',
+          },
+          signal: AbortSignal.timeout(15000)
+        });
+
+        if (leaderboardResp.ok) {
+          const leaderboardData = await leaderboardResp.json();
+          const entries = leaderboardData.data || leaderboardData.leaderboard || leaderboardData;
+          if (Array.isArray(entries)) {
+            entries.forEach((entry: any, index: number) => {
+              const username = (entry.username || entry.user_name || entry.handle || '').toString().replace(/^@+/, '');
+              const rank = entry.rank || (index + 1);
+              if (username) {
+                leaderboardMap.set(username.toLowerCase(), rank);
+              }
+            });
+            console.log(`Loaded ${leaderboardMap.size} rankings from leaderboard`);
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch leaderboard:', error);
+      }
+    }
 
     // Rate limit: 100 calls per 5 minutes = ~3 seconds between calls to be safe
     const delayBetweenCalls = 3000;
@@ -138,6 +179,7 @@ serve(async (req) => {
             yaps_l3m: Number(pick('yaps_l3m','yaps_3m','yaps3m','l3m','3m')),
             yaps_l6m: Number(pick('yaps_l6m','yaps_6m','yaps6m','l6m','6m')),
             yaps_l12m: Number(pick('yaps_l12m','yaps_12m','yaps12m','l12m','12m')),
+            rank_30d: src.rank || leaderboardMap.get(name.toLowerCase())
           };
 
           if (!normalized.username) throw new Error('Missing username in Kaito response');
@@ -181,6 +223,9 @@ serve(async (req) => {
             console.warn(`No Yaps returned for ${username}, skipping upsert.`);
             results.failed.push({ username, error: 'no_data' });
           } else {
+            // Check if rank exists in leaderboard if not already set
+            const rank = yapsData.rank_30d || leaderboardMap.get(yapsData.username.toLowerCase());
+            
             // Upsert to database
             const { error: upsertError } = await supabaseClient
               .from('kaito_attention_scores')
@@ -196,6 +241,7 @@ serve(async (req) => {
                 yaps_6m: yapsData.yaps_l6m,
                 yaps_12m: yapsData.yaps_l12m,
                 yaps_all: yapsData.yaps_all,
+                rank_30d: rank || null,
                 metadata: { raw_response: yapsData },
                 updated_at: new Date().toISOString()
               }, {
