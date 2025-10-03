@@ -117,17 +117,27 @@ serve(async (req) => {
           }
 
           // Normalize potential field variations from the API
+          const src = (json && typeof json === 'object' && json.data) ? json.data : json;
+          const pick = (...keys: (string | number)[]) => {
+            for (const k of keys) {
+              const key = typeof k === 'number' ? String(k) : k;
+              if (src && src[key] != null) return src[key];
+            }
+            return 0;
+          };
+          const name = (src.username ?? src.user_name ?? src.handle ?? candidate)?.toString() ?? candidate;
+
           const normalized: KaitoYapsResponse = {
-            user_id: json.user_id ?? json.userId ?? json.id,
-            username: (json.username ?? json.user_name ?? json.handle ?? candidate).replace(/^@+/, ''),
-            yaps_all: json.yaps_all ?? json.yapsAll ?? json.total ?? 0,
-            yaps_l24h: json.yaps_l24h ?? json.yaps24h ?? json.l24h ?? 0,
-            yaps_l48h: json.yaps_l48h ?? json.yaps48h ?? json.l48h ?? 0,
-            yaps_l7d: json.yaps_l7d ?? json.yaps7d ?? json.l7d ?? 0,
-            yaps_l30d: json.yaps_l30d ?? json.yaps30d ?? json.l30d ?? 0,
-            yaps_l3m: json.yaps_l3m ?? json.yaps3m ?? 0,
-            yaps_l6m: json.yaps_l6m ?? json.yaps6m ?? 0,
-            yaps_l12m: json.yaps_l12m ?? json.yaps12m ?? 0,
+            user_id: (src.user_id ?? src.userId ?? src.id ?? '').toString(),
+            username: name.replace(/^@+/, ''),
+            yaps_all: Number(pick('yaps_all','yapsAll','total')),
+            yaps_l24h: Number(pick('yaps_l24h','yaps_24h','yaps24h','l24h','24h')),
+            yaps_l48h: Number(pick('yaps_l48h','yaps_48h','yaps48h','l48h','48h')),
+            yaps_l7d: Number(pick('yaps_l7d','yaps_7d','yaps7d','l7d','7d')),
+            yaps_l30d: Number(pick('yaps_l30d','yaps_30d','yaps30d','l30d','30d')),
+            yaps_l3m: Number(pick('yaps_l3m','yaps_3m','yaps3m','l3m','3m')),
+            yaps_l6m: Number(pick('yaps_l6m','yaps_6m','yaps6m','l6m','6m')),
+            yaps_l12m: Number(pick('yaps_l12m','yaps_12m','yaps12m','l12m','12m')),
           };
 
           if (!normalized.username) throw new Error('Missing username in Kaito response');
@@ -161,32 +171,43 @@ serve(async (req) => {
         if (!yapsData.username) {
           results.failed.push({ username, error: 'Empty username in response' });
         } else {
-          // Upsert to database
-          const { error: upsertError } = await supabaseClient
-            .from('kaito_attention_scores')
-            .upsert({
-              agent_id: agent?.id || null,
-              twitter_user_id: yapsData.user_id,
-              twitter_username: yapsData.username,
-              yaps_24h: yapsData.yaps_l24h,
-              yaps_48h: yapsData.yaps_l48h,
-              yaps_7d: yapsData.yaps_l7d,
-              yaps_30d: yapsData.yaps_l30d,
-              yaps_3m: yapsData.yaps_l3m,
-              yaps_6m: yapsData.yaps_l6m,
-              yaps_12m: yapsData.yaps_l12m,
-              yaps_all: yapsData.yaps_all,
-              metadata: { raw_response: yapsData },
-              updated_at: new Date().toISOString()
-            }, {
-              onConflict: 'twitter_username'
-            });
+          const hasAny = [
+            yapsData.yaps_all, yapsData.yaps_l24h, yapsData.yaps_l48h,
+            yapsData.yaps_l7d, yapsData.yaps_l30d, yapsData.yaps_l3m,
+            yapsData.yaps_l6m, yapsData.yaps_l12m,
+          ].some((v) => Number(v) > 0);
 
-          if (upsertError) {
-            console.error(`Database error for ${username}:`, upsertError);
-            results.failed.push({ username, error: upsertError.message });
+          if (!hasAny) {
+            console.warn(`No Yaps returned for ${username}, skipping upsert.`);
+            results.failed.push({ username, error: 'no_data' });
           } else {
-            results.success.push({ username, yaps_all: yapsData.yaps_all });
+            // Upsert to database
+            const { error: upsertError } = await supabaseClient
+              .from('kaito_attention_scores')
+              .upsert({
+                agent_id: agent?.id || null,
+                twitter_user_id: yapsData.user_id,
+                twitter_username: yapsData.username,
+                yaps_24h: yapsData.yaps_l24h,
+                yaps_48h: yapsData.yaps_l48h,
+                yaps_7d: yapsData.yaps_l7d,
+                yaps_30d: yapsData.yaps_l30d,
+                yaps_3m: yapsData.yaps_l3m,
+                yaps_6m: yapsData.yaps_l6m,
+                yaps_12m: yapsData.yaps_l12m,
+                yaps_all: yapsData.yaps_all,
+                metadata: { raw_response: yapsData },
+                updated_at: new Date().toISOString()
+              }, {
+                onConflict: 'twitter_username'
+              });
+
+            if (upsertError) {
+              console.error(`Database error for ${username}:`, upsertError);
+              results.failed.push({ username, error: upsertError.message });
+            } else {
+              results.success.push({ username, yaps_all: yapsData.yaps_all });
+            }
           }
         }
 

@@ -111,10 +111,24 @@ export const KaitoInfluenceDashboard = () => {
       }
 
       if (fetched) {
-        setSearchedAgents(prev => {
-          const exists = prev.some(a => a.twitter_username.toLowerCase() === fetched.twitter_username.toLowerCase());
-          return exists ? prev : [...prev, fetched];
-        });
+        const zeroish = [
+          fetched.yaps_24h, fetched.yaps_48h, fetched.yaps_7d,
+          fetched.yaps_30d, fetched.yaps_3m, fetched.yaps_6m,
+          fetched.yaps_12m, fetched.yaps_all
+        ].every((v: any) => !v || Number(v) === 0);
+
+        if (zeroish) {
+          toast({
+            title: 'No Kaito data found',
+            description: `Kaito did not return analytics for @${username}. This can happen for non-crypto accounts or during rate limits.`,
+            variant: 'destructive',
+          });
+        } else {
+          setSearchedAgents(prev => {
+            const exists = prev.some(a => a.twitter_username.toLowerCase() === fetched.twitter_username.toLowerCase());
+            return exists ? prev : [...prev, fetched];
+          });
+        }
       } else {
         toast({
           title: 'User not found',
