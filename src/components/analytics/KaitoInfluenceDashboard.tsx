@@ -216,7 +216,7 @@ export const KaitoInfluenceDashboard = () => {
             </Button>
           </form>
           <p className="text-xs text-muted-foreground mt-2">
-            Type any X username and click "Fetch" to get their Kaito statistics
+            <strong>Note:</strong> Kaito tracks crypto-specific social influence. Try crypto accounts like VitalikButerin, cz_binance, or saylor. Non-crypto accounts will return zero Yaps.
           </p>
         </div>
       </CardHeader>
