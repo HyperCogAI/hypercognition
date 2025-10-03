@@ -19,7 +19,7 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Fetch tokens from database
+    // Fetch tokens from database with their IDs
     const { data: tokens, error: tokensError } = await supabaseClient
       .from('solana_tokens')
       .select('id, mint_address, symbol, name')
@@ -130,6 +130,7 @@ serve(async (req) => {
           })
 
           priceHistory.push({
+            token_id: token.id,
             mint_address: token.mint_address,
             price,
             volume: volume24h,

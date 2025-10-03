@@ -3,8 +3,9 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, AreaChart, Area } from 'recharts'
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { TrendingUp, TrendingDown, BarChart3 } from "lucide-react"
+import { TrendingUp, TrendingDown, BarChart3, RefreshCw } from "lucide-react"
 import { supabase } from '@/integrations/supabase/client'
+import { useToast } from "@/hooks/use-toast"
 
 interface SolanaPriceChartProps {
   token: any
@@ -18,7 +19,29 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
   const [timeframe, setTimeframe] = useState<'1H' | '4H' | '1D' | '1W'>('1D')
   const [chartData, setChartData] = useState<any[]>([])
   const [loading, setLoading] = useState(false)
+  const [syncing, setSyncing] = useState(false)
   const attemptedSyncRef = useRef(false)
+  const { toast } = useToast()
+
+  const generateFallbackData = useCallback(() => {
+    const basePrice = token?.price || 0
+    if (!basePrice) return
+    
+    const dataPoints = timeframe === '1H' ? 12 : timeframe === '4H' ? 16 : timeframe === '1D' ? 24 : 30
+    const data = Array.from({ length: dataPoints }, (_, i) => {
+      const variation = (Math.random() - 0.5) * 0.02
+      const price = basePrice * (1 + variation)
+      
+      return {
+        time: timeframe === '1H' || timeframe === '4H' || timeframe === '1D'
+          ? `${String(i).padStart(2, '0')}:00`
+          : `Day ${i + 1}`,
+        price: Number(price.toFixed(6)),
+        volume: (token?.volume_24h || 0) / dataPoints
+      }
+    })
+    setChartData(data)
+  }, [token?.price, token?.volume_24h, timeframe])
 
   // Fetch price history from Supabase
   const fetchPriceHistory = useCallback(async () => {
@@ -43,7 +66,12 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
         .gte('timestamp', startTime.toISOString())
         .order('timestamp', { ascending: true })
       
-      if (error) throw error
+      if (error) {
+        console.error('[Chart] Database error:', error)
+        throw error
+      }
+      
+      console.log(`[Chart] Fetched ${data?.length || 0} price history points for ${token.symbol}`)
       
       if (data && data.length > 0) {
         const formatted = data.map((item: any) => ({
@@ -55,6 +83,7 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
           volume: Number(item.volume)
         }))
         setChartData(formatted)
+        console.log('[Chart] Chart data set successfully')
       } else {
         // No data found - trigger sync once then retry
         if (!attemptedSyncRef.current) {
@@ -91,32 +120,47 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
         generateFallbackData()
       }
     } catch (error) {
-      console.error('Error fetching price history:', error)
+      console.error('[Chart] Error fetching price history:', error)
+      toast({
+        title: "Chart Error",
+        description: "Failed to load price data. Using fallback data.",
+        variant: "destructive"
+      })
       generateFallbackData()
     } finally {
       setLoading(false)
     }
-  }, [token?.mint_address, timeframe])
+  }, [token?.mint_address, token?.symbol, timeframe, generateFallbackData, toast])
 
-  const generateFallbackData = useCallback(() => {
-    const basePrice = token?.price || 0
-    if (!basePrice) return
-    
-    const dataPoints = timeframe === '1H' ? 12 : timeframe === '4H' ? 16 : timeframe === '1D' ? 24 : 30
-    const data = Array.from({ length: dataPoints }, (_, i) => {
-      const variation = (Math.random() - 0.5) * 0.02
-      const price = basePrice * (1 + variation)
+  const handleManualSync = useCallback(async () => {
+    setSyncing(true)
+    try {
+      console.log('[Chart] Manual sync triggered')
+      const { error } = await supabase.functions.invoke('solana-data-sync')
       
-      return {
-        time: timeframe === '1H' || timeframe === '4H' || timeframe === '1D'
-          ? `${String(i).padStart(2, '0')}:00`
-          : `Day ${i + 1}`,
-        price: Number(price.toFixed(6)),
-        volume: (token?.volume_24h || 0) / dataPoints
-      }
-    })
-    setChartData(data)
-  }, [token?.price, token?.volume_24h, timeframe])
+      if (error) throw error
+      
+      toast({
+        title: "Sync Started",
+        description: "Fetching latest price data...",
+      })
+      
+      // Wait then refetch
+      setTimeout(() => {
+        fetchPriceHistory()
+        setSyncing(false)
+      }, 3000)
+    } catch (error) {
+      console.error('[Chart] Sync error:', error)
+      toast({
+        title: "Sync Failed",
+        description: "Could not sync data. Please try again.",
+        variant: "destructive"
+      })
+      setSyncing(false)
+    }
+  }, [fetchPriceHistory, toast])
+
 
   // Reset sync ref when token changes
   useEffect(() => {
@@ -157,18 +201,30 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
               </Badge>
             </div>
           </div>
-          <div className="flex gap-2 mb-4">
-            {(['1H', '4H', '1D', '1W'] as const).map((tf) => (
-              <Button
-                key={tf}
-                variant={timeframe === tf ? "default" : "outline"}
-                size="sm"
-                onClick={() => setTimeframe(tf)}
-                disabled={loading}
-              >
-                {tf}
-              </Button>
-            ))}
+          <div className="flex items-center gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleManualSync}
+              disabled={syncing || loading}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-3 w-3 ${syncing ? 'animate-spin' : ''}`} />
+              {syncing ? 'Syncing...' : 'Sync'}
+            </Button>
+            <div className="flex gap-2">
+              {(['1H', '4H', '1D', '1W'] as const).map((tf) => (
+                <Button
+                  key={tf}
+                  variant={timeframe === tf ? "default" : "outline"}
+                  size="sm"
+                  onClick={() => setTimeframe(tf)}
+                  disabled={loading || syncing}
+                >
+                  {tf}
+                </Button>
+              ))}
+            </div>
           </div>
         </div>
       </CardHeader>
