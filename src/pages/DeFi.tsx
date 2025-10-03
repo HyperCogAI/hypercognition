@@ -8,7 +8,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SearchInput } from '@/components/ui/search-input';
 import { ArrowLeft, Coins, Lock, TrendingUp, Zap, Repeat } from 'lucide-react';
 import { EVMDEX } from '@/components/evm/EVMDEX';
-import { SolanaDEX } from '@/components/solana/SolanaDEX';
 import { Link } from 'react-router-dom';
 import { useState, useEffect, useMemo } from 'react';
 import { RealDeFiService } from '@/services/RealDeFiService';
@@ -191,10 +190,7 @@ const DeFi = () => {
           </TabsList>
 
           <TabsContent value="dex" className="mt-6">
-            <div className="grid gap-6 md:grid-cols-2">
-              <EVMDEX />
-              <SolanaDEX />
-            </div>
+            <EVMDEX />
           </TabsContent>
 
           <TabsContent value="pools" className="mt-6">
