@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { coinGeckoSolanaApi } from '@/lib/apis/coingeckoSolanaApi'
+import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 
 interface SolanaToken {
@@ -32,48 +32,41 @@ export const useSolanaRealtime = () => {
     try {
       setIsLoading(true)
       
-      // Use CoinGecko Solana API instead of Birdeye
-      const tokensData = await coinGeckoSolanaApi.getSolanaTokens()
+      // Fetch from Supabase
+      const { data, error } = await supabase
+        .from('solana_tokens')
+        .select('*')
+        .eq('is_active', true)
+        .order('market_cap', { ascending: false })
+        .limit(20)
       
-      if (!tokensData || tokensData.length === 0) {
-        console.warn('[SolanaRealtime] No data from CoinGecko - using mock data')
+      if (error) throw error
+      
+      if (!data || data.length === 0) {
+        console.warn('[SolanaRealtime] No data from database - using mock data')
         setTokens(generateMockTokens())
         setIsLoading(false)
         return
       }
 
-      // Map CoinGecko data to our format
-      const mappedTokens = tokensData.slice(0, 20).map((token) => {
-        try {
-          if (!token || !token.id) return null
-          
-          return {
-            id: token.id,
-            mint_address: token.id, // Use ID as mint address proxy
-            name: token.name,
-            symbol: token.symbol,
-            description: `${token.name} on Solana`,
-            image_url: token.image || '/placeholder.svg',
-            decimals: 9, // Default Solana decimals
-            price: token.current_price,
-            market_cap: token.market_cap || 0,
-            volume_24h: token.total_volume || 0,
-            change_24h: token.price_change_percentage_24h || 0,
-            is_active: true
-          } as SolanaToken
-        } catch (error) {
-          console.error(`Error mapping token ${token?.id}:`, error)
-          return null
-        }
-      })
-
-      const validTokens = mappedTokens.filter((token): token is SolanaToken => token !== null)
+      // Map database data to our format
+      const mappedTokens = data.map((token: any) => ({
+        id: token.coingecko_id || token.mint_address,
+        mint_address: token.mint_address,
+        name: token.name,
+        symbol: token.symbol,
+        description: `${token.name} on Solana`,
+        image_url: token.logo_uri || '/placeholder.svg',
+        decimals: token.decimals,
+        price: Number(token.price_usd),
+        market_cap: Number(token.market_cap),
+        volume_24h: Number(token.volume_24h),
+        change_24h: Number(token.price_change_24h),
+        is_active: token.is_active
+      }))
       
-      // Sort by market cap descending
-      validTokens.sort((a, b) => (b.market_cap || 0) - (a.market_cap || 0))
-      
-      setTokens(validTokens)
-      console.log('Fetched', validTokens.length, 'Solana tokens from CoinGecko')
+      setTokens(mappedTokens)
+      console.log('Fetched', mappedTokens.length, 'Solana tokens from database')
       
     } catch (error) {
       console.error('Error fetching Solana tokens:', error)

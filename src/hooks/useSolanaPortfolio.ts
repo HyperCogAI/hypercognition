@@ -62,7 +62,20 @@ export const useSolanaPortfolio = () => {
       return []
     }
 
-    return data || []
+    return (data || []).map((token: any) => ({
+      id: token.coingecko_id || token.mint_address,
+      mint_address: token.mint_address,
+      name: token.name,
+      symbol: token.symbol,
+      description: `${token.name} on Solana`,
+      image_url: token.logo_uri || '/placeholder.svg',
+      decimals: token.decimals,
+      price: Number(token.price_usd),
+      market_cap: Number(token.market_cap),
+      volume_24h: Number(token.volume_24h),
+      change_24h: Number(token.price_change_24h),
+      is_active: token.is_active
+    }))
   }
 
   const fetchPortfolio = async () => {
@@ -121,13 +134,13 @@ export const useSolanaPortfolio = () => {
       }
 
       const { data, error } = await supabase
-        .from('solana_portfolios')
+        .from('solana_portfolio' as any)
         .insert({
           user_id: user.id,
-          token_id: tokenData.id,
           mint_address: mintAddress,
           amount,
           purchase_price: purchasePrice,
+          purchase_date: new Date().toISOString()
         })
         .select()
         .single()
