@@ -11,6 +11,8 @@ import { PerformanceMonitor } from '@/components/ui/performance-monitor'
 import { ThemeToggle } from '@/components/ui/theme-toggle'
 import { Button } from '@/components/ui/button'
 import { Bell, Search } from 'lucide-react'
+import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
+import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
 
 interface ResponsiveLayoutProps {
   children: React.ReactNode
@@ -140,6 +142,8 @@ export function ResponsiveLayout({
                 {showPerformanceMonitor && (
                   <PerformanceMonitor showDetails={false} />
                 )}
+                <NetworkSelectorButton />
+                <UnifiedWalletButton />
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <Search className="h-4 w-4" />
                 </Button>
