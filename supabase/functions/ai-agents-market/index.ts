@@ -76,16 +76,22 @@ async function getDEXScreenerData(tokenAddress?: string, searchQuery?: string) {
       return currentLiq > bestLiq ? current : best;
     }, pairs[0]);
 
+    // Construct readable pair name from base and quote tokens
+    const baseSymbol = bestPair.baseToken?.symbol || '';
+    const quoteSymbol = bestPair.quoteToken?.symbol || '';
+    const pairName = (baseSymbol && quoteSymbol) ? `${baseSymbol}/${quoteSymbol}` : '';
+
     return {
       dexLiquidity: bestPair.liquidity?.usd || 0,
       dexVolume24h: bestPair.volume?.h24 || 0,
       dexPriceUsd: parseFloat(bestPair.priceUsd || '0'),
       dexPriceChange24h: bestPair.priceChange?.h24 || 0,
-      dexPair: bestPair.pairAddress,
+      dexPair: pairName,
       dexName: bestPair.dexId,
       dexChain: bestPair.chainId,
       fdv: bestPair.fdv || 0,
-      pairCreatedAt: bestPair.pairCreatedAt
+      pairCreatedAt: bestPair.pairCreatedAt,
+      pairAddress: bestPair.pairAddress
     };
   } catch (error) {
     console.error('[DEXScreener] Error:', error);
