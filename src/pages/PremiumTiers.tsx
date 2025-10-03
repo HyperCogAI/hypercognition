@@ -14,8 +14,8 @@ const PremiumTiers = () => {
       name: "Basic",
       icon: Star,
       description: "Perfect for getting started with AI trading",
-      monthlyPrice: 29,
-      annualPrice: 290,
+      monthlyPrice: 0,
+      annualPrice: 0,
       popular: false,
       features: [
         "Access to 3 AI trading agents",
@@ -192,12 +192,18 @@ const PremiumTiers = () => {
                 
                 <div className="mt-4">
                   <div className="text-3xl md:text-4xl font-bold text-foreground">
-                    ${getPrice(tier).toLocaleString()}
-                    <span className="text-sm md:text-lg font-normal text-muted-foreground">
-                      /{isAnnual ? 'year' : 'month'}
-                    </span>
+                    {getPrice(tier) === 0 ? (
+                      'Free'
+                    ) : (
+                      <>
+                        ${getPrice(tier).toLocaleString()}
+                        <span className="text-sm md:text-lg font-normal text-muted-foreground">
+                          /{isAnnual ? 'year' : 'month'}
+                        </span>
+                      </>
+                    )}
                   </div>
-                  {isAnnual && (
+                  {isAnnual && getPrice(tier) > 0 && (
                     <div className="text-xs md:text-sm text-green-500 font-medium mt-1">
                       Save {getSavings(tier)}% annually
                     </div>
@@ -237,7 +243,7 @@ const PremiumTiers = () => {
                   variant={tier.popular ? "default" : "outline"}
                   size="lg"
                 >
-                  {tier.name === "Basic" ? "Start Free Trial" : `Upgrade to ${tier.name}`}
+                  {tier.name === "Basic" ? "Get Started Free" : `Upgrade to ${tier.name}`}
                 </Button>
               </CardContent>
             </Card>
