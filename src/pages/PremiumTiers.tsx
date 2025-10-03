@@ -7,6 +7,7 @@ import { Check, Star, Zap, Crown, TrendingUp, Shield, Users } from "lucide-react
 import { SEOHead } from "@/components/seo/SEOHead"
 import { useSubscription, type BillingPeriod, type SubscriptionTier } from "@/hooks/useSubscription"
 import { toast } from "sonner"
+import gradientBg from "@/assets/gradient-blur-enterprise.png"
 
 const PremiumTiers = () => {
   const [isAnnual, setIsAnnual] = useState(false)
@@ -397,7 +398,11 @@ const PremiumTiers = () => {
         </Card>
 
         {/* Enterprise CTA */}
-        <Card className="mt-8 md:mt-12 relative overflow-hidden border-primary/30 bg-gradient-to-br from-primary/5 to-secondary/5">
+        <Card className="mt-8 md:mt-12 relative overflow-hidden border-primary/30">
+          <div 
+            className="absolute inset-0 bg-cover bg-center"
+            style={{ backgroundImage: `url(${gradientBg})` }}
+          />
           <CardContent className="relative p-4 md:p-8 text-center">
             <div className="w-16 h-16 mx-auto mb-4 bg-primary/10 rounded-full flex items-center justify-center">
               <Users className="h-8 w-8 text-primary" />
@@ -409,7 +414,10 @@ const PremiumTiers = () => {
               Custom pricing and features for large organizations, institutions, and trading firms. 
               Get dedicated support, custom integrations, and enterprise-grade security.
             </p>
-            <Button size="lg" variant="outline" className="w-full sm:w-auto">
+            <Button 
+              size="lg" 
+              className="w-full sm:w-auto bg-[#5A8A9F] hover:bg-[#4A7A8F] text-white rounded-full px-12 py-6 text-lg font-medium border-2 border-white/20"
+            >
               Contact Sales
             </Button>
           </CardContent>
