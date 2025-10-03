@@ -6,9 +6,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import ethereumLogo from "@/assets/networks/ethereum-official.png"
-import bnbLogo from "@/assets/networks/bnb-official.png"
-import solanaLogo from "@/assets/networks/solana-official.png"
+import ethereumLogo from "@/assets/networks/ethereum-coingecko.png"
+import bnbLogo from "@/assets/networks/bnb-coingecko.png"
+import solanaLogo from "@/assets/networks/solana-coingecko.png"
 import baseLogo from "@/assets/networks/base-official.png"
 
 const networks = [
