@@ -712,6 +712,48 @@ export type Database = {
           },
         ]
       }
+      agent_comparisons: {
+        Row: {
+          agent_1_id: string
+          agent_2_id: string
+          comparison_data: Json
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          agent_1_id: string
+          agent_2_id: string
+          comparison_data?: Json
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          agent_1_id?: string
+          agent_2_id?: string
+          comparison_data?: Json
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "agent_comparisons_agent_1_id_fkey"
+            columns: ["agent_1_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "agent_comparisons_agent_2_id_fkey"
+            columns: ["agent_2_id"]
+            isOneToOne: false
+            referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       agent_creation_requests: {
         Row: {
           agent_data: Json
@@ -6191,6 +6233,10 @@ export type Database = {
       }
       get_acp_dashboard_stats: {
         Args: { user_id_param: string }
+        Returns: Json
+      }
+      get_agent_comparison_data: {
+        Args: { p_agent_1_id: string; p_agent_2_id: string }
         Returns: Json
       }
       get_current_user_admin_role: {

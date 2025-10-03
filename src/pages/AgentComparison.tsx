@@ -1,12 +1,14 @@
 import { useState, useEffect } from "react"
-import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, Star } from "lucide-react"
+import { ArrowLeft, BarChart3, TrendingUp, TrendingDown, Star, Save, History } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Badge } from "@/components/ui/badge"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import { useAuth } from "@/contexts/AuthContext"
+import { useToast } from "@/hooks/use-toast"
+import { SEOHead } from "@/components/seo/SEOHead"
 
 interface Agent {
   id: string
@@ -27,20 +29,30 @@ interface ComparisonData {
 
 export default function AgentComparison() {
   const navigate = useNavigate()
+  const { user } = useAuth()
+  const { toast } = useToast()
   const [agents, setAgents] = useState<Agent[]>([])
   const [selectedAgents, setSelectedAgents] = useState<Agent[]>([])
   const [loading, setLoading] = useState(true)
+  const [recentComparisons, setRecentComparisons] = useState<any[]>([])
 
   useEffect(() => {
     fetchAgents()
-  }, [])
+    if (user) {
+      fetchRecentComparisons()
+    }
+  }, [user])
 
   const fetchAgents = async () => {
     try {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from('agents')
-        .select('*')
+        .select('id, name, symbol, price, change_24h, market_cap, volume_24h, avatar_url, status')
+        .eq('status', 'active')
         .order('market_cap', { ascending: false })
+        .limit(50)
+
+      if (error) throw error
 
       if (data) {
         setAgents(data.map(agent => ({
@@ -56,8 +68,37 @@ export default function AgentComparison() {
       }
     } catch (error) {
       console.error('Error fetching agents:', error)
+      toast({
+        title: "Error",
+        description: "Failed to load agents",
+        variant: "destructive",
+      })
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchRecentComparisons = async () => {
+    if (!user) return
+    
+    try {
+      const { data, error } = await supabase
+        .from('agent_comparisons')
+        .select(`
+          id,
+          created_at,
+          agent_1:agent_1_id(name, symbol),
+          agent_2:agent_2_id(name, symbol)
+        `)
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: false })
+        .limit(5)
+
+      if (error) throw error
+      
+      setRecentComparisons(data || [])
+    } catch (error) {
+      console.error('Error fetching recent comparisons:', error)
     }
   }
 
@@ -69,6 +110,64 @@ export default function AgentComparison() {
 
   const removeAgent = (agentId: string) => {
     setSelectedAgents(selectedAgents.filter(a => a.id !== agentId))
+  }
+
+  const saveComparison = async () => {
+    if (!user) {
+      toast({
+        title: "Sign In Required",
+        description: "Please sign in to save comparisons",
+        variant: "destructive",
+      })
+      return
+    }
+
+    if (selectedAgents.length !== 2) return
+
+    try {
+      const { error } = await supabase
+        .from('agent_comparisons')
+        .insert({
+          user_id: user.id,
+          agent_1_id: selectedAgents[0].id,
+          agent_2_id: selectedAgents[1].id,
+          comparison_data: {
+            agent_1: {
+              name: selectedAgents[0].name,
+              symbol: selectedAgents[0].symbol,
+              price: selectedAgents[0].price,
+              change_24h: selectedAgents[0].change_24h
+            },
+            agent_2: {
+              name: selectedAgents[1].name,
+              symbol: selectedAgents[1].symbol,
+              price: selectedAgents[1].price,
+              change_24h: selectedAgents[1].change_24h
+            },
+            timestamp: new Date().toISOString()
+          }
+        })
+        .select()
+        .single()
+
+      if (error && error.code !== '23505') { // Ignore duplicate key error
+        throw error
+      }
+
+      toast({
+        title: "Comparison Saved",
+        description: "This comparison has been saved to your history",
+      })
+
+      fetchRecentComparisons()
+    } catch (error) {
+      console.error('Error saving comparison:', error)
+      toast({
+        title: "Error",
+        description: "Failed to save comparison",
+        variant: "destructive",
+      })
+    }
   }
 
   const getComparisonData = (): ComparisonData[] => {
@@ -109,117 +208,179 @@ export default function AgentComparison() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <div className="border-b border-border/50 bg-card/20 backdrop-blur-sm sticky top-0 z-40">
-        <div className="container mx-auto px-4 sm:px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <Button 
-                variant="ghost" 
-                size="sm" 
-                onClick={() => navigate("/")}
-                className="h-8 w-8 p-0"
-              >
-                <ArrowLeft className="h-4 w-4" />
-              </Button>
-              <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
-                Agent{" "}
-                <span className="text-white">
-                  Comparison
-                </span>
-                <BarChart3 className="h-6 w-6" />
-                Agent Comparison
-              </h1>
+    <>
+      <SEOHead
+        title="Compare AI Agents - Side-by-Side Analysis | HyperCognition"
+        description="Compare AI trading agents side by side. Analyze performance metrics, market cap, trading volume, and price changes to make informed decisions."
+        keywords="AI agent comparison, compare trading agents, agent analysis, cryptocurrency comparison, trading metrics"
+      />
+      <div className="min-h-screen bg-background text-foreground">
+        {/* Header */}
+        <div className="border-b border-border/50 bg-card/20 backdrop-blur-sm sticky top-0 z-40">
+          <div className="container mx-auto px-4 sm:px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-4">
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => navigate("/")}
+                  className="h-8 w-8 p-0"
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+                <h1 className="text-xl sm:text-2xl font-bold text-white leading-tight flex items-center gap-2">
+                  <BarChart3 className="h-6 w-6" />
+                  Agent Comparison
+                </h1>
+              </div>
+              {selectedAgents.length === 2 && user && (
+                <Button onClick={saveComparison} size="sm" className="gap-2">
+                  <Save className="h-4 w-4" />
+                  Save
+                </Button>
+              )}
             </div>
           </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
-        {/* Selection Area */}
-        <Card className="bg-card/30 border-border/50 mb-6">
-          <CardHeader>
-            <CardTitle>Select Agents to Compare (Choose 2)</CardTitle>
-          </CardHeader>
-          <CardContent>
-            {/* Selected Agents */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-              {[0, 1].map(index => (
-                <div key={index} className="p-4 border-2 border-dashed border-border/50 rounded-lg min-h-24 flex items-center justify-center">
-                  {selectedAgents[index] ? (
-                    <div className="flex items-center justify-between w-full">
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">
-                          {selectedAgents[index].symbol.substring(0, 2)}
-                        </div>
-                        <div>
-                          <div className="font-medium">{selectedAgents[index].name}</div>
-                          <div className="text-sm text-muted-foreground">{selectedAgents[index].symbol}</div>
-                        </div>
+        <div className="container mx-auto px-4 sm:px-6 py-6 sm:py-8">
+          {/* Recent Comparisons */}
+          {user && recentComparisons.length > 0 && (
+            <Card className="bg-card/30 border-border/50 mb-6">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                  <History className="h-5 w-5" />
+                  Recent Comparisons
+                </CardTitle>
+                <CardDescription>Your previously saved agent comparisons</CardDescription>
+              </CardHeader>
+              <CardContent>
+                <div className="space-y-2">
+                  {recentComparisons.map((comp) => (
+                    <div key={comp.id} className="flex items-center justify-between p-3 rounded-lg bg-card/20 hover:bg-card/30 transition-colors">
+                      <div className="flex items-center gap-2 text-sm">
+                        <span className="font-medium">{comp.agent_1?.symbol}</span>
+                        <span className="text-muted-foreground">vs</span>
+                        <span className="font-medium">{comp.agent_2?.symbol}</span>
                       </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => removeAgent(selectedAgents[index].id)}
-                      >
-                        Remove
-                      </Button>
+                      <div className="text-xs text-muted-foreground">
+                        {new Date(comp.created_at).toLocaleDateString()}
+                      </div>
                     </div>
-                  ) : (
-                    <div className="text-center text-muted-foreground">
-                      <div className="text-sm">Select Agent {index + 1}</div>
-                    </div>
-                  )}
+                  ))}
                 </div>
-              ))}
-            </div>
+              </CardContent>
+            </Card>
+          )}
 
-            {/* Agent Selection Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-64 overflow-y-auto">
-              {agents.map(agent => {
-                const isSelected = selectedAgents.find(a => a.id === agent.id)
-                const canSelect = selectedAgents.length < 2 && !isSelected
-
-                return (
-                  <div
-                    key={agent.id}
-                    className={`p-3 rounded-lg border cursor-pointer transition-all ${
-                      isSelected 
-                        ? 'border-primary bg-primary/10' 
-                        : canSelect 
-                          ? 'border-border/50 hover:border-primary/50 hover:bg-card/50'
-                          : 'border-border/30 opacity-50 cursor-not-allowed'
-                    }`}
-                    onClick={() => canSelect && selectAgent(agent)}
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
-                        {agent.symbol.substring(0, 2)}
+          {/* Selection Area */}
+          <Card className="bg-card/30 border-border/50 mb-6">
+            <CardHeader>
+              <CardTitle>Select Agents to Compare (Choose 2)</CardTitle>
+              <CardDescription>
+                {loading ? 'Loading agents...' : `${agents.length} active agents available for comparison`}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              {/* Selected Agents */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                {[0, 1].map(index => (
+                  <div key={index} className="p-4 border-2 border-dashed border-border/50 rounded-lg min-h-24 flex items-center justify-center">
+                    {selectedAgents[index] ? (
+                      <div className="flex items-center justify-between w-full">
+                        <div className="flex items-center gap-3">
+                          {selectedAgents[index].avatar_url ? (
+                            <img 
+                              src={selectedAgents[index].avatar_url} 
+                              alt={selectedAgents[index].name}
+                              className="w-10 h-10 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center font-bold text-primary">
+                              {selectedAgents[index].symbol.substring(0, 2)}
+                            </div>
+                          )}
+                          <div>
+                            <div className="font-medium">{selectedAgents[index].name}</div>
+                            <div className="text-sm text-muted-foreground">{selectedAgents[index].symbol}</div>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => removeAgent(selectedAgents[index].id)}
+                        >
+                          Remove
+                        </Button>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">{agent.name}</div>
-                        <div className="text-xs text-muted-foreground">{agent.symbol}</div>
+                    ) : (
+                      <div className="text-center text-muted-foreground">
+                        <div className="text-sm">Select Agent {index + 1}</div>
                       </div>
-                    </div>
-                    <div className="text-xs text-muted-foreground">
-                      {formatCurrency(agent.market_cap)}
-                    </div>
+                    )}
                   </div>
-                )
-              })}
-            </div>
-          </CardContent>
-        </Card>
+                ))}
+              </div>
 
-        {/* Comparison Results */}
-        {selectedAgents.length === 2 && (
-          <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-3 bg-card/50 mb-6">
-              <TabsTrigger value="overview">Overview</TabsTrigger>
-              <TabsTrigger value="metrics">Detailed Metrics</TabsTrigger>
-              <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
-            </TabsList>
+              {/* Agent Selection Grid */}
+              {loading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin h-8 w-8 border-2 border-primary border-t-transparent rounded-full"></div>
+                </div>
+              ) : (
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 max-h-64 overflow-y-auto">
+                  {agents.map(agent => {
+                    const isSelected = selectedAgents.find(a => a.id === agent.id)
+                    const canSelect = selectedAgents.length < 2 && !isSelected
+
+                    return (
+                      <div
+                        key={agent.id}
+                        className={`p-3 rounded-lg border cursor-pointer transition-all ${
+                          isSelected 
+                            ? 'border-primary bg-primary/10' 
+                            : canSelect 
+                              ? 'border-border/50 hover:border-primary/50 hover:bg-card/50'
+                              : 'border-border/30 opacity-50 cursor-not-allowed'
+                        }`}
+                        onClick={() => canSelect && selectAgent(agent)}
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          {agent.avatar_url ? (
+                            <img 
+                              src={agent.avatar_url} 
+                              alt={agent.name}
+                              className="w-8 h-8 rounded-full object-cover"
+                            />
+                          ) : (
+                            <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center text-xs font-bold text-primary">
+                              {agent.symbol.substring(0, 2)}
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <div className="font-medium text-sm truncate">{agent.name}</div>
+                            <div className="text-xs text-muted-foreground">{agent.symbol}</div>
+                          </div>
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {formatCurrency(agent.market_cap)}
+                        </div>
+                      </div>
+                    )
+                  })}
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Comparison Results */}
+          {selectedAgents.length === 2 && (
+            <Tabs defaultValue="overview" className="w-full">
+              <TabsList className="grid w-full grid-cols-3 bg-card/50 mb-6">
+                <TabsTrigger value="overview">Overview</TabsTrigger>
+                <TabsTrigger value="metrics">Detailed Metrics</TabsTrigger>
+                <TabsTrigger value="analysis">AI Analysis</TabsTrigger>
+              </TabsList>
 
             <TabsContent value="overview">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -360,7 +521,8 @@ export default function AgentComparison() {
             </CardContent>
           </Card>
         )}
+        </div>
       </div>
-    </div>
+    </>
   )
 }
