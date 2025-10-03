@@ -210,7 +210,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
                 </div>
               </div>
               <div className="space-y-2">
-                <div className="text-2xl font-bold">{formatNumber(data.tvl)}</div>
+                <div className="text-2xl font-bold">{key === 'base' ? '-' : formatNumber(data.tvl)}</div>
                 <div className="text-sm text-muted-foreground">TVL</div>
                 <div className="flex items-center justify-between text-sm">
                   <span>Volume 24h:</span>
