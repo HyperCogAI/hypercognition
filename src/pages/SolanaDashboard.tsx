@@ -5,6 +5,7 @@ import { SolanaPortfolioCard } from "@/components/portfolio/SolanaPortfolioCard"
 import { SolanaMarketOverview } from "@/components/trading/SolanaMarketOverview"
 import { SolanaAnalyticsDashboard } from "@/components/analytics/SolanaAnalyticsDashboard"
 import { SolanaOrderManager } from "@/components/trading/SolanaOrderManager"
+import { SolanaDEX } from "@/components/solana/SolanaDEX"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { Button } from "@/components/ui/button"
 import { TrendingUp, Activity, Zap, DollarSign, BarChart3 } from "lucide-react"
@@ -137,14 +138,54 @@ const SolanaDashboard = () => {
       </div>
 
       {/* Main Content Tabs */}
-      <Tabs defaultValue="overview" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
+      <Tabs defaultValue="dex" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-6">
+          <TabsTrigger value="dex">DEX</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
           <TabsTrigger value="trading">Trading</TabsTrigger>
           <TabsTrigger value="staking">Staking</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
+
+        <TabsContent value="dex" className="space-y-6">
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <div className="lg:col-span-2">
+              <SolanaDEX />
+            </div>
+            <div className="space-y-4">
+              <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg">Recent Swaps</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-sm text-muted-foreground">
+                    Your swap history will appear here
+                  </p>
+                </CardContent>
+              </Card>
+              <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="text-lg">Quick Stats</CardTitle>
+                </CardHeader>
+                <CardContent className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Total Swaps</span>
+                    <span className="font-semibold">0</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Total Volume</span>
+                    <span className="font-semibold">$0.00</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-sm text-muted-foreground">Avg. Slippage</span>
+                    <span className="font-semibold">-</span>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
+        </TabsContent>
 
         <TabsContent value="overview" className="space-y-6">
           <SolanaMarketOverview onTokenSelect={setSelectedToken} />
