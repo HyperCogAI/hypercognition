@@ -22,7 +22,7 @@ serve(async (req) => {
     // Fetch tokens from database
     const { data: tokens, error: tokensError } = await supabaseClient
       .from('solana_tokens')
-      .select('*')
+      .select('id, mint_address, symbol, name')
       .eq('is_active', true)
 
     if (tokensError) {
@@ -31,10 +31,16 @@ serve(async (req) => {
 
     console.log(`[SolanaSync] Fetching data for ${tokens.length} tokens`)
 
-    // Fetch price data from CoinGecko
-    const coingeckoIds = tokens
-      .filter(t => t.coingecko_id)
-      .map(t => t.coingecko_id)
+    // Fetch price data from CoinGecko for tokens with coingecko_id
+    const { data: tokensWithCoingecko } = await supabaseClient
+      .from('solana_tokens')
+      .select('id, mint_address, symbol')
+      .eq('is_active', true)
+      .not('symbol', 'is', null)
+    
+    const coingeckoIds = tokensWithCoingecko
+      ?.map(t => t.symbol?.toLowerCase())
+      .filter(Boolean)
       .join(',')
 
     let priceData: any = {}
@@ -55,38 +61,38 @@ serve(async (req) => {
       }
     }
 
-    // Fetch additional data from DEXScreener for tokens with pair addresses
-    const tokensWithPairs = tokens.filter(t => t.dex_pair_address)
-    
-    for (const token of tokensWithPairs) {
+    // Fetch additional data from DEXScreener for all tokens
+    for (const token of tokens) {
       try {
-        const dexUrl = `https://api.dexscreener.com/latest/dex/pairs/solana/${token.dex_pair_address}`
+        const dexUrl = `https://api.dexscreener.com/latest/dex/search?q=${token.symbol}`
         const response = await fetch(dexUrl)
         
         if (response.ok) {
           const data = await response.json()
-          const pair = data.pair
+          const pair = data.pairs?.find((p: any) => 
+            p.chainId === 'solana' && 
+            (p.baseToken?.address === token.mint_address || p.baseToken?.symbol === token.symbol)
+          )
           
           if (pair) {
             // Update token with DEXScreener data
             await supabaseClient
               .from('solana_tokens')
               .update({
-                price_usd: parseFloat(pair.priceUsd || '0'),
-                price_change_24h: pair.priceChange?.h24 || 0,
+                price: parseFloat(pair.priceUsd || '0'),
+                change_24h: pair.priceChange?.h24 || 0,
                 volume_24h: pair.volume?.h24 || 0,
-                liquidity_usd: pair.liquidity?.usd || 0,
-                fdv: pair.fdv || 0,
+                market_cap: pair.marketCap || 0,
                 updated_at: new Date().toISOString()
               })
-              .eq('id', token.id)
+              .eq('mint_address', token.mint_address)
 
             // Insert price history
             await supabaseClient
               .from('solana_price_history')
               .insert({
                 mint_address: token.mint_address,
-                price_usd: parseFloat(pair.priceUsd || '0'),
+                price: parseFloat(pair.priceUsd || '0'),
                 volume_24h: pair.volume?.h24 || 0,
                 market_cap: pair.marketCap || 0
               })
@@ -100,31 +106,34 @@ serve(async (req) => {
       }
     }
 
-    // Update tokens with CoinGecko data
-    for (const token of tokens) {
-      if (token.coingecko_id && priceData[token.coingecko_id]) {
-        const data = priceData[token.coingecko_id]
+    // Update tokens with CoinGecko data (if available)
+    if (Object.keys(priceData).length > 0) {
+      for (const token of tokensWithCoingecko || []) {
+        const symbolKey = token.symbol?.toLowerCase()
+        if (symbolKey && priceData[symbolKey]) {
+          const data = priceData[symbolKey]
         
         await supabaseClient
           .from('solana_tokens')
           .update({
-            price_usd: data.usd || 0,
-            price_change_24h: data.usd_24h_change || 0,
+            price: data.usd || 0,
+            change_24h: data.usd_24h_change || 0,
             market_cap: data.usd_market_cap || 0,
             volume_24h: data.usd_24h_vol || 0,
             updated_at: new Date().toISOString()
           })
-          .eq('id', token.id)
+          .eq('mint_address', token.mint_address)
 
         // Insert price history
         await supabaseClient
           .from('solana_price_history')
           .insert({
             mint_address: token.mint_address,
-            price_usd: data.usd || 0,
+            price: data.usd || 0,
             volume_24h: data.usd_24h_vol || 0,
             market_cap: data.usd_market_cap || 0
           })
+        }
       }
     }
 

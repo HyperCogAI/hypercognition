@@ -23,12 +23,6 @@ export const useSolanaRealtime = () => {
   const [isLoading, setIsLoading] = useState(true)
 
   const fetchTokens = async () => {
-    // Redirect to Solana auth if not authenticated
-    if (!user) {
-      window.location.href = '/solana-auth';
-      return;
-    }
-
     try {
       setIsLoading(true)
       
@@ -51,17 +45,17 @@ export const useSolanaRealtime = () => {
 
       // Map database data to our format
       const mappedTokens = data.map((token: any) => ({
-        id: token.coingecko_id || token.mint_address,
+        id: token.id,
         mint_address: token.mint_address,
         name: token.name,
         symbol: token.symbol,
-        description: `${token.name} on Solana`,
-        image_url: token.logo_uri || '/placeholder.svg',
+        description: token.description || `${token.name} on Solana`,
+        image_url: token.image_url || '/placeholder.svg',
         decimals: token.decimals,
-        price: Number(token.price_usd),
+        price: Number(token.price),
         market_cap: Number(token.market_cap),
         volume_24h: Number(token.volume_24h),
-        change_24h: Number(token.price_change_24h),
+        change_24h: Number(token.change_24h),
         is_active: token.is_active
       }))
       
@@ -128,9 +122,6 @@ export const useSolanaRealtime = () => {
   }
 
   useEffect(() => {
-    // Don't start fetching if user is not authenticated
-    if (!user) return;
-    
     // Initial fetch
     fetchTokens()
 
@@ -140,7 +131,7 @@ export const useSolanaRealtime = () => {
     return () => {
       clearInterval(interval)
     }
-  }, [user])
+  }, [])
 
   const getTokenByMint = (mintAddress: string) => {
     return tokens.find(token => token.mint_address === mintAddress)

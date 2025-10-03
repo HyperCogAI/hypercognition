@@ -37,19 +37,6 @@ export const useSolanaPortfolio = () => {
   const [solBalance, setSolBalance] = useState(0)
   const [isLoading, setIsLoading] = useState(false)
 
-  // Redirect to Solana auth if not authenticated
-  if (!user) {
-    window.location.href = '/solana-auth';
-    return {
-      portfolio: [],
-      solBalance: 0,
-      isLoading: false,
-      refreshPortfolio: () => {},
-      totalValue: 0,
-      totalChange24h: 0
-    };
-  }
-
   const fetchSolanaTokens = async (): Promise<SolanaToken[]> => {
     const { data, error } = await supabase
       .from('solana_tokens')
@@ -63,17 +50,17 @@ export const useSolanaPortfolio = () => {
     }
 
     return (data || []).map((token: any) => ({
-      id: token.coingecko_id || token.mint_address,
+      id: token.id,
       mint_address: token.mint_address,
       name: token.name,
       symbol: token.symbol,
-      description: `${token.name} on Solana`,
-      image_url: token.logo_uri || '/placeholder.svg',
+      description: token.description || `${token.name} on Solana`,
+      image_url: token.image_url || '/placeholder.svg',
       decimals: token.decimals,
-      price: Number(token.price_usd),
+      price: Number(token.price),
       market_cap: Number(token.market_cap),
       volume_24h: Number(token.volume_24h),
-      change_24h: Number(token.price_change_24h),
+      change_24h: Number(token.change_24h),
       is_active: token.is_active
     }))
   }
@@ -100,7 +87,7 @@ export const useSolanaPortfolio = () => {
           if (!token || account.amount === 0) return null
           
           return {
-            id: `${account.mint}_${Date.now()}`,
+            id: token.id,
             token_id: token.id,
             mint_address: account.mint,
             amount: account.amount,
@@ -134,9 +121,10 @@ export const useSolanaPortfolio = () => {
       }
 
       const { data, error } = await supabase
-        .from('solana_portfolio' as any)
+        .from('solana_portfolios' as any)
         .insert({
           user_id: user.id,
+          token_id: tokenData.id,
           mint_address: mintAddress,
           amount,
           purchase_price: purchasePrice,
