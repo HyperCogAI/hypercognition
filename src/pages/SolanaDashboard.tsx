@@ -20,6 +20,11 @@ const SolanaDashboard = () => {
   const topTokens = tokens.slice(0, 3)
   const totalMarketCap = tokens.reduce((sum, token) => sum + token.market_cap, 0)
   const totalVolume = tokens.reduce((sum, token) => sum + token.volume_24h, 0)
+  const topGainer = useMemo(() => {
+    return tokens.length > 0 
+      ? [...tokens].sort((a, b) => b.change_24h - a.change_24h)[0]
+      : null
+  }, [tokens])
 
   // Find Solana token by symbol, fallback to first token
   const defaultToken = useMemo(() => {
@@ -119,11 +124,11 @@ const SolanaDashboard = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
-            {topTokens.length > 0 && (
+            {topGainer && (
               <>
-                <div className="text-lg font-bold">{topTokens[0]?.symbol}</div>
-                <p className="text-xs text-green-500">
-                  +{topTokens[0]?.change_24h.toFixed(2)}%
+                <div className="text-lg font-bold">{topGainer.symbol}</div>
+                <p className={`text-xs ${topGainer.change_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                  {topGainer.change_24h >= 0 ? '+' : ''}{topGainer.change_24h.toFixed(2)}%
                 </p>
               </>
             )}
