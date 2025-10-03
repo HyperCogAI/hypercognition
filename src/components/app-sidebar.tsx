@@ -76,6 +76,7 @@ const professionalItems = [
 const resourceItems = [
   { title: "Tutorials", url: "/tutorials", icon: BookOpen },
   { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
+  { title: "Premium", url: "/premium", icon: Crown },
   { title: "Contact", url: "/contact", icon: HelpCircle },
   { title: "Docs", url: "https://whitepaper.hypercognition.io/hypercognition/", icon: FileText, external: true },
 ]
