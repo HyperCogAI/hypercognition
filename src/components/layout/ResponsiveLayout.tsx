@@ -111,7 +111,7 @@ export function ResponsiveLayout({
           <AppSidebar />
           <SidebarInset className="flex-1">
             {/* Desktop Toolbar */}
-            <header className="sticky top-0 z-20 w-full border-b bg-background/80 backdrop-blur-md">
+            <header className="sticky top-0 z-30 w-full border-b bg-background/80 backdrop-blur-md">
               <div className="flex h-16 items-center px-6 gap-4">
                 <SidebarTrigger />
                 <div className="flex items-center gap-4 ml-auto">
@@ -123,7 +123,7 @@ export function ResponsiveLayout({
             </header>
             
             {/* Desktop Content */}
-            <main className="flex-1 overflow-hidden">
+            <main className="flex-1 overflow-hidden pt-16">
               <div className="container max-w-screen-2xl p-6">
                 {children}
               </div>
