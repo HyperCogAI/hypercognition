@@ -29,8 +29,6 @@ import {
   Calendar,
   Tag,
   Paperclip,
-  Phone,
-  Video,
   Users
 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -569,17 +567,6 @@ export const CustomerSupportDashboard = () => {
                     <MessageCircle className="h-5 w-5" />
                     Start Live Chat
                   </Button>
-                  
-                  <div className="grid grid-cols-2 gap-3">
-                    <Button variant="outline" className="gap-2">
-                      <Phone className="h-4 w-4" />
-                      Voice Call
-                    </Button>
-                    <Button variant="outline" className="gap-2">
-                      <Video className="h-4 w-4" />
-                      Video Call
-                    </Button>
-                  </div>
                 </div>
 
                 <div className="mt-8 text-sm text-muted-foreground">
