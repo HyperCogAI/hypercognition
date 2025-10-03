@@ -15,6 +15,8 @@ import {
   Calendar,
   BarChart3
 } from 'lucide-react';
+import { useAuth } from '@/contexts/AuthContext';
+
 
 interface UserProfile {
   id: string;
@@ -87,21 +89,76 @@ const FollowingList: React.FC<FollowingListProps> = ({ users, onFollow, onUnfoll
 };
 
 export function SocialNetwork() {
-  // Real data from Supabase
-  const { data: relationships = [], isLoading: relationshipsLoading } = useQuery({
-    queryKey: ['user-relationships'],
+  const { user } = useAuth()
+
+  // Following relationships for current user
+  const { data: followingRels = [] } = useQuery({
+    queryKey: ['following', user?.id],
     queryFn: async () => {
+      if (!user?.id) return []
       const { data, error } = await supabase
         .from('user_relationships')
-        .select('*')
-        .order('created_at', { ascending: false });
-      
-      if (error) throw error;
-      return data || [];
-    }
-  });
+        .select('following_id, created_at, status')
+        .eq('follower_id', user.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data || []
+    },
+    enabled: !!user?.id,
+  })
 
-  const { data: activities = [], isLoading: activitiesLoading } = useQuery({
+  // Followers for current user
+  const { data: followersRels = [] } = useQuery({
+    queryKey: ['followers', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return []
+      const { data, error } = await supabase
+        .from('user_relationships')
+        .select('follower_id, created_at, status')
+        .eq('following_id', user.id)
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+      if (error) throw error
+      return data || []
+    },
+    enabled: !!user?.id,
+  })
+
+  // Profiles for following
+  const followingIds = (followingRels as any[]).map(r => r.following_id)
+  const { data: followingProfiles = [] } = useQuery({
+    queryKey: ['following-profiles', followingIds.sort().join(',')],
+    queryFn: async () => {
+      if (!followingIds.length) return []
+      const { data, error } = await supabase
+        .from('profiles' as any)
+        .select('user_id, display_name, avatar_url')
+        .in('user_id', followingIds)
+      if (error) throw error
+      return data || []
+    },
+    enabled: followingIds.length > 0,
+  })
+
+  // Profiles for followers
+  const followerIds = (followersRels as any[]).map(r => r.follower_id)
+  const { data: followerProfiles = [] } = useQuery({
+    queryKey: ['follower-profiles', followerIds.sort().join(',')],
+    queryFn: async () => {
+      if (!followerIds.length) return []
+      const { data, error } = await supabase
+        .from('profiles' as any)
+        .select('user_id, display_name, avatar_url')
+        .in('user_id', followerIds)
+      if (error) throw error
+      return data || []
+    },
+    enabled: followerIds.length > 0,
+  })
+
+  // Public activities
+  const { data: activities = [] } = useQuery({
     queryKey: ['social-activities'],
     queryFn: async () => {
       const { data, error } = await supabase
@@ -109,107 +166,88 @@ export function SocialNetwork() {
         .select('*')
         .eq('privacy_level', 'public')
         .order('created_at', { ascending: false })
-        .limit(20);
-      
-      if (error) throw error;
-      return data || [];
-    }
-  });
+        .limit(20)
+      if (error) throw error
+      return data || []
+    },
+  })
 
-  // Transform relationships data to match UI interface
-  const mockFollowing: UserProfile[] = relationships
-    .filter(rel => rel.status === 'active')
-    .slice(0, 10)
-    .map((rel, index) => ({
-      id: rel.following_id,
-      display_name: `Trader ${rel.following_id.slice(-4)}`,
-      avatar_url: undefined,
-      bio: `Active trader specializing in DeFi protocols`,
-      followers_count: Math.floor(Math.random() * 5000) + 100,
-      following_count: Math.floor(Math.random() * 1000) + 50,
-      posts_count: Math.floor(Math.random() * 500) + 10,
-      trading_score: Math.floor(Math.random() * 100) + 50,
-      join_date: rel.created_at,
-      is_verified: Math.random() > 0.7,
-      is_following: true
-    }));
+  // Current user's trader profile (for performance metrics)
+  const { data: myProfile } = useQuery({
+    queryKey: ['my-trader-profile', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return null
+      const { data, error } = await supabase
+        .from('trader_profiles' as any)
+        .select('*')
+        .eq('user_id', user.id)
+        .maybeSingle()
+      if (error) throw error
+      return data
+    },
+    enabled: !!user?.id,
+  })
 
-  const mockFollowers: UserProfile[] = relationships
-    .filter(rel => rel.status === 'active')
-    .slice(0, 10)
-    .map((rel, index) => ({
-      id: rel.follower_id,
-      display_name: `Follower ${rel.follower_id.slice(-4)}`,
-      avatar_url: undefined,
-      bio: `Crypto enthusiast and trader`,
-      followers_count: Math.floor(Math.random() * 2000) + 50,
-      following_count: Math.floor(Math.random() * 500) + 20,
-      posts_count: Math.floor(Math.random() * 200) + 5,
-      trading_score: Math.floor(Math.random() * 100) + 30,
-      join_date: rel.created_at,
-      is_verified: Math.random() > 0.8,
-      is_following: false
-    }));
+  // Map to UI model (no random mock values)
+  const followingUsers = (followingProfiles as any[]).map(p => ({
+    id: p.user_id,
+    display_name: p.display_name || p.user_id.slice(0, 6),
+    avatar_url: p.avatar_url || undefined,
+    bio: undefined,
+    followers_count: 0,
+    following_count: 0,
+    posts_count: 0,
+    trading_score: undefined,
+    join_date: new Date().toISOString(),
+    is_verified: false,
+    is_following: true,
+  })) as UserProfile[]
 
-  const mockSuggestions: UserProfile[] = Array.from({ length: 8 }, (_, i) => ({
-    id: `suggestion_${i}`,
-    display_name: `Suggested User ${i + 1}`,
-    avatar_url: undefined,
-    bio: `Professional trader with ${Math.floor(Math.random() * 5) + 1}+ years experience`,
-    followers_count: Math.floor(Math.random() * 10000) + 500,
-    following_count: Math.floor(Math.random() * 2000) + 100,
-    posts_count: Math.floor(Math.random() * 1000) + 50,
-    trading_score: Math.floor(Math.random() * 100) + 60,
-    join_date: new Date(Date.now() - Math.random() * 365 * 24 * 60 * 60 * 1000).toISOString(),
-    is_verified: Math.random() > 0.6,
-    is_following: false
-  }));
+  const followersUsers = (followerProfiles as any[]).map(p => ({
+    id: p.user_id,
+    display_name: p.display_name || p.user_id.slice(0, 6),
+    avatar_url: p.avatar_url || undefined,
+    bio: undefined,
+    followers_count: 0,
+    following_count: 0,
+    posts_count: 0,
+    trading_score: undefined,
+    join_date: new Date().toISOString(),
+    is_verified: false,
+    is_following: false,
+  })) as UserProfile[]
 
-  const handleFollow = async (userId: string) => {
+  const handleFollow = async (targetUserId: string) => {
     try {
+      const { data: authRes } = await supabase.auth.getUser()
+      const currentUserId = authRes.user?.id
+      if (!currentUserId) return
       const { error } = await supabase
-        .from('user_relationships')
-        .insert({
-          follower_id: 'current_user', // Should use actual current user ID
-          following_id: userId,
-          status: 'active'
-        });
-
-      if (error) throw error;
-      
-      console.log(`Following user ${userId}`);
-    } catch (error) {
-      console.error('Error following user:', error);
+        .from('user_relationships' as any)
+        .insert({ follower_id: currentUserId, following_id: targetUserId, status: 'active' })
+      if (error) throw error
+    } catch (e) {
+      console.error('Error following user:', e)
     }
-  };
-
-  const handleUnfollow = async (userId: string) => {
-    try {
-      const { error } = await supabase
-        .from('user_relationships')
-        .update({ status: 'inactive' })
-        .eq('follower_id', 'current_user') // Should use actual current user ID
-        .eq('following_id', userId);
-
-      if (error) throw error;
-      
-      console.log(`Unfollowed user ${userId}`);
-    } catch (error) {
-      console.error('Error unfollowing user:', error);
-    }
-  };
-
-  if (relationshipsLoading || activitiesLoading) {
-    return (
-      <div className="space-y-6">
-        <div className="animate-pulse space-y-4">
-          {[1, 2, 3].map(i => (
-            <div key={i} className="h-24 bg-muted rounded-lg"></div>
-          ))}
-        </div>
-      </div>
-    );
   }
+
+  const handleUnfollow = async (targetUserId: string) => {
+    try {
+      const { data: authRes } = await supabase.auth.getUser()
+      const currentUserId = authRes.user?.id
+      if (!currentUserId) return
+      const { error } = await supabase
+        .from('user_relationships' as any)
+        .update({ status: 'inactive' })
+        .eq('follower_id', currentUserId)
+        .eq('following_id', targetUserId)
+      if (error) throw error
+    } catch (e) {
+      console.error('Error unfollowing user:', e)
+    }
+  }
+
+  const loading = false
 
   return (
     <div className="space-y-6">
@@ -232,11 +270,11 @@ export function SocialNetwork() {
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <div>
-              <div className="text-2xl font-bold text-primary">{mockFollowing.length}</div>
+              <div className="text-2xl font-bold text-primary">{followingUsers.length}</div>
               <div className="text-sm text-muted-foreground">Following</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-secondary">{mockFollowers.length}</div>
+              <div className="text-2xl font-bold text-secondary">{followersUsers.length}</div>
               <div className="text-sm text-muted-foreground">Followers</div>
             </div>
             <div>
