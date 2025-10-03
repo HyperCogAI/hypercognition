@@ -32,6 +32,7 @@ export const SocialTradingDashboard: React.FC = () => {
     topTraders,
     socialFeed,
     copyTradingSettings,
+    following,
     loading,
     followTrader,
     unfollowTrader,
@@ -117,12 +118,12 @@ export const SocialTradingDashboard: React.FC = () => {
           <div className="flex gap-2">
             <Button
               size="sm"
-              variant={trader.is_following ? "secondary" : "default"}
-              onClick={() => trader.is_following ? unfollowTrader(trader.id) : followTrader(trader.id)}
+              variant={following.some(f => f.user_id === trader.user_id) ? "secondary" : "default"}
+              onClick={() => following.some(f => f.user_id === trader.user_id) ? unfollowTrader(trader.user_id) : followTrader(trader.user_id)}
               className="flex-1 text-xs"
             >
               <Users className="w-3 h-3 mr-1" />
-              {trader.is_following ? 'Following' : 'Follow'}
+              {following.some(f => f.user_id === trader.user_id) ? 'Following' : 'Follow'}
             </Button>
             
             {trader.copy_trading_enabled && (
@@ -283,7 +284,7 @@ export const SocialTradingDashboard: React.FC = () => {
           <div className="grid gap-4">
             <h2 className="text-xl font-semibold">Following</h2>
             
-            {topTraders.filter(trader => trader.is_following).length === 0 ? (
+            {following.length === 0 ? (
               <Card className="p-8 text-center">
                 <Users className="w-12 h-12 mx-auto mb-4 text-muted-foreground" />
                 <h3 className="text-lg font-semibold mb-2">No traders followed yet</h3>
@@ -296,7 +297,7 @@ export const SocialTradingDashboard: React.FC = () => {
               </Card>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {topTraders.filter(trader => trader.is_following).map(renderTraderCard)}
+                {following.map(renderTraderCard)}
               </div>
             )}
           </div>
