@@ -64,17 +64,41 @@ serve(async (req) => {
               throw new Error('No Solana pairs found')
             }
 
-            // Get best pair by liquidity
-            const bestPair = solanaPairs.sort((a: any, b: any) => 
-              (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
-            )[0]
+            // Prefer pairs where our token is the base; otherwise handle inverse (quote) pairs by inverting price
+            const lowerMint = token.mint_address.toLowerCase()
+            const directPairs = solanaPairs.filter((p: any) => (p.baseToken?.address || '').toLowerCase() === lowerMint)
+            const inversePairs = solanaPairs.filter((p: any) => (p.quoteToken?.address || '').toLowerCase() === lowerMint)
+            const pickByLiquidity = (arr: any[]) => arr.sort((a: any, b: any) => (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0))[0]
+
+            const selectedPair = directPairs.length ? pickByLiquidity(directPairs) : (inversePairs.length ? pickByLiquidity(inversePairs) : null)
+            if (!selectedPair) {
+              throw new Error('No matching pairs for token address')
+            }
+            const isBase = directPairs.length > 0
+
+            const basePriceUsd = parseFloat(selectedPair.priceUsd || '0')
+            if (!isFinite(basePriceUsd) || basePriceUsd <= 0) {
+              throw new Error('Invalid base pair price')
+            }
+            const price = isBase ? basePriceUsd : (1 / basePriceUsd)
+
+            // Approximate inverse percentage change for quote-side tokens
+            const baseChange = parseFloat(selectedPair.priceChange?.h24 || '0')
+            const change24h = isBase ? baseChange : (baseChange === 0 ? 0 : -baseChange)
+
+            const volume24h = parseFloat(selectedPair.volume?.h24 || '0')
+            const marketCap = isBase ? parseFloat(selectedPair.fdv || '0') : 0
+
+            if (!isFinite(price) || price <= 0) {
+              throw new Error('Computed invalid price')
+            }
 
             return {
               token,
-              price: parseFloat(bestPair.priceUsd || '0'),
-              change24h: parseFloat(bestPair.priceChange?.h24 || '0'),
-              volume24h: parseFloat(bestPair.volume?.h24 || '0'),
-              marketCap: parseFloat(bestPair.fdv || '0'),
+              price,
+              change24h,
+              volume24h,
+              marketCap,
             }
           } catch (error) {
             console.error(`[SolanaSync] Error for ${token.symbol}:`, error)
@@ -101,7 +125,7 @@ serve(async (req) => {
           priceHistory.push({
             mint_address: token.mint_address,
             price,
-            volume_24h: volume24h,
+            volume: volume24h,
             market_cap: marketCap
           })
           

@@ -37,7 +37,7 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
       // Fetch from database
       const { data, error } = await supabase
         .from('solana_price_history')
-        .select('price, volume_24h, timestamp')
+        .select('price, volume, timestamp')
         .eq('mint_address', token.mint_address)
         .gte('timestamp', startTime.toISOString())
         .order('timestamp', { ascending: true })
@@ -51,7 +51,7 @@ const SolanaPriceChartComponent: React.FC<SolanaPriceChartProps> = ({
             minute: '2-digit' 
           }),
           price: Number(item.price),
-          volume: Number(item.volume_24h)
+          volume: Number(item.volume)
         }))
         setChartData(formatted)
       } else {
