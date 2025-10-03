@@ -1,5 +1,6 @@
 import { useEffect } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
+import { GradientBorderButton } from "./GradientBorderButton"
 import { useWallet } from "@/hooks/useWallet"
 import { Wallet, LogOut } from "lucide-react"
 import {
@@ -58,10 +59,10 @@ export const WalletButton = () => {
 
 
     return (
-      <CyberButton variant="gradient-border" size="sm" onClick={connectWallet} className="w-[130px] justify-center">
+      <GradientBorderButton onClick={connectWallet} className="w-[130px] justify-center">
         <Wallet className="h-4 w-4 text-white" />
         <span className="text-white">Connect EVM</span>
-      </CyberButton>
+      </GradientBorderButton>
     )
   }
 

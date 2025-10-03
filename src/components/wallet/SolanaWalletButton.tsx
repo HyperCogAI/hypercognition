@@ -1,4 +1,5 @@
 import { CyberButton } from "@/components/ui/cyber-button"
+import { GradientBorderButton } from "./GradientBorderButton"
 import { useSolanaWallet } from "@/hooks/useSolanaWallet"
 import { useEffect } from "react"
 import { Wallet, LogOut } from "lucide-react"
@@ -72,9 +73,7 @@ export const SolanaWalletButton = () => {
     }
 
     return (
-      <CyberButton 
-        variant="gradient-border" 
-        size="sm" 
+      <GradientBorderButton 
         onClick={() => {
           console.log('Solana Connect button clicked')
           connectWallet()
@@ -83,7 +82,7 @@ export const SolanaWalletButton = () => {
       >
         <Wallet className="h-4 w-4 text-white" />
         <span className="text-white">Connect SOL</span>
-      </CyberButton>
+      </GradientBorderButton>
     )
   }
 
