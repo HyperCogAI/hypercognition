@@ -63,11 +63,8 @@ export const ReferralDashboard = () => {
     <div className="space-y-8">
       {/* Header */}
       <div>
-        <h1 className="text-4xl font-bold mb-2">
-          Referral{" "}
-          <span className="bg-gradient-to-r from-primary to-primary/60 bg-clip-text text-transparent">
-            Program
-          </span>
+        <h1 className="text-4xl font-bold mb-2 text-white">
+          Referral Program
         </h1>
         <p className="text-muted-foreground">
           Invite friends and earn rewards for every successful referral
