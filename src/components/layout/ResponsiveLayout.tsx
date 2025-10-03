@@ -147,8 +147,8 @@ export function ResponsiveLayout({
                 </Button>
                 <ThemeToggle />
                 <div className="flex items-center gap-2">
-                  <UnifiedWalletButton />
                   <NetworkSelectorButton />
+                  <UnifiedWalletButton />
                 </div>
               </div>
             </header>

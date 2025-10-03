@@ -75,8 +75,8 @@ export function Navigation() {
               )
             )}
             <div className="flex items-center gap-2">
-              <UnifiedWalletButton />
               <NetworkSelectorButton />
+              <UnifiedWalletButton />
             </div>
           </div>
 
