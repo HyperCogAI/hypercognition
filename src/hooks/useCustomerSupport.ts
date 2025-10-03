@@ -138,9 +138,9 @@ export const useCustomerSupport = () => {
 
   const fetchTicketMessages = useCallback(async (ticketId: string) => {
     try {
-      // Fetch real messages from Supabase
+      // Fetch messages from support_messages table
       const { data: messagesData, error } = await supabase
-        .from('support_ticket_messages')
+        .from('support_messages' as any)
         .select('*')
         .eq('ticket_id', ticketId)
         .order('created_at', { ascending: true });
@@ -148,14 +148,13 @@ export const useCustomerSupport = () => {
       if (error) throw error;
 
       // Transform data to match interface
-      const transformedMessages: SupportMessage[] = (messagesData || []).map(msg => ({
+      const transformedMessages: SupportMessage[] = ((messagesData || []) as any[]).map((msg: any) => ({
         id: msg.id,
         ticket_id: msg.ticket_id,
         sender_id: msg.user_id,
-        sender_type: msg.is_staff_response ? 'agent' : 'customer',
+        sender_type: msg.is_system ? 'system' : (msg.is_internal ? 'agent' : 'customer'),
         message: msg.message,
-        is_internal_note: false,
-        attachments: Array.isArray(msg.attachments) ? msg.attachments as string[] : [],
+        is_internal_note: msg.is_internal || false,
         created_at: msg.created_at
       }));
 
@@ -280,52 +279,48 @@ export const useCustomerSupport = () => {
     try {
       setLoading(true);
 
-      const { data, error } = await supabase
-        .from('support_tickets')
-        .insert([{
-          user_id: user?.id,
+      // Call edge function to create ticket
+      const { data, error } = await supabase.functions.invoke('create-support-ticket', {
+        body: {
           subject: ticketData.subject,
           description: ticketData.description,
-          category: ticketData.category,
+          category_id: ticketData.category,
           priority: ticketData.priority,
-          metadata: {
-            tags: ticketData.tags,
-            attachments: ticketData.attachments || []
-          }
-        }])
-        .select()
-        .single();
+          tags: ticketData.tags
+        }
+      });
 
       if (error) throw error;
 
       // Transform response to match interface
+      const ticketStatus = data.ticket.status === 'waiting_customer' ? 'waiting_for_customer' : data.ticket.status;
       const newTicket: SupportTicket = {
-        id: data.id,
-        user_id: data.user_id,
-        subject: data.subject,
-        description: data.description,
-        category: data.category as 'technical' | 'billing' | 'general' | 'feature_request' | 'bug_report',
-        priority: data.priority as 'low' | 'medium' | 'high' | 'urgent',
-        status: data.status as 'open' | 'in_progress' | 'waiting_for_customer' | 'resolved' | 'closed',
-        created_at: data.created_at,
-        updated_at: data.updated_at,
-        tags: Array.isArray(data.metadata) ? [] : (data.metadata as any)?.tags || [],
-        attachments: Array.isArray(data.metadata) ? [] : (data.metadata as any)?.attachments || []
+        id: data.ticket.id,
+        user_id: data.ticket.user_id,
+        subject: data.ticket.subject,
+        description: data.ticket.description,
+        category: data.ticket.category_id as 'technical' | 'billing' | 'general' | 'feature_request' | 'bug_report',
+        priority: data.ticket.priority as 'low' | 'medium' | 'high' | 'urgent',
+        status: ticketStatus as 'open' | 'in_progress' | 'waiting_for_customer' | 'resolved' | 'closed',
+        created_at: data.ticket.created_at,
+        updated_at: data.ticket.updated_at,
+        tags: data.ticket.tags || [],
+        attachments: []
       };
 
       setTickets(prev => [newTicket, ...prev]);
 
       toast({
         title: "Ticket Created",
-        description: `Your support ticket #${newTicket.id} has been created successfully.`,
+        description: `Your support ticket ${data.ticket.ticket_number} has been created successfully.`,
       });
 
       return newTicket;
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to create ticket:', error);
       toast({
         title: "Error",
-        description: "Failed to create support ticket",
+        description: error.message || "Failed to create support ticket",
         variant: "destructive"
       });
       throw error;
@@ -337,15 +332,26 @@ export const useCustomerSupport = () => {
   // Send message to ticket
   const sendMessage = async (ticketId: string, message: string, attachments?: File[]) => {
     try {
+      // Call edge function to send message
+      const { data, error } = await supabase.functions.invoke('reply-support-ticket', {
+        body: {
+          ticket_id: ticketId,
+          message: message,
+          is_internal: false
+        }
+      });
+
+      if (error) throw error;
+
+      // Add message to local state
       const newMessage: SupportMessage = {
-        id: `msg_${Date.now()}`,
+        id: data.message.id,
         ticket_id: ticketId,
         sender_id: user?.id || '',
         sender_type: 'customer',
-        message,
+        message: data.message.message,
         is_internal_note: false,
-        created_at: new Date().toISOString(),
-        attachments: attachments ? attachments.map(f => f.name) : undefined
+        created_at: data.message.created_at
       };
 
       setMessages(prev => ({
@@ -353,10 +359,10 @@ export const useCustomerSupport = () => {
         [ticketId]: [...(prev[ticketId] || []), newMessage]
       }));
 
-      // Update ticket status to indicate customer response
+      // Update ticket status
       setTickets(prev => prev.map(ticket => 
         ticket.id === ticketId 
-          ? { ...ticket, updated_at: new Date().toISOString(), status: ticket.status === 'waiting_for_customer' ? 'in_progress' : ticket.status }
+          ? { ...ticket, updated_at: new Date().toISOString() }
           : ticket
       ));
 
@@ -364,11 +370,11 @@ export const useCustomerSupport = () => {
         title: "Message Sent",
         description: "Your message has been sent to our support team.",
       });
-    } catch (error) {
+    } catch (error: any) {
       console.error('Failed to send message:', error);
       toast({
         title: "Error",
-        description: "Failed to send message",
+        description: error.message || "Failed to send message",
         variant: "destructive"
       });
     }
@@ -469,7 +475,7 @@ export const useCustomerSupport = () => {
 
   // Setup real-time subscriptions
   useEffect(() => {
-    if (!user) return;
+    if (!user || tickets.length === 0) return;
 
     const channel = supabase
       .channel(`support:${user.id}`)
@@ -477,15 +483,26 @@ export const useCustomerSupport = () => {
         {
           event: 'INSERT',
           schema: 'public',
-          table: 'support_messages',
+          table: 'support_messages' as any,
           filter: `ticket_id=in.(${tickets.map(t => t.id).join(',')})`
         },
         (payload) => {
-          const newMessage = payload.new as SupportMessage;
-          if (newMessage.sender_type === 'agent') {
+          const msg = payload.new as any;
+          // Only show notification if message is from agent and not from current user
+          if (msg.user_id !== user.id && !msg.is_system) {
+            const newMessage: SupportMessage = {
+              id: msg.id,
+              ticket_id: msg.ticket_id,
+              sender_id: msg.user_id,
+              sender_type: msg.is_internal ? 'agent' : 'customer',
+              message: msg.message,
+              is_internal_note: msg.is_internal || false,
+              created_at: msg.created_at
+            };
+
             setMessages(prev => ({
               ...prev,
-              [newMessage.ticket_id]: [...(prev[newMessage.ticket_id] || []), newMessage]
+              [msg.ticket_id]: [...(prev[msg.ticket_id] || []), newMessage]
             }));
 
             toast({
