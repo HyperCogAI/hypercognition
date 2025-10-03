@@ -27,7 +27,7 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="fixed md:hidden top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
+    <nav className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Sidebar Toggle - Desktop Left */}
