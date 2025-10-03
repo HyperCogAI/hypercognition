@@ -11,6 +11,10 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 import { toast } from '@/hooks/use-toast';
 import { SEOHead } from '@/components/seo/SEOHead';
+import { SettingsTestPanel } from '@/components/settings/SettingsTestPanel';
+import { useUserSettings } from '@/hooks/useUserSettings';
+import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
+import { usePrivacySettings } from '@/hooks/usePrivacySettings';
 import {
   User,
   Shield,
@@ -37,33 +41,59 @@ import {
 } from 'lucide-react';
 
 const Settings = () => {
-  const [theme, setTheme] = useState('dark');
-  const [language, setLanguage] = useState('en');
-  const [currency, setCurrency] = useState('USD');
+  // Backend hooks
+  const { settings, updateSettings, isLoading: isLoadingSettings } = useUserSettings();
+  const { preferences, updatePreferences } = useNotificationPreferences();
+  const { privacySettings, updatePrivacySettings } = usePrivacySettings();
+
+  // Local state for form
+  const [theme, setTheme] = useState<'light' | 'dark' | 'system'>((settings?.theme_mode as any) || 'dark');
+  const [language, setLanguage] = useState(settings?.language || 'en');
+  const [currency, setCurrency] = useState(settings?.currency || 'USD');
   const [notifications, setNotifications] = useState({
-    email: true,
-    push: true,
+    email: settings?.email_notifications_enabled ?? true,
+    push: settings?.push_notifications_enabled ?? true,
     sms: false,
-    trades: true,
-    news: true,
-    priceAlerts: true
+    trades: preferences?.portfolio_updates_enabled ?? true,
+    news: preferences?.market_news_enabled ?? true,
+    priceAlerts: preferences?.price_alerts_enabled ?? true
   });
   const [trading, setTrading] = useState({
     defaultLeverage: '10x',
     riskLevel: 'medium',
-    autoTrading: false,
+    autoTrading: settings?.auto_approve_transactions ?? false,
     paperMode: true,
-    stopLoss: '5'
+    stopLoss: settings?.default_slippage_tolerance?.toString() || '5'
   });
   const [security, setSecurity] = useState({
-    twoFactor: false,
-    sessionTimeout: '30',
+    twoFactor: settings?.two_factor_enabled ?? false,
+    sessionTimeout: settings?.session_timeout_minutes?.toString() || '30',
     ipWhitelist: false,
     apiAccess: false
   });
   const [showApiKey, setShowApiKey] = useState(false);
 
   const handleSave = (section: string) => {
+    // Save to backend based on section
+    if (section === 'Account') {
+      updateSettings({
+        language,
+        currency,
+        timezone: Intl.DateTimeFormat().resolvedOptions().timeZone
+      });
+    } else if (section === 'Security') {
+      updateSettings({
+        session_timeout_minutes: parseInt(security.sessionTimeout),
+      });
+    } else if (section === 'Notifications') {
+      updatePreferences({
+        price_alerts_enabled: notifications.priceAlerts,
+        market_news_enabled: notifications.news,
+        email_notifications_enabled: notifications.email,
+        push_notifications_enabled: notifications.push,
+      });
+    }
+    
     toast({
       title: "Settings Saved",
       description: `${section} settings have been updated successfully.`,
@@ -111,9 +141,16 @@ const Settings = () => {
           </div>
 
           {/* Settings Tabs */}
-          <Tabs defaultValue="account" className="space-y-4 md:space-y-6">
+          <Tabs defaultValue="testing" className="space-y-4 md:space-y-6">
             <div className="w-full overflow-x-auto">
               <TabsList className="inline-flex w-full min-w-max h-11 md:h-12 bg-card/80 border border-border/50 backdrop-blur-sm p-1 rounded-lg">
+                <TabsTrigger 
+                  value="testing" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <Monitor className="w-4 h-4" />
+                  <span className="hidden sm:inline">🧪 Test</span>
+                </TabsTrigger>
                 <TabsTrigger 
                   value="account" 
                   className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
@@ -158,6 +195,11 @@ const Settings = () => {
                 </TabsTrigger>
               </TabsList>
             </div>
+
+            {/* Backend Test Panel - Remove in production */}
+            <TabsContent value="testing" className="space-y-6">
+              <SettingsTestPanel />
+            </TabsContent>
 
             {/* Account Settings */}
             <TabsContent value="account" className="space-y-4 md:space-y-6">
@@ -570,7 +612,7 @@ const Settings = () => {
                     <div className="space-y-4">
                       <div className="space-y-2">
                         <Label htmlFor="theme">Theme</Label>
-                        <Select value={theme} onValueChange={setTheme}>
+                        <Select value={theme} onValueChange={(value) => setTheme(value as any)}>
                           <SelectTrigger className="bg-background/50">
                             <SelectValue />
                           </SelectTrigger>
