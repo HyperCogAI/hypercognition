@@ -1,267 +1,354 @@
 import { supabase } from '@/integrations/supabase/client'
 
-export interface Community {
-  id: string
-  name: string
-  description?: string
-  avatar_url?: string
-  banner_url?: string
-  created_by: string
-  member_count: number
-  post_count: number
-  is_private: boolean
-  rules?: any[]
-  tags?: string[]
-  created_at: string
-  updated_at: string
-}
-
-export interface CommunityMember {
-  id: string
-  community_id: string
-  user_id: string
-  role: 'owner' | 'moderator' | 'member'
-  joined_at: string
-}
-
 export interface CommunityPost {
   id: string
-  community_id: string
   user_id: string
+  category_id?: string
   title: string
   content: string
-  post_type: 'discussion' | 'announcement' | 'question'
-  media_urls?: string[]
-  likes_count: number
-  comments_count: number
   is_pinned: boolean
+  is_locked: boolean
+  view_count: number
+  reply_count: number
+  like_count: number
+  last_activity_at: string
   created_at: string
-  updated_at: string
+  profiles?: {
+    display_name?: string
+    avatar_url?: string
+  }
+  community_categories?: {
+    name: string
+  }
 }
 
-export class CommunityService {
-  /**
-   * Get all public communities
-   */
-  async getCommunities(): Promise<Community[]> {
+export interface PostReply {
+  id: string
+  post_id: string
+  user_id: string
+  content: string
+  like_count: number
+  is_solution: boolean
+  created_at: string
+  profiles?: {
+    display_name?: string
+    avatar_url?: string
+  }
+}
+
+export interface ChatMessage {
+  id: string
+  user_id: string
+  content: string
+  is_system_message: boolean
+  created_at: string
+  profiles?: {
+    display_name?: string
+    avatar_url?: string
+  }
+}
+
+export interface UserStats {
+  id: string
+  user_id: string
+  posts_created: number
+  replies_created: number
+  likes_received: number
+  reputation_score: number
+  rank?: number
+  profiles?: {
+    display_name?: string
+    avatar_url?: string
+  }
+}
+
+class CommunityService {
+  // ==================== FORUM POSTS ====================
+  
+  async getPosts(limit = 20, categoryId?: string) {
+    let query = supabase
+      .from('community_posts')
+      .select(`
+        *,
+        profiles(display_name, avatar_url),
+        community_categories(name)
+      `)
+      .order('is_pinned', { ascending: false })
+      .order('last_activity_at', { ascending: false })
+      .limit(limit)
+    
+    if (categoryId) {
+      query = query.eq('category_id', categoryId)
+    }
+    
+    const { data, error } = await query
+    if (error) throw error
+    return data as CommunityPost[]
+  }
+  
+  async getPost(postId: string) {
     const { data, error } = await supabase
-      .from('communities' as any)
-      .select('*')
-      .eq('is_private', false)
-      .order('member_count', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching communities:', error)
-      return []
-    }
-
-    return (data || []) as any[]
+      .from('community_posts')
+      .select(`
+        *,
+        profiles(display_name, avatar_url),
+        community_categories(name)
+      `)
+      .eq('id', postId)
+      .single()
+    
+    if (error) throw error
+    
+    // Increment view count
+    await supabase
+      .from('community_posts')
+      .update({ view_count: data.view_count + 1 })
+      .eq('id', postId)
+    
+    return data as CommunityPost
   }
-
-  /**
-   * Get user's communities
-   */
-  async getUserCommunities(userId: string): Promise<Community[]> {
-    const { data, error } = await supabase
-      .from('community_members' as any)
-      .select('community_id')
-      .eq('user_id', userId)
-
-    if (error) {
-      console.error('Error fetching user communities:', error)
-      return []
-    }
-
-    if (!data || data.length === 0) return []
-
-    const communityIds = data.map((item: any) => item.community_id)
-    const { data: communities } = await supabase
-      .from('communities' as any)
-      .select('*')
-      .in('id', communityIds)
-
-    return (communities || []) as any[]
-  }
-
-  /**
-   * Create a community
-   */
-  async createCommunity(community: {
-    name: string
-    description?: string
-    is_private?: boolean
-    tags?: string[]
-  }): Promise<{ success: boolean; community?: Community; error?: string }> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        return { success: false, error: 'User not authenticated' }
-      }
-
-      const { data, error } = await supabase
-        .from('communities' as any)
-        .insert({
-          ...community,
-          created_by: user.id,
-          member_count: 1
-        } as any)
-        .select()
-        .single()
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      // Add creator as owner
-      await supabase.from('community_members' as any).insert({
-        community_id: (data as any).id,
-        user_id: user.id,
-        role: 'owner'
-      } as any)
-
-      return { success: true, community: data as any }
-    } catch (error: any) {
-      return { success: false, error: error.message }
-    }
-  }
-
-  /**
-   * Join a community
-   */
-  async joinCommunity(communityId: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        return { success: false, error: 'User not authenticated' }
-      }
-
-      const { error } = await supabase
-        .from('community_members' as any)
-        .insert({
-          community_id: communityId,
-          user_id: user.id,
-          role: 'member'
-        } as any)
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      // Increment member count
-      const { data: community } = await supabase
-        .from('communities' as any)
-        .select('member_count')
-        .eq('id', communityId)
-        .single()
-      
-      if (community && (community as any).member_count !== undefined) {
-        await supabase
-          .from('communities' as any)
-          .update({ member_count: ((community as any).member_count || 0) + 1 } as any)
-          .eq('id', communityId)
-      }
-
-      return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
-    }
-  }
-
-  /**
-   * Leave a community
-   */
-  async leaveCommunity(communityId: string): Promise<{ success: boolean; error?: string }> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        return { success: false, error: 'User not authenticated' }
-      }
-
-      const { error } = await supabase
-        .from('community_members' as any)
-        .delete()
-        .eq('community_id', communityId)
-        .eq('user_id', user.id)
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      return { success: true }
-    } catch (error: any) {
-      return { success: false, error: error.message }
-    }
-  }
-
-  /**
-   * Get community posts
-   */
-  async getCommunityPosts(communityId: string): Promise<CommunityPost[]> {
-    const { data, error } = await supabase
-      .from('community_posts' as any)
-      .select('*')
-      .eq('community_id', communityId)
-      .order('created_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching community posts:', error)
-      return []
-    }
-
-    return (data || []) as any[]
-  }
-
-  /**
-   * Create community post
-   */
-  async createCommunityPost(post: {
-    community_id: string
+  
+  async createPost(post: {
     title: string
     content: string
-    post_type?: string
-    media_urls?: string[]
-  }): Promise<{ success: boolean; post?: CommunityPost; error?: string }> {
-    try {
-      const { data: { user } } = await supabase.auth.getUser()
-      if (!user) {
-        return { success: false, error: 'User not authenticated' }
-      }
-
-      const { data, error } = await supabase
-        .from('community_posts' as any)
-        .insert({
-          ...post,
-          user_id: user.id
-        } as any)
-        .select()
-        .single()
-
-      if (error) {
-        return { success: false, error: error.message }
-      }
-
-      return { success: true, post: data as any }
-    } catch (error: any) {
-      return { success: false, error: error.message }
-    }
-  }
-
-  /**
-   * Get community members
-   */
-  async getCommunityMembers(communityId: string): Promise<CommunityMember[]> {
+    category_id?: string
+  }) {
     const { data, error } = await supabase
-      .from('community_members' as any)
+      .from('community_posts')
+      .insert({
+        ...post,
+        user_id: (await supabase.auth.getUser()).data.user?.id
+      })
+      .select()
+      .single()
+    
+    if (error) throw error
+    return { success: true, post: data }
+  }
+  
+  async updatePost(postId: string, updates: { title?: string; content?: string }) {
+    const { error } = await supabase
+      .from('community_posts')
+      .update(updates)
+      .eq('id', postId)
+    
+    if (error) throw error
+    return { success: true }
+  }
+  
+  async deletePost(postId: string) {
+    const { error } = await supabase
+      .from('community_posts')
+      .delete()
+      .eq('id', postId)
+    
+    if (error) throw error
+    return { success: true }
+  }
+  
+  async likePost(postId: string) {
+    const userId = (await supabase.auth.getUser()).data.user?.id
+    if (!userId) throw new Error('User not authenticated')
+    
+    const { error } = await supabase
+      .from('community_post_likes')
+      .insert({ post_id: postId, user_id: userId })
+    
+    if (error) throw error
+    return { success: true }
+  }
+  
+  async unlikePost(postId: string) {
+    const userId = (await supabase.auth.getUser()).data.user?.id
+    if (!userId) throw new Error('User not authenticated')
+    
+    const { error } = await supabase
+      .from('community_post_likes')
+      .delete()
+      .eq('post_id', postId)
+      .eq('user_id', userId)
+    
+    if (error) throw error
+    return { success: true }
+  }
+  
+  // ==================== POST REPLIES ====================
+  
+  async getReplies(postId: string) {
+    const { data, error } = await supabase
+      .from('community_post_replies')
+      .select(`
+        *,
+        profiles(display_name, avatar_url)
+      `)
+      .eq('post_id', postId)
+      .order('created_at', { ascending: true })
+    
+    if (error) throw error
+    return data as PostReply[]
+  }
+  
+  async createReply(postId: string, content: string) {
+    const userId = (await supabase.auth.getUser()).data.user?.id
+    if (!userId) throw new Error('User not authenticated')
+    
+    const { data, error } = await supabase
+      .from('community_post_replies')
+      .insert({
+        post_id: postId,
+        user_id: userId,
+        content
+      })
+      .select()
+      .single()
+    
+    if (error) throw error
+    return { success: true, reply: data }
+  }
+  
+  async likeReply(replyId: string) {
+    const userId = (await supabase.auth.getUser()).data.user?.id
+    if (!userId) throw new Error('User not authenticated')
+    
+    const { error } = await supabase
+      .from('community_reply_likes')
+      .insert({ reply_id: replyId, user_id: userId })
+    
+    if (error) throw error
+    return { success: true }
+  }
+  
+  async unlikeReply(replyId: string) {
+    const userId = (await supabase.auth.getUser()).data.user?.id
+    if (!userId) throw new Error('User not authenticated')
+    
+    const { error } = await supabase
+      .from('community_reply_likes')
+      .delete()
+      .eq('reply_id', replyId)
+      .eq('user_id', userId)
+    
+    if (error) throw error
+    return { success: true }
+  }
+  
+  // ==================== LIVE CHAT ====================
+  
+  async getChatMessages(limit = 50) {
+    const { data, error } = await supabase
+      .from('community_chat_messages')
+      .select(`
+        *,
+        profiles(display_name, avatar_url)
+      `)
+      .order('created_at', { ascending: false })
+      .limit(limit)
+    
+    if (error) throw error
+    return (data as ChatMessage[]).reverse()
+  }
+  
+  async sendChatMessage(content: string) {
+    const userId = (await supabase.auth.getUser()).data.user?.id
+    if (!userId) throw new Error('User not authenticated')
+    
+    const { data, error } = await supabase
+      .from('community_chat_messages')
+      .insert({
+        user_id: userId,
+        content
+      })
+      .select()
+      .single()
+    
+    if (error) throw error
+    return { success: true, message: data }
+  }
+  
+  subscribeToChat(callback: (message: ChatMessage) => void) {
+    return supabase
+      .channel('community_chat')
+      .on(
+        'postgres_changes',
+        {
+          event: 'INSERT',
+          schema: 'public',
+          table: 'community_chat_messages'
+        },
+        async (payload) => {
+          // Fetch the full message with profile data
+          const { data } = await supabase
+            .from('community_chat_messages')
+            .select(`
+              *,
+              profiles(display_name, avatar_url)
+            `)
+            .eq('id', payload.new.id)
+            .single()
+          
+          if (data) callback(data as ChatMessage)
+        }
+      )
+      .subscribe()
+  }
+  
+  // ==================== LEADERBOARD ====================
+  
+  async getLeaderboard(limit = 10) {
+    const { data, error } = await supabase
+      .from('community_user_stats')
+      .select(`
+        *,
+        profiles(display_name, avatar_url)
+      `)
+      .order('reputation_score', { ascending: false })
+      .limit(limit)
+    
+    if (error) throw error
+    return data as UserStats[]
+  }
+  
+  async getUserStats(userId: string) {
+    const { data, error } = await supabase
+      .from('community_user_stats')
+      .select(`
+        *,
+        profiles(display_name, avatar_url)
+      `)
+      .eq('user_id', userId)
+      .single()
+    
+    if (error && error.code !== 'PGRST116') throw error
+    return data as UserStats | null
+  }
+  
+  // ==================== CATEGORIES ====================
+  
+  async getCategories() {
+    const { data, error } = await supabase
+      .from('community_categories')
       .select('*')
-      .eq('community_id', communityId)
-      .order('joined_at', { ascending: false })
-
-    if (error) {
-      console.error('Error fetching community members:', error)
-      return []
+      .eq('is_active', true)
+      .order('sort_order')
+    
+    if (error) throw error
+    return data
+  }
+  
+  // ==================== STATS ====================
+  
+  async getCommunityStats() {
+    const [postsResult, usersResult, chatResult] = await Promise.all([
+      supabase.from('community_posts').select('id', { count: 'exact', head: true }),
+      supabase.from('community_user_stats').select('id', { count: 'exact', head: true }),
+      supabase.from('community_chat_messages').select('id', { count: 'exact', head: true })
+    ])
+    
+    return {
+      totalPosts: postsResult.count || 0,
+      activeMembers: usersResult.count || 0,
+      totalMessages: chatResult.count || 0
     }
-
-    return (data || []) as any[]
   }
 }
 

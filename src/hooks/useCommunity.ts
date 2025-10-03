@@ -1,140 +1,128 @@
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { useAuth } from '@/contexts/AuthContext'
 import { communityService } from '@/services/CommunityService'
+import { useAuth } from '@/contexts/AuthContext'
 import { toast } from '@/hooks/use-toast'
+import { useEffect } from 'react'
 
-export function useCommunity(communityId?: string) {
+export function useCommunity() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
-  // Fetch all communities
-  const { data: communities = [], isLoading: communitiesLoading } = useQuery({
-    queryKey: ['communities'],
-    queryFn: () => communityService.getCommunities(),
+  // Fetch community stats
+  const { data: stats } = useQuery({
+    queryKey: ['community-stats'],
+    queryFn: () => communityService.getCommunityStats(),
   })
 
-  // Fetch user's communities
-  const { data: userCommunities = [] } = useQuery({
-    queryKey: ['user-communities', user?.id],
-    queryFn: () => {
-      if (!user?.id) return []
-      return communityService.getUserCommunities(user.id)
-    },
-    enabled: !!user?.id,
+  // Fetch forum posts
+  const { data: posts = [], isLoading: postsLoading } = useQuery({
+    queryKey: ['community-posts'],
+    queryFn: () => communityService.getPosts(),
   })
 
-  // Fetch community posts
-  const { data: communityPosts = [], isLoading: postsLoading } = useQuery({
-    queryKey: ['community-posts', communityId],
-    queryFn: () => {
-      if (!communityId) return []
-      return communityService.getCommunityPosts(communityId)
-    },
-    enabled: !!communityId,
+  // Fetch categories
+  const { data: categories = [] } = useQuery({
+    queryKey: ['community-categories'],
+    queryFn: () => communityService.getCategories(),
   })
 
-  // Fetch community members
-  const { data: communityMembers = [] } = useQuery({
-    queryKey: ['community-members', communityId],
-    queryFn: () => {
-      if (!communityId) return []
-      return communityService.getCommunityMembers(communityId)
-    },
-    enabled: !!communityId,
+  // Fetch chat messages
+  const { data: chatMessages = [], isLoading: chatLoading } = useQuery({
+    queryKey: ['community-chat'],
+    queryFn: () => communityService.getChatMessages(),
   })
 
-  // Create community mutation
-  const createCommunityMutation = useMutation({
-    mutationFn: (community: Parameters<typeof communityService.createCommunity>[0]) =>
-      communityService.createCommunity(community),
-    onSuccess: (result) => {
-      if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ['communities'] })
-        queryClient.invalidateQueries({ queryKey: ['user-communities'] })
-        toast({
-          title: 'Success',
-          description: 'Community created successfully',
-        })
-      } else {
-        toast({
-          title: 'Error',
-          description: result.error || 'Failed to create community',
-          variant: 'destructive'
-        })
-      }
-    }
+  // Fetch leaderboard
+  const { data: leaderboard = [], isLoading: leaderboardLoading } = useQuery({
+    queryKey: ['community-leaderboard'],
+    queryFn: () => communityService.getLeaderboard(),
   })
 
-  // Join community mutation
-  const joinCommunityMutation = useMutation({
-    mutationFn: (communityId: string) => communityService.joinCommunity(communityId),
-    onSuccess: (result) => {
-      if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ['communities'] })
-        queryClient.invalidateQueries({ queryKey: ['user-communities'] })
-        queryClient.invalidateQueries({ queryKey: ['community-members'] })
-        toast({
-          title: 'Success',
-          description: 'Joined community',
-        })
-      } else {
-        toast({
-          title: 'Error',
-          description: result.error || 'Failed to join community',
-          variant: 'destructive'
-        })
-      }
-    }
-  })
-
-  // Leave community mutation
-  const leaveCommunityMutation = useMutation({
-    mutationFn: (communityId: string) => communityService.leaveCommunity(communityId),
-    onSuccess: (result) => {
-      if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ['user-communities'] })
-        queryClient.invalidateQueries({ queryKey: ['community-members'] })
-        toast({
-          title: 'Success',
-          description: 'Left community',
-        })
-      }
-    }
-  })
-
-  // Create community post mutation
+  // Create post mutation
   const createPostMutation = useMutation({
-    mutationFn: (post: Parameters<typeof communityService.createCommunityPost>[0]) =>
-      communityService.createCommunityPost(post),
-    onSuccess: (result) => {
-      if (result.success) {
-        queryClient.invalidateQueries({ queryKey: ['community-posts'] })
-        toast({
-          title: 'Success',
-          description: 'Post created successfully',
-        })
-      } else {
-        toast({
-          title: 'Error',
-          description: result.error || 'Failed to create post',
-          variant: 'destructive'
-        })
-      }
-    }
+    mutationFn: (post: { title: string; content: string; category_id?: string }) =>
+      communityService.createPost(post),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-posts'] })
+      queryClient.invalidateQueries({ queryKey: ['community-stats'] })
+      toast({ title: 'Success', description: 'Post created successfully' })
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to create post',
+        variant: 'destructive',
+      })
+    },
   })
+
+  // Like post mutation
+  const likePostMutation = useMutation({
+    mutationFn: (postId: string) => communityService.likePost(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-posts'] })
+    },
+  })
+
+  // Unlike post mutation
+  const unlikePostMutation = useMutation({
+    mutationFn: (postId: string) => communityService.unlikePost(postId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-posts'] })
+    },
+  })
+
+  // Send chat message mutation
+  const sendMessageMutation = useMutation({
+    mutationFn: (content: string) => communityService.sendChatMessage(content),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['community-chat'] })
+    },
+    onError: () => {
+      toast({
+        title: 'Error',
+        description: 'Failed to send message',
+        variant: 'destructive',
+      })
+    },
+  })
+
+  // Subscribe to real-time chat updates
+  useEffect(() => {
+    const channel = communityService.subscribeToChat((message) => {
+      queryClient.setQueryData(['community-chat'], (old: any) => {
+        if (!old) return [message]
+        return [...old, message]
+      })
+    })
+
+    return () => {
+      channel.unsubscribe()
+    }
+  }, [queryClient])
 
   return {
-    communities,
-    userCommunities,
-    communityPosts,
-    communityMembers,
-    isLoading: communitiesLoading || postsLoading,
-    createCommunity: createCommunityMutation.mutate,
-    joinCommunity: joinCommunityMutation.mutate,
-    leaveCommunity: leaveCommunityMutation.mutate,
+    // Data
+    stats,
+    posts,
+    categories,
+    chatMessages,
+    leaderboard,
+    
+    // Loading states
+    isLoading: postsLoading || chatLoading || leaderboardLoading,
+    postsLoading,
+    chatLoading,
+    leaderboardLoading,
+    
+    // Mutations
     createPost: createPostMutation.mutate,
-    isCreatingCommunity: createCommunityMutation.isPending,
-    isJoining: joinCommunityMutation.isPending,
+    likePost: likePostMutation.mutate,
+    unlikePost: unlikePostMutation.mutate,
+    sendMessage: sendMessageMutation.mutate,
+    
+    // Mutation states
     isCreatingPost: createPostMutation.isPending,
+    isSendingMessage: sendMessageMutation.isPending,
   }
 }
