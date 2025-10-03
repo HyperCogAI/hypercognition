@@ -46,7 +46,7 @@ export const useSolanaRealtime = () => {
         .select('id, mint_address, name, symbol, description, image_url, decimals, price, market_cap, volume_24h, change_24h, is_active')
         .eq('is_active', true)
         .order('market_cap', { ascending: false })
-        .limit(100)
+        .limit(50)
       
       if (error) throw error
       

@@ -83,7 +83,7 @@ export const SolanaMarketOverview = ({ onTokenSelect }: SolanaMarketOverviewProp
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5 text-purple-400" />
-            Top 100 Solana Tokens by Market Cap
+            Top 50 Solana Tokens by Market Cap
           </CardTitle>
           <div className="flex items-center gap-2">
             <Badge variant="secondary" className="text-xs">
