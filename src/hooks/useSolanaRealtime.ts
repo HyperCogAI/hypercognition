@@ -22,7 +22,7 @@ export const useSolanaRealtime = () => {
   const isFetchingRef = useRef(false)
   const abortControllerRef = useRef<AbortController | null>(null)
 
-  const fetchTokens = useCallback(async () => {
+  const fetchTokens = useCallback(async (includeCustomTokens: boolean = true, userWalletAddress?: string) => {
     // Prevent concurrent fetches
     if (isFetchingRef.current) {
       console.log('[SolanaRealtime] Fetch already in progress, skipping')
@@ -71,9 +71,38 @@ export const useSolanaRealtime = () => {
         change_24h: Number(token.change_24h) || 0,
         is_active: token.is_active
       }))
-      
-      setTokens(mappedTokens)
-      console.log(`[SolanaRealtime] ✓ Loaded ${mappedTokens.length} tokens`)
+
+      // Fetch custom tokens if requested and user is connected
+      let customTokens: SolanaToken[] = []
+      if (includeCustomTokens && userWalletAddress) {
+        const { data: customData, error: customError } = await supabase
+          .from('custom_solana_tokens')
+          .select('*')
+          .eq('user_id', userWalletAddress)
+          .eq('is_active', true)
+
+        if (!customError && customData) {
+          customTokens = customData.map((token: any) => ({
+            id: token.id,
+            mint_address: token.mint_address,
+            name: token.name,
+            symbol: token.symbol,
+            description: token.description || `${token.name} on Solana`,
+            image_url: token.image_url || '/placeholder.svg',
+            decimals: token.decimals,
+            price: 0, // Custom tokens don't have price data initially
+            market_cap: 0,
+            volume_24h: 0,
+            change_24h: 0,
+            is_active: token.is_active
+          }))
+          console.log(`[SolanaRealtime] ✓ Loaded ${customTokens.length} custom tokens`)
+        }
+      }
+
+      const allTokens = [...mappedTokens, ...customTokens]
+      setTokens(allTokens)
+      console.log(`[SolanaRealtime] ✓ Loaded ${allTokens.length} total tokens (${mappedTokens.length} standard + ${customTokens.length} custom)`)
       
     } catch (error: any) {
       if (error.name !== 'AbortError') {
@@ -118,5 +147,6 @@ export const useSolanaRealtime = () => {
     fetchTokens,
     getTokenByMint,
     getTokensBySymbols,
+    refetchTokens: fetchTokens,
   }
 }

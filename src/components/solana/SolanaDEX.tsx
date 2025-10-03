@@ -15,6 +15,7 @@ import { jupiterApi } from "@/lib/apis/jupiterApi"
 import { ArrowDownUp, Settings, TrendingUp, Wallet, AlertCircle, Loader2, RefreshCw } from "lucide-react"
 import { Connection, VersionedTransaction } from "@solana/web3.js"
 import { supabase } from "@/integrations/supabase/client"
+import { AddCustomToken } from "./AddCustomToken"
 
 interface SwapQuote {
   inputMint: string
@@ -28,9 +29,16 @@ interface SwapQuote {
 }
 
 export const SolanaDEX = () => {
-  const { tokens } = useSolanaRealtime()
+  const { tokens, refetchTokens } = useSolanaRealtime()
   const { publicKey, signTransaction, connected } = useWallet()
   const { toast } = useToast()
+
+  // Refetch tokens when wallet connects to include custom tokens
+  useEffect(() => {
+    if (publicKey && refetchTokens) {
+      refetchTokens(true, publicKey.toString())
+    }
+  }, [publicKey, refetchTokens])
 
   const [fromToken, setFromToken] = useState<string>("")
   const [toToken, setToToken] = useState<string>("")
@@ -241,13 +249,16 @@ export const SolanaDEX = () => {
             </CardTitle>
             <CardDescription>Swap tokens instantly via Jupiter Aggregator</CardDescription>
           </div>
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={() => setShowSettings(true)}
-          >
-            <Settings className="h-4 w-4" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <AddCustomToken onTokenAdded={() => refetchTokens?.(true, publicKey?.toString())} />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setShowSettings(true)}
+            >
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-4">

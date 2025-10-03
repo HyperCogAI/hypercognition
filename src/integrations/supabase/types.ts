@@ -1878,6 +1878,48 @@ export type Database = {
         }
         Relationships: []
       }
+      custom_solana_tokens: {
+        Row: {
+          created_at: string
+          decimals: number
+          description: string | null
+          id: string
+          image_url: string | null
+          is_active: boolean
+          mint_address: string
+          name: string
+          symbol: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          decimals?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          mint_address: string
+          name: string
+          symbol: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          decimals?: number
+          description?: string | null
+          id?: string
+          image_url?: string | null
+          is_active?: boolean
+          mint_address?: string
+          name?: string
+          symbol?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       defi_pools: {
         Row: {
           apy: number
