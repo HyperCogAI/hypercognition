@@ -17,7 +17,8 @@ const cyberButtonVariants = cva(
         cyber: "bg-gradient-to-r from-primary/80 to-accent/80 text-primary-foreground shadow-lg hover:shadow-xl hover:from-primary hover:to-accent hover:text-muted-foreground transition-all duration-300",
         neon: "bg-primary/60 text-white border border-white hover:bg-primary/70 transition-all duration-300 shadow-lg glow-primary",
         analytics: "rounded-full border border-primary/30 bg-background/10 text-white hover:bg-primary/10 hover:border-primary/50 hover:text-muted-foreground transition-all duration-300 shadow-sm",
-        ai: "bg-gradient-to-r from-secondary/70 to-primary/70 text-primary-foreground shadow-lg hover:from-secondary hover:to-primary hover:text-muted-foreground transition-all duration-300"
+        ai: "bg-gradient-to-r from-secondary/70 to-primary/70 text-primary-foreground shadow-lg hover:from-secondary hover:to-primary hover:text-muted-foreground transition-all duration-300",
+        "gradient-border": "relative bg-black/60 text-white border border-transparent hover:bg-black/70 transition-all duration-300 overflow-hidden before:absolute before:inset-0 before:-z-10 before:rounded-full before:p-[1px] before:bg-gradient-to-r before:from-primary before:via-secondary before:to-primary before:bg-[length:200%_100%] before:animate-[borderRotate_3s_linear_infinite]"
       },
       size: {
         default: "h-9 px-4 py-2",

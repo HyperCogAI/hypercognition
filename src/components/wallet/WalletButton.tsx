@@ -58,7 +58,7 @@ export const WalletButton = () => {
 
 
     return (
-      <CyberButton variant="outline" size="sm" onClick={connectWallet} className="w-[130px] justify-center">
+      <CyberButton variant="gradient-border" size="sm" onClick={connectWallet} className="w-[130px] justify-center">
         <Wallet className="h-4 w-4 text-white" />
         <span className="text-white">Connect EVM</span>
       </CyberButton>

@@ -73,7 +73,7 @@ export const SolanaWalletButton = () => {
 
     return (
       <CyberButton 
-        variant="outline" 
+        variant="gradient-border" 
         size="sm" 
         onClick={() => {
           console.log('Solana Connect button clicked')
