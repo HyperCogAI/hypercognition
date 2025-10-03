@@ -1952,6 +1952,54 @@ export type Database = {
         }
         Relationships: []
       }
+      connected_accounts: {
+        Row: {
+          access_token_encrypted: string | null
+          created_at: string
+          id: string
+          is_active: boolean | null
+          last_synced_at: string | null
+          provider: string
+          provider_account_id: string
+          provider_account_name: string | null
+          refresh_token_encrypted: string | null
+          scopes: string[] | null
+          token_expires_at: string | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_token_encrypted?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          provider: string
+          provider_account_id: string
+          provider_account_name?: string | null
+          refresh_token_encrypted?: string | null
+          scopes?: string[] | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_token_encrypted?: string | null
+          created_at?: string
+          id?: string
+          is_active?: boolean | null
+          last_synced_at?: string | null
+          provider?: string
+          provider_account_id?: string
+          provider_account_name?: string | null
+          refresh_token_encrypted?: string | null
+          scopes?: string[] | null
+          token_expires_at?: string | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       content_moderation: {
         Row: {
           action: string
@@ -4286,6 +4334,57 @@ export type Database = {
           },
         ]
       }
+      privacy_settings: {
+        Row: {
+          allow_third_party_cookies: boolean | null
+          blocked_users: string[] | null
+          created_at: string
+          hide_from_search_engines: boolean | null
+          id: string
+          muted_users: string[] | null
+          private_profile: boolean | null
+          profile_searchable: boolean | null
+          share_trading_data: boolean | null
+          share_with_partners: boolean | null
+          show_activity_status: boolean | null
+          show_last_seen: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_third_party_cookies?: boolean | null
+          blocked_users?: string[] | null
+          created_at?: string
+          hide_from_search_engines?: boolean | null
+          id?: string
+          muted_users?: string[] | null
+          private_profile?: boolean | null
+          profile_searchable?: boolean | null
+          share_trading_data?: boolean | null
+          share_with_partners?: boolean | null
+          show_activity_status?: boolean | null
+          show_last_seen?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_third_party_cookies?: boolean | null
+          blocked_users?: string[] | null
+          created_at?: string
+          hide_from_search_engines?: boolean | null
+          id?: string
+          muted_users?: string[] | null
+          private_profile?: boolean | null
+          profile_searchable?: boolean | null
+          share_trading_data?: boolean | null
+          share_with_partners?: boolean | null
+          show_activity_status?: boolean | null
+          show_last_seen?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -4690,6 +4789,45 @@ export type Database = {
           setting_value?: Json
           updated_at?: string
           updated_by?: string | null
+        }
+        Relationships: []
+      }
+      settings_change_log: {
+        Row: {
+          changed_by: string
+          created_at: string
+          id: string
+          ip_address: unknown | null
+          new_value: Json | null
+          old_value: Json | null
+          setting_category: string
+          setting_name: string
+          user_agent: string | null
+          user_id: string
+        }
+        Insert: {
+          changed_by: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_value?: Json | null
+          old_value?: Json | null
+          setting_category: string
+          setting_name: string
+          user_agent?: string | null
+          user_id: string
+        }
+        Update: {
+          changed_by?: string
+          created_at?: string
+          id?: string
+          ip_address?: unknown | null
+          new_value?: Json | null
+          old_value?: Json | null
+          setting_category?: string
+          setting_name?: string
+          user_agent?: string | null
+          user_id?: string
         }
         Relationships: []
       }
@@ -6027,6 +6165,57 @@ export type Database = {
         }
         Relationships: []
       }
+      user_api_tokens: {
+        Row: {
+          created_at: string
+          created_by_ip: unknown | null
+          description: string | null
+          expires_at: string | null
+          id: string
+          is_active: boolean | null
+          last_used_at: string | null
+          name: string
+          rate_limit_per_hour: number | null
+          scopes: string[] | null
+          token_hash: string
+          token_prefix: string
+          usage_count: number | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          created_by_ip?: unknown | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          name: string
+          rate_limit_per_hour?: number | null
+          scopes?: string[] | null
+          token_hash: string
+          token_prefix: string
+          usage_count?: number | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          created_by_ip?: unknown | null
+          description?: string | null
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          last_used_at?: string | null
+          name?: string
+          rate_limit_per_hour?: number | null
+          scopes?: string[] | null
+          token_hash?: string
+          token_prefix?: string
+          usage_count?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_balances: {
         Row: {
           available_balance: number
@@ -6342,6 +6531,129 @@ export type Database = {
         }
         Relationships: []
       }
+      user_settings: {
+        Row: {
+          allow_analytics: boolean | null
+          allow_direct_messages: boolean | null
+          allow_personalization: boolean | null
+          auto_approve_transactions: boolean | null
+          confirm_transactions: boolean | null
+          created_at: string
+          currency: string | null
+          date_format: string | null
+          default_slippage_tolerance: number | null
+          email_marketing_enabled: boolean | null
+          email_notifications_enabled: boolean | null
+          email_product_updates: boolean | null
+          email_security_alerts: boolean | null
+          id: string
+          language: string | null
+          last_activity_at: string | null
+          login_notifications: boolean | null
+          metadata: Json | null
+          profile_visibility:
+            | Database["public"]["Enums"]["privacy_level"]
+            | null
+          push_notifications_enabled: boolean | null
+          push_price_alerts: boolean | null
+          push_social_updates: boolean | null
+          push_trading_alerts: boolean | null
+          require_password_change_days: number | null
+          session_timeout_minutes: number | null
+          share_anonymous_data: boolean | null
+          show_email: boolean | null
+          show_portfolio: boolean | null
+          show_test_networks: boolean | null
+          show_trading_history: boolean | null
+          show_wallet_address: boolean | null
+          theme_mode: Database["public"]["Enums"]["theme_mode"] | null
+          timezone: string | null
+          two_factor_enabled: boolean | null
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          allow_analytics?: boolean | null
+          allow_direct_messages?: boolean | null
+          allow_personalization?: boolean | null
+          auto_approve_transactions?: boolean | null
+          confirm_transactions?: boolean | null
+          created_at?: string
+          currency?: string | null
+          date_format?: string | null
+          default_slippage_tolerance?: number | null
+          email_marketing_enabled?: boolean | null
+          email_notifications_enabled?: boolean | null
+          email_product_updates?: boolean | null
+          email_security_alerts?: boolean | null
+          id?: string
+          language?: string | null
+          last_activity_at?: string | null
+          login_notifications?: boolean | null
+          metadata?: Json | null
+          profile_visibility?:
+            | Database["public"]["Enums"]["privacy_level"]
+            | null
+          push_notifications_enabled?: boolean | null
+          push_price_alerts?: boolean | null
+          push_social_updates?: boolean | null
+          push_trading_alerts?: boolean | null
+          require_password_change_days?: number | null
+          session_timeout_minutes?: number | null
+          share_anonymous_data?: boolean | null
+          show_email?: boolean | null
+          show_portfolio?: boolean | null
+          show_test_networks?: boolean | null
+          show_trading_history?: boolean | null
+          show_wallet_address?: boolean | null
+          theme_mode?: Database["public"]["Enums"]["theme_mode"] | null
+          timezone?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          allow_analytics?: boolean | null
+          allow_direct_messages?: boolean | null
+          allow_personalization?: boolean | null
+          auto_approve_transactions?: boolean | null
+          confirm_transactions?: boolean | null
+          created_at?: string
+          currency?: string | null
+          date_format?: string | null
+          default_slippage_tolerance?: number | null
+          email_marketing_enabled?: boolean | null
+          email_notifications_enabled?: boolean | null
+          email_product_updates?: boolean | null
+          email_security_alerts?: boolean | null
+          id?: string
+          language?: string | null
+          last_activity_at?: string | null
+          login_notifications?: boolean | null
+          metadata?: Json | null
+          profile_visibility?:
+            | Database["public"]["Enums"]["privacy_level"]
+            | null
+          push_notifications_enabled?: boolean | null
+          push_price_alerts?: boolean | null
+          push_social_updates?: boolean | null
+          push_trading_alerts?: boolean | null
+          require_password_change_days?: number | null
+          session_timeout_minutes?: number | null
+          share_anonymous_data?: boolean | null
+          show_email?: boolean | null
+          show_portfolio?: boolean | null
+          show_test_networks?: boolean | null
+          show_trading_history?: boolean | null
+          show_wallet_address?: boolean | null
+          theme_mode?: Database["public"]["Enums"]["theme_mode"] | null
+          timezone?: string | null
+          two_factor_enabled?: boolean | null
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_stakes: {
         Row: {
           amount: number
@@ -6502,6 +6814,10 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: Json
       }
+      cleanup_expired_api_tokens: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
       cleanup_expired_sessions: {
         Args: Record<PropertyKey, never>
         Returns: undefined
@@ -6578,6 +6894,10 @@ export type Database = {
       }
       get_user_dex_stats: {
         Args: { user_id_param: string }
+        Returns: Json
+      }
+      get_user_settings: {
+        Args: { p_user_id?: string }
         Returns: Json
       }
       get_user_subscription: {
@@ -6729,7 +7049,10 @@ export type Database = {
     }
     Enums: {
       billing_period: "monthly" | "annual"
+      notification_frequency: "instant" | "daily" | "weekly" | "never"
+      privacy_level: "public" | "friends" | "private"
       subscription_tier: "basic" | "pro" | "elite"
+      theme_mode: "light" | "dark" | "system"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6858,7 +7181,10 @@ export const Constants = {
   public: {
     Enums: {
       billing_period: ["monthly", "annual"],
+      notification_frequency: ["instant", "daily", "weekly", "never"],
+      privacy_level: ["public", "friends", "private"],
       subscription_tier: ["basic", "pro", "elite"],
+      theme_mode: ["light", "dark", "system"],
     },
   },
 } as const
