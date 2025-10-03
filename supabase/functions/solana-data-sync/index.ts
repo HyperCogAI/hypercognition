@@ -19,10 +19,10 @@ serve(async (req) => {
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY') ?? ''
     )
 
-    // Fetch tokens from database with their IDs
+    // Fetch tokens from database with their IDs and existing logos
     const { data: tokens, error: tokensError } = await supabaseClient
       .from('solana_tokens')
-      .select('id, mint_address, symbol, name')
+      .select('id, mint_address, symbol, name, image_url')
       .eq('is_active', true)
 
     if (tokensError) {
@@ -93,8 +93,8 @@ serve(async (req) => {
               throw new Error('Computed invalid price')
             }
 
-            // Extract logo URL from pair info
-            const logoUrl = isBase 
+            // Extract logo URL from pair info, fallback to existing logo
+            const newLogoUrl = isBase 
               ? (selectedPair.info?.imageUrl || selectedPair.baseToken?.imageUrl)
               : (selectedPair.info?.imageUrl || selectedPair.quoteToken?.imageUrl)
 
@@ -104,7 +104,7 @@ serve(async (req) => {
               change24h,
               volume24h,
               marketCap,
-              logoUrl: logoUrl || null,
+              logoUrl: newLogoUrl || token.image_url || null,
             }
           } catch (error) {
             console.error(`[SolanaSync] Error for ${token.symbol}:`, error)
