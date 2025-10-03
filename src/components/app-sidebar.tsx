@@ -134,8 +134,12 @@ export function AppSidebar() {
                       end={item.url === "/"}
                        className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                     >
-                      <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                          {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -158,8 +162,12 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                     >
-                      <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                          {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -182,8 +190,12 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                     >
-                      <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                          {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -206,8 +218,12 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                     >
-                      <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                          {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -230,16 +246,20 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                     >
-                      <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                      {!isCollapsed && (
-                        <div className="flex items-center justify-between w-full">
-                          <span className="font-medium">{item.title}</span>
-                          {item.title === "Favorites" && (
-                            <Badge variant="secondary" className="text-xs bg-accent/20 border-accent/30 text-accent-foreground">
-                              3
-                            </Badge>
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                          {!isCollapsed && (
+                            <div className="flex items-center justify-between w-full">
+                              <span className="font-medium">{item.title}</span>
+                              {item.title === "Favorites" && (
+                                <Badge variant="secondary" className="text-xs bg-accent/20 border-accent/30 text-accent-foreground">
+                                  3
+                                </Badge>
+                              )}
+                            </div>
                           )}
-                        </div>
+                        </>
                       )}
                     </NavLink>
                   </SidebarMenuButton>
@@ -263,8 +283,12 @@ export function AppSidebar() {
                       to={item.url}
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                     >
-                      <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                      {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                      {({ isActive }) => (
+                        <>
+                          <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                          {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -303,8 +327,12 @@ export function AppSidebar() {
                         to={item.url}
                         className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
                       >
-                        <item.icon className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
-                        {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                        {({ isActive }) => (
+                          <>
+                            <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                            {!isCollapsed && <span className="font-medium">{item.title}</span>}
+                          </>
+                        )}
                       </NavLink>
                     )}
                   </SidebarMenuButton>
@@ -326,8 +354,12 @@ export function AppSidebar() {
                       to="/settings"
                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
                     >
-                      <Settings className="h-4 w-4 opacity-40 group-hover/menu:opacity-100 group-hover/menu:rotate-90 transition-all duration-300" />
-                      {!isCollapsed && <span className="font-medium">Settings</span>}
+                      {({ isActive }) => (
+                        <>
+                          <Settings className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-40'} group-hover/menu:opacity-100 group-hover/menu:rotate-90 transition-all duration-300`} />
+                          {!isCollapsed && <span className="font-medium">Settings</span>}
+                        </>
+                      )}
                     </NavLink>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
