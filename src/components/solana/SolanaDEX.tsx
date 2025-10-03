@@ -14,6 +14,7 @@ import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
 import { jupiterApi } from "@/lib/apis/jupiterApi"
 import { ArrowDownUp, Settings, TrendingUp, Wallet, AlertCircle, Loader2, RefreshCw } from "lucide-react"
 import { Connection, VersionedTransaction } from "@solana/web3.js"
+import { supabase } from "@/integrations/supabase/client"
 
 interface SwapQuote {
   inputMint: string
@@ -139,20 +140,26 @@ export const SolanaDEX = () => {
 
     setIsSwapping(true)
     try {
-      // Get swap transaction from Jupiter
-      const swapResponse = await fetch('https://quote-api.jup.ag/v6/swap', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          quoteResponse: quote,
-          userPublicKey: publicKey.toString(),
-          wrapAndUnwrapSol: true,
-          dynamicComputeUnitLimit: true,
-          prioritizationFeeLamports: 'auto'
-        })
-      })
+      // Call backend to prepare swap and record in database
+      const { data: swapData, error: backendError } = await supabase.functions.invoke(
+        'solana-swap',
+        {
+          body: {
+            walletAddress: publicKey.toString(),
+            inputMint: fromToken,
+            outputMint: toToken,
+            inputAmount: parseFloat(fromAmount),
+            slippageBps: slippage * 100,
+            route: quote
+          }
+        }
+      );
 
-      const { swapTransaction } = await swapResponse.json()
+      if (backendError || !swapData?.success) {
+        throw new Error(backendError?.message || swapData?.error || "Failed to prepare swap");
+      }
+
+      const { swapTransaction, swapId } = swapData;
 
       // Deserialize and sign transaction
       const swapTransactionBuf = Buffer.from(swapTransaction, 'base64')
@@ -172,8 +179,28 @@ export const SolanaDEX = () => {
         maxRetries: 2
       })
 
+      console.log("Transaction sent:", txid);
+      
+      // Update swap record with transaction hash
+      await supabase
+        .from('solana_swaps')
+        .update({ 
+          transaction_hash: txid,
+          status: 'confirming'
+        })
+        .eq('id', swapId);
+
       // Confirm transaction
       await connection.confirmTransaction(txid, 'confirmed')
+
+      // Mark as completed
+      await supabase
+        .from('solana_swaps')
+        .update({ 
+          status: 'completed',
+          completed_at: new Date().toISOString()
+        })
+        .eq('id', swapId);
 
       toast({
         title: "Swap Successful!",

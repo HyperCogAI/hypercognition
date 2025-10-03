@@ -4446,6 +4446,66 @@ export type Database = {
           },
         ]
       }
+      solana_swaps: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          error_message: string | null
+          id: string
+          input_amount: number
+          input_mint: string
+          input_symbol: string | null
+          output_amount: number
+          output_mint: string
+          output_symbol: string | null
+          price_impact: number | null
+          route_data: Json | null
+          slippage_bps: number
+          status: string
+          transaction_hash: string | null
+          user_id: string | null
+          wallet_address: string
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_amount: number
+          input_mint: string
+          input_symbol?: string | null
+          output_amount: number
+          output_mint: string
+          output_symbol?: string | null
+          price_impact?: number | null
+          route_data?: Json | null
+          slippage_bps?: number
+          status?: string
+          transaction_hash?: string | null
+          user_id?: string | null
+          wallet_address: string
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          error_message?: string | null
+          id?: string
+          input_amount?: number
+          input_mint?: string
+          input_symbol?: string | null
+          output_amount?: number
+          output_mint?: string
+          output_symbol?: string | null
+          price_impact?: number | null
+          route_data?: Json | null
+          slippage_bps?: number
+          status?: string
+          transaction_hash?: string | null
+          user_id?: string | null
+          wallet_address?: string
+        }
+        Relationships: []
+      }
       solana_tokens: {
         Row: {
           change_24h: number
