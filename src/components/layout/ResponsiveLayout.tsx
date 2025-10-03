@@ -4,7 +4,7 @@ import { useIsMobile } from '@/hooks/use-mobile'
 import { AppSidebar } from '@/components/app-sidebar'
 import { MobileNavigation } from '@/components/mobile/MobileNavigation'
 import { Navigation } from '@/components/layout/Navigation'
-import { SidebarProvider, SidebarInset } from '@/components/ui/sidebar'
+import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { Breadcrumb, BreadcrumbList, BreadcrumbItem, BreadcrumbLink, BreadcrumbSeparator, BreadcrumbPage } from '@/components/ui/breadcrumb'
 import { Separator } from '@/components/ui/separator'
 import { PerformanceMonitor } from '@/components/ui/performance-monitor'
@@ -110,6 +110,18 @@ export function ResponsiveLayout({
         <div className="flex min-h-screen w-full">
           <AppSidebar />
           <SidebarInset className="flex-1">
+            {/* Desktop Toolbar */}
+            <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
+              <div className="flex h-16 items-center px-6 gap-4">
+                <SidebarTrigger className="-ml-2" />
+                <div className="flex items-center gap-4 ml-auto">
+                  <NetworkSelectorButton />
+                  <UnifiedWalletButton />
+                  <ThemeToggle />
+                </div>
+              </div>
+            </header>
+            
             {/* Desktop Content */}
             <main className="flex-1 overflow-hidden">
               <div className="container max-w-screen-2xl p-6">

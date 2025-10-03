@@ -27,30 +27,16 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
+    <nav className="md:hidden fixed top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
-          {/* Sidebar Toggle - Desktop Left */}
-          <div className="hidden md:block">
-            <SidebarTrigger />
-          </div>
-
           {/* Logo - Mobile Only */}
-          <div className="flex md:hidden items-center gap-3">
+          <div className="flex items-center gap-3">
             <img 
               src={newLogo} 
               alt="HyperCognition" 
               className="h-8 w-auto"
             />
-          </div>
-
-          {/* Desktop Right Section */}
-          <div className="hidden md:flex items-center gap-4 ml-auto">
-            {!isLoading && user && <UserMenu />}
-            <div className="flex items-center gap-2">
-              <NetworkSelectorButton />
-              <UnifiedWalletButton />
-            </div>
           </div>
 
           {/* Mobile Menu Button */}
