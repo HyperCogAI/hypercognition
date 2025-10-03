@@ -49,6 +49,7 @@ const navigationSections = [
     title: "DeFi & Crypto",
     items: [
       { icon: Coins, label: 'DeFi', path: '/defi', id: 'defi' },
+      { icon: Coins, label: 'Solana', path: '/solana', id: 'solana' },
       { icon: Lock, label: 'Solana Staking', path: '/solana-staking', id: 'solana-staking' },
       { icon: Layers, label: 'Staking', path: '/staking', id: 'staking' },
       { icon: Star, label: 'Referrals', path: '/referrals', id: 'referrals' },
