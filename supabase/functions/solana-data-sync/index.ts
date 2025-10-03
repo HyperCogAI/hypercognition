@@ -31,6 +31,21 @@ serve(async (req) => {
 
     console.log(`[SolanaSync] Fetching data for ${tokens.length} tokens in parallel`)
 
+    // Fetch Jupiter prices as fallback
+    const mintAddresses = tokens.map(t => t.mint_address)
+    let jupiterPrices: Record<string, any> = {}
+    try {
+      const jupiterUrl = `https://api.jup.ag/price/v2?ids=${mintAddresses.join(',')}`
+      const jupiterResponse = await fetch(jupiterUrl)
+      if (jupiterResponse.ok) {
+        const jupiterData = await jupiterResponse.json()
+        jupiterPrices = jupiterData.data || {}
+        console.log(`[SolanaSync] Fetched Jupiter prices for ${Object.keys(jupiterPrices).length} tokens`)
+      }
+    } catch (error) {
+      console.warn('[SolanaSync] Jupiter API fallback failed:', error)
+    }
+
     // Batch tokens into groups of 5 for parallel processing
     const batchSize = 5
     const tokenBatches = []
@@ -60,8 +75,26 @@ serve(async (req) => {
             const data = await response.json()
             const solanaPairs = data.pairs?.filter((p: any) => p.chainId === 'solana') || []
             
+            // If no DEX pairs found, try Jupiter as fallback
             if (solanaPairs.length === 0) {
-              throw new Error('No Solana pairs found')
+              const jupiterPrice = jupiterPrices[token.mint_address]
+              if (!jupiterPrice) {
+                throw new Error('No trading data found on DEXScreener or Jupiter')
+              }
+              
+              const price = parseFloat(jupiterPrice.price || '0')
+              if (!isFinite(price) || price <= 0) {
+                throw new Error('Invalid Jupiter price')
+              }
+
+              return {
+                token,
+                price,
+                change24h: 0, // Jupiter API v2 doesn't provide 24h change
+                volume24h: 0,
+                marketCap: 0,
+                logoUrl: token.image_url || null,
+              }
             }
 
             // Prefer pairs where our token is the base; otherwise handle inverse (quote) pairs by inverting price
