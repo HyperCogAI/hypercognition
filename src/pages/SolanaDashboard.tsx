@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SolanaPortfolioCard } from "@/components/portfolio/SolanaPortfolioCard"
 import { SolanaMarketOverview } from "@/components/trading/SolanaMarketOverview"
 import { SolanaAnalyticsDashboard } from "@/components/analytics/SolanaAnalyticsDashboard"
-import { SolanaPriceChart } from "@/components/trading/SolanaPriceChart"
 import { SolanaOrderManager } from "@/components/trading/SolanaOrderManager"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { Button } from "@/components/ui/button"
@@ -143,12 +142,7 @@ const SolanaDashboard = () => {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <SolanaMarketOverview onTokenSelect={setSelectedToken} />
-            {chartToken && (
-              <SolanaPriceChart token={chartToken} />
-            )}
-          </div>
+          <SolanaMarketOverview onTokenSelect={setSelectedToken} />
         </TabsContent>
 
         <TabsContent value="portfolio" className="space-y-6">
