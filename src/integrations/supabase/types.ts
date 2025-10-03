@@ -6392,6 +6392,54 @@ export type Database = {
           },
         ]
       }
+      user_subscriptions: {
+        Row: {
+          auto_renew: boolean | null
+          billing_period: Database["public"]["Enums"]["billing_period"] | null
+          created_at: string
+          expires_at: string | null
+          id: string
+          last_payment_at: string | null
+          next_payment_at: string | null
+          payment_method: string | null
+          started_at: string
+          status: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_renew?: boolean | null
+          billing_period?: Database["public"]["Enums"]["billing_period"] | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_payment_at?: string | null
+          next_payment_at?: string | null
+          payment_method?: string | null
+          started_at?: string
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_renew?: boolean | null
+          billing_period?: Database["public"]["Enums"]["billing_period"] | null
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          last_payment_at?: string | null
+          next_payment_at?: string | null
+          payment_method?: string | null
+          started_at?: string
+          status?: string
+          tier?: Database["public"]["Enums"]["subscription_tier"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       marketplace_developers_public: {
@@ -6532,6 +6580,16 @@ export type Database = {
         Args: { user_id_param: string }
         Returns: Json
       }
+      get_user_subscription: {
+        Args: { user_id_param?: string }
+        Returns: {
+          billing_period: Database["public"]["Enums"]["billing_period"]
+          expires_at: string
+          id: string
+          status: string
+          tier: Database["public"]["Enums"]["subscription_tier"]
+        }[]
+      }
       is_admin: {
         Args: Record<PropertyKey, never>
         Returns: boolean
@@ -6587,6 +6645,13 @@ export type Database = {
       update_community_user_stats: {
         Args: { p_increment?: number; p_stat_type: string; p_user_id: string }
         Returns: undefined
+      }
+      upgrade_subscription: {
+        Args: {
+          new_billing_period: Database["public"]["Enums"]["billing_period"]
+          new_tier: Database["public"]["Enums"]["subscription_tier"]
+        }
+        Returns: Json
       }
       validate_acp_job: {
         Args: {
@@ -6663,7 +6728,8 @@ export type Database = {
       }
     }
     Enums: {
-      [_ in never]: never
+      billing_period: "monthly" | "annual"
+      subscription_tier: "basic" | "pro" | "elite"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -6790,6 +6856,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      billing_period: ["monthly", "annual"],
+      subscription_tier: ["basic", "pro", "elite"],
+    },
   },
 } as const

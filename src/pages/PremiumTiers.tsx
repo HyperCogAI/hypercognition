@@ -5,9 +5,29 @@ import { Button } from "@/components/ui/button"
 import { Switch } from "@/components/ui/switch"
 import { Check, Star, Zap, Crown, TrendingUp, Shield, Users } from "lucide-react"
 import { SEOHead } from "@/components/seo/SEOHead"
+import { useSubscription, type BillingPeriod, type SubscriptionTier } from "@/hooks/useSubscription"
+import { toast } from "sonner"
 
 const PremiumTiers = () => {
   const [isAnnual, setIsAnnual] = useState(false)
+  const { currentTier, upgradeTo, isUpgrading, isLoading } = useSubscription()
+
+  const handleUpgrade = (tierName: string) => {
+    const tier = tierName.toLowerCase() as SubscriptionTier
+    
+    if (tier === 'elite') {
+      toast.info('Elite tier is coming soon!')
+      return
+    }
+
+    if (tier === 'basic') {
+      upgradeTo({ tier: 'basic', billingPeriod: 'monthly' })
+      return
+    }
+
+    const billingPeriod: BillingPeriod = isAnnual ? 'annual' : 'monthly'
+    upgradeTo({ tier, billingPeriod })
+  }
 
   const tiers = [
     {
@@ -242,9 +262,19 @@ const PremiumTiers = () => {
                   className="w-full mt-4" 
                   variant="default"
                   size="lg"
-                  disabled={tier.name === "Elite"}
+                  disabled={
+                    tier.name === "Elite" || 
+                    isUpgrading || 
+                    isLoading ||
+                    currentTier === tier.name.toLowerCase()
+                  }
+                  onClick={() => handleUpgrade(tier.name)}
                 >
-                  {tier.name === "Basic" ? "Get Started Free" : tier.name === "Elite" ? "Coming Soon" : `Upgrade to ${tier.name}`}
+                  {isLoading ? "Loading..." :
+                   currentTier === tier.name.toLowerCase() ? "Current Plan" :
+                   tier.name === "Basic" ? "Get Started Free" : 
+                   tier.name === "Elite" ? "Coming Soon" : 
+                   `Upgrade to ${tier.name}`}
                 </Button>
               </CardContent>
             </Card>
