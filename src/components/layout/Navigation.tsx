@@ -4,6 +4,8 @@ import { useAuth } from "@/contexts/AuthContext"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { WalletSection } from "@/components/wallet/WalletSection"
+import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
+import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { ThemeToggle } from "@/components/ui/theme-toggle"
 import { Menu, X, Bot, Zap, LogIn } from "lucide-react"
 import newLogo from "@/assets/new-logo.png"
@@ -24,7 +26,7 @@ export function Navigation() {
   ]
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-md border-b border-border/20">
+    <nav className="fixed md:relative top-0 left-0 right-0 z-[100] bg-background/80 backdrop-blur-md border-b border-border/20">
       <div className="container mx-auto px-6">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
@@ -50,7 +52,7 @@ export function Navigation() {
             ))}
           </div>
 
-          {/* Desktop Auth */}
+          {/* Desktop Right Section */}
           <div className="hidden md:flex items-center gap-4">
             <ThemeToggle />
             {!isLoading && (
@@ -72,6 +74,10 @@ export function Navigation() {
                 </>
               )
             )}
+            <div className="flex items-center gap-2">
+              <UnifiedWalletButton />
+              <NetworkSelectorButton />
+            </div>
           </div>
 
           {/* Mobile Menu Button */}
