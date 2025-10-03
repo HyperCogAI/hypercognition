@@ -188,6 +188,27 @@ export function SocialNetwork() {
     enabled: !!user?.id,
   })
 
+  // Suggested traders (public) excluding already connected users
+  const excludeIds = new Set<string>([
+    ...(followingIds || []),
+    ...(followerIds || []),
+    ...(user?.id ? [user.id] : []),
+  ])
+
+  const { data: suggested = [] } = useQuery({
+    queryKey: ['suggested-traders', user?.id, followingIds.sort().join(','), followerIds.sort().join(',')],
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('trader_profiles' as any)
+        .select('user_id, display_name, avatar_url, is_verified, win_rate, total_trades')
+        .eq('is_public', true)
+        .order('pnl_percentage', { ascending: false })
+        .limit(12)
+      if (error) throw error
+      return data || []
+    },
+  })
+
   // Map to UI model (no random mock values)
   const followingUsers = (followingProfiles as any[]).map(p => ({
     id: p.user_id,
@@ -216,6 +237,23 @@ export function SocialNetwork() {
     is_verified: false,
     is_following: false,
   })) as UserProfile[]
+
+  const suggestionsUsers = (suggested as any[])
+    .filter(p => !excludeIds.has(p.user_id))
+    .map(p => ({
+      id: p.user_id,
+      display_name: p.display_name || p.user_id.slice(0, 6),
+      avatar_url: p.avatar_url || undefined,
+      bio: undefined,
+      followers_count: 0,
+      following_count: 0,
+      posts_count: 0,
+      trading_score: undefined,
+      join_date: new Date().toISOString(),
+      is_verified: !!p.is_verified,
+      is_following: false,
+    })) as UserProfile[]
+
 
   const handleFollow = async (targetUserId: string) => {
     try {
@@ -248,6 +286,13 @@ export function SocialNetwork() {
   }
 
   const loading = false
+
+  const monthlyReturn = (myProfile as any)?.monthly_return as number | null ?? null
+  const winRate = (myProfile as any)?.win_rate as number | null ?? null
+  const totalTrades = (myProfile as any)?.total_trades as number | null ?? 0
+  const tradingScore = (myProfile as any)?.pnl_percentage as number | null ?? null
+  const rankValue = (myProfile as any)?.global_rank as number | null ?? null
+
 
   return (
     <div className="space-y-6">
@@ -293,15 +338,15 @@ export function SocialNetwork() {
           </CardHeader>
           <CardContent className="text-center space-y-4">
             <div>
-              <div className="text-2xl font-bold text-yellow-500">#42</div>
+              <div className="text-2xl font-bold text-yellow-500">{rankValue ? `#${rankValue}` : '—'}</div>
               <div className="text-sm text-muted-foreground">Global Rank</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-blue-500">85</div>
+              <div className="text-2xl font-bold text-blue-500">{tradingScore !== null ? Math.round(tradingScore) : '—'}</div>
               <div className="text-sm text-muted-foreground">Trading Score</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-purple-500">12</div>
+              <div className="text-2xl font-bold text-purple-500">{(myProfile as any)?.total_followers ?? 0}</div>
               <div className="text-sm text-muted-foreground">Achievements</div>
             </div>
           </CardContent>
@@ -333,8 +378,8 @@ export function SocialNetwork() {
 
       <Tabs defaultValue="following" className="space-y-4">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="following">Following ({mockFollowing.length})</TabsTrigger>
-          <TabsTrigger value="followers">Followers ({mockFollowers.length})</TabsTrigger>
+          <TabsTrigger value="following">Following ({followingUsers.length})</TabsTrigger>
+          <TabsTrigger value="followers">Followers ({followersUsers.length})</TabsTrigger>
           <TabsTrigger value="discover">Discover</TabsTrigger>
         </TabsList>
 
@@ -348,7 +393,7 @@ export function SocialNetwork() {
             </CardHeader>
             <CardContent>
               <FollowingList
-                users={mockFollowing}
+                users={followingUsers}
                 onFollow={handleFollow}
                 onUnfollow={handleUnfollow}
               />
@@ -366,7 +411,7 @@ export function SocialNetwork() {
             </CardHeader>
             <CardContent>
               <FollowingList
-                users={mockFollowers}
+                users={followersUsers}
                 onFollow={handleFollow}
                 onUnfollow={handleUnfollow}
               />
@@ -384,7 +429,7 @@ export function SocialNetwork() {
             </CardHeader>
             <CardContent>
               <FollowingList
-                users={mockSuggestions}
+                users={suggestionsUsers}
                 onFollow={handleFollow}
                 onUnfollow={handleUnfollow}
               />
