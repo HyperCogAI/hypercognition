@@ -31,109 +31,83 @@ serve(async (req) => {
 
     console.log(`[SolanaSync] Fetching data for ${tokens.length} tokens`)
 
-    // Fetch price data from CoinGecko for tokens with coingecko_id
-    const { data: tokensWithCoingecko } = await supabaseClient
-      .from('solana_tokens')
-      .select('id, mint_address, symbol')
-      .eq('is_active', true)
-      .not('symbol', 'is', null)
-    
-    const coingeckoIds = tokensWithCoingecko
-      ?.map(t => t.symbol?.toLowerCase())
-      .filter(Boolean)
-      .join(',')
+    let successCount = 0
+    let errorCount = 0
 
-    let priceData: any = {}
-    
-    if (coingeckoIds) {
-      try {
-        const coingeckoUrl = `https://api.coingecko.com/api/v3/simple/price?ids=${coingeckoIds}&vs_currencies=usd&include_24hr_change=true&include_market_cap=true&include_24hr_vol=true`
-        const response = await fetch(coingeckoUrl)
-        
-        if (response.ok) {
-          priceData = await response.json()
-          console.log(`[SolanaSync] CoinGecko data fetched for ${Object.keys(priceData).length} tokens`)
-        } else {
-          console.error(`[SolanaSync] CoinGecko API error: ${response.status}`)
-        }
-      } catch (error) {
-        console.error('[SolanaSync] Error fetching from CoinGecko:', error)
-      }
-    }
-
-    // Fetch additional data from DEXScreener for all tokens
+    // Fetch data from DEXScreener for each token using mint address
     for (const token of tokens) {
       try {
-        const dexUrl = `https://api.dexscreener.com/latest/dex/search?q=${token.symbol}`
+        // Use token address endpoint for more accurate data
+        const dexUrl = `https://api.dexscreener.com/latest/dex/tokens/${token.mint_address}`
+        console.log(`[SolanaSync] Fetching ${token.symbol} from DEXScreener...`)
+        
         const response = await fetch(dexUrl)
         
-        if (response.ok) {
-          const data = await response.json()
-          const pair = data.pairs?.find((p: any) => 
-            p.chainId === 'solana' && 
-            (p.baseToken?.address === token.mint_address || p.baseToken?.symbol === token.symbol)
-          )
-          
-          if (pair) {
-            // Update token with DEXScreener data
-            await supabaseClient
-              .from('solana_tokens')
-              .update({
-                price: parseFloat(pair.priceUsd || '0'),
-                change_24h: pair.priceChange?.h24 || 0,
-                volume_24h: pair.volume?.h24 || 0,
-                market_cap: pair.marketCap || 0,
-                updated_at: new Date().toISOString()
-              })
-              .eq('mint_address', token.mint_address)
-
-            // Insert price history
-            await supabaseClient
-              .from('solana_price_history')
-              .insert({
-                mint_address: token.mint_address,
-                price: parseFloat(pair.priceUsd || '0'),
-                volume_24h: pair.volume?.h24 || 0,
-                market_cap: pair.marketCap || 0
-              })
-          }
+        if (!response.ok) {
+          console.error(`[SolanaSync] DEXScreener API error for ${token.symbol}: ${response.status}`)
+          errorCount++
+          continue
         }
-        
-        // Rate limit - wait 300ms between requests
-        await new Promise(resolve => setTimeout(resolve, 300))
-      } catch (error) {
-        console.error(`[SolanaSync] Error fetching DEXScreener data for ${token.symbol}:`, error)
-      }
-    }
 
-    // Update tokens with CoinGecko data (if available)
-    if (Object.keys(priceData).length > 0) {
-      for (const token of tokensWithCoingecko || []) {
-        const symbolKey = token.symbol?.toLowerCase()
-        if (symbolKey && priceData[symbolKey]) {
-          const data = priceData[symbolKey]
+        const data = await response.json()
         
-        await supabaseClient
+        // Find the best Solana pair (highest liquidity)
+        const solanaPairs = data.pairs?.filter((p: any) => p.chainId === 'solana') || []
+        
+        if (solanaPairs.length === 0) {
+          console.log(`[SolanaSync] No Solana pairs found for ${token.symbol}`)
+          errorCount++
+          continue
+        }
+
+        // Sort by liquidity and take the top pair
+        const bestPair = solanaPairs.sort((a: any, b: any) => 
+          (b.liquidity?.usd || 0) - (a.liquidity?.usd || 0)
+        )[0]
+
+        const price = parseFloat(bestPair.priceUsd || '0')
+        const change24h = parseFloat(bestPair.priceChange?.h24 || '0')
+        const volume24h = parseFloat(bestPair.volume?.h24 || '0')
+        const marketCap = parseFloat(bestPair.fdv || '0') // Use FDV as market cap
+        const liquidity = parseFloat(bestPair.liquidity?.usd || '0')
+
+        console.log(`[SolanaSync] ${token.symbol}: $${price}, 24h: ${change24h}%, Vol: $${volume24h}`)
+
+        // Update token with DEXScreener data
+        const { error: updateError } = await supabaseClient
           .from('solana_tokens')
           .update({
-            price: data.usd || 0,
-            change_24h: data.usd_24h_change || 0,
-            market_cap: data.usd_market_cap || 0,
-            volume_24h: data.usd_24h_vol || 0,
+            price,
+            change_24h: change24h,
+            volume_24h: volume24h,
+            market_cap: marketCap,
             updated_at: new Date().toISOString()
           })
           .eq('mint_address', token.mint_address)
+
+        if (updateError) {
+          console.error(`[SolanaSync] Error updating ${token.symbol}:`, updateError)
+          errorCount++
+          continue
+        }
 
         // Insert price history
         await supabaseClient
           .from('solana_price_history')
           .insert({
             mint_address: token.mint_address,
-            price: data.usd || 0,
-            volume_24h: data.usd_24h_vol || 0,
-            market_cap: data.usd_market_cap || 0
+            price,
+            volume_24h: volume24h,
+            market_cap: marketCap
           })
-        }
+
+        successCount++
+        
+        // Rate limit - wait 400ms between requests to respect API limits
+        await new Promise(resolve => setTimeout(resolve, 400))
+      } catch (error) {
+        console.error(`[SolanaSync] Error fetching data for ${token.symbol}:`, error)
+        errorCount++
       }
     }
 

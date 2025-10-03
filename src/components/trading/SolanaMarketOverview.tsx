@@ -2,10 +2,43 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
-import { TrendingUp, TrendingDown, Activity, DollarSign } from "lucide-react"
+import { TrendingUp, TrendingDown, Activity, DollarSign, RefreshCw } from "lucide-react"
+import { supabase } from "@/integrations/supabase/client"
+import { useState } from "react"
+import { useToast } from "@/hooks/use-toast"
 
 export const SolanaMarketOverview = () => {
-  const { tokens, isLoading } = useSolanaRealtime()
+  const { tokens, isLoading, fetchTokens } = useSolanaRealtime()
+  const [isSyncing, setIsSyncing] = useState(false)
+  const { toast } = useToast()
+
+  const handleManualSync = async () => {
+    setIsSyncing(true)
+    try {
+      const { error } = await supabase.functions.invoke('solana-data-sync')
+      
+      if (error) throw error
+      
+      // Wait a moment then refresh the data
+      setTimeout(() => {
+        fetchTokens()
+      }, 2000)
+      
+      toast({
+        title: "Sync Started",
+        description: "Fetching latest Solana market data...",
+      })
+    } catch (error) {
+      console.error('Sync error:', error)
+      toast({
+        title: "Sync Failed",
+        description: "Could not fetch latest data. Please try again.",
+        variant: "destructive"
+      })
+    } finally {
+      setTimeout(() => setIsSyncing(false), 3000)
+    }
+  }
 
   const formatCurrency = (value: number) => {
     return new Intl.NumberFormat('en-US', {
@@ -48,9 +81,21 @@ export const SolanaMarketOverview = () => {
             <Activity className="h-5 w-5 text-purple-400" />
             Solana Market Overview
           </CardTitle>
-          <Badge variant="secondary" className="text-xs">
-            {tokens.length} Tokens
-          </Badge>
+          <div className="flex items-center gap-2">
+            <Badge variant="secondary" className="text-xs">
+              {tokens.length} Tokens
+            </Badge>
+            <Button 
+              size="sm" 
+              variant="outline"
+              onClick={handleManualSync}
+              disabled={isSyncing}
+              className="gap-2"
+            >
+              <RefreshCw className={`h-3 w-3 ${isSyncing ? 'animate-spin' : ''}`} />
+              {isSyncing ? 'Syncing...' : 'Refresh'}
+            </Button>
+          </div>
         </div>
       </CardHeader>
       <CardContent className="space-y-3">
