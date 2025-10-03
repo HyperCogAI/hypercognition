@@ -37,7 +37,7 @@ export const KaitoInfluenceDashboard = () => {
       autoSyncedRef.current = true;
       console.log('Auto-syncing influencers, current count:', topAgents.length);
       const toSync = DEFAULT_USERNAMES.slice(0, 50);
-      syncMultiple({ usernames: toSync });
+      syncMultiple({ usernames: toSync, fetchLeaderboard: true });
     }
   }, [isLoadingTop, isSyncing, topAgents.length]);
 
@@ -69,7 +69,7 @@ export const KaitoInfluenceDashboard = () => {
       ? topAgents.slice(0, 50).map(agent => agent.twitter_username)
       : DEFAULT_USERNAMES.slice(0, 50)
     );
-    syncMultiple({ usernames });
+    syncMultiple({ usernames, fetchLeaderboard: true });
   };
 
   const handleSearch = async (e: React.FormEvent) => {

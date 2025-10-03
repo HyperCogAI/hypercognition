@@ -28,12 +28,6 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   const { data: topAgents = [], isLoading: isLoadingTop } = useQuery({
     queryKey: ['kaito-attention', 'top'],
     queryFn: async (): Promise<KaitoAttentionScore[]> => {
-      // First sync with leaderboard to get rankings
-      await KaitoService.syncAttentionScores({
-        mode: 'leaderboard',
-        fetchLeaderboard: true
-      });
-      
       const scores = await KaitoService.getTopAgentsByAttention(50, '30d');
       console.log('Top agents fetched with rankings:', scores);
       return scores || [];
@@ -70,13 +64,12 @@ export const useKaitoAttention = (agentId?: string, username?: string) => {
   };
 
   const syncForUsername = (username: string) => {
-    syncMutation.mutate({ usernames: [username] });
+    syncMutation.mutate({ usernames: [username], fetchLeaderboard: true });
   };
 
   const syncForUsernameAsync = (username: string) => {
-    return syncMutation.mutateAsync({ usernames: [username] });
+    return syncMutation.mutateAsync({ usernames: [username], fetchLeaderboard: true });
   };
-
   const syncMultiple = (request: KaitoSyncRequest) => {
     syncMutation.mutate(request);
   };
