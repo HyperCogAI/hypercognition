@@ -6,10 +6,10 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import ethereumLogo from "@/assets/networks/ethereum.png"
-import bnbLogo from "@/assets/networks/bnb.png"
-import solanaLogo from "@/assets/networks/solana.png"
-import baseLogo from "@/assets/networks/base.png"
+import ethereumLogo from "@/assets/networks/ethereum-official.png"
+import bnbLogo from "@/assets/networks/bnb-official.png"
+import solanaLogo from "@/assets/networks/solana-official.png"
+import baseLogo from "@/assets/networks/base-official.png"
 
 const networks = [
   { id: 'base' as NetworkType, name: 'Base', logo: baseLogo },
@@ -28,7 +28,7 @@ export const NetworkSelectorButton = () => {
       <DropdownMenuTrigger asChild>
         <div>
           <GradientBorderButton className="w-[130px] justify-center">
-            <img src={currentNetwork.logo} alt={currentNetwork.name} className="h-4 w-4" />
+            <img src={currentNetwork.logo} alt={currentNetwork.name + ' logo'} loading="lazy" className="h-4 w-4 shrink-0" />
             <span className="text-white">{currentNetwork.name}</span>
           </GradientBorderButton>
         </div>
@@ -40,7 +40,7 @@ export const NetworkSelectorButton = () => {
             onClick={() => setNetwork(network.id)}
             className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer"
           >
-            <img src={network.logo} alt={network.name} className="h-4 w-4 mr-2" />
+            <img src={network.logo} alt={network.name + ' logo'} loading="lazy" className="h-4 w-4 mr-2 shrink-0" />
             {network.name}
           </DropdownMenuItem>
         ))}

@@ -114,7 +114,7 @@ export const UnifiedWalletButton = () => {
           <span className="text-white">{formatAddress(address!)}</span>
         </CyberButton>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 bg-black/60 border-white/20 backdrop-blur-md">
+      <DropdownMenuContent align="end" className="w-48 bg-black/90 border-white/20 backdrop-blur-md z-50">
         <DropdownMenuItem onClick={disconnectWallet} className="text-white hover:bg-white/10 focus:bg-white/10">
           <LogOut className="h-4 w-4 mr-2" />
           Disconnect
