@@ -12,10 +12,10 @@ import solanaLogo from "@/assets/networks/solana-coingecko.png"
 import baseLogo from "@/assets/networks/base-official.png"
 
 const networks = [
-  { id: 'base' as NetworkType, name: 'Base', logo: baseLogo },
-  { id: 'ethereum' as NetworkType, name: 'Ethereum', logo: ethereumLogo },
-  { id: 'bnb' as NetworkType, name: 'BNB Chain', logo: bnbLogo },
-  { id: 'solana' as NetworkType, name: 'Solana', logo: solanaLogo },
+  { id: 'base' as NetworkType, name: 'Base', logo: baseLogo, color: '0 82% 60%' },
+  { id: 'ethereum' as NetworkType, name: 'Ethereum', logo: ethereumLogo, color: '240 100% 70%' },
+  { id: 'bnb' as NetworkType, name: 'BNB Chain', logo: bnbLogo, color: '48 100% 50%' },
+  { id: 'solana' as NetworkType, name: 'Solana', logo: solanaLogo, color: '270 100% 70%' },
 ]
 
 export const NetworkSelectorButton = () => {
@@ -38,7 +38,16 @@ export const NetworkSelectorButton = () => {
           <DropdownMenuItem 
             key={network.id}
             onClick={() => setNetwork(network.id)}
-            className="text-white hover:bg-white/10 focus:bg-white/10 cursor-pointer"
+            className="text-white/70 hover:text-white focus:text-white cursor-pointer transition-colors"
+            style={{
+              ['--network-color' as string]: network.color,
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = `hsl(${network.color})`
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = ''
+            }}
           >
             <img src={network.logo} alt={network.name + ' logo'} loading="lazy" className="h-4 w-4 mr-2 shrink-0" />
             {network.name}
