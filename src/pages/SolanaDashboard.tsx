@@ -4,7 +4,6 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SolanaPortfolioCard } from "@/components/portfolio/SolanaPortfolioCard"
 import { SolanaMarketOverview } from "@/components/trading/SolanaMarketOverview"
 import { SolanaAnalyticsDashboard } from "@/components/analytics/SolanaAnalyticsDashboard"
-import { SolanaOrderManager } from "@/components/trading/SolanaOrderManager"
 import { SolanaDEX } from "@/components/solana/SolanaDEX"
 import { RecentSwaps } from "@/components/solana/RecentSwaps"
 import { SEOHead } from "@/components/seo/SEOHead"
@@ -140,11 +139,10 @@ const SolanaDashboard = () => {
 
       {/* Main Content Tabs */}
       <Tabs defaultValue="dex" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-6">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="dex">DEX</TabsTrigger>
           <TabsTrigger value="overview">Overview</TabsTrigger>
           <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
-          <TabsTrigger value="trading">Trading</TabsTrigger>
           <TabsTrigger value="staking">Staking</TabsTrigger>
           <TabsTrigger value="analytics">Analytics</TabsTrigger>
         </TabsList>
@@ -166,31 +164,6 @@ const SolanaDashboard = () => {
 
         <TabsContent value="portfolio" className="space-y-6">
           <SolanaPortfolioCard />
-        </TabsContent>
-
-        <TabsContent value="trading" className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <SolanaOrderManager />
-            <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-              <CardHeader>
-                <CardTitle>Quick Actions</CardTitle>
-                <CardDescription>
-                  Access trading features and marketplace
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <Button asChild className="w-full">
-                  <a href="/marketplace">Visit Token Marketplace</a>
-                </Button>
-                <Button variant="outline" asChild className="w-full">
-                  <a href="/advanced-trading">Advanced Trading</a>
-                </Button>
-                <Button variant="outline" asChild className="w-full">
-                  <a href="/portfolio">Portfolio Overview</a>
-                </Button>
-              </CardContent>
-            </Card>
-          </div>
         </TabsContent>
 
         <TabsContent value="staking" className="space-y-6">
