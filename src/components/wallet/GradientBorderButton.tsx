@@ -11,7 +11,7 @@ export const GradientBorderButton = ({ children, className, ...props }: Gradient
     <div className="relative inline-flex rounded-full p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift">
       <button
         className={cn(
-          "relative rounded-full px-3 h-8 text-xs font-medium inline-flex items-center justify-center gap-2 bg-black/90 hover:bg-black/95 text-white transition-colors duration-300",
+          "relative rounded-full px-3 h-8 text-xs font-medium inline-flex items-center justify-center gap-2 bg-black hover:bg-gray-900 text-white transition-colors duration-300",
           className
         )}
         {...props}
