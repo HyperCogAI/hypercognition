@@ -245,7 +245,7 @@ const AppLayout = () => {
         <div className="flex-1 flex flex-col">
           {!isACPPage && (
               <div className="bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-border/30 px-3 py-[10px] shadow-lg flex items-center gap-2">
-                <SidebarTrigger className="hover:bg-muted transition-colors duration-300" />
+                <SidebarTrigger className="text-[hsl(215,10%,25%)] hover:bg-muted transition-colors duration-300" />
                 <div className="ml-auto flex items-center gap-2">
                   <NetworkSelectorButton />
                   <UnifiedWalletButton />
