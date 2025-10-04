@@ -1,14 +1,18 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
-import { TrendingUp, TrendingDown, Flame, Zap, Volume2 } from "lucide-react"
+import { useCryptoWatchlist } from "@/hooks/useCryptoWatchlist"
+import { TrendingUp, TrendingDown, Flame, Zap, Volume2, Star } from "lucide-react"
 import { useState } from "react"
 import { ProfessionalPriceChart } from "@/components/charts/ProfessionalPriceChart"
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import { cn } from "@/lib/utils"
 
 export const TrendingCoins = () => {
   const { crypto = [], isLoading } = useRealMarketData()
   const [selectedCrypto, setSelectedCrypto] = useState<any>(null)
+  const { isInWatchlist, addToWatchlist, removeFromWatchlist } = useCryptoWatchlist()
 
   if (isLoading || crypto.length === 0) return null
 
@@ -43,6 +47,9 @@ export const TrendingCoins = () => {
       className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors cursor-pointer border border-border/30"
     >
       <div className="flex items-center gap-3 flex-1">
+        {coin.image && (
+          <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full" />
+        )}
         <div>
           <div className="font-semibold">{coin.name}</div>
           <div className="text-xs text-muted-foreground">{coin.symbol.toUpperCase()}</div>
@@ -107,13 +114,16 @@ export const TrendingCoins = () => {
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            {topVolume.map((coin) => (
+          {topVolume.map((coin) => (
               <div
                 key={coin.id}
                 onClick={() => setSelectedCrypto(coin)}
                 className="flex items-center justify-between p-3 rounded-lg bg-background/50 hover:bg-background/80 transition-colors cursor-pointer border border-border/30"
               >
                 <div className="flex items-center gap-3 flex-1">
+                  {coin.image && (
+                    <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full" />
+                  )}
                   <div>
                     <div className="font-semibold">{coin.name}</div>
                     <div className="text-xs text-muted-foreground">{coin.symbol.toUpperCase()}</div>
@@ -134,8 +144,33 @@ export const TrendingCoins = () => {
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
+              {selectedCrypto?.image && (
+                <img src={selectedCrypto.image} alt={selectedCrypto.name} className="w-8 h-8 rounded-full" />
+              )}
               {selectedCrypto?.name}
               <Badge variant="outline">{selectedCrypto?.symbol.toUpperCase()}</Badge>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 ml-auto"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (selectedCrypto) {
+                    if (isInWatchlist(selectedCrypto.id)) {
+                      removeFromWatchlist(selectedCrypto.id)
+                    } else {
+                      addToWatchlist(selectedCrypto.id, selectedCrypto.name, selectedCrypto.symbol)
+                    }
+                  }
+                }}
+              >
+                <Star
+                  className={cn(
+                    "h-5 w-5 transition-colors",
+                    selectedCrypto && isInWatchlist(selectedCrypto.id) && "fill-yellow-500 text-yellow-500"
+                  )}
+                />
+              </Button>
             </DialogTitle>
             <DialogDescription>
               Historical price chart and market statistics

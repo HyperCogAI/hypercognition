@@ -219,7 +219,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
               <CardTitle className="flex items-center gap-2">
                 Live Market Data
                 {isLive && (
-                  <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30 animate-pulse">
+                  <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
                     Live
                   </Badge>
                 )}
@@ -261,9 +261,6 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    {/* Live indicator */}
-                    <div className={`w-2 h-2 rounded-full ${isLive ? 'bg-green-500 animate-pulse' : 'bg-gray-500'}`} />
-                    
                     <Button
                       variant="ghost"
                       size="sm"
@@ -278,6 +275,9 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                       />
                     </Button>
                     <span className="text-sm text-muted-foreground w-6">{index + 1}</span>
+                    {token.image && (
+                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                    )}
                     <div className="flex-1">
                       <div className="font-semibold">{token.name}</div>
                       <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
@@ -339,6 +339,9 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <TrendingUp className="h-5 w-5 text-green-500" />
+                    {token.image && (
+                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                    )}
                     <div className="flex-1">
                       <div className="font-semibold">{token.name}</div>
                       <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
@@ -365,6 +368,9 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 >
                   <div className="flex items-center gap-4 flex-1">
                     <TrendingDown className="h-5 w-5 text-red-500" />
+                    {token.image && (
+                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                    )}
                     <div className="flex-1">
                       <div className="font-semibold">{token.name}</div>
                       <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
@@ -390,6 +396,9 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
+                    {token.image && (
+                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                    )}
                     <Activity className="h-5 w-5 text-primary" />
                     <div className="flex-1">
                       <div className="font-semibold">{token.name}</div>
@@ -430,8 +439,33 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
         <DialogContent className="max-w-4xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
+              {selectedCrypto?.image && (
+                <img src={selectedCrypto.image} alt={selectedCrypto.name} className="w-8 h-8 rounded-full" />
+              )}
               {selectedCrypto?.name}
               <Badge variant="outline">{selectedCrypto?.symbol.toUpperCase()}</Badge>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="h-8 w-8 p-0 ml-auto"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  if (selectedCrypto) {
+                    if (isInWatchlist(selectedCrypto.id)) {
+                      removeFromWatchlist(selectedCrypto.id)
+                    } else {
+                      addToWatchlist(selectedCrypto.id, selectedCrypto.name, selectedCrypto.symbol)
+                    }
+                  }
+                }}
+              >
+                <Star
+                  className={cn(
+                    "h-5 w-5 transition-colors",
+                    selectedCrypto && isInWatchlist(selectedCrypto.id) && "fill-yellow-500 text-yellow-500"
+                  )}
+                />
+              </Button>
             </DialogTitle>
             <DialogDescription>
               Historical price chart and market statistics
