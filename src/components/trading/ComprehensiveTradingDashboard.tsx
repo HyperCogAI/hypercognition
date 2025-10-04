@@ -261,19 +261,6 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
                   <div className="flex items-center gap-4 flex-1">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 w-8 p-0 hover:bg-transparent"
-                      onClick={(e) => handleWatchlistToggle(token, e)}
-                    >
-                      <Star
-                        className={cn(
-                          "h-4 w-4 transition-colors",
-                          isInWatchlist(token.id) && "fill-yellow-500 text-yellow-500"
-                        )}
-                      />
-                    </Button>
                     <span className="text-sm text-muted-foreground w-6">{index + 1}</span>
                     {token.image && (
                       <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
