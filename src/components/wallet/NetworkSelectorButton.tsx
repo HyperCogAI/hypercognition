@@ -29,9 +29,8 @@ export const NetworkSelectorButton = () => {
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
         <div>
-          <GradientBorderButton className="w-[130px] justify-center">
+          <GradientBorderButton className="w-auto justify-center">
             <img src={currentNetwork.logo} alt={currentNetwork.name + ' logo'} loading="lazy" className="h-4 w-4 shrink-0" />
-            <span className="text-white">{currentNetwork.name}</span>
           </GradientBorderButton>
         </div>
       </DropdownMenuTrigger>
