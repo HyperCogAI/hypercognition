@@ -242,7 +242,7 @@ const AppLayout = () => {
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
         <AppSidebar />
-        <div className="flex-1 flex flex-col relative overflow-y-auto">
+        <div className="flex-1 flex flex-col">
           {!isACPPage && (
               <div className="sticky top-0 z-50 bg-gradient-to-r from-background/40 to-background/40 backdrop-blur-md border-b border-border/30 px-5 h-20 shadow-lg flex items-center gap-2">
                 <SidebarTrigger className="text-[hsl(215,10%,15%)] hover:bg-muted transition-colors duration-300" />
