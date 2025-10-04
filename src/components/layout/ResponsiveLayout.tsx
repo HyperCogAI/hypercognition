@@ -111,7 +111,7 @@ export function ResponsiveLayout({
           <AppSidebar />
           <SidebarInset className="flex-1">
             {/* Desktop Header */}
-            <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-border/70 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
+            <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-border/30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 px-4">
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
               
