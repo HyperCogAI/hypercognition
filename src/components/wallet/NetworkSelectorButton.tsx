@@ -30,7 +30,7 @@ export const NetworkSelectorButton = () => {
       <DropdownMenuTrigger asChild>
         <div>
           <GradientBorderButton className="w-auto justify-center">
-            <img src={currentNetwork.logo} alt={currentNetwork.name + ' logo'} loading="lazy" className="h-5 w-auto object-contain shrink-0" />
+            <img src={currentNetwork.logo} alt={currentNetwork.name + ' logo'} loading="lazy" className="h-4 w-auto object-contain shrink-0" />
           </GradientBorderButton>
         </div>
       </DropdownMenuTrigger>
@@ -47,7 +47,7 @@ export const NetworkSelectorButton = () => {
               e.currentTarget.style.backgroundColor = ''
             }}
           >
-            <img src={network.logo} alt={network.name + ' logo'} loading="lazy" className="h-5 w-auto object-contain mr-2 shrink-0" />
+            <img src={network.logo} alt={network.name + ' logo'} loading="lazy" className="h-4 w-auto object-contain mr-2 shrink-0" />
             {network.name}
           </DropdownMenuItem>
         ))}
