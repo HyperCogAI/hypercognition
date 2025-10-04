@@ -244,7 +244,7 @@ const AppLayout = () => {
         <AppSidebar />
         <div className="flex-1 flex flex-col">
           {!isACPPage && (
-              <div className="bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-border/30 px-4 py-5.5 shadow-lg flex items-center gap-2">
+              <div className="bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-border/30 px-6 py-5 shadow-lg flex items-center gap-2">
                 <SidebarTrigger className="text-[hsl(215,10%,15%)] hover:bg-muted transition-colors duration-300" />
                 <div className="ml-auto flex items-center gap-2">
                   <NetworkSelectorButton />
