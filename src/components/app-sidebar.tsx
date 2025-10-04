@@ -2,8 +2,6 @@ import { useState } from "react"
 import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard, Layers, UserCog } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import newLogo from "@/assets/new-logo.png"
-import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
-import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
 import {
   Sidebar,
   SidebarContent,
@@ -103,17 +101,6 @@ export function AppSidebar() {
       className="border-r border-border/30"
     >
       <SidebarContent className="bg-card border-r border-border/30 shadow-2xl">
-        {/* Wallet Controls Header */}
-        <div className="sticky top-0 z-50 bg-gradient-to-r from-background/90 to-background/80 backdrop-blur-md border-b border-primary/10 p-2">
-          <div className="flex items-center gap-2">
-            <SidebarTrigger className="hover:bg-primary/10 transition-colors duration-300" />
-            <div className="ml-auto flex items-center gap-2">
-              <NetworkSelectorButton />
-              <UnifiedWalletButton />
-            </div>
-          </div>
-        </div>
-
         {/* Logo */}
         <div className="p-4 border-b border-border/30 bg-background">
           <div className="flex items-center justify-start gap-4">
