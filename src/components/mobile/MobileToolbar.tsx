@@ -1,5 +1,5 @@
-import { WalletButton } from '@/components/wallet/WalletButton'
-import { SolanaWalletButton } from '@/components/wallet/SolanaWalletButton'
+import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
+import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
 import logoUrl from '@/assets/HyperCognition2.png'
 
 // Preload the logo to prevent fuzzy loading
@@ -31,13 +31,9 @@ export const MobileToolbar = () => {
         </div>
 
         {/* Wallet buttons on the right */}
-        <div className="flex items-center -space-x-2 -mr-[3.2px]">
-          <div className="scale-90">
-            <WalletButton />
-          </div>
-          <div className="scale-90">
-            <SolanaWalletButton />
-          </div>
+        <div className="flex items-center gap-2">
+          <NetworkSelectorButton />
+          <UnifiedWalletButton />
         </div>
       </div>
     </header>
