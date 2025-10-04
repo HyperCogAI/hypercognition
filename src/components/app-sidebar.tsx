@@ -102,13 +102,13 @@ export function AppSidebar() {
     >
       <SidebarContent className="bg-card border-r border-border/30 shadow-2xl">
         {/* Logo */}
-        <div className={`p-4 border-b border-border/30 bg-background ${isCollapsed ? 'flex justify-center' : ''}`}>
+        <div className={`border-b border-border/30 bg-background ${isCollapsed ? 'p-2 flex justify-center' : 'p-4'}`}>
           <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start gap-4'}`}>
             <img 
               src={newLogo} 
               alt="HyperCognition Logo" 
               className={`object-contain transition-all duration-300 ${
-                isCollapsed ? 'h-10 w-10' : 'h-12 w-auto'
+                isCollapsed ? 'h-8 w-auto' : 'h-12 w-auto'
               }`}
             />
           </div>
