@@ -109,10 +109,12 @@ export const UnifiedWalletButton = () => {
   return (
     <DropdownMenu>
       <DropdownMenuTrigger asChild>
-        <CyberButton variant="outline" size="sm" className="w-[130px] justify-center">
-          <Wallet className="h-4 w-4 text-white" />
-          <span className="text-white">{formatAddress(address!)}</span>
-        </CyberButton>
+        <div>
+          <GradientBorderButton className="w-[130px] justify-center">
+            <Wallet className="h-4 w-4 text-white" />
+            <span className="text-white">{formatAddress(address!)}</span>
+          </GradientBorderButton>
+        </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 bg-[hsl(var(--menu-surface))] border-white/20 z-50">
         <DropdownMenuItem onClick={disconnectWallet} className="text-white hover:bg-white/10 focus:bg-white/10">
