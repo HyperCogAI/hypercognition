@@ -193,9 +193,9 @@ export const MobileNavigation = () => {
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
                                 "h-16 flex flex-col gap-2 p-4 transition-all duration-200 text-sm",
-                                "hover:scale-[1.02] hover:shadow-lg border-2 hover:bg-muted/60 hover:text-foreground",
-                                "rounded-xl bg-card/50 backdrop-blur-sm border-border",
-                                active && "text-white shadow-xl scale-[1.02] bg-muted/80 border-border/60"
+                                "hover:scale-[1.02] hover:shadow-lg border-2 hover:bg-gray-800/60 hover:text-foreground",
+                                "rounded-xl bg-gray-900/50 backdrop-blur-sm border-gray-800",
+                                active && "text-white shadow-xl scale-[1.02] bg-gray-800/80 border-gray-600"
                               )}
                             >
                               <Icon className="h-5 w-5 mb-1" />
