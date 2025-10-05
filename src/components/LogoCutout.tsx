@@ -19,7 +19,7 @@ export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", class
       <img
         src={src}
         alt={alt}
-        className="relative z-10 block h-full w-auto transform-gpu scale-[1.08] origin-center"
+        className="relative z-10 block h-full w-auto transform-gpu scale-[1.10] origin-center"
         decoding="async"
         loading="eager"
       />
