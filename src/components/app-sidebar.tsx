@@ -116,11 +116,11 @@ export function AppSidebar() {
 
         {/* Core Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Core</span>
               </div>
             )}
@@ -151,11 +151,11 @@ export function AppSidebar() {
 
         {/* Trading Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Trading</span>
               </div>
             )}
@@ -185,11 +185,11 @@ export function AppSidebar() {
 
         {/* DeFi & Crypto Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">DeFi & Crypto</span>
               </div>
             )}
@@ -219,11 +219,11 @@ export function AppSidebar() {
 
         {/* Analytics Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Analytics</span>
               </div>
             )}
@@ -253,11 +253,11 @@ export function AppSidebar() {
 
         {/* Community Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Community</span>
               </div>
             )}
@@ -296,11 +296,11 @@ export function AppSidebar() {
 
         {/* Professional Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Professional</span>
               </div>
             )}
@@ -330,11 +330,11 @@ export function AppSidebar() {
 
         {/* Resources Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
                 <span className="text-xs font-bold text-white tracking-widest uppercase">Resources</span>
               </div>
             )}
