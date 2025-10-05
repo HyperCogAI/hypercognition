@@ -21,6 +21,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
@@ -245,7 +246,10 @@ const AppLayout = () => {
         <div className="flex-1 flex flex-col h-screen overflow-y-auto">
           {!isACPPage && (
               <div className="sticky top-0 z-50 bg-gradient-to-r from-background/80 to-background/80 backdrop-blur-md border-b border-border/30 px-5 h-28 shadow-lg flex items-center gap-2">
-                <SidebarTrigger className="text-[hsl(215,10%,15%)] hover:bg-muted transition-colors duration-300" />
+                <div className="flex items-center gap-2">
+                  <SidebarTrigger className="text-foreground hover:bg-muted transition-colors duration-300" />
+                  <ThemeToggle />
+                </div>
                 <div className="ml-auto flex items-center gap-2">
                   <NetworkSelectorButton />
                   <UnifiedWalletButton />
