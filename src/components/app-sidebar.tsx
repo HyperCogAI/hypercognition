@@ -108,7 +108,7 @@ export function AppSidebar() {
             <LogoCutout 
               src={newLogo}
               alt="HyperCognition Logo"
-              className={isCollapsed ? 'h-8' : 'h-12'}
+              className={isCollapsed ? 'h-10' : 'h-16'}
             />
           </div>
         </div>
