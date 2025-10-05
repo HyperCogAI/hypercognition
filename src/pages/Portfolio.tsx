@@ -65,42 +65,29 @@ export default function Portfolio() {
         keywords="portfolio tracking, investment analytics, AI agents, trading performance, portfolio optimization"
       />
       
-      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8 animate-fade-in">
+      <div className="container mx-auto px-6 py-8">
         {/* Header Section */}
-        <div className="text-center mb-8">
-          <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20 border border-primary/20">
-              <Wallet className="h-8 w-8 text-primary" />
-            </div>
-            <div>
-              <h1 className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Portfolio Dashboard
-              </h1>
-            </div>
-          </div>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto mb-6">
+        <div className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            Portfolio Dashboard
+          </h1>
+          <p className="text-muted-foreground">
             Track performance, analyze holdings, and optimize your AI agent investments
           </p>
-          <Button asChild className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
-            <Link to="/marketplace">
-              <Plus className="h-4 w-4 mr-2" />
-              Add Investment
-            </Link>
-          </Button>
         </div>
 
         {/* Balance Card - Always show if available */}
         {balance && (
-          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 mb-6">
+          <Card className="mb-6">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
                   <p className="text-sm font-medium text-muted-foreground mb-2">Available Cash</p>
-                  <p className="text-2xl font-bold text-foreground">${balance.available_balance.toFixed(2)}</p>
+                  <p className="text-2xl font-bold">${balance.available_balance.toFixed(2)}</p>
                   <p className="text-xs text-muted-foreground mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-gradient-to-r from-green-500/20 to-emerald-500/20">
-                  <DollarSign className="h-6 w-6 text-green-400" />
+                <div className="p-3 rounded-lg bg-muted">
+                  <DollarSign className="h-6 w-6" />
                 </div>
               </div>
             </CardContent>
@@ -111,42 +98,42 @@ export default function Portfolio() {
           <>
             
             {/* Portfolio Summary Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+              <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-2">Total Portfolio Value</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(portfolioValue)}</p>
+                      <p className="text-2xl font-bold">{formatCurrency(portfolioValue)}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20">
-                      <Wallet className="h-6 w-6 text-primary" />
+                    <div className="p-3 rounded-lg bg-muted">
+                      <Wallet className="h-6 w-6" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+              <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-2">Total Invested</p>
-                      <p className="text-2xl font-bold text-foreground">{formatCurrency(totalInvested)}</p>
+                      <p className="text-2xl font-bold">{formatCurrency(totalInvested)}</p>
                     </div>
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20">
-                      <TrendingUp className="h-6 w-6 text-primary" />
+                    <div className="p-3 rounded-lg bg-muted">
+                      <TrendingUp className="h-6 w-6" />
                     </div>
                   </div>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:shadow-lg hover:shadow-primary/10 transition-all duration-300">
+              <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
                       <p className="text-sm font-medium text-muted-foreground mb-2">Total P&L</p>
                       <div className="flex items-center gap-2">
-                        <p className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                        <p className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {formatCurrency(totalPnL)}
                         </p>
                         <Badge variant={totalPnL >= 0 ? 'default' : 'destructive'} className="text-xs">
@@ -154,8 +141,8 @@ export default function Portfolio() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="p-3 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20">
-                      <BarChart3 className="h-6 w-6 text-primary" />
+                    <div className="p-3 rounded-lg bg-muted">
+                      <BarChart3 className="h-6 w-6" />
                     </div>
                   </div>
                 </CardContent>
@@ -163,60 +150,36 @@ export default function Portfolio() {
             </div>
 
             {/* Solana Portfolio Section */}
-            <div className="mb-8">
+            <div className="mb-6">
               <SolanaPortfolioCard />
             </div>
 
             {/* Portfolio Tabs */}
-            <Tabs defaultValue="detailed" className="space-y-6">
-              <TabsList className="grid w-full grid-cols-3 md:grid-cols-6 bg-gradient-to-r from-muted to-muted/50 p-1 rounded-xl">
-                <TabsTrigger 
-                  value="detailed" 
-                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
-                >
+            <Tabs defaultValue="detailed" className="w-full mb-6">
+              <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-6 gap-1 scrollbar-hide">
+                <TabsTrigger value="detailed" className="flex-shrink-0 gap-2">
                   <Activity className="h-4 w-4" />
                   <span className="hidden sm:inline">Detailed</span>
-                  <span className="sm:hidden">Live</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="performance" 
-                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
-                >
+                <TabsTrigger value="performance" className="flex-shrink-0 gap-2">
                   <TrendingUp className="h-4 w-4" />
                   <span className="hidden sm:inline">Performance</span>
-                  <span className="sm:hidden">Perf</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="analytics" 
-                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
-                >
+                <TabsTrigger value="analytics" className="flex-shrink-0 gap-2">
                   <BarChart3 className="h-4 w-4" />
                   <span className="hidden sm:inline">Analytics</span>
-                  <span className="sm:hidden">Stats</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="optimizer" 
-                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
-                >
+                <TabsTrigger value="optimizer" className="flex-shrink-0 gap-2">
                   <Target className="h-4 w-4" />
                   <span className="hidden sm:inline">Optimizer</span>
-                  <span className="sm:hidden">Opt</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="holdings" 
-                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
-                >
+                <TabsTrigger value="holdings" className="flex-shrink-0 gap-2">
                   <Wallet className="h-4 w-4" />
                   <span className="hidden sm:inline">EVM Holdings</span>
-                  <span className="sm:hidden">EVM</span>
                 </TabsTrigger>
-                <TabsTrigger 
-                  value="solana" 
-                  className="flex items-center gap-2 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-accent data-[state=active]:text-primary-foreground rounded-lg transition-all duration-200 text-xs md:text-sm"
-                >
+                <TabsTrigger value="solana" className="flex-shrink-0 gap-2">
                   <Wallet className="h-4 w-4" />
                   <span className="hidden sm:inline">Solana</span>
-                  <span className="sm:hidden">SOL</span>
                 </TabsTrigger>
               </TabsList>
 
@@ -236,33 +199,33 @@ export default function Portfolio() {
                 <PortfolioOptimizer />
               </TabsContent>
 
-              <TabsContent value="holdings">
-                <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
+              <TabsContent value="holdings" className="mt-6">
+                <Card>
                   <CardHeader>
-                    <CardTitle className="flex items-center gap-2 text-foreground">
-                      <Wallet className="h-5 w-5 text-primary" />
+                    <CardTitle className="flex items-center gap-2">
+                      <Wallet className="h-5 w-5" />
                       EVM Holdings
                     </CardTitle>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
                       {holdings.map((holding, index) => (
-                        <div key={holding.id} className="flex items-center justify-between p-4 border border-primary/10 rounded-xl bg-gradient-to-r from-muted/30 to-muted/10 hover:shadow-md transition-all duration-200">
+                        <div key={holding.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                           <div className="flex items-center gap-4">
-                            <div className="p-2 rounded-lg bg-gradient-to-r from-primary/20 to-accent/20">
-                              <Wallet className="h-4 w-4 text-primary" />
+                            <div className="p-2 rounded-lg bg-muted">
+                              <Wallet className="h-4 w-4" />
                             </div>
                             <div>
-                              <p className="font-medium text-foreground">{holding.asset_name}</p>
+                              <p className="font-medium">{holding.asset_name}</p>
                               <p className="text-sm text-muted-foreground">
                                 {holding.quantity.toFixed(4)} {holding.asset_symbol}
                               </p>
                             </div>
                           </div>
                           <div className="text-right">
-                            <p className="font-medium text-foreground">{formatCurrency(holding.current_value)}</p>
+                            <p className="font-medium">{formatCurrency(holding.current_value)}</p>
                             <div className="flex items-center gap-2">
-                              <span className={`text-sm font-medium ${holding.unrealized_pnl >= 0 ? 'text-green-400' : 'text-red-400'}`}>
+                              <span className={`text-sm font-medium ${holding.unrealized_pnl >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                                 {formatCurrency(holding.unrealized_pnl)}
                               </span>
                               <Badge variant={holding.unrealized_pnl >= 0 ? 'default' : 'destructive'} className="text-xs">
@@ -277,22 +240,22 @@ export default function Portfolio() {
                 </Card>
               </TabsContent>
 
-              <TabsContent value="solana">
+              <TabsContent value="solana" className="mt-6">
                 <SolanaPortfolioCard />
               </TabsContent>
             </Tabs>
           </>
         ) : (
-          <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20">
+          <Card>
             <CardContent className="p-8 text-center">
-              <div className="p-4 rounded-xl bg-gradient-to-r from-primary/20 to-accent/20 inline-block mb-6">
-                <Wallet className="h-12 w-12 text-primary" />
+              <div className="p-4 rounded-lg bg-muted inline-block mb-6">
+                <Wallet className="h-12 w-12" />
               </div>
-              <h3 className="text-xl font-semibold mb-3 text-foreground">No Portfolio Data</h3>
+              <h3 className="text-xl font-semibold mb-3">No Portfolio Data</h3>
               <p className="text-muted-foreground mb-6 max-w-md mx-auto">
                 Start investing in AI agents to track your portfolio performance and unlock powerful analytics
               </p>
-              <Button asChild className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
+              <Button asChild>
                 <Link to="/marketplace">
                   <Plus className="h-4 w-4 mr-2" />
                   Explore AI Agents
