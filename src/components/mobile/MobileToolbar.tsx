@@ -16,7 +16,7 @@ export const MobileToolbar = () => {
           <LogoCutout 
             src={logoUrl} 
             alt="HyperCognition logo" 
-            className="h-9"
+            className="h-10"
             gradientScale={0.75}
           />
         </div>
