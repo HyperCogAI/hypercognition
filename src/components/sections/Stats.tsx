@@ -36,7 +36,6 @@ export const Stats = () => {
     <section className="py-12 md:py-16 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-background to-card/20" />
-      <div className="absolute inset-0 cyber-grid opacity-10" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         <div className="text-center mb-8 md:mb-12">

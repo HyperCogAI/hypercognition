@@ -34,7 +34,6 @@ export const Testimonials = () => {
     <section className="py-24 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-card/10 via-background to-card/10" />
-      <div className="absolute inset-0 cyber-grid opacity-5" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}

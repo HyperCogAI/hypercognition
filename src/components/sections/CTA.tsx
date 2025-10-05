@@ -6,7 +6,6 @@ export function CTA() {
     <section className="py-24 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-r from-primary/10 via-secondary/10 to-accent/10" />
-      <div className="absolute inset-0 cyber-grid opacity-10" />
       
       {/* Floating Orbs */}
       

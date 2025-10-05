@@ -6,7 +6,6 @@ export const HyperCTA = () => {
   return (
     <section className="py-12 md:py-16 px-4 relative overflow-hidden">
       {/* Background Effects */}
-      <div className="absolute inset-0 cyber-grid opacity-5" />
       
       {/* Animated Orbs */}
 

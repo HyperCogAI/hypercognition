@@ -46,7 +46,6 @@ export const HyperFeatures = () => {
     <section className="py-12 md:py-16 px-4 relative overflow-hidden">
       {/* Background Effects */}
       <div className="absolute inset-0 bg-gradient-to-b from-background via-card/20 to-background" />
-      <div className="absolute inset-0 cyber-grid opacity-20" />
       
       <div className="max-w-6xl mx-auto relative z-10">
         {/* Section Header */}

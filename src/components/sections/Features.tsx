@@ -46,7 +46,6 @@ export function Features() {
   return (
     <section className="py-16 md:py-24 relative">
       {/* Background Elements */}
-      <div className="absolute inset-0 cyber-grid opacity-5" />
       
       <div className="container mx-auto px-4 md:px-6">
         {/* Section Header */}
