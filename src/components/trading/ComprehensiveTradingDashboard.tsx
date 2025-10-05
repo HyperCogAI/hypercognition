@@ -264,14 +264,14 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   onClick={() => setSelectedCrypto(token)}
                   className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
-                    <span className="text-sm text-muted-foreground w-4 sm:w-6">{index + 1}</span>
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+                    <span className="text-sm text-muted-foreground w-4 sm:w-6 flex-shrink-0">{index + 1}</span>
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex-shrink-0" />
                     )}
-                    <div className="flex-1 min-w-0">
+                    <div className="flex-1 min-w-0 max-w-[120px] sm:max-w-none">
                       <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
-                      <div className="text-xs sm:text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground truncate">{token.symbol.toUpperCase()}</div>
                     </div>
                     {!isMobile && (
                       <div className="flex gap-1.5 mr-4">
