@@ -214,27 +214,31 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
       {/* Market Data Tabs */}
       <Card className="bg-card/30 backdrop-blur-sm border-border/50">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <div>
-              <CardTitle className="flex items-center gap-2">
-                Live Market Data
-                {isLive && (
-                  <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
-                    Live
-                  </Badge>
-                )}
-                <Badge variant="outline" className="text-xs">
-                  {crypto.length} Assets
-                </Badge>
-              </CardTitle>
-              <CardDescription>
-                Real-time cryptocurrency prices and market data
-              </CardDescription>
+          <div className="flex flex-col gap-4">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex-1">
+                <CardTitle className="text-xl sm:text-2xl mb-2">
+                  Live Market Data
+                </CardTitle>
+                <CardDescription className="text-sm">
+                  Real-time cryptocurrency prices and market data
+                </CardDescription>
+              </div>
+              <Button onClick={refreshData} variant="outline" size="sm" className="flex-shrink-0">
+                <RefreshCw className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Refresh</span>
+              </Button>
             </div>
-            <Button onClick={refreshData} variant="outline" size="sm">
-              <RefreshCw className="w-4 h-4 mr-2" />
-              Refresh
-            </Button>
+            <div className="flex items-center gap-2 flex-wrap">
+              {isLive && (
+                <Badge variant="outline" className="text-xs bg-green-500/10 text-green-400 border-green-500/30">
+                  Live
+                </Badge>
+              )}
+              <Badge variant="outline" className="text-xs">
+                {crypto.length} Assets
+              </Badge>
+            </div>
           </div>
         </CardHeader>
         <CardContent>
