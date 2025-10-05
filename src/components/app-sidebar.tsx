@@ -115,7 +115,7 @@ export function AppSidebar() {
 
 
         {/* Core Navigation */}
-        <SidebarGroup className="mb-6">
+        <SidebarGroup className="mb-6 mt-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-3">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
