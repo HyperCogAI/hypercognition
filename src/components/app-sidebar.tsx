@@ -121,7 +121,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Core</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Core</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -156,7 +156,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Trading</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Trading</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -190,7 +190,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">DeFi & Crypto</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">DeFi & Crypto</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -224,7 +224,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Analytics</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Analytics</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -258,7 +258,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Community</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Community</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -301,7 +301,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Professional</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Professional</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -335,7 +335,7 @@ export function AppSidebar() {
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
               <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-3 py-1 shadow-md">
-                <span className="text-xs font-bold text-white tracking-widest uppercase">Resources</span>
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Resources</span>
               </div>
             )}
           </SidebarGroupLabel>
