@@ -14,8 +14,7 @@ import { useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
 import { cn } from '@/lib/utils'
-import newLogo from '@/assets/HyperCognition6b.png'
-import { LogoCutout } from '@/components/LogoCutout'
+import hyperLogo from '@/assets/hyper-cognition-logo-large.png'
 
 // Core navigation items for bottom bar
 const bottomNavItems = [
@@ -166,11 +165,7 @@ export const MobileNavigation = () => {
             <SheetContent side="bottom" className="h-[100vh] rounded-none bg-background/98 backdrop-blur-md border-none">
               <SheetHeader className="pb-6 border-b border-border/20">
                 <SheetTitle className="flex items-center justify-center">
-                  <LogoCutout 
-                    src={newLogo}
-                    alt="HyperCognition Logo"
-                    className="h-10"
-                  />
+                  <img src={hyperLogo} alt="HyperCognition" className="h-10 w-auto" />
                 </SheetTitle>
               </SheetHeader>
               
