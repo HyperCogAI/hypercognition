@@ -210,7 +210,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
   }, []);
 
   return (
-    <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col">
+    <Card className="w-full max-w-2xl mx-auto h-[600px] flex flex-col backdrop-blur-md border border-border/50 shadow-xl">
       <CardHeader className="flex-shrink-0">
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
@@ -220,17 +220,17 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
           <div className="flex items-center gap-2">
             {isConnected && (
               <>
-                <Badge variant={isListening ? "default" : "secondary"} className="text-xs">
+                <Badge variant={isListening ? "default" : "secondary"} className="text-xs bg-card/40 border-border/40">
                   <Mic className="w-3 h-3 mr-1" />
                   {isListening ? 'Listening' : 'Idle'}
                 </Badge>
-                <Badge variant={isSpeaking ? "default" : "secondary"} className="text-xs">
+                <Badge variant={isSpeaking ? "default" : "secondary"} className="text-xs bg-card/40 border-border/40">
                   <Volume2 className="w-3 h-3 mr-1" />
                   {isSpeaking ? 'Speaking' : 'Quiet'}
                 </Badge>
               </>
             )}
-            <Badge variant={isConnected ? "default" : "secondary"}>
+            <Badge variant={isConnected ? "default" : "secondary"} className="bg-card/40 border-border/40">
               {isConnected ? 'Connected' : 'Disconnected'}
             </Badge>
           </div>
@@ -262,10 +262,10 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
                 )}
                 
                 <div
-                  className={`max-w-[80%] rounded-lg p-3 ${
+                  className={`max-w-[80%] rounded-2xl p-3 backdrop-blur-sm shadow-sm transition-all ${
                     message.type === 'assistant'
-                      ? 'bg-muted text-foreground'
-                      : 'bg-primary text-primary-foreground'
+                      ? 'bg-card/40 border border-border/30'
+                      : 'bg-gradient-to-br from-primary/80 to-primary/60 text-primary-foreground'
                   }`}
                 >
                   <p className="text-sm whitespace-pre-wrap">{message.content}</p>
@@ -293,7 +293,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
               <Button 
                 onClick={startConversation}
                 disabled={isConnecting}
-                className="bg-primary/60 border border-white hover:bg-primary/70 text-white"
+                className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 transition-all duration-300"
               >
                 {isConnecting ? (
                   <>
@@ -311,6 +311,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
               <Button 
                 onClick={endConversation}
                 variant="outline"
+                className="rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
               >
                 <PhoneOff className="w-4 h-4 mr-2" />
                 End Conversation
@@ -323,6 +324,7 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
                 size="icon"
                 onClick={() => setAudioEnabled(!audioEnabled)}
                 title={audioEnabled ? 'Mute audio' : 'Enable audio'}
+                className="rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
               >
                 {audioEnabled ? (
                   <Volume2 className="w-4 h-4" />
@@ -341,13 +343,14 @@ const VoiceInterface: React.FC<VoiceInterfaceProps> = ({ onSpeakingChange }) => 
                 onChange={(e) => setTextInput(e.target.value)}
                 onKeyPress={handleKeyPress}
                 placeholder="Type your message or speak..."
-                className="flex-1"
+                className="flex-1 rounded-xl border border-border/40 bg-card/20 backdrop-blur-sm focus:border-primary/50 transition-colors"
                 disabled={!isConnected}
               />
               <Button
                 onClick={sendTextMessage}
                 disabled={!textInput.trim() || !isConnected}
                 size="icon"
+                className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 transition-all duration-300"
               >
                 <Send className="w-4 h-4" />
               </Button>

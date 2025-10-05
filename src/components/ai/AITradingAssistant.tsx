@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import { useAITradingAssistant } from '@/hooks/useAITradingAssistant'
 import { VoiceAssistantModal } from './VoiceAssistantModal'
-import { Bot, User, Send, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap, Mic } from 'lucide-react'
+import { Bot, User, Send, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap, Mic, Paperclip, X } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface AITradingAssistantProps {
@@ -19,7 +19,9 @@ interface AITradingAssistantProps {
 
 export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AITradingAssistantProps) {
   const [message, setMessage] = useState('')
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([])
   const messagesEndRef = useRef<HTMLDivElement>(null)
+  const fileInputRef = useRef<HTMLInputElement>(null)
   
   const {
     loading,
@@ -64,6 +66,21 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
     }
   }
 
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(e.target.files || [])
+    if (uploadedFiles.length + files.length > 10) {
+      return // Max 10 files
+    }
+    setUploadedFiles(prev => [...prev, ...files])
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ''
+    }
+  }
+
+  const removeFile = (index: number) => {
+    setUploadedFiles(prev => prev.filter((_, i) => i !== index))
+  }
+
   const handleQuickAction = async (action: string) => {
     try {
       switch (action) {
@@ -96,7 +113,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
   }
 
   const renderRecommendation = (rec: any, idx: number) => (
-    <div key={idx} className="p-3 bg-card rounded-lg border">
+    <div key={idx} className="p-3 bg-card/30 rounded-xl border border-border/30 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Badge 
@@ -124,7 +141,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
   )
 
   const renderMarketAnalysis = (analysis: any) => (
-    <div className="p-3 bg-card rounded-lg border space-y-3">
+    <div className="p-3 bg-card/30 rounded-xl border border-border/30 backdrop-blur-sm space-y-3">
       <div className="flex items-center justify-between">
         <h4 className="font-medium flex items-center gap-2">
           <Brain className="h-4 w-4" />
@@ -192,14 +209,14 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
   )
 
   return (
-    <Card className="h-[700px] flex flex-col">
+    <Card className="h-[700px] flex flex-col backdrop-blur-md border border-border/50 shadow-xl">
       <CardHeader className="px-4 md:px-6 py-3 md:py-4 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
             <Bot className="h-5 w-5 text-primary" />
             <span className="hidden sm:inline">AI Trading Assistant</span>
             <span className="sm:hidden">AI Assistant</span>
-            <Badge variant="outline" className="ml-2 text-xs">
+            <Badge variant="outline" className="ml-2 text-xs bg-card/40 border-border/40">
               {loading ? 'Analyzing...' : 'Ready'}
             </Badge>
           </CardTitle>
@@ -208,7 +225,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             size="sm" 
             onClick={clearHistory}
             disabled={loading || chatHistory.length === 0}
-            className="self-start sm:self-auto"
+            className="self-start sm:self-auto rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
           >
             Clear Chat
           </Button>
@@ -224,7 +241,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               size="sm"
               onClick={() => handleQuickAction('market-analysis')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <TrendingUp className="h-4 w-4" />
               <span className="text-xs md:text-sm">Market</span>
@@ -234,7 +251,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               size="sm"
               onClick={() => handleQuickAction('portfolio-advice')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <Target className="h-4 w-4" />
               <span className="text-xs md:text-sm">Portfolio</span>
@@ -244,7 +261,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               size="sm"
               onClick={() => handleQuickAction('trading-signals')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <Zap className="h-4 w-4" />
               <span className="text-xs md:text-sm">Signals</span>
@@ -254,7 +271,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               size="sm"
               onClick={() => handleQuickAction('risk-assessment')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <Shield className="h-4 w-4" />
               <span className="text-xs md:text-sm">Risk</span>
@@ -264,7 +281,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               size="sm"
               onClick={() => handleQuickAction('market-news')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row col-span-2 sm:col-span-1"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row col-span-2 sm:col-span-1"
             >
               <AlertTriangle className="h-4 w-4" />
               <span className="text-xs md:text-sm">News</span>
@@ -302,10 +319,10 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
                 
                 <div className={`max-w-[85%] ${msg.type === 'user' ? 'order-1' : ''}`}>
                   <div
-                    className={`rounded-lg p-3 ${
+                    className={`rounded-2xl p-3 backdrop-blur-sm shadow-sm transition-all ${
                       msg.type === 'user'
-                        ? 'bg-primary text-primary-foreground'
-                        : 'bg-muted'
+                        ? 'bg-gradient-to-br from-primary/80 to-primary/60 text-primary-foreground'
+                        : 'bg-card/40 border border-border/30'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -330,7 +347,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
                       
                       {/* Portfolio Insights */}
                       {msg.data.portfolio_insights && (
-                        <div className="p-3 bg-card rounded-lg border">
+                        <div className="p-3 bg-card/30 rounded-xl border border-border/30 backdrop-blur-sm">
                           <h4 className="font-medium mb-2 flex items-center gap-2">
                             <Target className="h-4 w-4" />
                             Portfolio Insights
@@ -382,7 +399,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Bot className="h-4 w-4 text-primary" />
                 </div>
-                <div className="bg-muted rounded-lg p-3">
+                <div className="bg-card/40 backdrop-blur-sm border border-border/30 rounded-2xl p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm text-muted-foreground">Analyzing market data and generating insights...</span>
@@ -399,19 +416,61 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
 
         {/* Message Input */}
         <div className="p-4 md:p-4">
+          {/* File Previews */}
+          {uploadedFiles.length > 0 && (
+            <div className="flex flex-wrap gap-2 mb-3">
+              {uploadedFiles.map((file, index) => (
+                <Badge 
+                  key={index} 
+                  variant="outline" 
+                  className="pl-3 pr-1 py-1 bg-card/40 border-border/40 backdrop-blur-sm"
+                >
+                  <span className="text-xs max-w-[120px] truncate">{file.name}</span>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-4 w-4 ml-1 hover:bg-destructive/20"
+                    onClick={() => removeFile(index)}
+                  >
+                    <X className="h-3 w-3" />
+                  </Button>
+                </Badge>
+              ))}
+            </div>
+          )}
+          
           <div className="flex gap-2 mb-3">
+            <input
+              ref={fileInputRef}
+              type="file"
+              multiple
+              accept="image/*,.pdf,.doc,.docx"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => fileInputRef.current?.click()}
+              disabled={loading || uploadedFiles.length >= 10}
+              className="rounded-full border border-border/40 bg-card/20 hover:bg-card/40 backdrop-blur-sm transition-all duration-300"
+              title="Upload files"
+            >
+              <Paperclip className="h-4 w-4" />
+            </Button>
             <Input
               value={message}
               onChange={(e) => setMessage(e.target.value)}
               onKeyPress={handleKeyPress}
               placeholder="Ask about trading strategies, market analysis, risk management, or portfolio optimization..."
               disabled={loading}
-              className="flex-1"
+              className="flex-1 rounded-xl border border-border/40 bg-card/20 backdrop-blur-sm focus:border-primary/50 transition-colors"
             />
             <Button 
               onClick={handleSendMessage} 
               disabled={loading || !message.trim()}
               size="icon"
+              className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 transition-all duration-300"
             >
               {loading ? (
                 <Loader2 className="h-4 w-4 animate-spin" />
@@ -426,7 +485,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             <Button
               variant="outline"
               size="sm"
-              className="w-full flex items-center justify-center gap-2 h-9"
+              className="w-full flex items-center justify-center gap-2 h-9 rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
             >
               <Mic className="h-4 w-4" />
               Switch to Voice Mode
