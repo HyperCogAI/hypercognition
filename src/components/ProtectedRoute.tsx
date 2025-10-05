@@ -1,9 +1,6 @@
 import { useAuth } from "@/contexts/AuthContext"
-import { WalletButton } from "@/components/wallet/WalletButton"
-import { SolanaWalletButton } from "@/components/wallet/SolanaWalletButton"
-import { useWallet as useEvmWallet } from "@/hooks/useWallet"
-import { useSolanaWallet } from "@/hooks/useSolanaWallet"
-
+import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
+import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Wallet } from "lucide-react"
 
@@ -36,9 +33,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
               Connect a wallet to access this feature and start trading AI agents.
             </CardDescription>
           </CardHeader>
-          <CardContent className="flex justify-center gap-3 flex-wrap">
-            <WalletButton />
-            <SolanaWalletButton />
+          <CardContent className="flex flex-col items-center gap-3">
+            <NetworkSelectorButton />
+            <UnifiedWalletButton />
           </CardContent>
         </Card>
       </div>
