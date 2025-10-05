@@ -115,8 +115,8 @@ export function AppSidebar() {
 
 
         {/* Core Navigation */}
-        <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
+        <SidebarGroup className="mb-6">
+          <SidebarGroupLabel className="px-4 flex items-center justify-start mb-3">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
@@ -150,7 +150,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Trading Section */}
-        <SidebarGroup>
+        <SidebarGroup className="mb-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
@@ -184,7 +184,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* DeFi & Crypto Section */}
-        <SidebarGroup>
+        <SidebarGroup className="mb-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
@@ -218,7 +218,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Analytics Section */}
-        <SidebarGroup>
+        <SidebarGroup className="mb-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
@@ -252,7 +252,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Community Section */}
-        <SidebarGroup>
+        <SidebarGroup className="mb-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
@@ -295,7 +295,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Professional Section */}
-        <SidebarGroup>
+        <SidebarGroup className="mb-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
@@ -329,7 +329,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
         {/* Resources Section */}
-        <SidebarGroup>
+        <SidebarGroup className="mb-6">
           <SidebarGroupLabel className="px-4 flex items-center justify-start mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
