@@ -221,11 +221,11 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             </Badge>
           </CardTitle>
           <Button 
-            variant="secondary" 
+            variant="outline" 
             size="sm" 
             onClick={clearHistory}
             disabled={loading || chatHistory.length === 0}
-            className="self-start sm:self-auto"
+            className="self-start sm:self-auto rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
           >
             Clear Chat
           </Button>
@@ -237,51 +237,51 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
         <div className="px-4 md:px-6 pb-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => handleQuickAction('market-analysis')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <TrendingUp className="h-4 w-4" />
               <span className="text-xs md:text-sm">Market</span>
             </Button>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => handleQuickAction('portfolio-advice')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <Target className="h-4 w-4" />
               <span className="text-xs md:text-sm">Portfolio</span>
             </Button>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => handleQuickAction('trading-signals')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <Zap className="h-4 w-4" />
               <span className="text-xs md:text-sm">Signals</span>
             </Button>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => handleQuickAction('risk-assessment')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row"
             >
               <Shield className="h-4 w-4" />
               <span className="text-xs md:text-sm">Risk</span>
             </Button>
             <Button
-              variant="secondary"
+              variant="outline"
               size="sm"
               onClick={() => handleQuickAction('market-news')}
               disabled={loading}
-              className="flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row col-span-2 sm:col-span-1"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300 flex flex-col items-center gap-1 h-14 md:h-auto md:flex-row col-span-2 sm:col-span-1"
             >
               <AlertTriangle className="h-4 w-4" />
               <span className="text-xs md:text-sm">News</span>
