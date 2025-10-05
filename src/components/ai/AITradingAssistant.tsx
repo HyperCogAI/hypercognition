@@ -467,10 +467,11 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               className="flex-1 rounded-xl border border-border/40 bg-card/20 backdrop-blur-sm focus:border-primary/50 transition-colors"
             />
             <Button 
+              variant="ghost"
               onClick={handleSendMessage} 
               disabled={loading || !message.trim()}
               size="icon"
-              className="rounded-full bg-primary/10 hover:bg-primary/20 border-[0.5px] border-primary/30 hover:border-primary/50 transition-all duration-300"
+              className="rounded-full bg-primary/10 hover:bg-primary/20 border-0 outline outline-[1px] outline-primary/30 hover:outline-primary/50 transition-all duration-300"
             >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
