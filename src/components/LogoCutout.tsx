@@ -12,7 +12,7 @@ export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", class
     <div className={cn("relative inline-block overflow-hidden rounded-md", className)}>
       {/* Animated gradient background */}
       <div
-        className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift pointer-events-none"
+        className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift pointer-events-none scale-[0.96] origin-center"
         aria-hidden="true"
       />
       {/* Logo overlay with transparent middle */}
