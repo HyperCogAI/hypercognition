@@ -75,7 +75,7 @@ export function EnhancedHero() {
               
               <h1 className="text-[2.625rem] md:text-6xl lg:text-7xl font-bold bg-gradient-to-r from-foreground via-primary to-accent bg-clip-text text-transparent leading-tight">
                 <div className="mb-2 md:mb-4">The Future of</div>
-                <span className="text-[2.625rem] md:text-6xl lg:text-7xl text-primary relative whitespace-nowrap">
+                <span className="text-[2.625rem] md:text-6xl lg:text-7xl bg-gradient-to-r from-blue-400 via-blue-500 to-cyan-400 bg-clip-text text-transparent bg-[length:200%_auto] animate-gradient-shift relative whitespace-nowrap">
                   {typedText}
                   <span className="animate-pulse">|</span>
                 </span>
