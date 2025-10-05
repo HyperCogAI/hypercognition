@@ -416,7 +416,7 @@ const PremiumTiers = () => {
             </p>
             <Button 
               size="default" 
-              className="w-full sm:w-auto bg-[#5A8A9F] hover:bg-[#4A7A8F] text-white rounded-full px-8 py-2 text-sm font-medium border-2 border-white/20"
+              className="w-full sm:w-auto bg-[#5A8A9F] hover:bg-[#4A7A8F] text-white rounded-full px-8 py-2 text-sm font-medium border border-white/20"
             >
               Contact Sales
             </Button>
