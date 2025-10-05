@@ -221,7 +221,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             </Badge>
           </CardTitle>
           <Button 
-            variant="outline" 
+            variant="ghost" 
             size="sm" 
             onClick={clearHistory}
             disabled={loading || chatHistory.length === 0}
@@ -237,7 +237,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
         <div className="px-4 md:px-6 pb-4">
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => handleQuickAction('market-analysis')}
               disabled={loading}
@@ -247,7 +247,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               <span className="text-xs md:text-sm">Market</span>
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => handleQuickAction('portfolio-advice')}
               disabled={loading}
@@ -257,7 +257,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               <span className="text-xs md:text-sm">Portfolio</span>
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => handleQuickAction('trading-signals')}
               disabled={loading}
@@ -267,7 +267,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               <span className="text-xs md:text-sm">Signals</span>
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => handleQuickAction('risk-assessment')}
               disabled={loading}
@@ -277,7 +277,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               <span className="text-xs md:text-sm">Risk</span>
             </Button>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               onClick={() => handleQuickAction('market-news')}
               disabled={loading}
@@ -449,7 +449,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               className="hidden"
             />
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
               onClick={() => fileInputRef.current?.click()}
               disabled={loading || uploadedFiles.length >= 10}
@@ -483,7 +483,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
           {/* Voice Interface Toggle */}
           <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={portfolio} marketData={marketData}>
             <Button
-              variant="outline"
+              variant="ghost"
               size="sm"
               className="w-full flex items-center justify-center gap-2 h-9 rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
             >
