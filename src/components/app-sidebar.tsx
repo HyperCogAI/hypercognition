@@ -120,8 +120,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Core</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Core</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -155,8 +155,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Trading</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Trading</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -189,8 +189,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">DeFi & Crypto</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">DEFI</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -223,8 +223,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Analytics</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Analytics</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -257,8 +257,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Community</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Community</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -300,8 +300,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Professional</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Professional</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -334,8 +334,8 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded px-2.5 py-0.5 shadow-md">
-                <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Resources</span>
+              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+                <span className="text-xs font-bold text-muted-foreground tracking-widest uppercase">Resources</span>
               </div>
             )}
           </SidebarGroupLabel>
