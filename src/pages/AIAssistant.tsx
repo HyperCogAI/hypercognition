@@ -128,9 +128,9 @@ const AIAssistant = () => {
                 <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2 md:pt-4">
                   <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
                     <Button 
-                      variant="outline" 
+                      variant="secondary" 
                       size="default"
-                      className="gap-2 border-white/30 text-white hover:bg-white/10 text-sm md:text-base"
+                      className="gap-2 text-sm md:text-base"
                     >
                       <Mic className="h-4 w-4 md:h-5 md:w-5" />
                       Try Voice Mode
