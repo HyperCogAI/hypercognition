@@ -81,7 +81,7 @@ export const UnifiedWalletButton = () => {
       } catch (_) {}
       return (
         <div className="w-full flex flex-col gap-2">
-          <div className="relative rounded-full w-[130px] p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift">
+          <div className="relative rounded-full w-[130px] p-[1px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift">
             <a href={href} target="_top" aria-label="Connect wallet (open in full window)" className="inline-flex items-center justify-center gap-2 w-full h-8 rounded-full bg-[#16181f] hover:bg-[#1d2029] text-white text-xs font-medium">
               <Wallet className="h-4 w-4 text-white" />
               <span className="text-white">Connect</span>
