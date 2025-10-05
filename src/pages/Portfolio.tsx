@@ -71,7 +71,7 @@ export default function Portfolio() {
           <h1 className="text-3xl md:text-4xl font-bold mb-2">
             Portfolio Dashboard
           </h1>
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground/40">
             Track performance, analyze holdings, and optimize your AI agent investments
           </p>
         </div>
@@ -82,12 +82,12 @@ export default function Portfolio() {
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Available Cash</p>
+                  <p className="text-sm font-medium text-muted-foreground/40 mb-2">Available Cash</p>
                   <p className="text-2xl font-bold">${balance.available_balance.toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
+                  <p className="text-xs text-muted-foreground/40 mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
                 </div>
                 <div className="p-3 rounded-lg bg-muted">
-                  <DollarSign className="h-6 w-6" />
+                  <DollarSign className="h-6 w-6 text-muted-foreground/40" />
                 </div>
               </div>
             </CardContent>
@@ -103,11 +103,11 @@ export default function Portfolio() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-2">Total Portfolio Value</p>
+                      <p className="text-sm font-medium text-muted-foreground/40 mb-2">Total Portfolio Value</p>
                       <p className="text-2xl font-bold">{formatCurrency(portfolioValue)}</p>
                     </div>
                     <div className="p-3 rounded-lg bg-muted">
-                      <Wallet className="h-6 w-6" />
+                      <Wallet className="h-6 w-6 text-muted-foreground/40" />
                     </div>
                   </div>
                 </CardContent>
@@ -117,11 +117,11 @@ export default function Portfolio() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-2">Total Invested</p>
+                      <p className="text-sm font-medium text-muted-foreground/40 mb-2">Total Invested</p>
                       <p className="text-2xl font-bold">{formatCurrency(totalInvested)}</p>
                     </div>
                     <div className="p-3 rounded-lg bg-muted">
-                      <TrendingUp className="h-6 w-6" />
+                      <TrendingUp className="h-6 w-6 text-muted-foreground/40" />
                     </div>
                   </div>
                 </CardContent>
@@ -131,7 +131,7 @@ export default function Portfolio() {
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
                     <div>
-                      <p className="text-sm font-medium text-muted-foreground mb-2">Total P&L</p>
+                      <p className="text-sm font-medium text-muted-foreground/40 mb-2">Total P&L</p>
                       <div className="flex items-center gap-2">
                         <p className={`text-2xl font-bold ${totalPnL >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                           {formatCurrency(totalPnL)}
@@ -142,7 +142,7 @@ export default function Portfolio() {
                       </div>
                     </div>
                     <div className="p-3 rounded-lg bg-muted">
-                      <BarChart3 className="h-6 w-6" />
+                      <BarChart3 className="h-6 w-6 text-muted-foreground/40" />
                     </div>
                   </div>
                 </CardContent>
@@ -213,11 +213,11 @@ export default function Portfolio() {
                         <div key={holding.id} className="flex items-center justify-between p-4 border rounded-lg hover:bg-muted/50 transition-colors">
                           <div className="flex items-center gap-4">
                             <div className="p-2 rounded-lg bg-muted">
-                              <Wallet className="h-4 w-4" />
+                              <Wallet className="h-4 w-4 text-muted-foreground/40" />
                             </div>
                             <div>
                               <p className="font-medium">{holding.asset_name}</p>
-                              <p className="text-sm text-muted-foreground">
+                              <p className="text-sm text-muted-foreground/40">
                                 {holding.quantity.toFixed(4)} {holding.asset_symbol}
                               </p>
                             </div>
@@ -249,10 +249,10 @@ export default function Portfolio() {
           <Card>
             <CardContent className="p-8 text-center">
               <div className="p-4 rounded-lg bg-muted inline-block mb-6">
-                <Wallet className="h-12 w-12" />
+                <Wallet className="h-12 w-12 text-muted-foreground/40" />
               </div>
               <h3 className="text-xl font-semibold mb-3">No Portfolio Data</h3>
-              <p className="text-muted-foreground mb-6 max-w-md mx-auto">
+              <p className="text-muted-foreground/40 mb-6 max-w-md mx-auto">
                 Start investing in AI agents to track your portfolio performance and unlock powerful analytics
               </p>
               <Button asChild>
