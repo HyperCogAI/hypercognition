@@ -189,13 +189,13 @@ export const MobileNavigation = () => {
                           return (
                             <Button
                               key={item.id}
-                              variant={"outline"}
+                              variant={"solid"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
                                 "h-16 flex flex-col gap-2 p-4 transition-all duration-200 text-sm",
-                                "hover:scale-[1.02] hover:shadow-lg border-2 hover:bg-accent/50 hover:text-foreground",
-                                "rounded-xl bg-card/50 backdrop-blur-sm",
-                                active && "text-white shadow-xl scale-[1.02] bg-primary/10 border-primary/30"
+                                "hover:scale-[1.02] hover:shadow-lg",
+                                "rounded-xl",
+                                active && "shadow-xl scale-[1.02] ring-2 ring-white/40"
                               )}
                             >
                               <Icon className="h-5 w-5 mb-1" />
