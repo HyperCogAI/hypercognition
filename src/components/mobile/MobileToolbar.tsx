@@ -1,6 +1,7 @@
 import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
 import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
-import logoUrl from '@/assets/HyperCognition6-2.png'
+import { LogoCutout } from '@/components/LogoCutout'
+import logoUrl from '@/assets/HyperCognition6b.png'
 
 // Preload the logo to prevent fuzzy loading
 const preloadLogo = new Image()
@@ -12,21 +13,10 @@ export const MobileToolbar = () => {
       <div className="flex h-16 items-center justify-between pl-4 pr-4">
         {/* Logo on the left */}
         <div className="flex items-center relative">
-          <img 
+          <LogoCutout 
             src={logoUrl} 
             alt="HyperCognition logo" 
-            className="h-9 w-auto object-contain will-change-auto"
-            style={{ 
-              imageRendering: 'crisp-edges',
-              WebkitBackfaceVisibility: 'hidden',
-              backfaceVisibility: 'hidden',
-              WebkitTransform: 'translateZ(0)',
-              transform: 'translateZ(0)',
-              WebkitFontSmoothing: 'antialiased'
-            }}
-            loading="eager"
-            decoding="sync"
-            draggable={false}
+            className="h-9"
           />
         </div>
 
