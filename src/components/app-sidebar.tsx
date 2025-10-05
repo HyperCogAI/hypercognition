@@ -2,6 +2,7 @@ import { useState } from "react"
 import { Home, TrendingUp, Wallet, Plus, Settings, BarChart3, Users, Star, Menu, Zap, Bot, FileText, ExternalLink, Store, Bell, Activity, Target, Share2, ListOrdered, Shield, LineChart, Building2, Scale, ArrowLeftRight, HelpCircle, DollarSign, Coins, Sparkles, BookOpen, Globe, Package, Tags, Crown, Briefcase, GraduationCap, Lock, CreditCard, Layers, UserCog } from "lucide-react"
 import { NavLink, useLocation } from "react-router-dom"
 import newLogo from "@/assets/HyperCognition6.png"
+import { LogoCutout } from "@/components/LogoCutout"
 import {
   Sidebar,
   SidebarContent,
@@ -104,15 +105,11 @@ export function AppSidebar() {
         {/* Logo */}
         <div className={`border-b border-border/30 bg-background ${isCollapsed ? 'p-2 flex justify-center' : 'p-4'}`}>
           <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start gap-4'}`}>
-            <div className="relative inline-flex bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift rounded-lg p-1">
-              <img 
-                src={newLogo} 
-                alt="HyperCognition Logo" 
-                className={`object-contain transition-all duration-300 mix-blend-screen ${
-                  isCollapsed ? 'h-8 w-auto' : 'h-12 w-auto'
-                }`}
-              />
-            </div>
+            <LogoCutout 
+              src={newLogo}
+              alt="HyperCognition Logo"
+              className={isCollapsed ? 'h-8' : 'h-12'}
+            />
           </div>
         </div>
 
