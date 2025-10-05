@@ -104,11 +104,11 @@ export function AppSidebar() {
         {/* Logo */}
         <div className={`border-b border-border/30 bg-background ${isCollapsed ? 'p-2 flex justify-center' : 'p-4'}`}>
           <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start gap-4'}`}>
-            <div className="relative inline-flex bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift rounded-lg">
+            <div className="relative inline-flex bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift rounded-lg p-1">
               <img 
                 src={newLogo} 
                 alt="HyperCognition Logo" 
-                className={`object-contain transition-all duration-300 mix-blend-lighten ${
+                className={`object-contain transition-all duration-300 mix-blend-screen ${
                   isCollapsed ? 'h-8 w-auto' : 'h-12 w-auto'
                 }`}
               />
