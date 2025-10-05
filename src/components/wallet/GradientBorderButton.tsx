@@ -8,7 +8,7 @@ interface GradientBorderButtonProps extends ButtonHTMLAttributes<HTMLButtonEleme
 
 export const GradientBorderButton = ({ children, className, ...props }: GradientBorderButtonProps) => {
   return (
-    <div className="relative inline-flex rounded-full p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift">
+    <div className="relative inline-flex rounded-full p-[4px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift">
       <button
         className={cn(
           "relative rounded-full px-3 h-8 text-xs font-medium inline-flex items-center justify-center gap-2 bg-[#16181f] hover:bg-[#1d2029] text-white transition-colors duration-300",
