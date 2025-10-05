@@ -134,7 +134,7 @@ export function EnhancedHero() {
             </Link>
             
             <Link to="/tutorials-hub" className="w-full sm:w-auto">
-              <CyberButton variant="analytics" size="lg" className="group w-full px-6 py-3 md:px-8 md:py-4 text-sm md:text-base hover:brightness-110 transition-all duration-300">
+              <CyberButton variant="analytics" size="lg" className="group w-full px-6 py-3 md:px-8 md:py-4 text-sm md:text-base">
                 <Play className="h-3 w-3 md:h-4 md:w-4 mr-2 text-white" />
                 <span className="text-white font-semibold">Watch Demo</span>
               </CyberButton>
