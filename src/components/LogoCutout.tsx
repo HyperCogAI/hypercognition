@@ -9,10 +9,10 @@ interface LogoCutoutProps {
 
 export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", className }) => {
   return (
-    <div className={cn("relative inline-block overflow-hidden", className)}>
+    <div className={cn("relative inline-block overflow-hidden rounded-2xl", className)}>
       {/* Animated gradient background */}
       <div
-        className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift pointer-events-none scale-[0.98] origin-center"
+        className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift pointer-events-none"
         aria-hidden="true"
       />
       {/* Logo overlay with transparent middle */}
