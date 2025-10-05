@@ -89,7 +89,7 @@ export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", class
     <div className={cn("relative inline-block", className)}>
       {/* Animated gradient visible only within the logo silhouette */}
       <div
-        className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift"
+        className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift z-0 pointer-events-none"
         style={maskStyle}
         aria-hidden="true"
       />
@@ -97,7 +97,7 @@ export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", class
       <img
         src={processedSrc || src}
         alt={alt}
-        className="block h-full w-auto"
+        className="relative z-10 block h-full w-auto"
         decoding="async"
         loading="eager"
       />
