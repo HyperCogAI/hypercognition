@@ -9,7 +9,7 @@ interface LogoCutoutProps {
 
 export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", className }) => {
   return (
-    <div className={cn("relative inline-block", className)}>
+    <div className={cn("relative inline-block overflow-hidden", className)}>
       {/* Animated gradient background */}
       <div
         className="absolute inset-0 bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift pointer-events-none"
@@ -19,7 +19,7 @@ export const LogoCutout: React.FC<LogoCutoutProps> = ({ src, alt = "Logo", class
       <img
         src={src}
         alt={alt}
-        className="relative z-10 block h-full w-auto"
+        className="relative z-10 block h-full w-auto transform-gpu scale-[1.06] origin-center"
         decoding="async"
         loading="eager"
       />
