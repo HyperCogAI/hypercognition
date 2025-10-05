@@ -8,68 +8,78 @@
 
 @layer base {
   :root {
-    /* Light Mode Colors */
-    --background: 0 0% 100%;
-    --foreground: 222 47% 11%;
+    color-scheme: dark;
+    /* Deep Black Base - Darker by 30% */
+    --background: 222 30% 5%;
+    --foreground: 210 40% 95%;
 
-    /* Card System */
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
-    --card-glow: 210 40% 96%;
+    /* Card System - Darker by 30% */
+    --card: 222 25% 6%;
+    --card-foreground: 210 30% 90%;
+    --card-glow: 220 40% 8%;
 
     /* Interactive Elements */
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 0 0% 4%;
+    --popover-foreground: 210 15% 90%;
 
-    /* Primary - Bright Cyan */
-    --primary: 190 100% 42%;
-    --primary-foreground: 0 0% 100%;
-    --primary-glow: 190 100% 50%;
+    /* Primary - Bright Cyan like in image */
+    --primary: 190 100% 70%;
+    --primary-foreground: 0 0% 0%;
+    --primary-glow: 190 100% 80%;
     
     /* Semi-transparent cyan variants */
-    --primary-semi: 190 100% 42% / 0.3;
-    --primary-border: 190 100% 42%;
+    --primary-semi: 190 100% 70% / 0.3;
+    --primary-border: 190 100% 70%;
 
     /* Secondary - Blue accent */
-    --secondary: 210 100% 45%;
-    --secondary-foreground: 0 0% 100%;
-    --secondary-glow: 210 100% 60%;
+    --secondary: 210 100% 65%;
+    --secondary-foreground: 210 40% 95%;
+    --secondary-glow: 210 100% 80%;
 
-    /* Muted Elements */
-    --muted: 210 40% 96%;
-    --muted-foreground: 215 16% 47%;
+    /* Muted Elements - Very Dark */
+    --muted: 0 0% 8%;
+    --muted-foreground: 215 10% 55%;
 
-    /* Accent - Soft Blue */
-    --accent: 210 100% 45%;
-    --accent-foreground: 0 0% 100%;
-    --accent-glow: 210 100% 60%;
+    /* Accent - Soft Blue Glow */
+    --accent: 210 100% 65%;
+    --accent-foreground: 0 0% 5%;
+    --accent-glow: 210 100% 80%;
 
-    /* Danger - Red */
-    --destructive: 0 84% 60%;
-    --destructive-foreground: 0 0% 100%;
-    --destructive-glow: 0 84% 70%;
+    /* Danger - Subtle Red */
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 210 15% 95%;
+    --destructive-glow: 0 70% 65%;
 
     /* UI Elements */
-    --border: 214 32% 91%;
-    --input: 214 32% 91%;
-    --ring: 190 100% 42%;
-    --menu-surface: 0 0% 100%;
+    --border: 220 10% 15%;
+    --input: 0 0% 6%;
+    --ring: 220 100% 60%;
+    --menu-surface: 220 22% 6%;
 
     /* Design Tokens */
     --radius: 0.75rem;
     
     /* Custom Scroll Color */
-    --scroll-color: 210 40% 96%;
+    --scroll-color: 220 25% 2.5%;
 
     --sidebar-background: 0 0% 98%;
+
     --sidebar-foreground: 240 5.3% 26.1%;
+
     --sidebar-primary: 240 5.9% 10%;
+
     --sidebar-primary-foreground: 0 0% 98%;
-    --sidebar-accent: 240 4.8% 95.9%;
-    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-accent: 222 15% 8.8%;
+
+    --sidebar-accent-foreground: 0 0% 98%;
+
     --sidebar-border: 220 13% 91%;
+
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --sidebar-active: 210 40% 96%;
+    
+    /* Sidebar active state */
+    --sidebar-active: 222 30% 4%;
   }
 
     /* Gradients for Backgrounds */
@@ -88,46 +98,27 @@
   }
 
   .dark {
-    /* Dark Mode Colors */
-    --background: 222 30% 5%;
-    --foreground: 210 40% 95%;
-
-    --card: 222 25% 6%;
-    --card-foreground: 210 30% 90%;
-    --card-glow: 220 40% 8%;
-
-    --popover: 0 0% 4%;
-    --popover-foreground: 210 15% 90%;
-
-    --primary: 190 100% 70%;
-    --primary-foreground: 0 0% 0%;
-    --primary-glow: 190 100% 80%;
-    
-    --primary-semi: 190 100% 70% / 0.3;
-    --primary-border: 190 100% 70%;
-
+    /* Keep same values for dark mode since we're already dark-themed */
+    --background: 222 15% 6%;
+    --foreground: 210 40% 98%;
+    --card: 222 20% 8%;
+    --card-foreground: 210 40% 95%;
+    --popover: 222 25% 10%;
+    --popover-foreground: 210 40% 98%;
+    --primary: 195 100% 50%;
+    --primary-foreground: 222 15% 6%;
     --secondary: 210 100% 65%;
-    --secondary-foreground: 210 40% 95%;
-    --secondary-glow: 210 100% 80%;
-
-    --muted: 0 0% 8%;
-    --muted-foreground: 215 10% 55%;
-
-    --accent: 210 100% 65%;
-    --accent-foreground: 0 0% 5%;
-    --accent-glow: 210 100% 80%;
-
-    --destructive: 0 60% 50%;
-    --destructive-foreground: 210 15% 95%;
-    --destructive-glow: 0 70% 65%;
-
-    --border: 220 10% 15%;
-    --input: 0 0% 6%;
-    --ring: 220 100% 60%;
+    --secondary-foreground: 210 40% 98%;
+    --muted: 222 20% 15%;
+    --muted-foreground: 215 15% 65%;
+    --accent: 140 100% 50%;
+    --accent-foreground: 222 15% 6%;
+    --destructive: 0 85% 55%;
+    --destructive-foreground: 210 40% 98%;
+    --border: 222 20% 20%;
+    --input: 222 25% 12%;
+    --ring: 195 100% 50%;
     --menu-surface: 220 22% 6%;
-
-    --scroll-color: 220 25% 2.5%;
-
     --sidebar-background: 240 5.9% 10%;
     --sidebar-foreground: 240 4.8% 95.9%;
     --sidebar-primary: 224.3 76.3% 48%;
@@ -136,7 +127,6 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    --sidebar-active: 222 30% 4%;
   }
 
 @layer base {
