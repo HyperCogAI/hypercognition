@@ -36,14 +36,14 @@ export const Footer = () => {
                 className="w-8 h-8 bg-card/40 rounded-lg flex items-center justify-center hover:bg-accent/20 transition-colors"
                 aria-label="GitHub"
               >
-                <Github className="w-4 h-4 text-foreground hover:text-accent" />
+                <Github className="w-4 h-4 text-muted-foreground/80 hover:text-accent" />
               </a>
               <a 
                 href="https://whitepaper.hypercognition.io/hypercognition/" 
                 className="w-8 h-8 bg-card/40 rounded-lg flex items-center justify-center hover:bg-accent/20 transition-colors"
                 aria-label="Documentation"
               >
-                <FileText className="w-4 h-4 text-foreground hover:text-accent" />
+                <FileText className="w-4 h-4 text-muted-foreground/80 hover:text-accent" />
               </a>
             </div>
           </div>
