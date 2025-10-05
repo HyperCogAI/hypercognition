@@ -116,12 +116,12 @@ export function AppSidebar() {
 
         {/* Core Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">Core</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">Core</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -151,12 +151,12 @@ export function AppSidebar() {
 
         {/* Trading Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">Trading</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">Trading</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -185,12 +185,12 @@ export function AppSidebar() {
 
         {/* DeFi & Crypto Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">DeFi & Crypto</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">DeFi & Crypto</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -219,12 +219,12 @@ export function AppSidebar() {
 
         {/* Analytics Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">Analytics</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">Analytics</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -253,12 +253,12 @@ export function AppSidebar() {
 
         {/* Community Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">Community</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">Community</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -296,12 +296,12 @@ export function AppSidebar() {
 
         {/* Professional Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">Professional</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">Professional</span>
               </div>
             )}
           </SidebarGroupLabel>
@@ -330,12 +330,12 @@ export function AppSidebar() {
 
         {/* Resources Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+          <SidebarGroupLabel className="px-4 flex items-center justify-center mb-2">
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
-                <span className="text-sm font-bold text-white tracking-wide">Resources</span>
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-5 py-2 shadow-md">
+                <span className="text-xs font-bold text-white tracking-widest uppercase">Resources</span>
               </div>
             )}
           </SidebarGroupLabel>
