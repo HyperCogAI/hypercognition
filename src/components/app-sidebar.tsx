@@ -120,7 +120,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Core</span>
               </div>
             )}
@@ -155,7 +155,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Trading</span>
               </div>
             )}
@@ -189,7 +189,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">DeFi & Crypto</span>
               </div>
             )}
@@ -223,7 +223,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Analytics</span>
               </div>
             )}
@@ -257,7 +257,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Community</span>
               </div>
             )}
@@ -300,7 +300,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Professional</span>
               </div>
             )}
@@ -334,7 +334,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-2.5 py-0.5 shadow-md">
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-md px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold text-gray-400 tracking-widest uppercase">Resources</span>
               </div>
             )}
