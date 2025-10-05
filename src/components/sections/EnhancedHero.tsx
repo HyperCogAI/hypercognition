@@ -61,9 +61,6 @@ export function EnhancedHero() {
       {/* Gradient Overlay */}
       <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/50 to-background/70 z-5" />
       
-      {/* Animated Grid Overlay */}
-      <div className="absolute inset-0 cyber-grid opacity-5 z-15" />
-      
       
       {/* Content */}
       <div className="relative z-20 container mx-auto px-4 md:px-6 text-center pt-20 md:pt-0">

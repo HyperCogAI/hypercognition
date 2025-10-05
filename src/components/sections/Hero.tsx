@@ -24,9 +24,6 @@ export function Hero() {
         />
       </div>
       
-      {/* Animated Grid Overlay */}
-      <div className="absolute inset-0 cyber-grid opacity-20 z-10" />
-      
       {/* Content */}
       <div className="relative z-20 container mx-auto px-6 text-center">
         <div className="max-w-4xl mx-auto space-y-8 animate-fade-up pt-[34rem]">
