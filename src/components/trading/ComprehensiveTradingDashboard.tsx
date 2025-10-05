@@ -258,16 +258,16 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 <div 
                   key={token.id}
                   onClick={() => setSelectedCrypto(token)}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
+                  className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <span className="text-sm text-muted-foreground w-6">{index + 1}</span>
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                    <span className="text-sm text-muted-foreground w-4 sm:w-6">{index + 1}</span>
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
                     )}
-                    <div className="flex-1">
-                      <div className="font-semibold">{token.name}</div>
-                      <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
                     </div>
                     {!isMobile && (
                       <div className="flex gap-1.5 mr-4">
@@ -294,8 +294,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   </div>
                   <div className={isMobile ? "text-right" : "flex items-center gap-8 text-right"}>
                     <div>
-                      <div className="font-semibold">{formatPrice(token.current_price)}</div>
-                      <div className={`text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      <div className="font-semibold text-sm sm:text-base">{formatPrice(token.current_price)}</div>
+                      <div className={`text-xs sm:text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {token.price_change_percentage_24h >= 0 ? '+' : ''}{token.price_change_percentage_24h.toFixed(2)}%
                       </div>
                     </div>
@@ -322,22 +322,22 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 <div 
                   key={token.id}
                   onClick={() => setSelectedCrypto(token)}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-green-500/20 cursor-pointer"
+                  className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-green-500/20 cursor-pointer"
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <TrendingUp className="h-5 w-5 text-green-500" />
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                    <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
                     )}
-                    <div className="flex-1">
-                      <div className="font-semibold">{token.name}</div>
-                      <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{formatPrice(token.current_price)}</div>
-                    <div className="text-sm text-green-500 flex items-center gap-1 justify-end">
-                      <ArrowUpRight className="h-4 w-4" />
+                    <div className="font-semibold text-sm sm:text-base">{formatPrice(token.current_price)}</div>
+                    <div className="text-xs sm:text-sm text-green-500 flex items-center gap-1 justify-end">
+                      <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4" />
                       +{token.price_change_percentage_24h.toFixed(2)}%
                     </div>
                   </div>
@@ -351,22 +351,22 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 <div 
                   key={token.id}
                   onClick={() => setSelectedCrypto(token)}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-red-500/20 cursor-pointer"
+                  className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-red-500/20 cursor-pointer"
                 >
-                  <div className="flex items-center gap-4 flex-1">
-                    <TrendingDown className="h-5 w-5 text-red-500" />
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                    <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
                     )}
-                    <div className="flex-1">
-                      <div className="font-semibold">{token.name}</div>
-                      <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{formatPrice(token.current_price)}</div>
-                    <div className="text-sm text-red-500 flex items-center gap-1 justify-end">
-                      <ArrowDownRight className="h-4 w-4" />
+                    <div className="font-semibold text-sm sm:text-base">{formatPrice(token.current_price)}</div>
+                    <div className="text-xs sm:text-sm text-red-500 flex items-center gap-1 justify-end">
+                      <ArrowDownRight className="h-3 w-3 sm:h-4 sm:w-4" />
                       {token.price_change_percentage_24h.toFixed(2)}%
                     </div>
                   </div>
@@ -380,21 +380,21 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 <div 
                   key={token.id}
                   onClick={() => setSelectedCrypto(token)}
-                  className="flex items-center justify-between p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
+                  className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
-                  <div className="flex items-center gap-4 flex-1">
+                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-8 h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
                     )}
-                    <Activity className="h-5 w-5 text-primary" />
-                    <div className="flex-1">
-                      <div className="font-semibold">{token.name}</div>
-                      <div className="text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
+                    <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
+                    <div className="flex-1 min-w-0">
+                      <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">{token.symbol.toUpperCase()}</div>
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="font-semibold">{formatVolume(token.total_volume)}</div>
-                    <div className={`text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                    <div className="font-semibold text-sm sm:text-base">{formatVolume(token.total_volume)}</div>
+                    <div className={`text-xs sm:text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                       {token.price_change_percentage_24h >= 0 ? '+' : ''}{token.price_change_percentage_24h.toFixed(2)}%
                     </div>
                   </div>
