@@ -8,7 +8,7 @@ import { Separator } from '@/components/ui/separator'
 import { Progress } from '@/components/ui/progress'
 import { useAITradingAssistant } from '@/hooks/useAITradingAssistant'
 import { VoiceAssistantModal } from './VoiceAssistantModal'
-import { Bot, User, Send, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap, Mic, Paperclip, X } from 'lucide-react'
+import { Bot, User, ArrowUp, TrendingUp, TrendingDown, AlertTriangle, Loader2, Brain, Target, Shield, Zap, Mic, Paperclip, X } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
 interface AITradingAssistantProps {
@@ -472,11 +472,11 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               size="icon"
               className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/30 hover:border-primary/50 transition-all duration-300"
             >
-              {loading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
+            {loading ? (
+              <Loader2 className="h-4 w-4 animate-spin" />
+            ) : (
+              <ArrowUp className="h-4 w-4" />
+            )}
             </Button>
           </div>
           
