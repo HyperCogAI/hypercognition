@@ -116,8 +116,14 @@ export function AppSidebar() {
 
         {/* Core Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Core"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">Core</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -145,8 +151,14 @@ export function AppSidebar() {
 
         {/* Trading Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Trading"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">Trading</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -173,8 +185,14 @@ export function AppSidebar() {
 
         {/* DeFi & Crypto Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "DeFi & Crypto"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">DeFi & Crypto</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -201,8 +219,14 @@ export function AppSidebar() {
 
         {/* Analytics Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Analytics"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">Analytics</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -229,8 +253,14 @@ export function AppSidebar() {
 
         {/* Community Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Community"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">Community</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -266,8 +296,14 @@ export function AppSidebar() {
 
         {/* Professional Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Professional"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">Professional</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
@@ -294,8 +330,14 @@ export function AppSidebar() {
 
         {/* Resources Section */}
         <SidebarGroup>
-          <SidebarGroupLabel className="px-4 text-xs font-semibold text-muted-foreground tracking-wider uppercase">
-            {isCollapsed ? "•••" : "Resources"}
+          <SidebarGroupLabel className="px-4 flex items-center justify-center">
+            {isCollapsed ? (
+              <span className="text-xs text-muted-foreground">•••</span>
+            ) : (
+              <div className="bg-gray-900/80 border border-gray-500/40 rounded-full px-4 py-1.5 shadow-sm">
+                <span className="text-sm font-bold text-white tracking-wide">Resources</span>
+              </div>
+            )}
           </SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
