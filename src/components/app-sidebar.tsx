@@ -71,11 +71,11 @@ const professionalItems = [
   { title: "Technical Analysis", url: "/technical-analysis", icon: LineChart },
   { title: "Advanced AI", url: "/advanced-ai", icon: Bot },
   { title: "Enhanced Features", url: "/enhanced-features", icon: Sparkles },
-  { title: "Multi Language", url: "/multi-language", icon: Globe },
 ]
 
 const resourceItems = [
   { title: "Tutorials", url: "/tutorials", icon: BookOpen },
+  { title: "Multi Language", url: "/multi-language", icon: Globe },
   { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
   { title: "Premium", url: "/premium", icon: Crown },
   { title: "Contact", url: "/contact", icon: HelpCircle },
@@ -277,11 +277,7 @@ export function AppSidebar() {
                           {!isCollapsed && (
                             <div className="flex items-center justify-between w-full">
                               <span className="font-medium">{item.title}</span>
-                              {item.title === "Favorites" && (
-                                <Badge variant="secondary" className="text-xs bg-accent/20 border-accent/30 text-accent-foreground">
-                                  3
-                                </Badge>
-                              )}
+                              {/* TODO: Add dynamic favorites count when backend is implemented */}
                             </div>
                           )}
                         </>
