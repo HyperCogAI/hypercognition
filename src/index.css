@@ -476,4 +476,21 @@
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
   }
+
+  /* Premium Crown Animated Gradient */
+  .premium-crown {
+    background: linear-gradient(135deg, #facc15, #fb923c, #f97316, #fb923c, #facc15);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: crownGlow 3s ease-in-out infinite;
+    filter: drop-shadow(0 0 8px rgba(251, 146, 60, 0.6));
+    opacity: 1 !important;
+  }
+
+  @keyframes crownGlow {
+    0%, 100% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+  }
 }

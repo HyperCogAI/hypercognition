@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
+import { cn } from "@/lib/utils"
 
 
 // Core navigation items
@@ -347,7 +348,11 @@ export function AppSidebar() {
                         rel="noopener noreferrer"
                         className={`${getNavCls({ isActive: false })} visited:text-muted-foreground hover:visited:text-foreground flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent`}
                       >
-                        <item.icon className="h-4 w-4 opacity-60 group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
+                        <item.icon className={cn(
+                          "h-4 w-4 transition-all duration-300",
+                          item.title === "Premium" ? "premium-crown" : "opacity-60 group-hover/menu:opacity-100",
+                          "group-hover/menu:scale-110"
+                        )} />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium">{item.title}</span>
@@ -362,7 +367,11 @@ export function AppSidebar() {
                       >
                         {({ isActive }) => (
                           <>
-                            <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-60'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                            <item.icon className={cn(
+                              "h-4 w-4 transition-all duration-300",
+                              item.title === "Premium" ? "premium-crown" : `${isActive ? 'opacity-100' : 'opacity-60'} group-hover/menu:opacity-100`,
+                              "group-hover/menu:scale-110"
+                            )} />
                             {!isCollapsed && <span className="font-medium">{item.title}</span>}
                           </>
                         )}
