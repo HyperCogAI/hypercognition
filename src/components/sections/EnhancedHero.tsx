@@ -63,7 +63,7 @@ export function EnhancedHero() {
       
       
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center pt-[45px] md:pt-0">
+      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center pt-[40px] md:pt-0">
         <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 animate-fade-up">
           
           {/* Hero Headline */}
