@@ -149,17 +149,17 @@ export const SolanaAnalyticsDashboard = () => {
 
       {/* Analytics Tabs */}
       <Tabs defaultValue="performance" className="space-y-6">
-        <TabsList className="w-full flex overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 gap-2 p-1">
-          <TabsTrigger value="performance" className="flex-shrink-0 min-w-[120px] md:min-w-0 text-sm px-4">
+        <TabsList className="w-full !grid grid-cols-2 gap-1 p-1 !h-auto md:!inline-flex md:h-10 md:gap-2 md:flex-nowrap">
+          <TabsTrigger value="performance" className="w-full text-sm px-3 py-2 md:w-auto md:px-4 md:py-1.5">
             Performance
           </TabsTrigger>
-          <TabsTrigger value="dominance" className="flex-shrink-0 min-w-[120px] md:min-w-0 text-sm px-4">
+          <TabsTrigger value="dominance" className="w-full text-sm px-3 py-2 md:w-auto md:px-4 md:py-1.5">
             Dominance
           </TabsTrigger>
-          <TabsTrigger value="gainers" className="flex-shrink-0 min-w-[120px] md:min-w-0 text-sm px-4">
+          <TabsTrigger value="gainers" className="w-full text-sm px-3 py-2 md:w-auto md:px-4 md:py-1.5">
             Top Movers
           </TabsTrigger>
-          <TabsTrigger value="volume" className="flex-shrink-0 min-w-[120px] md:min-w-0 text-sm px-4">
+          <TabsTrigger value="volume" className="w-full text-sm px-3 py-2 md:w-auto md:px-4 md:py-1.5">
             Volume
           </TabsTrigger>
         </TabsList>
