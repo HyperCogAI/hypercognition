@@ -407,21 +407,23 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
             </TabsContent>
           </Tabs>
 
-          {/* CTA to full market overview */}
-          <div className="mt-6 pt-6 border-t border-border/50 flex items-center justify-between">
-            <div>
-              <div className="font-semibold">View Complete Market Data</div>
-              <div className="text-sm text-muted-foreground">
-                Explore detailed analytics for all {crypto.length}+ cryptocurrencies
+          {/* CTA to full market overview - only show when viewing limited data */}
+          {limit < crypto.length && (
+            <div className="mt-6 pt-6 border-t border-border/50 flex items-center justify-between">
+              <div>
+                <div className="font-semibold">View Complete Market Data</div>
+                <div className="text-sm text-muted-foreground">
+                  Explore detailed analytics for all {crypto.length}+ cryptocurrencies
+                </div>
               </div>
+              <Button asChild>
+                <Link to="/market-overview">
+                  View Full Market
+                  <ExternalLink className="ml-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
-            <Button asChild>
-              <Link to="/market-overview">
-                View Full Market
-                <ExternalLink className="ml-2 h-4 w-4" />
-              </Link>
-            </Button>
-          </div>
+          )}
         </CardContent>
       </Card>
 
