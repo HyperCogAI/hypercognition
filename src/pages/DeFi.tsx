@@ -173,20 +173,20 @@ const DeFi = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="dex" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 lg:grid-cols-4 gap-2">
-            <TabsTrigger value="dex" className="gap-2">
+          <TabsList className="w-full flex lg:grid lg:grid-cols-4 overflow-x-auto scrollbar-hide gap-2 p-1">
+            <TabsTrigger value="dex" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
               <Repeat className="h-4 w-4" />
               <span>DEX</span>
             </TabsTrigger>
-            <TabsTrigger value="pools" className="gap-2">
+            <TabsTrigger value="pools" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
               <TrendingUp className="h-4 w-4" />
               <span>Pools</span>
             </TabsTrigger>
-            <TabsTrigger value="positions" className="gap-2">
+            <TabsTrigger value="positions" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
               <Coins className="h-4 w-4" />
               <span>Positions</span>
             </TabsTrigger>
-            <TabsTrigger value="staking" className="gap-2">
+            <TabsTrigger value="staking" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
               <Lock className="h-4 w-4" />
               <span>Staking</span>
             </TabsTrigger>
