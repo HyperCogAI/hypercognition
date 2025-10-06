@@ -198,10 +198,7 @@ export const MobileNavigation = () => {
                                 active && "text-white shadow-xl scale-[1.02] bg-gray-800/80 border-gray-600"
                               )}
                             >
-                              <Icon className={cn(
-                                "h-5 w-5 mb-1",
-                                item.label === "Premium" && "premium-crown"
-                              )} />
+                              <Icon className="h-5 w-5 mb-1" />
                               <span className="text-xs font-semibold text-center leading-tight px-1">{item.label}</span>
                             </Button>
                           )
