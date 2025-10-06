@@ -10,6 +10,7 @@ import {
   Building2, Scale, Package, Globe, Settings, HelpCircle, Crown, FileText,
   Bot, UserCog, Zap, Briefcase, BookOpen
 } from 'lucide-react'
+import { GradientCrown } from '@/components/icons/GradientCrown'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from '@/hooks/use-mobile'
 import { useHaptics } from '@/hooks/useHaptics'
@@ -192,13 +193,17 @@ export const MobileNavigation = () => {
                               variant={"ghost"}
                               onClick={() => handleNavigation(item.path)}
                               className={cn(
-                                "h-16 flex flex-col gap-2 p-4 transition-all duration-200 text-sm",
+                                "group h-16 flex flex-col gap-2 p-4 transition-all duration-200 text-sm",
                                 "hover:scale-[1.02] hover:shadow-lg border-2 hover:bg-gray-800/60 hover:text-foreground",
                                 "rounded-xl bg-gray-900/50 backdrop-blur-sm border-gray-800",
                                 active && "text-white shadow-xl scale-[1.02] bg-gray-800/80 border-gray-600"
                               )}
                             >
-                              <Icon className="h-5 w-5 mb-1" />
+                              {item.label === 'Premium' ? (
+                                <GradientCrown className="h-5 w-5 mb-1" active={active} />
+                              ) : (
+                                <Icon className="h-5 w-5 mb-1" />
+                              )}
                               <span className="text-xs font-semibold text-center leading-tight px-1">{item.label}</span>
                             </Button>
                           )
