@@ -120,7 +120,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">Core</span>
               </div>
             )}
@@ -155,7 +155,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">Trading</span>
               </div>
             )}
@@ -189,7 +189,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">DEFI</span>
               </div>
             )}
@@ -223,7 +223,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">Analytics</span>
               </div>
             )}
@@ -257,7 +257,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">Community</span>
               </div>
             )}
@@ -296,7 +296,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">Professional</span>
               </div>
             )}
@@ -330,7 +330,7 @@ export function AppSidebar() {
             {isCollapsed ? (
               <span className="text-xs text-muted-foreground">•••</span>
             ) : (
-              <div className="bg-card/90 border border-primary/20 rounded px-2.5 py-0.5 shadow-md">
+              <div className="bg-card/90 border border-primary/10 rounded-full px-2.5 py-0.5 shadow-md">
                 <span className="text-xs font-bold tracking-widest uppercase bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">Resources</span>
               </div>
             )}
