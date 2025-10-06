@@ -51,7 +51,7 @@ export function EnhancedHero() {
 
 
   return (
-    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pointer-events-none">
+    <section className="relative min-h-screen flex items-start md:items-center justify-center overflow-hidden pointer-events-none">
       
       {/* Animated Particles Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
