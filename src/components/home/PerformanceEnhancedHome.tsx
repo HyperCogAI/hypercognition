@@ -4,6 +4,7 @@ import { MobileStats, MobileFeatures, MobileCTA, MobileMetrics } from './MobileO
 import { useDeviceDetection } from '@/hooks/useDeviceDetection'
 import { usePerformanceMonitoring } from '@/hooks/usePerformanceMonitoring'
 import { performanceOptimizer } from '@/lib/performanceOptimizer'
+import { useViewportUnitsFix } from '@/hooks/useViewportUnitsFix'
 
 // Memoized components to prevent unnecessary re-renders
 const MemoizedMobileStats = memo(MobileStats)
@@ -20,6 +21,9 @@ export const PerformanceEnhancedHome = memo(function PerformanceEnhancedHome({
 }: PerformanceEnhancedHomeProps) {
   const { isMobile, isTablet, screenSize } = useDeviceDetection()
   const { performanceData, getMetrics } = usePerformanceMonitoring('PerformanceEnhancedHome')
+  
+  // Fix viewport height inconsistencies in mobile browsers (especially WebViews like Metamask)
+  useViewportUnitsFix()
 
   // Memoize device-specific configurations
   const deviceConfig = useMemo(() => ({
