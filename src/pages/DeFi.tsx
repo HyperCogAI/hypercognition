@@ -173,20 +173,20 @@ const DeFi = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="dex" className="w-full">
-          <TabsList className="w-full grid grid-cols-2 lg:grid-cols-4 gap-1 lg:gap-2 p-0.5 lg:p-1">
-            <TabsTrigger value="dex" className="gap-1.5 text-xs lg:text-sm">
+          <TabsList className="w-full !grid grid-cols-2 lg:!flex lg:flex-nowrap !h-auto lg:h-10 gap-1 lg:gap-2 p-0.5 lg:p-1">
+            <TabsTrigger value="dex" className="w-full gap-1.5 text-xs lg:text-sm">
               <Repeat className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>DEX</span>
             </TabsTrigger>
-            <TabsTrigger value="pools" className="gap-1.5 text-xs lg:text-sm">
+            <TabsTrigger value="pools" className="w-full gap-1.5 text-xs lg:text-sm">
               <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>Pools</span>
             </TabsTrigger>
-            <TabsTrigger value="positions" className="gap-1.5 text-xs lg:text-sm">
+            <TabsTrigger value="positions" className="w-full gap-1.5 text-xs lg:text-sm">
               <Coins className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>Positions</span>
             </TabsTrigger>
-            <TabsTrigger value="staking" className="gap-1.5 text-xs lg:text-sm">
+            <TabsTrigger value="staking" className="w-full gap-1.5 text-xs lg:text-sm">
               <Lock className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>Staking</span>
             </TabsTrigger>
