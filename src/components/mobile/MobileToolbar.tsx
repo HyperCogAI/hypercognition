@@ -10,19 +10,19 @@ preloadLogo.src = logoUrl
 export const MobileToolbar = () => {
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/60 border-b border-border/30 pt-[env(safe-area-inset-top)] backdrop-blur-md">
-      <div className="flex h-16 items-center justify-between pl-4 pr-4">
+      <div className="flex h-14 items-center justify-between px-3">
         {/* Logo on the left */}
-        <div className="flex items-center relative">
+        <div className="flex items-center relative flex-shrink-0">
           <LogoCutout 
             src={logoUrl} 
             alt="HyperCognition logo" 
-            className="h-10"
+            className="h-8"
             gradientScale={0.75}
           />
         </div>
 
         {/* Wallet buttons on the right */}
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-1.5 flex-shrink-0">
           <NetworkSelectorButton />
           <UnifiedWalletButton />
         </div>
