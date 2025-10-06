@@ -481,7 +481,17 @@
   .premium-crown {
     color: #fbbf24 !important;
     opacity: 1 !important;
-    animation: yellowToWhite 3s ease-in-out infinite;
+    filter: brightness(1.2) saturate(1.5);
+    transition: filter 0.3s ease-in-out;
+  }
+
+  .premium-crown:hover,
+  .premium-crown:active,
+  button:hover .premium-crown,
+  button:active .premium-crown,
+  a:hover .premium-crown,
+  a:active .premium-crown {
+    animation: yellowToWhite 1.5s ease-in-out infinite;
   }
 
   @keyframes yellowToWhite {
