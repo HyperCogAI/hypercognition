@@ -92,27 +92,42 @@ class CoinGeckoAPI {
       return pendingRequest
     }
 
-    // Create new request
+    // Create new request using edge function proxy
     const requestPromise = (async () => {
       try {
-        await this.rateLimit()
+        // Extract the endpoint path from the full URL
+        const urlObj = new URL(url)
+        const endpoint = urlObj.pathname + urlObj.search
         
-        const response = await fetch(url)
+        // Call edge function proxy to bypass CORS and leverage server-side caching
+        const proxyUrl = `https://xdinlkmqmjlrmunsjswf.supabase.co/functions/v1/coingecko-proxy?endpoint=${encodeURIComponent(endpoint)}`
+        
+        const response = await fetch(proxyUrl)
         
         if (!response.ok) {
-          if (response.status === 429) {
-            // Rate limited, wait longer and retry once
-            console.warn('CoinGecko rate limit hit, waiting 10 seconds...')
-            await new Promise(resolve => setTimeout(resolve, 10000))
-            const retryResponse = await fetch(url)
-            if (!retryResponse.ok) {
-              throw new Error(`CoinGecko API error: ${retryResponse.status}`)
+          // Fallback to direct API call if proxy fails
+          console.warn('Proxy failed, falling back to direct API call')
+          await this.rateLimit()
+          const directResponse = await fetch(url)
+          
+          if (!directResponse.ok) {
+            if (directResponse.status === 429) {
+              console.warn('CoinGecko rate limit hit, waiting 10 seconds...')
+              await new Promise(resolve => setTimeout(resolve, 10000))
+              const retryResponse = await fetch(url)
+              if (!retryResponse.ok) {
+                throw new Error(`CoinGecko API error: ${retryResponse.status}`)
+              }
+              const data = await retryResponse.json()
+              this.setCachedData(cacheKey, data)
+              return data
             }
-            const data = await retryResponse.json()
-            this.setCachedData(cacheKey, data)
-            return data
+            throw new Error(`CoinGecko API error: ${directResponse.status}`)
           }
-          throw new Error(`CoinGecko API error: ${response.status}`)
+          
+          const data = await directResponse.json()
+          this.setCachedData(cacheKey, data)
+          return data
         }
         
         const data = await response.json()
