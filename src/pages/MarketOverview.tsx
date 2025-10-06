@@ -18,7 +18,10 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useState, useMemo } from "react"
 import { useQuery } from "@tanstack/react-query"
 import { coinGeckoApi } from "@/lib/apis/coinGeckoApi"
+import { useIsMobile } from "@/hooks/useMediaQuery"
+
 export default function MarketOverview() {
+  const isMobile = useIsMobile()
   const [searchQuery, setSearchQuery] = useState("")
   const [filters, setFilters] = useState<FilterState>({
     minPrice: "",
@@ -33,9 +36,12 @@ export default function MarketOverview() {
     sortOrder: "desc",
   })
 
+  // Use lower limit on mobile to prevent crashes
+  const dataLimit = isMobile ? 30 : 100
+  
   const { data: crypto } = useQuery({
-    queryKey: ["coingecko-top", 100],
-    queryFn: () => coinGeckoApi.getTopCryptos(100),
+    queryKey: ["coingecko-top", dataLimit],
+    queryFn: () => coinGeckoApi.getTopCryptos(dataLimit),
     staleTime: 30000,
     gcTime: 300000,
     refetchInterval: 30000,
@@ -186,7 +192,7 @@ export default function MarketOverview() {
           </TabsList>
 
           <TabsContent value="market" className="mt-6">
-            <ComprehensiveTradingDashboard limit={100} searchQuery={searchQuery} />
+            <ComprehensiveTradingDashboard limit={dataLimit} searchQuery={searchQuery} />
           </TabsContent>
 
           <TabsContent value="watchlist" className="mt-6">
@@ -214,7 +220,7 @@ export default function MarketOverview() {
               Showing {filteredAndSortedCrypto.length} of {crypto?.length || 0} cryptocurrencies
             </div>
             <ComprehensiveTradingDashboard 
-              limit={filteredAndSortedCrypto.length} 
+              limit={Math.min(filteredAndSortedCrypto.length, dataLimit)} 
               searchQuery={searchQuery}
             />
           </TabsContent>
