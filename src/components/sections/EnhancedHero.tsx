@@ -51,7 +51,7 @@ export function EnhancedHero() {
 
 
   return (
-    <section className="relative min-h-[85vh] md:min-h-screen flex items-center justify-center overflow-hidden pointer-events-none">
+    <section className="relative min-h-screen flex items-center justify-center overflow-hidden pointer-events-none">
       
       {/* Animated Particles Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -63,7 +63,7 @@ export function EnhancedHero() {
       
       
       {/* Content */}
-      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center pt-8 md:pt-0">
+      <div className="relative z-20 container mx-auto px-4 md:px-6 text-center pt-20 md:pt-0">
         <div className="max-w-6xl mx-auto space-y-8 md:space-y-12 animate-fade-up">
           
           {/* Hero Headline */}
