@@ -79,16 +79,16 @@ export const SolanaAnalyticsDashboard = () => {
   return (
     <div className="space-y-6">
       {/* Market Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-3 md:gap-6">
         <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardHeader className="pb-1 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium flex items-center gap-2">
               <DollarSign className="h-4 w-4 text-green-500" />
               Total Market Cap
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {formatCurrency(totalMarketCap)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -98,14 +98,14 @@ export const SolanaAnalyticsDashboard = () => {
         </Card>
 
         <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardHeader className="pb-1 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium flex items-center gap-2">
               <Activity className="h-4 w-4 text-blue-500" />
               24h Volume
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">
+            <div className="text-xl md:text-2xl font-bold">
               {formatCurrency(totalVolume)}
             </div>
             <p className="text-xs text-muted-foreground">
@@ -115,14 +115,14 @@ export const SolanaAnalyticsDashboard = () => {
         </Card>
 
         <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardHeader className="pb-1 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium flex items-center gap-2">
               <TrendingUp className="h-4 w-4 text-purple-500" />
               Avg Change
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className={`text-2xl font-bold ${averageChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+            <div className={`text-xl md:text-2xl font-bold ${averageChange >= 0 ? 'text-green-500' : 'text-red-500'}`}>
               {averageChange >= 0 ? '+' : ''}{averageChange.toFixed(2)}%
             </div>
             <p className="text-xs text-muted-foreground">
@@ -132,14 +132,14 @@ export const SolanaAnalyticsDashboard = () => {
         </Card>
 
         <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium flex items-center gap-2">
+          <CardHeader className="pb-1 md:pb-2">
+            <CardTitle className="text-xs md:text-sm font-medium flex items-center gap-2">
               <Zap className="h-4 w-4 text-yellow-500" />
               Active Tokens
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">{tokens.length}</div>
+            <div className="text-xl md:text-2xl font-bold">{tokens.length}</div>
             <p className="text-xs text-muted-foreground">
               Currently tracked
             </p>
@@ -149,11 +149,11 @@ export const SolanaAnalyticsDashboard = () => {
 
       {/* Analytics Tabs */}
       <Tabs defaultValue="performance" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="performance">Performance</TabsTrigger>
-          <TabsTrigger value="dominance">Market Dominance</TabsTrigger>
-          <TabsTrigger value="gainers">Top Movers</TabsTrigger>
-          <TabsTrigger value="volume">Volume Analysis</TabsTrigger>
+        <TabsList className="w-full flex overflow-x-auto scrollbar-hide md:grid md:grid-cols-4 gap-1 p-0.5 md:p-1">
+          <TabsTrigger value="performance" className="flex-shrink-0 min-w-[110px] md:min-w-0 text-xs md:text-sm">Performance</TabsTrigger>
+          <TabsTrigger value="dominance" className="flex-shrink-0 min-w-[110px] md:min-w-0 text-xs md:text-sm">Dominance</TabsTrigger>
+          <TabsTrigger value="gainers" className="flex-shrink-0 min-w-[110px] md:min-w-0 text-xs md:text-sm">Top Movers</TabsTrigger>
+          <TabsTrigger value="volume" className="flex-shrink-0 min-w-[110px] md:min-w-0 text-xs md:text-sm">Volume</TabsTrigger>
         </TabsList>
 
         <TabsContent value="performance" className="space-y-6">
@@ -168,18 +168,18 @@ export const SolanaAnalyticsDashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-60 md:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={performanceData}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
                       dataKey="symbol" 
                       stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
+                      fontSize={10}
                     />
                     <YAxis 
                       stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
+                      fontSize={10}
                     />
                     <Tooltip 
                       contentStyle={{ 
@@ -195,12 +195,12 @@ export const SolanaAnalyticsDashboard = () => {
                   </BarChart>
                 </ResponsiveContainer>
               </div>
-              <div className="flex gap-2 mt-4">
+              <div className="flex flex-wrap gap-1.5 md:gap-2 mt-4">
                 {(['price', 'volume', 'market_cap'] as const).map((metric) => (
                   <Badge
                     key={metric}
                     variant={selectedMetric === metric ? "default" : "outline"}
-                    className="cursor-pointer"
+                    className="cursor-pointer text-[10px] md:text-xs"
                     onClick={() => setSelectedMetric(metric)}
                   >
                     {metric === 'volume' ? 'Volume (M)' : metric === 'market_cap' ? 'Market Cap (B)' : 'Price ($)'}
@@ -220,16 +220,16 @@ export const SolanaAnalyticsDashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-                {marketDominance.map((entry) => (
+              <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2 md:gap-4">
+                {marketDominance.slice(0, 4).concat(marketDominance.slice(4)).map((entry, index) => (
                   <Card 
                     key={entry.name}
-                    className="border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300"
+                    className={`border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-sm hover:shadow-lg transition-all duration-300 ${index >= 4 ? 'hidden md:block' : ''}`}
                     style={{
                       borderColor: entry.color + '30',
                     }}
                   >
-                    <CardContent className="p-6">
+                    <CardContent className="p-4 md:p-6">
                       <div className="flex items-center gap-2 mb-3">
                         <div 
                           className="w-2 h-2 rounded-full" 
@@ -257,7 +257,7 @@ export const SolanaAnalyticsDashboard = () => {
         </TabsContent>
 
         <TabsContent value="gainers" className="space-y-6">
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
             <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-green-500">
@@ -268,12 +268,12 @@ export const SolanaAnalyticsDashboard = () => {
               <CardContent>
                 <div className="space-y-3">
                   {topGainers.map((token, index) => (
-                    <div key={token.id} className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
+                    <div key={token.id} className="flex items-center justify-between p-2 md:p-3 bg-background/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
                         <div>
                           <p className="font-medium">{token.symbol}</p>
-                          <p className="text-sm text-muted-foreground">${token.price.toFixed(4)}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">${token.price.toFixed(4)}</p>
                         </div>
                       </div>
                       <Badge variant="default" className="bg-green-500">
@@ -295,12 +295,12 @@ export const SolanaAnalyticsDashboard = () => {
               <CardContent>
                 <div className="space-y-3">
                   {topLosers.map((token, index) => (
-                    <div key={token.id} className="flex items-center justify-between p-3 bg-background/50 rounded-lg">
+                    <div key={token.id} className="flex items-center justify-between p-2 md:p-3 bg-background/50 rounded-lg">
                       <div className="flex items-center gap-3">
                         <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
                         <div>
                           <p className="font-medium">{token.symbol}</p>
-                          <p className="text-sm text-muted-foreground">${token.price.toFixed(4)}</p>
+                          <p className="text-xs md:text-sm text-muted-foreground">${token.price.toFixed(4)}</p>
                         </div>
                       </div>
                       <Badge variant="destructive">
@@ -323,18 +323,18 @@ export const SolanaAnalyticsDashboard = () => {
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="h-80">
+              <div className="h-60 md:h-80">
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart data={performanceData.sort((a, b) => b.volume_24h - a.volume_24h)}>
                     <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
                     <XAxis 
                       dataKey="symbol" 
                       stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
+                      fontSize={10}
                     />
                     <YAxis 
                       stroke="hsl(var(--muted-foreground))"
-                      fontSize={12}
+                      fontSize={10}
                       tickFormatter={(value) => `$${value}M`}
                     />
                     <Tooltip 
