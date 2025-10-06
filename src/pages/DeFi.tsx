@@ -173,21 +173,21 @@ const DeFi = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="dex" className="w-full">
-          <TabsList className="w-full flex lg:grid lg:grid-cols-4 overflow-x-auto scrollbar-hide gap-2 p-1">
-            <TabsTrigger value="dex" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
-              <Repeat className="h-4 w-4" />
+          <TabsList className="w-full grid grid-cols-2 lg:grid-cols-4 gap-1 lg:gap-2 p-0.5 lg:p-1">
+            <TabsTrigger value="dex" className="gap-1.5 text-xs lg:text-sm">
+              <Repeat className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>DEX</span>
             </TabsTrigger>
-            <TabsTrigger value="pools" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
-              <TrendingUp className="h-4 w-4" />
+            <TabsTrigger value="pools" className="gap-1.5 text-xs lg:text-sm">
+              <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>Pools</span>
             </TabsTrigger>
-            <TabsTrigger value="positions" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
-              <Coins className="h-4 w-4" />
+            <TabsTrigger value="positions" className="gap-1.5 text-xs lg:text-sm">
+              <Coins className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>Positions</span>
             </TabsTrigger>
-            <TabsTrigger value="staking" className="gap-2 flex-shrink-0 min-w-[120px] lg:min-w-0">
-              <Lock className="h-4 w-4" />
+            <TabsTrigger value="staking" className="gap-1.5 text-xs lg:text-sm">
+              <Lock className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>Staking</span>
             </TabsTrigger>
           </TabsList>
