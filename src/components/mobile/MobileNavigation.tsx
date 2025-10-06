@@ -35,6 +35,7 @@ const navigationSections = [
       { icon: Plus, label: 'Create Agent', path: '/create-agent', id: 'create-agent' },
       { icon: Bot, label: 'ACP', path: '/acp', id: 'acp' },
       { icon: UserCog, label: 'Admin', path: '/admin', id: 'admin' },
+      { icon: Bell, label: 'Notifications', path: '/notifications', id: 'notifications' },
     ]
   },
   {
@@ -46,27 +47,25 @@ const navigationSections = [
     ]
   },
   {
-    title: "DeFi & Crypto",
+    title: "DeFi",
     items: [
       { icon: Coins, label: 'DeFi', path: '/defi', id: 'defi' },
       { icon: Coins, label: 'Solana', path: '/solana', id: 'solana' },
       { icon: Lock, label: 'Solana Staking', path: '/solana-staking', id: 'solana-staking' },
       { icon: Layers, label: 'Staking', path: '/staking', id: 'staking' },
-      { icon: Star, label: 'Referrals', path: '/referrals', id: 'referrals' },
     ]
   },
   {
     title: "Analytics",
     items: [
       { icon: BarChart3, label: 'Analytics', path: '/analytics', id: 'analytics' },
-      { icon: Bell, label: 'Notifications', path: '/notifications', id: 'notifications' },
+      { icon: BarChart3, label: 'Compare', path: '/compare', id: 'compare' },
     ]
   },
   {
     title: "Community",
     items: [
       { icon: Star, label: 'Favorites', path: '/favorites', id: 'favorites' },
-      { icon: BarChart3, label: 'Compare', path: '/compare', id: 'compare' },
       { icon: Users, label: 'Community', path: '/community', id: 'community' },
       { icon: Share2, label: 'Social Trading', path: '/social-trading', id: 'social-trading' },
     ]
@@ -82,15 +81,16 @@ const navigationSections = [
       { icon: LineChart, label: 'Technical Analysis', path: '/technical-analysis', id: 'technical-analysis' },
       { icon: Bot, label: 'Advanced AI', path: '/advanced-ai', id: 'advanced-ai' },
       { icon: Sparkles, label: 'Enhanced Features', path: '/enhanced-features', id: 'enhanced-features' },
-      { icon: Globe, label: 'Multi Language', path: '/multi-language', id: 'multi-language' },
     ]
   },
   {
     title: "Resources",
     items: [
       { icon: BookOpen, label: 'Tutorials', path: '/tutorials', id: 'tutorials' },
+      { icon: Globe, label: 'Multi Language', path: '/multi-language', id: 'multi-language' },
       { icon: HelpCircle, label: 'Customer Support', path: '/customer-support', id: 'customer-support' },
       { icon: Crown, label: 'Premium', path: '/premium', id: 'premium' },
+      { icon: Star, label: 'Referrals', path: '/referrals', id: 'referrals' },
       { icon: HelpCircle, label: 'Contact', path: '/contact', id: 'contact' },
       { icon: Settings, label: 'Settings', path: '/settings', id: 'settings' },
     ]
