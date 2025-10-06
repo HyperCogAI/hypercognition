@@ -19,7 +19,6 @@ import { Badge } from "@/components/ui/badge"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
-import { GradientCrown } from "@/components/icons/GradientCrown";
 
 
 // Core navigation items
@@ -363,11 +362,7 @@ export function AppSidebar() {
                       >
                         {({ isActive }) => (
                           <>
-                            {item.title === 'Premium' ? (
-                              <GradientCrown className="h-4 w-4 transition-all duration-300" active={isActive} />
-                            ) : (
-                              <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-60'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
-                            )}
+                            <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-60'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
                             {!isCollapsed && <span className="font-medium">{item.title}</span>}
                           </>
                         )}
