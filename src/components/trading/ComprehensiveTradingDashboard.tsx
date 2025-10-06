@@ -264,8 +264,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   onClick={() => setSelectedCrypto(token)}
                   className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-                    <span className="text-sm text-muted-foreground w-4 sm:w-6 flex-shrink-0">{index + 1}</span>
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <span className="text-sm text-muted-foreground w-5 sm:w-6 flex-shrink-0">{index + 1}</span>
                     {token.image && (
                       <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0" />
                     )}
@@ -328,7 +328,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   onClick={() => setSelectedCrypto(token)}
                   className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-green-500/20 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1">
                     <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
                     {token.image && (
                       <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full" />
@@ -357,7 +357,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   onClick={() => setSelectedCrypto(token)}
                   className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-red-500/20 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1">
                     <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
                     {token.image && (
                       <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full" />
@@ -386,7 +386,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   onClick={() => setSelectedCrypto(token)}
                   className="flex items-center justify-between p-2.5 sm:p-4 rounded-lg bg-background/50 hover:bg-background/80 transition-colors border border-border/30 cursor-pointer"
                 >
-                  <div className="flex items-center gap-2 sm:gap-4 flex-1">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1">
                     {token.image && (
                       <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full" />
                     )}
