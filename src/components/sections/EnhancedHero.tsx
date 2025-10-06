@@ -51,10 +51,7 @@ export function EnhancedHero() {
 
 
   return (
-    <section 
-      className="relative flex items-start md:items-center justify-center overflow-hidden pointer-events-none" 
-      style={{ minHeight: 'var(--dvh, 100vh)' }}
-    >
+    <section className="relative min-h-viewport flex items-start md:items-center justify-center overflow-hidden pointer-events-none">
       
       {/* Animated Particles Background */}
       <div className="absolute inset-0 z-0 pointer-events-none">
@@ -125,7 +122,10 @@ export function EnhancedHero() {
           </div>
           
           {/* CTA Buttons */}
-          <div className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4 pointer-events-auto">
+          <div 
+            className="flex flex-col sm:flex-row gap-4 md:gap-6 justify-center items-center pt-4 pointer-events-auto"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+          >
             <Link to="/marketplace" className="w-full sm:w-auto">
               <CyberButton variant="neon" size="lg" className="group relative overflow-hidden w-full px-6 py-3 md:px-8 md:py-4 text-sm md:text-base justify-center hover:brightness-110 transition-all duration-300">
                 <span className="relative z-10 text-white font-semibold text-center">Start Trading Now</span>

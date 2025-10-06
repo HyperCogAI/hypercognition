@@ -9,6 +9,9 @@
 @layer base {
   :root {
     color-scheme: dark;
+    /* Viewport fallback for JS-backed viewport fix */
+    --vh: 1vh;
+    
     /* Deep Black Base - Darker by 30% */
     --background: 222 30% 5%;
     --foreground: 210 40% 95%;
@@ -475,5 +478,21 @@
   
   .scrollbar-hide::-webkit-scrollbar {
     display: none;
+  }
+
+  /* Viewport height utility with robust fallbacks */
+  .min-h-viewport {
+    /* Baseline fallback */
+    min-height: 100vh;
+    /* JS-backed fallback for webviews with broken vh */
+    min-height: calc(var(--vh, 1vh) * 100);
+  }
+
+  /* Prefer the most correct dynamic behavior when supported */
+  @supports (min-height: 100svh) and (min-height: 100dvh) and (min-height: 100lvh) {
+    .min-h-viewport {
+      /* Clamp avoids "too small" (svh) and "too big" (lvh) cases */
+      min-height: clamp(100svh, 100dvh, 100lvh);
+    }
   }
 }
