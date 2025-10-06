@@ -48,7 +48,7 @@ export const TrendingCoins = () => {
     >
       <div className="flex items-center gap-3 flex-1">
         {coin.image && (
-          <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full" />
+          <img src={coin.image} alt={coin.name} className="w-7 h-7 rounded-full" />
         )}
         <div>
           <div className="font-semibold">{coin.name}</div>
@@ -122,7 +122,7 @@ export const TrendingCoins = () => {
               >
                 <div className="flex items-center gap-3 flex-1">
                   {coin.image && (
-                    <img src={coin.image} alt={coin.name} className="w-8 h-8 rounded-full" />
+                    <img src={coin.image} alt={coin.name} className="w-7 h-7 rounded-full" />
                   )}
                   <div>
                     <div className="font-semibold">{coin.name}</div>
@@ -145,7 +145,7 @@ export const TrendingCoins = () => {
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               {selectedCrypto?.image && (
-                <img src={selectedCrypto.image} alt={selectedCrypto.name} className="w-8 h-8 rounded-full" />
+                <img src={selectedCrypto.image} alt={selectedCrypto.name} className="w-7 h-7 rounded-full" />
               )}
               {selectedCrypto?.name}
               <Badge variant="outline">{selectedCrypto?.symbol.toUpperCase()}</Badge>

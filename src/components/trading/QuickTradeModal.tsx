@@ -94,7 +94,7 @@ export function QuickTradeModal({ open, onOpenChange, crypto }: QuickTradeModalP
         <DialogHeader>
           <div className="flex items-center gap-3 mb-2">
             {crypto.image && (
-              <img src={crypto.image} alt={crypto.name} className="w-8 h-8 rounded-full" />
+              <img src={crypto.image} alt={crypto.name} className="w-7 h-7 rounded-full" />
             )}
             <div>
               <DialogTitle>Trade {crypto.name}</DialogTitle>

@@ -267,7 +267,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
                     <span className="text-sm text-muted-foreground w-4 sm:w-6 flex-shrink-0">{index + 1}</span>
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full flex-shrink-0" />
+                      <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full flex-shrink-0" />
                     )}
                     <div className="flex-1 min-w-0 max-w-[120px] sm:max-w-none">
                       <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
@@ -331,7 +331,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   <div className="flex items-center gap-2 sm:gap-4 flex-1">
                     <TrendingUp className="h-4 w-4 sm:h-5 sm:w-5 text-green-500 flex-shrink-0" />
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full" />
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
@@ -360,7 +360,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   <div className="flex items-center gap-2 sm:gap-4 flex-1">
                     <TrendingDown className="h-4 w-4 sm:h-5 sm:w-5 text-red-500 flex-shrink-0" />
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full" />
                     )}
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
@@ -388,7 +388,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                 >
                   <div className="flex items-center gap-2 sm:gap-4 flex-1">
                     {token.image && (
-                      <img src={token.image} alt={token.name} className="w-7 h-7 sm:w-8 sm:h-8 rounded-full" />
+                      <img src={token.image} alt={token.name} className="w-6 h-6 sm:w-7 sm:h-7 rounded-full" />
                     )}
                     <Activity className="h-4 w-4 sm:h-5 sm:w-5 text-primary flex-shrink-0" />
                     <div className="flex-1 min-w-0">
@@ -431,7 +431,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
           <DialogHeader>
             <DialogTitle className="flex items-center gap-3">
               {selectedCrypto?.image && (
-                <img src={selectedCrypto.image} alt={selectedCrypto.name} className="w-8 h-8 rounded-full" />
+                <img src={selectedCrypto.image} alt={selectedCrypto.name} className="w-7 h-7 rounded-full" />
               )}
               {selectedCrypto?.name}
               <Badge variant="outline">{selectedCrypto?.symbol.toUpperCase()}</Badge>
