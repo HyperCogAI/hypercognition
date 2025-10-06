@@ -29,6 +29,7 @@ const coreItems = [
   { title: "Create Agent", url: "/create-agent", icon: Plus },
   { title: "ACP", url: "/acp", icon: Bot },
   { title: "Admin", url: "/admin", icon: UserCog },
+  { title: "Notifications", url: "/notifications", icon: Bell },
 ]
 
 // Trading and investment items
@@ -44,19 +45,17 @@ const defiItems = [
   { title: "Solana", url: "/solana", icon: Coins },
   { title: "Solana Staking", url: "/solana-staking", icon: Lock },
   { title: "Staking", url: "/staking", icon: Layers },
-  { title: "Referrals", url: "/referrals", icon: Star },
 ]
 
 // Analytics and management
 const analyticsItems = [
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
-  { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Compare", url: "/compare", icon: BarChart3 },
 ]
 
 // Community and social features  
 const communityItems = [
   { title: "Favorites", url: "/favorites", icon: Star },
-  { title: "Compare", url: "/compare", icon: BarChart3 },
   { title: "Community", url: "/community", icon: Users },
   { title: "Social Trading", url: "/social-trading", icon: Share2 },
 ]
@@ -78,6 +77,7 @@ const resourceItems = [
   { title: "Multi Language", url: "/multi-language", icon: Globe },
   { title: "Customer Support", url: "/customer-support", icon: HelpCircle },
   { title: "Premium", url: "/premium", icon: Crown },
+  { title: "Referrals", url: "/referrals", icon: Star },
   { title: "Contact", url: "/contact", icon: HelpCircle },
   { title: "Docs", url: "https://whitepaper.hypercognition.io/hypercognition/", icon: FileText, external: true },
 ]
