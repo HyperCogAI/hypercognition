@@ -22,6 +22,12 @@ export function ScrollToTop() {
   // Scroll to top when route changes
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    
+    // Also scroll any main content containers (for desktop sidebar layout)
+    const mainContainers = document.querySelectorAll('main, [data-sidebar-inset]');
+    mainContainers.forEach(container => {
+      container.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+    });
   }, [pathname]);
 
   return null;

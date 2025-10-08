@@ -109,7 +109,7 @@ export function ResponsiveLayout({
       <SidebarProvider>
         <div className="flex min-h-screen w-full">
           <AppSidebar />
-          <SidebarInset className="flex-1">
+          <SidebarInset className="flex-1" data-sidebar-inset>
             {/* Desktop Header */}
             <header className="sticky top-0 z-40 flex h-16 shrink-0 items-center gap-2 border-b border-border/30 bg-background px-4">
               <SidebarTrigger className="-ml-1" />
