@@ -39,14 +39,11 @@ export const useApiTokens = () => {
         .join('')}`;
       
       const tokenPrefix = token.substring(0, 12);
-      const tokenHash = await crypto.subtle.digest(
-        'SHA-256',
-        new TextEncoder().encode(token)
-      ).then(hash => 
-        Array.from(new Uint8Array(hash))
-          .map(b => b.toString(16).padStart(2, '0'))
-          .join('')
-      );
+      const encodedData = new TextEncoder().encode(token).buffer as ArrayBuffer;
+      const hashBuffer = await crypto.subtle.digest('SHA-256', encodedData);
+      const tokenHash = Array.from(new Uint8Array(hashBuffer))
+        .map(b => b.toString(16).padStart(2, '0'))
+        .join('');
 
       const { data, error } = await supabase
         .from('user_api_tokens')

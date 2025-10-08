@@ -139,7 +139,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Enhanced password generation for wallet addresses
   const hashWalletAddress = async (address: string, salt: string): Promise<string> => {
     const encoder = new TextEncoder()
-    const data = encoder.encode(address.toLowerCase() + salt)
+    const data = encoder.encode(address.toLowerCase() + salt).buffer as ArrayBuffer
     const hashBuffer = await crypto.subtle.digest('SHA-256', data)
     const hashArray = Array.from(new Uint8Array(hashBuffer))
     return hashArray.map(b => b.toString(16).padStart(2, '0')).join('')
