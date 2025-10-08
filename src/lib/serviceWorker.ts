@@ -145,11 +145,12 @@ class ServiceWorkerManager {
       const permission = await Notification.requestPermission();
       
       if (permission === 'granted') {
+        const vapidKey = this.urlBase64ToUint8Array(
+          process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
+        );
         const subscription = await this.registration.pushManager.subscribe({
           userVisibleOnly: true,
-          applicationServerKey: this.urlBase64ToUint8Array(
-            process.env.REACT_APP_VAPID_PUBLIC_KEY || ''
-          )
+          applicationServerKey: vapidKey.buffer as ArrayBuffer
         });
 
         // Send subscription to server
@@ -310,7 +311,7 @@ class ServiceWorkerManager {
   }
 
   // Utility function for VAPID key conversion
-  private urlBase64ToUint8Array(base64String: string): Uint8Array<ArrayBuffer> {
+  private urlBase64ToUint8Array(base64String: string): Uint8Array {
     const padding = '='.repeat((4 - base64String.length % 4) % 4);
     const base64 = (base64String + padding)
       .replace(/-/g, '+')

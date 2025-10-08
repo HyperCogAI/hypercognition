@@ -13,7 +13,7 @@ const EnhancedHero = lazy(() => import('@/components/sections/EnhancedHero').the
 const HyperFeatures = lazy(() => import('@/components/sections/HyperFeatures').then(m => ({ default: m.HyperFeatures })))
 const HyperCTA = lazy(() => import('@/components/sections/HyperCTA').then(m => ({ default: m.HyperCTA })))
 
-const EnhancedMarketNews = lazy(() => import('@/components/news/EnhancedMarketNews'))
+const MarketNewsComponent = lazy(() => import('@/components/news/MarketNewsComponent').then(m => ({ default: m.MarketNewsComponent })))
 const AgentMarketplace = lazy(() => import('@/components/sections/AgentMarketplace').then(m => ({ default: m.AgentMarketplace })))
 const ComprehensiveTradingDashboard = lazy(() => import('@/components/trading/ComprehensiveTradingDashboard').then(m => ({ default: m.ComprehensiveTradingDashboard })))
 
@@ -195,7 +195,7 @@ export function OptimizedHomeLayout() {
           isMobile && "px-4"
         )}>
           <Suspense fallback={<MarketNewsSkeleton />}>
-            <EnhancedMarketNews />
+            <MarketNewsComponent maxArticles={10} />
           </Suspense>
         </section>
 
