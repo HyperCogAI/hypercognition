@@ -56,10 +56,10 @@ async function fetchCryptoPanicNews(limit: number = 20, category?: string) {
   }
 }
 
-// Fetch news from CoinGecko (free, no API key required)
+// Fetch news from CoinGecko Status Updates (free, no API key required)
 async function fetchCoinGeckoNews(limit: number = 20) {
   try {
-    const response = await fetch('https://api.coingecko.com/api/v3/news');
+    const response = await fetch('https://api.coingecko.com/api/v3/status_updates?category=general&per_page=50');
 
     if (!response.ok) {
       console.error(`[NewsSync] CoinGecko API error: ${response.status}`);
@@ -67,24 +67,29 @@ async function fetchCoinGeckoNews(limit: number = 20) {
     }
 
     const data = await response.json();
-    console.log(`[NewsSync] Fetched ${data.data?.length || 0} articles from CoinGecko`);
+    console.log(`[NewsSync] Fetched ${data.status_updates?.length || 0} status updates from CoinGecko`);
     
-    const news = (data.data || []).slice(0, limit).map((item: any, index: number) => ({
-      id: `coingecko-${item.id || index}`,
-      title: item.title,
-      summary: item.description || item.title,
-      content: item.description || item.title,
-      source: item.author || 'CoinGecko News',
-      source_api: 'CoinGecko',
-      url: item.url,
-      category: 'general',
-      sentiment_score: 0,
-      impact_level: 'medium' as const,
-      related_tokens: [],
-      related_chains: ['Bitcoin', 'Ethereum'],
-      published_at: item.updated_at || new Date().toISOString(),
-      created_at: new Date().toISOString()
-    }));
+    const news = (data.status_updates || []).slice(0, limit).map((item: any, index: number) => {
+      const projectName = item.project?.name || 'CoinGecko';
+      const title = `${projectName}: ${(item.description || '').substring(0, 100)}${item.description?.length > 100 ? '...' : ''}`;
+      
+      return {
+        id: `coingecko-${item.id || index}`,
+        title: title,
+        summary: item.description || title,
+        content: item.description || title,
+        source: projectName,
+        source_api: 'CoinGecko',
+        url: item.project?.website || item.project?.links?.homepage?.[0] || 'https://coingecko.com',
+        category: item.category || 'general',
+        sentiment_score: 0,
+        impact_level: 'medium' as const,
+        related_tokens: [],
+        related_chains: ['Bitcoin', 'Ethereum'],
+        published_at: item.created_at || new Date().toISOString(),
+        created_at: new Date().toISOString()
+      };
+    });
     
     return news;
   } catch (error) {
@@ -104,7 +109,7 @@ async function fetchNewsAPINews(limit: number = 20) {
 
   try {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=cryptocurrency OR bitcoin OR ethereum&sortBy=publishedAt&pageSize=${limit}&apiKey=${apiKey}`
+      `https://newsapi.org/v2/everything?q=crypto OR blockchain OR bitcoin&sortBy=publishedAt&language=en&pageSize=${limit}&apiKey=${apiKey}`
     );
 
     if (!response.ok) {

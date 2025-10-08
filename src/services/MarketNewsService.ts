@@ -107,14 +107,14 @@ export class MarketNewsService {
 
       return {
         timeframe,
-        overallSentiment: sentimentData.overallSentiment || 0.65,
-        fearGreedIndex: sentimentData.fearGreedIndex || 75,
-        bullishPercentage: sentimentData.bullishPercentage || 45,
-        bearishPercentage: sentimentData.bearishPercentage || 25,
-        neutralPercentage: sentimentData.neutralPercentage || 30,
-        volumeSentiment: sentimentData.volumeSentiment || 'bullish',
-        socialSentiment: sentimentData.socialSentiment || 'positive',
-        marketCapChange: sentimentData.marketCapChange || 3.2,
+        overallSentiment: sentimentData.overall || 0.65,
+        fearGreedIndex: sentimentData.fear_greed_index || 75,
+        bullishPercentage: sentimentData.bullish || 45,
+        bearishPercentage: sentimentData.bearish || 25,
+        neutralPercentage: sentimentData.neutral || 30,
+        volumeSentiment: sentimentData.volume_sentiment || 'bullish',
+        socialSentiment: sentimentData.social_sentiment || 'positive',
+        marketCapChange: sentimentData.market_cap_change || 3.2,
         timestamp: new Date()
       };
     } catch (error) {

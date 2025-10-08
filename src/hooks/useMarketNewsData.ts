@@ -85,8 +85,8 @@ export function useMarketNewsData() {
   useEffect(() => {
     refreshAll();
     
-    // Refresh every 5 minutes
-    const interval = setInterval(refreshAll, 300000);
+    // Refresh every 30 minutes to avoid API rate limits
+    const interval = setInterval(refreshAll, 1800000);
     
     return () => clearInterval(interval);
   }, [selectedCategory, selectedTimeframe]);
