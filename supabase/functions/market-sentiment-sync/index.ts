@@ -6,17 +6,16 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Fetch real crypto news from CryptoPanic API
+// Fetch news from CryptoPanic API
 async function fetchCryptoPanicNews(limit: number = 20, category?: string) {
   const apiKey = Deno.env.get('CRYPTOPANIC_API_KEY');
   
   if (!apiKey) {
-    console.warn('[NewsSync] CRYPTOPANIC_API_KEY not configured, using fallback data');
-    return null;
+    console.warn('[NewsSync] CRYPTOPANIC_API_KEY not configured');
+    return [];
   }
 
   try {
-    // CryptoPanic API - free tier supports 20 requests/day
     let url = `https://cryptopanic.com/api/v1/posts/?auth_token=${apiKey}&public=true`;
     
     if (category && category !== 'all') {
@@ -27,34 +26,190 @@ async function fetchCryptoPanicNews(limit: number = 20, category?: string) {
 
     if (!response.ok) {
       console.error(`[NewsSync] CryptoPanic API error: ${response.status}`);
-      return null;
+      return [];
     }
 
     const data = await response.json();
-    console.log(`[NewsSync] Fetched ${data.results?.length || 0} news articles from CryptoPanic`);
+    console.log(`[NewsSync] Fetched ${data.results?.length || 0} articles from CryptoPanic`);
     
-    // Transform CryptoPanic format to our format
     const news = (data.results || []).slice(0, limit).map((item: any, index: number) => ({
       id: `cryptopanic-${item.id || index}`,
       title: item.title,
-      summary: item.title, // CryptoPanic doesn't provide separate summary
+      summary: item.title,
       content: item.title,
       source: item.source?.title || 'CryptoPanic',
+      source_api: 'CryptoPanic',
       url: item.url,
       category: category || 'general',
       sentiment_score: item.votes?.positive > item.votes?.negative ? 0.5 : -0.5,
       impact_level: item.votes?.important ? 'high' : 'medium',
       related_tokens: item.currencies?.map((c: any) => c.code) || [],
-      related_chains: ['Bitcoin', 'Ethereum', 'Solana'], // Default chains
+      related_chains: ['Bitcoin', 'Ethereum', 'Solana'],
       published_at: item.published_at,
       created_at: new Date().toISOString()
     }));
     
     return news;
   } catch (error) {
-    console.error('[NewsSync] Error fetching CryptoPanic news:', error);
-    return null;
+    console.error('[NewsSync] Error fetching CryptoPanic:', error);
+    return [];
   }
+}
+
+// Fetch news from CoinGecko (free, no API key required)
+async function fetchCoinGeckoNews(limit: number = 20) {
+  try {
+    const response = await fetch('https://api.coingecko.com/api/v3/news');
+
+    if (!response.ok) {
+      console.error(`[NewsSync] CoinGecko API error: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`[NewsSync] Fetched ${data.data?.length || 0} articles from CoinGecko`);
+    
+    const news = (data.data || []).slice(0, limit).map((item: any, index: number) => ({
+      id: `coingecko-${item.id || index}`,
+      title: item.title,
+      summary: item.description || item.title,
+      content: item.description || item.title,
+      source: item.author || 'CoinGecko News',
+      source_api: 'CoinGecko',
+      url: item.url,
+      category: 'general',
+      sentiment_score: 0,
+      impact_level: 'medium' as const,
+      related_tokens: [],
+      related_chains: ['Bitcoin', 'Ethereum'],
+      published_at: item.updated_at || new Date().toISOString(),
+      created_at: new Date().toISOString()
+    }));
+    
+    return news;
+  } catch (error) {
+    console.error('[NewsSync] Error fetching CoinGecko:', error);
+    return [];
+  }
+}
+
+// Fetch news from NewsAPI (optional, requires API key)
+async function fetchNewsAPINews(limit: number = 20) {
+  const apiKey = Deno.env.get('NEWSAPI_KEY');
+  
+  if (!apiKey) {
+    console.log('[NewsSync] NEWSAPI_KEY not configured, skipping NewsAPI');
+    return [];
+  }
+
+  try {
+    const response = await fetch(
+      `https://newsapi.org/v2/everything?q=cryptocurrency OR bitcoin OR ethereum&sortBy=publishedAt&pageSize=${limit}&apiKey=${apiKey}`
+    );
+
+    if (!response.ok) {
+      console.error(`[NewsSync] NewsAPI error: ${response.status}`);
+      return [];
+    }
+
+    const data = await response.json();
+    console.log(`[NewsSync] Fetched ${data.articles?.length || 0} articles from NewsAPI`);
+    
+    const news = (data.articles || []).slice(0, limit).map((item: any, index: number) => ({
+      id: `newsapi-${index}-${Date.now()}`,
+      title: item.title,
+      summary: item.description || item.title,
+      content: item.content || item.description || item.title,
+      source: item.source?.name || 'NewsAPI',
+      source_api: 'NewsAPI',
+      url: item.url,
+      category: 'general',
+      sentiment_score: 0,
+      impact_level: 'medium' as const,
+      related_tokens: [],
+      related_chains: ['Bitcoin', 'Ethereum'],
+      published_at: item.publishedAt,
+      created_at: new Date().toISOString()
+    }));
+    
+    return news;
+  } catch (error) {
+    console.error('[NewsSync] Error fetching NewsAPI:', error);
+    return [];
+  }
+}
+
+// Deduplicate news articles by title similarity
+function deduplicateNews(articles: any[]) {
+  const unique: any[] = [];
+  const seenTitles = new Set<string>();
+  
+  for (const article of articles) {
+    const normalizedTitle = article.title.toLowerCase().trim();
+    
+    // Simple deduplication: check if similar title already exists
+    let isDuplicate = false;
+    for (const seenTitle of seenTitles) {
+      // If titles are >80% similar (simple character overlap check)
+      const similarity = calculateSimilarity(normalizedTitle, seenTitle);
+      if (similarity > 0.8) {
+        isDuplicate = true;
+        break;
+      }
+    }
+    
+    if (!isDuplicate) {
+      unique.push(article);
+      seenTitles.add(normalizedTitle);
+    }
+  }
+  
+  return unique;
+}
+
+// Simple similarity calculation (Jaccard similarity on words)
+function calculateSimilarity(str1: string, str2: string): number {
+  const words1 = new Set(str1.split(/\s+/));
+  const words2 = new Set(str2.split(/\s+/));
+  
+  const intersection = new Set([...words1].filter(x => words2.has(x)));
+  const union = new Set([...words1, ...words2]);
+  
+  return intersection.size / union.size;
+}
+
+// Aggregate news from multiple sources
+async function aggregateNews(limit: number = 20, category?: string) {
+  console.log('[NewsSync] Aggregating news from multiple sources...');
+  
+  // Fetch from all sources in parallel
+  const results = await Promise.allSettled([
+    fetchCryptoPanicNews(limit, category),
+    fetchCoinGeckoNews(limit),
+    fetchNewsAPINews(limit)
+  ]);
+  
+  // Collect successful results
+  const allNews: any[] = [];
+  results.forEach((result, index) => {
+    const sourceName = ['CryptoPanic', 'CoinGecko', 'NewsAPI'][index];
+    if (result.status === 'fulfilled' && result.value) {
+      console.log(`[NewsSync] ${sourceName}: ${result.value.length} articles`);
+      allNews.push(...result.value);
+    } else if (result.status === 'rejected') {
+      console.error(`[NewsSync] ${sourceName} failed:`, result.reason);
+    }
+  });
+  
+  // Deduplicate and sort by publish date
+  const uniqueNews = deduplicateNews(allNews);
+  uniqueNews.sort((a, b) => 
+    new Date(b.published_at).getTime() - new Date(a.published_at).getTime()
+  );
+  
+  console.log(`[NewsSync] Aggregated ${uniqueNews.length} unique articles from ${allNews.length} total`);
+  
+  return uniqueNews.slice(0, limit);
 }
 
 serve(async (req) => {
@@ -73,7 +228,7 @@ serve(async (req) => {
 
     // Handle news fetch request
     if (action === 'getNews') {
-      const news = await fetchCryptoPanicNews(limit || 20, category);
+      const news = await aggregateNews(limit || 20, category);
       
       if (news && news.length > 0) {
         return new Response(
@@ -82,12 +237,13 @@ serve(async (req) => {
         );
       }
       
-      // Return fallback news if API fails
+      // Return fallback news if all APIs fail
       const fallbackNews = Array.from({ length: Math.min(limit || 5, 5) }, (_, i) => ({
         id: `fallback-${i}`,
         title: `Crypto Market Update ${i + 1}`,
         summary: `Latest developments in cryptocurrency markets and blockchain technology`,
         source: 'Market Analysis',
+        source_api: 'Fallback',
         category: category || 'general',
         sentiment_score: (Math.random() - 0.5) * 2,
         impact_level: ['low', 'medium', 'high'][i % 3],

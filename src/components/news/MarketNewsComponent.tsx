@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useMemo } from 'react'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -16,7 +16,8 @@ import {
   Clock,
   AlertTriangle,
   Zap,
-  Globe
+  Globe,
+  Radio
 } from 'lucide-react'
 import { formatDistanceToNow } from 'date-fns'
 
@@ -43,6 +44,16 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
   } = useMarketNewsData();
 
   const { syncMarketSentiment, isSyncing } = useChainAnalyticsSync(false);
+  
+  const [sourceFilter, setSourceFilter] = useState<string>('all');
+  
+  // Filter articles by source API
+  const filteredArticles = useMemo(() => {
+    if (sourceFilter === 'all') return newsArticles;
+    return newsArticles.filter(article => 
+      (article as any).source_api === sourceFilter
+    );
+  }, [newsArticles, sourceFilter]);
 
   const handleRefresh = async () => {
     await Promise.all([
@@ -72,6 +83,15 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
       case 'high': return 'bg-red-100 text-red-700 border-red-200';
       case 'medium': return 'bg-yellow-100 text-yellow-700 border-yellow-200';
       case 'low': return 'bg-green-100 text-green-700 border-green-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
+    }
+  };
+  
+  const getSourceBadgeColor = (sourceApi?: string) => {
+    switch (sourceApi) {
+      case 'CryptoPanic': return 'bg-blue-100 text-blue-700 border-blue-200';
+      case 'CoinGecko': return 'bg-green-100 text-green-700 border-green-200';
+      case 'NewsAPI': return 'bg-purple-100 text-purple-700 border-purple-200';
       default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
@@ -183,9 +203,27 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
       {/* News Articles */}
       <Card className="border-border/50 bg-card/50 backdrop-blur">
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg">Latest Market News</CardTitle>
-            <div className="flex items-center gap-2">
+          <div className="flex items-center justify-between flex-wrap gap-3">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <Radio className="h-5 w-5" />
+              Latest Market News
+              <Badge variant="outline" className="text-xs">
+                {filteredArticles.length} articles
+              </Badge>
+            </CardTitle>
+            <div className="flex items-center gap-2 flex-wrap">
+              <Select value={sourceFilter} onValueChange={setSourceFilter}>
+                <SelectTrigger className="w-[140px]">
+                  <SelectValue placeholder="Source" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="all">All Sources</SelectItem>
+                  <SelectItem value="CryptoPanic">CryptoPanic</SelectItem>
+                  <SelectItem value="CoinGecko">CoinGecko</SelectItem>
+                  <SelectItem value="NewsAPI">NewsAPI</SelectItem>
+                </SelectContent>
+              </Select>
+              
               <Select value={selectedCategory} onValueChange={setSelectedCategory}>
                 <SelectTrigger className="w-[140px]">
                   <SelectValue placeholder="Category" />
@@ -221,68 +259,81 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
               </div>
             )}
 
-            {!loading && newsArticles.slice(0, maxArticles).map((article) => (
-              <div 
-                key={article.id} 
-                className="mb-4 p-4 border border-border/50 rounded-lg hover:bg-accent/50 transition-colors"
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <Badge variant="outline" className="text-xs">
-                        {article.category}
-                      </Badge>
-                      {article.impactLevel && (
-                        <Badge className={`text-xs ${getImpactColor(article.impactLevel)}`}>
-                          {article.impactLevel} impact
+            {!loading && filteredArticles.slice(0, maxArticles).map((article) => {
+              const sourceApi = (article as any).source_api;
+              
+              return (
+                <div 
+                  key={article.id} 
+                  className="mb-4 p-4 border border-border/50 rounded-lg hover:bg-accent/50 transition-colors"
+                >
+                  <div className="flex items-start justify-between gap-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
+                        {sourceApi && (
+                          <Badge className={`text-xs ${getSourceBadgeColor(sourceApi)}`}>
+                            <Radio className="h-3 w-3 mr-1" />
+                            {sourceApi}
+                          </Badge>
+                        )}
+                        <Badge variant="outline" className="text-xs">
+                          {article.category}
                         </Badge>
-                      )}
-                      {article.sentimentScore !== undefined && (
-                        <Badge variant="outline" className={`text-xs ${getSentimentColor(article.sentimentScore)}`}>
-                          {getSentimentText(article.sentimentScore)}
-                        </Badge>
-                      )}
-                    </div>
+                        {article.impactLevel && (
+                          <Badge className={`text-xs ${getImpactColor(article.impactLevel)}`}>
+                            {article.impactLevel} impact
+                          </Badge>
+                        )}
+                        {article.sentimentScore !== undefined && (
+                          <Badge variant="outline" className={`text-xs ${getSentimentColor(article.sentimentScore)}`}>
+                            {getSentimentText(article.sentimentScore)}
+                          </Badge>
+                        )}
+                      </div>
 
-                    <h3 className="font-semibold mb-2 text-foreground">
-                      {article.title}
-                    </h3>
-                    
-                    <p className="text-sm text-muted-foreground mb-3">
-                      {article.summary}
-                    </p>
+                      <h3 className="font-semibold mb-2 text-foreground">
+                        {article.title}
+                      </h3>
+                      
+                      <p className="text-sm text-muted-foreground mb-3">
+                        {article.summary}
+                      </p>
 
-                    <div className="flex items-center gap-4 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Clock className="h-3 w-3" />
-                        {formatDistanceToNow(article.publishedAt, { addSuffix: true })}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Globe className="h-3 w-3" />
-                        {article.source}
-                      </span>
-                      {article.relatedChains && article.relatedChains.length > 0 && (
+                      <div className="flex items-center gap-4 text-xs text-muted-foreground flex-wrap">
                         <span className="flex items-center gap-1">
-                          <Zap className="h-3 w-3" />
-                          {article.relatedChains.join(', ')}
+                          <Clock className="h-3 w-3" />
+                          {formatDistanceToNow(article.publishedAt, { addSuffix: true })}
                         </span>
+                        <span className="flex items-center gap-1">
+                          <Globe className="h-3 w-3" />
+                          {article.source}
+                          {sourceApi && sourceApi !== article.source && (
+                            <span className="text-muted-foreground/70">via {sourceApi}</span>
+                          )}
+                        </span>
+                        {article.relatedChains && article.relatedChains.length > 0 && (
+                          <span className="flex items-center gap-1">
+                            <Zap className="h-3 w-3" />
+                            {article.relatedChains.slice(0, 3).join(', ')}
+                          </span>
+                        )}
+                      </div>
+
+                      {article.url && (
+                        <a 
+                          href={article.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="text-xs text-primary hover:underline mt-2 inline-block"
+                        >
+                          Read full article →
+                        </a>
                       )}
                     </div>
-
-                    {article.url && (
-                      <a 
-                        href={article.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-xs text-primary hover:underline mt-2 inline-block"
-                      >
-                        Read full article →
-                      </a>
-                    )}
                   </div>
                 </div>
-              </div>
-            ))}
+              );
+            })}
           </ScrollArea>
         </CardContent>
       </Card>
