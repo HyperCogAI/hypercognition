@@ -5,7 +5,6 @@ import { Activity, TrendingUp, TrendingDown } from 'lucide-react';
 
 interface FearGreedWidgetProps {
   fearGreedIndex: number;
-  overallSentiment: number;
   bullishPercentage: number;
   bearishPercentage: number;
   neutralPercentage: number;
@@ -15,7 +14,6 @@ interface FearGreedWidgetProps {
 
 export const FearGreedWidget: React.FC<FearGreedWidgetProps> = ({
   fearGreedIndex,
-  overallSentiment,
   bullishPercentage,
   bearishPercentage,
   neutralPercentage,
@@ -109,14 +107,6 @@ export const FearGreedWidget: React.FC<FearGreedWidgetProps> = ({
               <div className="text-2xl font-bold text-red-500">
                 {bearishPercentage.toFixed(0)}%
               </div>
-            </div>
-          </div>
-
-          {/* Sentiment Score */}
-          <div className="pt-4 border-t border-border/50">
-            <div className="flex justify-between items-center text-sm">
-              <span className="text-muted-foreground">Overall Sentiment Score</span>
-              <span className="font-bold">{(overallSentiment * 100).toFixed(1)}</span>
             </div>
           </div>
         </div>

@@ -177,10 +177,10 @@ export const KaitoInfluenceDashboard = () => {
             </CardDescription>
           </div>
           <Button
-            variant="outline"
             size="sm"
             onClick={handleRefresh}
             disabled={isSyncing}
+            className="bg-gray-900/90 border border-gray-700/50 hover:bg-gray-800 hover:border-gray-600 text-white transition-all"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
             Sync
@@ -193,14 +193,14 @@ export const KaitoInfluenceDashboard = () => {
               placeholder="Search or fetch X username (e.g., VitalikButerin)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1"
+              className="flex-1 bg-gray-900/90 border-gray-700/50 text-white placeholder:text-gray-400 hover:border-gray-600 focus:border-gray-600"
               disabled={isSearching || isSyncing}
             />
             <Button 
               type="submit" 
-              variant="outline" 
               size="sm"
               disabled={isSearching || isSyncing || !searchQuery.trim()}
+              className="bg-gray-900/90 border border-gray-700/50 hover:bg-gray-800 hover:border-gray-600 text-white transition-all"
             >
               {isSearching ? (
                 <>

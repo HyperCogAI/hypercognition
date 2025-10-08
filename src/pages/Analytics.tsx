@@ -34,7 +34,6 @@ const Analytics = () => {
         {marketSentiment && (
           <FearGreedWidget
             fearGreedIndex={marketSentiment.fearGreedIndex}
-            overallSentiment={marketSentiment.overallSentiment}
             bullishPercentage={marketSentiment.bullishPercentage}
             bearishPercentage={marketSentiment.bearishPercentage}
             neutralPercentage={marketSentiment.neutralPercentage}
