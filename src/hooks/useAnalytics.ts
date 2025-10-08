@@ -48,7 +48,7 @@ export const useAnalytics = () => {
       // Fetch real AI agent market data
       // Fetch agents and market stats first, then pick a real agent for price history
       const [agents, marketStats] = await Promise.all([
-        aiAgentMarketApi.getTopAIAgents(20),
+        aiAgentMarketApi.getTopAIAgents(50),
         aiAgentMarketApi.getMarketStats()
       ])
 

@@ -6,6 +6,22 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
+// Helper to map DEXScreener chain IDs to our network categories
+function mapChainToNetwork(dexChain?: string): string {
+  if (!dexChain) return 'Other';
+  
+  const chain = dexChain.toLowerCase();
+  
+  // Map to our supported networks
+  if (chain === 'ethereum') return 'Ethereum';
+  if (chain === 'solana') return 'Solana';
+  if (chain === 'bsc' || chain === 'bnb') return 'BNB Chain';
+  if (chain === 'base') return 'Base';
+  
+  // Everything else (NEAR, Polygon, Avalanche, etc.) goes to Other
+  return 'Other';
+}
+
 // Helper to fetch DefiLlama data for a token
 async function getDefiLlamaData(tokenSymbol: string, coinGeckoId?: string) {
   try {
@@ -147,7 +163,7 @@ serve(async (req) => {
         total_supply: coin.total_supply || 0,
         rank: coin.market_cap_rank || 0,
         avatar_url: coin.image || '',
-        chain: 'Multi-Chain',
+        chain: 'Other',
         category: 'AI & Big Data'
       }));
 
@@ -162,6 +178,7 @@ serve(async (req) => {
               ]);
               return {
                 ...a,
+                chain: mapChainToNetwork(dexData?.dexChain),
                 // DEXScreener enrichment
                 dex_liquidity: dexData?.dexLiquidity || 0,
                 dex_volume_24h: dexData?.dexVolume24h || 0,
@@ -225,7 +242,7 @@ serve(async (req) => {
         low_24h: coin.low_24h || 0,
         rank: coin.market_cap_rank || 0,
         avatar_url: coin.image || '',
-        chain: 'Multi-Chain',
+        chain: 'Other',
         category: 'AI & Big Data'
       }));
 
@@ -309,7 +326,7 @@ serve(async (req) => {
         total_supply: coin.market_data?.total_supply || 0,
         rank: coin.market_cap_rank || 0,
         avatar_url: coin.image?.large || '',
-        chain: 'Multi-Chain',
+        chain: mapChainToNetwork(dexData?.dexChain),
         category: 'AI & Big Data',
         description: coin.description?.en || '',
         // DEXScreener enrichment
@@ -365,7 +382,7 @@ serve(async (req) => {
         change_24h: coin.price_change_24h || 0,
         change_percent_24h: coin.price_change_percentage_24h || 0,
         avatar_url: coin.image || '',
-        chain: 'Multi-Chain',
+        chain: 'Other',
         category: 'AI & Big Data'
       }));
 
