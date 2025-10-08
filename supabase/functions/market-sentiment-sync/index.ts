@@ -109,7 +109,7 @@ async function fetchNewsAPINews(limit: number = 20) {
 
   try {
     const response = await fetch(
-      `https://newsapi.org/v2/everything?q=crypto OR blockchain OR bitcoin&sortBy=publishedAt&language=en&pageSize=${limit}&apiKey=${apiKey}`
+      `https://newsapi.org/v2/everything?q=crypto OR blockchain OR bitcoin&sortBy=publishedAt&language=en&excludeDomains=es.cointelegraph.com&pageSize=${limit}&apiKey=${apiKey}`
     );
 
     if (!response.ok) {
