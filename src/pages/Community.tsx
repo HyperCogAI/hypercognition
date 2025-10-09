@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
-import { MessageCircle, ThumbsUp, Users, TrendingUp, Clock, Send, Pin, Loader2 } from "lucide-react"
+import { MessageCircle, ThumbsUp, Users, TrendingUp, Clock, Send, Pin, Loader2, ArrowUp } from "lucide-react"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { useCommunity } from "@/hooks/useCommunity"
 import { useAuth } from "@/contexts/AuthContext"
@@ -218,17 +218,19 @@ const Community = () => {
                     onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                     disabled={!user || isSendingMessage}
                   />
-                  <Button 
-                    onClick={handleSendMessage} 
-                    size="icon"
-                    disabled={!user || isSendingMessage || !newMessage.trim()}
-                  >
-                    {isSendingMessage ? (
-                      <Loader2 className="h-4 w-4 animate-spin" />
-                    ) : (
-                      <Send className="h-4 w-4" />
-                    )}
-                  </Button>
+                    <Button 
+                      variant="ghost"
+                      onClick={handleSendMessage} 
+                      disabled={!user || isSendingMessage || !newMessage.trim()}
+                      size="icon"
+                      className="rounded-full bg-primary/10 hover:bg-primary/20 border-0 outline outline-[1px] outline-primary/30 hover:outline-primary/50 transition-all duration-300"
+                    >
+                      {isSendingMessage ? (
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                      ) : (
+                        <ArrowUp className="h-4 w-4" />
+                      )}
+                    </Button>
                 </div>
               </CardContent>
             </Card>

@@ -16,7 +16,8 @@ import {
   BarChart3,
   Send,
   Image,
-  Hash
+  Hash,
+  ArrowUp
 } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useSocialFeed } from '@/hooks/useSocialFeed';
@@ -279,14 +280,15 @@ export const SocialFeed = () => {
               </select>
             </div>
             
-            <Button
-              onClick={handleCreatePost}
-              disabled={!newPostContent.trim()}
-              size="sm"
-            >
-              <Send className="h-4 w-4 mr-2" />
-              Post
-            </Button>
+                <Button
+                  variant="ghost"
+                  onClick={handleCreatePost}
+                  disabled={!newPostContent.trim()}
+                  size="icon"
+                  className="rounded-full bg-primary/10 hover:bg-primary/20 border-0 outline outline-[1px] outline-primary/30 hover:outline-primary/50 transition-all duration-300"
+                >
+                  <ArrowUp className="h-4 w-4" />
+                </Button>
           </div>
         </CardContent>
       </Card>
