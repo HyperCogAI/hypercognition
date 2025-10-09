@@ -5535,6 +5535,48 @@ export type Database = {
           },
         ]
       }
+      token_chain_overrides: {
+        Row: {
+          coingecko_id: string | null
+          contract_address: string | null
+          created_at: string
+          created_by: string | null
+          id: string
+          is_active: boolean
+          liquidity_chain: string | null
+          notes: string | null
+          primary_chain: string
+          symbol: string | null
+          updated_at: string
+        }
+        Insert: {
+          coingecko_id?: string | null
+          contract_address?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          liquidity_chain?: string | null
+          notes?: string | null
+          primary_chain: string
+          symbol?: string | null
+          updated_at?: string
+        }
+        Update: {
+          coingecko_id?: string | null
+          contract_address?: string | null
+          created_at?: string
+          created_by?: string | null
+          id?: string
+          is_active?: boolean
+          liquidity_chain?: string | null
+          notes?: string | null
+          primary_chain?: string
+          symbol?: string | null
+          updated_at?: string
+        }
+        Relationships: []
+      }
       token_metrics: {
         Row: {
           address: string

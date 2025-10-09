@@ -76,6 +76,7 @@ const TutorialsHub = lazy(() => import('./pages/TutorialsHub'));
 
 // Lazy loaded components - Administrative
 const Admin = lazy(() => import('./pages/Admin'));
+const ChainOverrides = lazy(() => import('./pages/admin/ChainOverrides'));
 const InstitutionalFeatures = lazy(() => import('./pages/InstitutionalFeatures'));
 const ComplianceRegulatory = lazy(() => import('./pages/ComplianceRegulatory'));
 const CustomerSupport = lazy(() => import('./pages/CustomerSupport'));
@@ -217,6 +218,7 @@ const AppLayout = () => {
                 <Route path="/advanced-notifications" element={<ProtectedRoute><AdvancedNotifications /></ProtectedRoute>} />
                 <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />
                 <Route path="/admin" element={<ProtectedRoute><Admin /></ProtectedRoute>} />
+                <Route path="/admin/chain-overrides" element={<ProtectedRoute><ChainOverrides /></ProtectedRoute>} />
                 <Route path="/logo-generator" element={<LogoGenerator />} />
                 <Route path="/agent-logo-showcase" element={<AgentLogoShowcase />} />
                 <Route path="/compare" element={<AgentComparison />} />

@@ -1,10 +1,74 @@
 import "https://deno.land/x/xhr@0.1.0/mod.ts";
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+// Initialize Supabase client for overrides
+const supabaseUrl = Deno.env.get('SUPABASE_URL')!;
+const supabaseKey = Deno.env.get('SUPABASE_ANON_KEY')!;
+const supabase = createClient(supabaseUrl, supabaseKey);
+
+// Load chain overrides from database
+async function loadOverrides() {
+  try {
+    const { data, error } = await supabase
+      .from('token_chain_overrides')
+      .select('symbol, coingecko_id, primary_chain, liquidity_chain, contract_address')
+      .eq('is_active', true);
+    
+    if (error) {
+      console.error('[Overrides] Failed to load:', error);
+      return { bySymbol: new Map(), byId: new Map() };
+    }
+    
+    const bySymbol = new Map();
+    const byId = new Map();
+    
+    data?.forEach((override: any) => {
+      if (override.symbol) {
+        bySymbol.set(override.symbol.toUpperCase(), override);
+      }
+      if (override.coingecko_id) {
+        byId.set(override.coingecko_id.toLowerCase(), override);
+      }
+    });
+    
+    console.log(`[Overrides] Loaded ${bySymbol.size} symbol mappings, ${byId.size} ID mappings`);
+    return { bySymbol, byId };
+  } catch (err) {
+    console.error('[Overrides] Exception:', err);
+    return { bySymbol: new Map(), byId: new Map() };
+  }
+}
+
+// Apply overrides to an agent
+function applyOverride(agent: any, bySymbol: Map<string, any>, byId: Map<string, any>) {
+  let override = null;
+  
+  // Try by CoinGecko ID first (more specific)
+  if (agent.id) {
+    override = byId.get(agent.id.toLowerCase());
+  }
+  
+  // Fallback to symbol
+  if (!override && agent.symbol) {
+    override = bySymbol.get(agent.symbol.toUpperCase());
+  }
+  
+  if (override) {
+    agent.chain = override.primary_chain;
+    if (override.liquidity_chain) {
+      agent.liquidity_chain = override.liquidity_chain;
+    }
+    console.log(`[Override Applied] ${agent.symbol}: ${override.primary_chain}`);
+  }
+  
+  return agent;
+}
 
 // Helper to normalize network names from various sources
 function normalizeNetworkName(input?: string): string {
@@ -12,46 +76,19 @@ function normalizeNetworkName(input?: string): string {
   
   const normalized = input.toLowerCase().trim();
   
-  // Ethereum variants
   if (normalized === 'ethereum' || normalized === 'eth') return 'Ethereum';
-  
-  // Solana
   if (normalized === 'solana' || normalized === 'sol') return 'Solana';
-  
-  // Base
   if (normalized === 'base') return 'Base';
-  
-  // BNB Chain variants
   if (normalized === 'bsc' || normalized === 'bnb' || normalized === 'binance-smart-chain' || normalized === 'binance smart chain') return 'BNB Chain';
-  
-  // NEAR Protocol
   if (normalized === 'near' || normalized === 'near-protocol') return 'NEAR';
-  
-  // Polygon
   if (normalized === 'polygon' || normalized === 'matic' || normalized === 'polygon-pos') return 'Polygon';
-  
-  // Avalanche
   if (normalized === 'avalanche' || normalized === 'avax' || normalized === 'avalanche-c-chain') return 'Avalanche';
-  
-  // Arbitrum
   if (normalized === 'arbitrum' || normalized === 'arbitrum-one') return 'Arbitrum';
-  
-  // Optimism
   if (normalized === 'optimism' || normalized === 'op') return 'Optimism';
-  
-  // Tron
   if (normalized === 'tron' || normalized === 'trx') return 'Tron';
-  
-  // Fantom
   if (normalized === 'fantom' || normalized === 'ftm') return 'Fantom';
-  
-  // Cardano
   if (normalized === 'cardano' || normalized === 'ada') return 'Cardano';
-  
-  // Cosmos
   if (normalized === 'cosmos' || normalized === 'atom') return 'Cosmos';
-  
-  // TON
   if (normalized === 'ton' || normalized === 'toncoin' || normalized === 'the-open-network') return 'TON';
   
   return 'Other';
@@ -59,21 +96,17 @@ function normalizeNetworkName(input?: string): string {
 
 // Helper to detect the native blockchain of a token from CoinGecko data
 function detectNativeChain(coin: any): string {
-  // Priority 1: Check asset_platform_id (most reliable for native chain)
   if (coin.asset_platform_id) {
     return normalizeNetworkName(coin.asset_platform_id);
   }
   
-  // Priority 2: Check platforms object keys
   if (coin.platforms && typeof coin.platforms === 'object') {
     const platformKeys = Object.keys(coin.platforms);
     if (platformKeys.length > 0) {
-      // Use the first platform as primary chain
       return normalizeNetworkName(platformKeys[0]);
     }
   }
   
-  // Priority 3: Check if it's a known L1 blockchain by coin ID
   if (coin.id) {
     const knownL1s: Record<string, string> = {
       'solana': 'Solana',
@@ -101,18 +134,6 @@ function detectNativeChain(coin: any): string {
     if (knownL1s[coin.id]) {
       return knownL1s[coin.id];
     }
-    
-    // Pattern-based detection as fallback
-    const id = coin.id.toLowerCase();
-    if (id.includes('arbitrum')) return 'Arbitrum';
-    if (id.includes('optimism')) return 'Optimism';
-    if (id.includes('polygon') || id.includes('matic')) return 'Polygon';
-    if (id.includes('base')) return 'Base';
-    if (id.includes('avalanche') || id.includes('avax')) return 'Avalanche';
-    if (id.includes('bsc') || id.includes('bnb')) return 'BNB Chain';
-    if (id.includes('solana') || id.includes('sol')) return 'Solana';
-    
-    console.log('[Chain Detection] Unknown chain for coin:', coin.id);
   }
   
   return 'Other';
@@ -121,13 +142,11 @@ function detectNativeChain(coin: any): string {
 // Helper to fetch DefiLlama data for a token
 async function getDefiLlamaData(tokenSymbol: string, coinGeckoId?: string) {
   try {
-    // First try to get protocol data by name/symbol
     const protocolsResponse = await fetch('https://api.llama.fi/protocols');
     if (!protocolsResponse.ok) return null;
 
     const protocols = await protocolsResponse.json();
     
-    // Find matching protocol (case-insensitive)
     const matchedProtocol = protocols.find((p: any) => 
       p.name.toLowerCase().includes(tokenSymbol.toLowerCase()) ||
       p.symbol?.toLowerCase() === tokenSymbol.toLowerCase() ||
@@ -136,7 +155,6 @@ async function getDefiLlamaData(tokenSymbol: string, coinGeckoId?: string) {
 
     if (!matchedProtocol) return null;
 
-    // Get detailed protocol data
     const detailResponse = await fetch(`https://api.llama.fi/protocol/${matchedProtocol.slug}`);
     if (!detailResponse.ok) return null;
 
@@ -164,10 +182,8 @@ async function getDEXScreenerData(tokenAddress?: string, searchQuery?: string) {
     let url = '';
     
     if (tokenAddress) {
-      // Search by token address
       url = `https://api.dexscreener.com/latest/dex/tokens/${tokenAddress}`;
     } else if (searchQuery) {
-      // Search by query
       url = `https://api.dexscreener.com/latest/dex/search/?q=${encodeURIComponent(searchQuery)}`;
     } else {
       return null;
@@ -178,7 +194,6 @@ async function getDEXScreenerData(tokenAddress?: string, searchQuery?: string) {
 
     const data = await response.json();
     
-    // Get the best pair (highest liquidity)
     const pairs = data.pairs || [];
     if (pairs.length === 0) return null;
 
@@ -188,7 +203,6 @@ async function getDEXScreenerData(tokenAddress?: string, searchQuery?: string) {
       return currentLiq > bestLiq ? current : best;
     }, pairs[0]);
 
-    // Construct readable pair name from base and quote tokens
     const baseSymbol = bestPair.baseToken?.symbol || '';
     const quoteSymbol = bestPair.quoteToken?.symbol || '';
     const pairName = (baseSymbol && quoteSymbol) ? `${baseSymbol}/${quoteSymbol}` : '';
@@ -221,6 +235,9 @@ serve(async (req) => {
 
     console.log('[AI-Market] Request:', { action, limit, id, days, enrich });
 
+    // Load overrides once per request
+    const overrides = await loadOverrides();
+
     // Fetch AI & Big Data category tokens from CoinGecko
     if (action === 'getTopAIAgents') {
       const response = await fetch(
@@ -238,50 +255,45 @@ serve(async (req) => {
 
       const data = await response.json();
 
-      // PERFORMANCE NOTE:
-      // Full enrichment (DEXScreener + DefiLlama per coin) frequently exceeds Edge CPU time
-      // for larger lists. By default we return a "lite" list (CoinGecko only). If the caller
-      // explicitly requests enrich=true, we enrich the first 6 items with DEXScreener only.
-
-      let agents: any[] = data.map((coin: any) => ({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        price: coin.current_price || 0,
-        market_cap: coin.market_cap || 0,
-        volume_24h: coin.total_volume || 0,
-        change_24h: coin.price_change_24h || 0,
-        change_percent_24h: coin.price_change_percentage_24h || 0,
-        change_percent_7d: coin.price_change_percentage_7d_in_currency || 0,
-        high_24h: coin.high_24h || 0,
-        low_24h: coin.low_24h || 0,
-        circulating_supply: coin.circulating_supply || 0,
-        total_supply: coin.total_supply || 0,
-        rank: coin.market_cap_rank || 0,
-        avatar_url: coin.image || '',
-        chain: detectNativeChain(coin),
-        liquidity_chain: '',
-        category: 'AI & Big Data'
-      }));
+      let agents: any[] = data.map((coin: any) => {
+        let agent = {
+          id: coin.id,
+          name: coin.name,
+          symbol: coin.symbol.toUpperCase(),
+          price: coin.current_price || 0,
+          market_cap: coin.market_cap || 0,
+          volume_24h: coin.total_volume || 0,
+          change_24h: coin.price_change_24h || 0,
+          change_percent_24h: coin.price_change_percentage_24h || 0,
+          change_percent_7d: coin.price_change_percentage_7d_in_currency || 0,
+          high_24h: coin.high_24h || 0,
+          low_24h: coin.low_24h || 0,
+          circulating_supply: coin.circulating_supply || 0,
+          total_supply: coin.total_supply || 0,
+          rank: coin.market_cap_rank || 0,
+          avatar_url: coin.image || '',
+          chain: detectNativeChain(coin),
+          liquidity_chain: '',
+          category: 'AI & Big Data'
+        };
+        return applyOverride(agent, overrides.bySymbol, overrides.byId);
+      });
 
       if (enrich) {
         const enrichCount = Math.min(6, agents.length);
         const enriched = await Promise.all(
           agents.slice(0, enrichCount).map(async (a) => {
             try {
-              // Only DEXScreener enrichment for list view (DefiLlama removed to save CPU)
               const dexData = await getDEXScreenerData(undefined, a.symbol);
               
-              // If native chain is 'Other' but we have DEX chain, use that as better fallback
               const finalChain = a.chain === 'Other' && dexData?.dexChain 
                 ? normalizeNetworkName(dexData.dexChain)
                 : a.chain;
               
-              return {
+              let updatedAgent = {
                 ...a,
                 chain: finalChain,
                 liquidity_chain: normalizeNetworkName(dexData?.dexChain),
-                // DEXScreener enrichment
                 dex_liquidity: dexData?.dexLiquidity || 0,
                 dex_volume_24h: dexData?.dexVolume24h || 0,
                 dex_price_usd: dexData?.dexPriceUsd || 0,
@@ -290,6 +302,8 @@ serve(async (req) => {
                 dex_pair: dexData?.dexPair || '',
                 fdv: dexData?.fdv || 0
               };
+              
+              return applyOverride(updatedAgent, overrides.bySymbol, overrides.byId);
             } catch (_) {
               return a;
             }
@@ -322,22 +336,25 @@ serve(async (req) => {
 
       const data = await response.json();
       
-      const agents = data.map((coin: any) => ({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        price: coin.current_price || 0,
-        market_cap: coin.market_cap || 0,
-        volume_24h: coin.total_volume || 0,
-        change_24h: coin.price_change_24h || 0,
-        change_percent_24h: coin.price_change_percentage_24h || 0,
-        high_24h: coin.high_24h || 0,
-        low_24h: coin.low_24h || 0,
-        rank: coin.market_cap_rank || 0,
-        avatar_url: coin.image || '',
-        chain: 'Other',
-        category: 'AI & Big Data'
-      }));
+      const agents = data.map((coin: any) => {
+        let agent = {
+          id: coin.id,
+          name: coin.name,
+          symbol: coin.symbol.toUpperCase(),
+          price: coin.current_price || 0,
+          market_cap: coin.market_cap || 0,
+          volume_24h: coin.total_volume || 0,
+          change_24h: coin.price_change_24h || 0,
+          change_percent_24h: coin.price_change_percentage_24h || 0,
+          high_24h: coin.high_24h || 0,
+          low_24h: coin.low_24h || 0,
+          rank: coin.market_cap_rank || 0,
+          avatar_url: coin.image || '',
+          chain: detectNativeChain(coin),
+          category: 'AI & Big Data'
+        };
+        return applyOverride(agent, overrides.bySymbol, overrides.byId);
+      });
 
       console.log('[AI-Market] Trending:', agents.length, 'AI tokens');
 
@@ -398,13 +415,12 @@ serve(async (req) => {
 
       const coin = await response.json();
       
-      // Fetch DEXScreener and DefiLlama data in parallel
       const [dexData, llamaData] = await Promise.all([
         getDEXScreenerData(undefined, coin.symbol),
         getDefiLlamaData(coin.symbol, coin.id)
       ]);
       
-      const agent = {
+      let agent = {
         id: coin.id,
         name: coin.name,
         symbol: coin.symbol.toUpperCase(),
@@ -423,14 +439,12 @@ serve(async (req) => {
         liquidity_chain: normalizeNetworkName(dexData?.dexChain),
         category: 'AI & Big Data',
         description: coin.description?.en || '',
-        // DEXScreener enrichment
         dex_liquidity: dexData?.dexLiquidity || 0,
         dex_volume_24h: dexData?.dexVolume24h || 0,
         dex_price_usd: dexData?.dexPriceUsd || 0,
         dex_chain: dexData?.dexChain || '',
         dex_name: dexData?.dexName || '',
         fdv: dexData?.fdv || coin.market_data?.fully_diluted_valuation?.usd || 0,
-        // DefiLlama enrichment
         tvl: llamaData?.tvl || 0,
         chain_tvls: llamaData?.chainTvls || {},
         mcap_tvl_ratio: llamaData?.mcaptvl || 0,
@@ -440,6 +454,8 @@ serve(async (req) => {
         twitter: llamaData?.twitter || '',
         website: llamaData?.url || ''
       };
+
+      agent = applyOverride(agent, overrides.bySymbol, overrides.byId);
 
       console.log('[AI-Market] Agent:', agent.name, 'with DEX + DeFi data');
 
@@ -465,20 +481,22 @@ serve(async (req) => {
 
       const data = await response.json();
       
-      // Client-side filtering will be done in the API client
-      const agents = data.map((coin: any) => ({
-        id: coin.id,
-        name: coin.name,
-        symbol: coin.symbol.toUpperCase(),
-        price: coin.current_price || 0,
-        market_cap: coin.market_cap || 0,
-        volume_24h: coin.total_volume || 0,
-        change_24h: coin.price_change_24h || 0,
-        change_percent_24h: coin.price_change_percentage_24h || 0,
-        avatar_url: coin.image || '',
-        chain: 'Other',
-        category: 'AI & Big Data'
-      }));
+      const agents = data.map((coin: any) => {
+        let agent = {
+          id: coin.id,
+          name: coin.name,
+          symbol: coin.symbol.toUpperCase(),
+          price: coin.current_price || 0,
+          market_cap: coin.market_cap || 0,
+          volume_24h: coin.total_volume || 0,
+          change_24h: coin.price_change_24h || 0,
+          change_percent_24h: coin.price_change_percentage_24h || 0,
+          avatar_url: coin.image || '',
+          chain: detectNativeChain(coin),
+          category: 'AI & Big Data'
+        };
+        return applyOverride(agent, overrides.bySymbol, overrides.byId);
+      });
 
       return new Response(JSON.stringify(agents), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
