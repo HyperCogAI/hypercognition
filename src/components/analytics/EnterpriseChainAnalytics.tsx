@@ -288,7 +288,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
 
       <Tabs defaultValue="tokens" className="space-y-6">
         <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="tokens">Top Tokens</TabsTrigger>
+          <TabsTrigger value="tokens">Top AI Tokens</TabsTrigger>
           <TabsTrigger value="liquidity">Liquidity Pools</TabsTrigger>
           <TabsTrigger value="comparison">Chain Comparison</TabsTrigger>
         </TabsList>
