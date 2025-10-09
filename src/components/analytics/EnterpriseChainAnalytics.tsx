@@ -127,9 +127,24 @@ export const EnterpriseChainAnalytics: React.FC = () => {
     );
   }
 
+  const normalizeFilterKey = (key: string): string => {
+    const mapping: Record<string, string> = {
+      'bnb': 'bnb chain',
+      'polygon': 'polygon',
+      'avalanche': 'avalanche',
+      'arbitrum': 'arbitrum',
+      'optimism': 'optimism',
+      'near': 'near',
+      'solana': 'solana',
+      'ethereum': 'ethereum',
+      'base': 'base'
+    };
+    return mapping[key.toLowerCase()] || key.toLowerCase();
+  };
+
   const filteredTokens = selectedChain === 'all' 
     ? topTokens 
-    : topTokens.filter(t => t.chain.toLowerCase() === selectedChain);
+    : topTokens.filter(t => t.chain.toLowerCase() === normalizeFilterKey(selectedChain));
 
   return (
     <div className="space-y-6">
@@ -305,7 +320,14 @@ export const EnterpriseChainAnalytics: React.FC = () => {
                       <div className="text-sm text-muted-foreground">Vol 24h</div>
                       <div className="font-medium">{formatNumber(token.volume24h)}</div>
                     </div>
-                    <Badge variant="outline" className="ml-4">{token.chain}</Badge>
+                    <div className="flex items-center gap-2 ml-4">
+                      <Badge variant="outline" className="capitalize">{token.chain}</Badge>
+                      {token.liquidityChain && token.liquidityChain.toLowerCase() !== token.chain.toLowerCase() && (
+                        <span className="text-xs text-muted-foreground">
+                          • Liquidity: {token.liquidityChain}
+                        </span>
+                      )}
+                    </div>
                   </div>
                 </CardContent>
               </Card>

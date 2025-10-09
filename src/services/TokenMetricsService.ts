@@ -12,6 +12,7 @@ export interface TokenMetrics {
   holders: number;
   transactions24h: number;
   chain: string;
+  liquidityChain?: string;
 }
 
 export class TokenMetricsService {
@@ -42,7 +43,8 @@ export class TokenMetricsService {
         marketCap: typeof agent.market_cap === 'number' ? agent.market_cap : 0,
         holders: 0, // unknown
         transactions24h: agent.price && agent.volume_24h ? Math.floor(agent.volume_24h / Math.max(agent.price, 1)) : 0,
-        chain: agent.dex_chain || agent.chain || 'Unknown'
+        chain: agent.chain || agent.liquidity_chain || agent.dex_chain || 'Unknown',
+        liquidityChain: agent.liquidity_chain || agent.dex_chain
       }));
 
       console.log(`[TokenMetrics] Fetched ${tokens.length} tokens from API`);

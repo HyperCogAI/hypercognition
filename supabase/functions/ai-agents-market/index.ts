@@ -221,7 +221,7 @@ serve(async (req) => {
       // PERFORMANCE NOTE:
       // Full enrichment (DEXScreener + DefiLlama per coin) frequently exceeds Edge CPU time
       // for larger lists. By default we return a "lite" list (CoinGecko only). If the caller
-      // explicitly requests enrich=true, we only enrich the first 8 items to stay within limits.
+      // explicitly requests enrich=true, we enrich the first 16 items to stay within limits.
 
       let agents: any[] = data.map((coin: any) => ({
         id: coin.id,
@@ -245,7 +245,7 @@ serve(async (req) => {
       }));
 
       if (enrich) {
-        const enrichCount = Math.min(8, agents.length);
+        const enrichCount = Math.min(16, agents.length);
         const enriched = await Promise.all(
           agents.slice(0, enrichCount).map(async (a) => {
             try {
