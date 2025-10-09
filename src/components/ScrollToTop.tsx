@@ -29,7 +29,7 @@ export function ScrollToTop() {
         document.body.scrollTop = 0;
 
         // Any scrollable app containers
-        const containers = document.querySelectorAll('main, [data-sidebar-inset], .sidebar-inset, [data-scroll-container]');
+        const containers = document.querySelectorAll('main, [data-sidebar-inset], .sidebar-inset, [data-scroll-container], [data-scroll-root]');
         containers.forEach((el) => {
           try {
             (el as HTMLElement).scrollTo({ top: 0, left: 0, behavior: 'auto' });
