@@ -6,19 +6,95 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
 
-// Helper to map DEXScreener chain IDs to our network categories
-function mapChainToNetwork(dexChain?: string): string {
-  if (!dexChain) return 'Other';
+// Helper to normalize network names from various sources
+function normalizeNetworkName(input?: string): string {
+  if (!input) return 'Other';
   
-  const chain = dexChain.toLowerCase();
+  const normalized = input.toLowerCase().trim();
   
-  // Map to our supported networks
-  if (chain === 'ethereum') return 'Ethereum';
-  if (chain === 'solana') return 'Solana';
-  if (chain === 'bsc' || chain === 'bnb') return 'BNB Chain';
-  if (chain === 'base') return 'Base';
+  // Ethereum variants
+  if (normalized === 'ethereum' || normalized === 'eth') return 'Ethereum';
   
-  // Everything else (NEAR, Polygon, Avalanche, etc.) goes to Other
+  // Solana
+  if (normalized === 'solana' || normalized === 'sol') return 'Solana';
+  
+  // Base
+  if (normalized === 'base') return 'Base';
+  
+  // BNB Chain variants
+  if (normalized === 'bsc' || normalized === 'bnb' || normalized === 'binance-smart-chain' || normalized === 'binance smart chain') return 'BNB Chain';
+  
+  // NEAR Protocol
+  if (normalized === 'near' || normalized === 'near-protocol') return 'NEAR';
+  
+  // Polygon
+  if (normalized === 'polygon' || normalized === 'matic' || normalized === 'polygon-pos') return 'Polygon';
+  
+  // Avalanche
+  if (normalized === 'avalanche' || normalized === 'avax' || normalized === 'avalanche-c-chain') return 'Avalanche';
+  
+  // Arbitrum
+  if (normalized === 'arbitrum' || normalized === 'arbitrum-one') return 'Arbitrum';
+  
+  // Optimism
+  if (normalized === 'optimism' || normalized === 'op') return 'Optimism';
+  
+  // Tron
+  if (normalized === 'tron' || normalized === 'trx') return 'Tron';
+  
+  // Fantom
+  if (normalized === 'fantom' || normalized === 'ftm') return 'Fantom';
+  
+  // Cardano
+  if (normalized === 'cardano' || normalized === 'ada') return 'Cardano';
+  
+  // Cosmos
+  if (normalized === 'cosmos' || normalized === 'atom') return 'Cosmos';
+  
+  // TON
+  if (normalized === 'ton' || normalized === 'toncoin' || normalized === 'the-open-network') return 'TON';
+  
+  return 'Other';
+}
+
+// Helper to detect the native blockchain of a token from CoinGecko data
+function detectNativeChain(coin: any): string {
+  // Priority 1: Check asset_platform_id (most reliable for native chain)
+  if (coin.asset_platform_id) {
+    return normalizeNetworkName(coin.asset_platform_id);
+  }
+  
+  // Priority 2: Check platforms object keys
+  if (coin.platforms && typeof coin.platforms === 'object') {
+    const platformKeys = Object.keys(coin.platforms);
+    if (platformKeys.length > 0) {
+      // Use the first platform as primary chain
+      return normalizeNetworkName(platformKeys[0]);
+    }
+  }
+  
+  // Priority 3: Check if it's a known L1 blockchain by coin ID
+  if (coin.id) {
+    const knownL1s: Record<string, string> = {
+      'solana': 'Solana',
+      'near': 'NEAR',
+      'ethereum': 'Ethereum',
+      'avalanche-2': 'Avalanche',
+      'cardano': 'Cardano',
+      'toncoin': 'TON',
+      'cosmos': 'Cosmos',
+      'fantom': 'Fantom',
+      'tron': 'Tron',
+      'bnb': 'BNB Chain',
+      'polygon-ecosystem-token': 'Polygon',
+      'matic-network': 'Polygon'
+    };
+    
+    if (knownL1s[coin.id]) {
+      return knownL1s[coin.id];
+    }
+  }
+  
   return 'Other';
 }
 
@@ -163,7 +239,8 @@ serve(async (req) => {
         total_supply: coin.total_supply || 0,
         rank: coin.market_cap_rank || 0,
         avatar_url: coin.image || '',
-        chain: 'Other',
+        chain: detectNativeChain(coin),
+        liquidity_chain: '',
         category: 'AI & Big Data'
       }));
 
@@ -178,7 +255,8 @@ serve(async (req) => {
               ]);
               return {
                 ...a,
-                chain: mapChainToNetwork(dexData?.dexChain),
+                // Keep native chain, add liquidity chain separately
+                liquidity_chain: normalizeNetworkName(dexData?.dexChain),
                 // DEXScreener enrichment
                 dex_liquidity: dexData?.dexLiquidity || 0,
                 dex_volume_24h: dexData?.dexVolume24h || 0,
@@ -326,7 +404,8 @@ serve(async (req) => {
         total_supply: coin.market_data?.total_supply || 0,
         rank: coin.market_cap_rank || 0,
         avatar_url: coin.image?.large || '',
-        chain: mapChainToNetwork(dexData?.dexChain),
+        chain: detectNativeChain(coin),
+        liquidity_chain: normalizeNetworkName(dexData?.dexChain),
         category: 'AI & Big Data',
         description: coin.description?.en || '',
         // DEXScreener enrichment

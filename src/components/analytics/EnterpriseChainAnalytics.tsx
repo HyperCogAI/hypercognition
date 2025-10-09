@@ -269,15 +269,15 @@ export const EnterpriseChainAnalytics: React.FC = () => {
         </TabsList>
 
         <TabsContent value="tokens" className="space-y-4">
-          <div className="flex gap-2 mb-4">
-            {['all', 'solana', 'ethereum', 'base', 'bnb'].map(chain => (
+          <div className="flex gap-2 mb-4 flex-wrap">
+            {['all', 'solana', 'ethereum', 'base', 'bnb', 'near', 'polygon', 'avalanche', 'arbitrum', 'optimism'].map(chain => (
               <Badge
                 key={chain}
                 variant={selectedChain === chain ? 'default' : 'outline'}
                 className="cursor-pointer capitalize"
                 onClick={() => setSelectedChain(chain as any)}
               >
-                {chain}
+                {chain === 'bnb' ? 'BNB Chain' : chain}
               </Badge>
             ))}
           </div>
