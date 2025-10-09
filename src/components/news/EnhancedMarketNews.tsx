@@ -190,7 +190,7 @@ const EnhancedMarketNews = () => {
           ) : (
               <div className="grid gap-6">
                 {filteredNews.slice(0, MAX_NEWS).map((article) => (
-                  <Card key={article.id} className="hover:shadow-md transition-shadow cursor-pointer">
+                  <Card key={article.id} className="hover:bg-muted/30 hover:border-border hover:shadow-md transition-all cursor-pointer">
                     <CardHeader>
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1">

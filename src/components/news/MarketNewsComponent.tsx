@@ -262,7 +262,7 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
               return (
                 <div 
                   key={article.id} 
-                  className="mb-4 p-4 border border-border/50 rounded-lg hover:bg-accent/50 transition-colors"
+                  className="mb-4 p-4 border border-border/50 rounded-lg hover:bg-muted/30 hover:border-border transition-colors"
                 >
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1">
