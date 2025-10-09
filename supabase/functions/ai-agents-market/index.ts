@@ -86,13 +86,33 @@ function detectNativeChain(coin: any): string {
       'fantom': 'Fantom',
       'tron': 'Tron',
       'bnb': 'BNB Chain',
+      'binancecoin': 'BNB Chain',
       'polygon-ecosystem-token': 'Polygon',
-      'matic-network': 'Polygon'
+      'matic-network': 'Polygon',
+      'polkadot': 'Polkadot',
+      'arbitrum': 'Arbitrum',
+      'optimism': 'Optimism',
+      'base': 'Base',
+      'sui': 'Sui',
+      'aptos': 'Aptos',
+      'injective-protocol': 'Injective'
     };
     
     if (knownL1s[coin.id]) {
       return knownL1s[coin.id];
     }
+    
+    // Pattern-based detection as fallback
+    const id = coin.id.toLowerCase();
+    if (id.includes('arbitrum')) return 'Arbitrum';
+    if (id.includes('optimism')) return 'Optimism';
+    if (id.includes('polygon') || id.includes('matic')) return 'Polygon';
+    if (id.includes('base')) return 'Base';
+    if (id.includes('avalanche') || id.includes('avax')) return 'Avalanche';
+    if (id.includes('bsc') || id.includes('bnb')) return 'BNB Chain';
+    if (id.includes('solana') || id.includes('sol')) return 'Solana';
+    
+    console.log('[Chain Detection] Unknown chain for coin:', coin.id);
   }
   
   return 'Other';
@@ -251,9 +271,15 @@ serve(async (req) => {
             try {
               // Only DEXScreener enrichment for list view (DefiLlama removed to save CPU)
               const dexData = await getDEXScreenerData(undefined, a.symbol);
+              
+              // If native chain is 'Other' but we have DEX chain, use that as better fallback
+              const finalChain = a.chain === 'Other' && dexData?.dexChain 
+                ? normalizeNetworkName(dexData.dexChain)
+                : a.chain;
+              
               return {
                 ...a,
-                // Keep native chain, add liquidity chain separately
+                chain: finalChain,
                 liquidity_chain: normalizeNetworkName(dexData?.dexChain),
                 // DEXScreener enrichment
                 dex_liquidity: dexData?.dexLiquidity || 0,
