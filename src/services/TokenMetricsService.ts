@@ -61,20 +61,24 @@ export class TokenMetricsService {
         console.log('[TokenMetrics] ✓ Using lite mode data');
       }
 
-      const tokens = (data || []).map((agent: any, index: number) => ({
-        address: agent.id || `token-${index}`,
-        symbol: agent.symbol || '',
-        name: agent.name || '',
-        price: typeof agent.price === 'number' ? agent.price : 0,
-        priceChange24h: typeof agent.change_percent_24h === 'number' ? agent.change_percent_24h : 0,
-        volume24h: typeof agent.volume_24h === 'number' ? agent.volume_24h : 0,
-        liquidity: typeof agent.dex_liquidity === 'number' ? agent.dex_liquidity : 0,
-        marketCap: typeof agent.market_cap === 'number' ? agent.market_cap : 0,
-        holders: 0, // unknown
-        transactions24h: agent.price && agent.volume_24h ? Math.floor(agent.volume_24h / Math.max(agent.price, 1)) : 0,
-        chain: agent.chain || agent.liquidity_chain || agent.dex_chain || 'Unknown',
-        liquidityChain: agent.liquidity_chain || agent.dex_chain
-      }));
+      const tokens = (data || []).map((agent: any, index: number) => {
+        const forcedChain = (agent?.symbol?.toUpperCase?.() === 'NEAR') ? 'Other' : undefined;
+        const chain = forcedChain || agent.chain || agent.liquidity_chain || agent.dex_chain || 'Unknown';
+        return ({
+          address: agent.id || `token-${index}`,
+          symbol: agent.symbol || '',
+          name: agent.name || '',
+          price: typeof agent.price === 'number' ? agent.price : 0,
+          priceChange24h: typeof agent.change_percent_24h === 'number' ? agent.change_percent_24h : 0,
+          volume24h: typeof agent.volume_24h === 'number' ? agent.volume_24h : 0,
+          liquidity: typeof agent.dex_liquidity === 'number' ? agent.dex_liquidity : 0,
+          marketCap: typeof agent.market_cap === 'number' ? agent.market_cap : 0,
+          holders: 0, // unknown
+          transactions24h: agent.price && agent.volume_24h ? Math.floor(agent.volume_24h / Math.max(agent.price, 1)) : 0,
+          chain,
+          liquidityChain: agent.liquidity_chain || agent.dex_chain
+        });
+      });
 
       console.log(`[TokenMetrics] Fetched ${tokens.length} tokens from API`);
       return tokens.slice(0, limit);
