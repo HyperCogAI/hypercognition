@@ -61,10 +61,9 @@ function applyOverride(agent: any, bySymbol: Map<string, any>, byId: Map<string,
   
   if (override) {
     agent.chain = override.primary_chain;
-    if (override.liquidity_chain) {
-      agent.liquidity_chain = override.liquidity_chain;
-    }
-    console.log(`[Override Applied] ${agent.symbol}: ${override.primary_chain}`);
+    // Always apply liquidity_chain from override, even if NULL (to clear enriched values)
+    agent.liquidity_chain = override.liquidity_chain || null;
+    console.log(`[Override Applied] ${agent.symbol}: ${override.primary_chain}${override.liquidity_chain ? ` (Liquidity: ${override.liquidity_chain})` : ''}`);
   }
   
   return agent;
