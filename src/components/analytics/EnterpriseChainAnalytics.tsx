@@ -332,11 +332,6 @@ export const EnterpriseChainAnalytics: React.FC = () => {
                     </div>
                     <div className="flex items-center gap-2 ml-4">
                       <Badge variant="outline" className="capitalize">{token.chain}</Badge>
-                      {token.liquidityChain && token.liquidityChain.toLowerCase() !== token.chain.toLowerCase() && (
-                        <span className="text-xs text-muted-foreground">
-                          • Liquidity: {token.liquidityChain}
-                        </span>
-                      )}
                     </div>
                   </div>
                 </CardContent>
