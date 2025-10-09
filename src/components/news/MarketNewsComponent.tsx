@@ -144,9 +144,6 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
                 <p className={`text-2xl font-bold ${getSentimentColor(marketSentiment.overallSentiment)}`}>
                   {getSentimentText(marketSentiment.overallSentiment)}
                 </p>
-                <p className="text-xs text-muted-foreground">
-                  Score: {(marketSentiment.overallSentiment * 100).toFixed(1)}
-                </p>
               </div>
 
               <div className="space-y-2">
