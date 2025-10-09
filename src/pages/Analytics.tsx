@@ -26,7 +26,7 @@ const Analytics = () => {
         <header className="mb-6">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Analytics</h1>
           <p className="text-muted-foreground">
-            Real-time Solana & EVM analytics with live chain metrics, cross-chain analysis, and market insights
+            Real-time analytics with live chain metrics, cross-chain analysis, and market insights
           </p>
         </header>
 
