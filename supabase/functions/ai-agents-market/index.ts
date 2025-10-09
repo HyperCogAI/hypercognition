@@ -221,7 +221,7 @@ serve(async (req) => {
       // PERFORMANCE NOTE:
       // Full enrichment (DEXScreener + DefiLlama per coin) frequently exceeds Edge CPU time
       // for larger lists. By default we return a "lite" list (CoinGecko only). If the caller
-      // explicitly requests enrich=true, we enrich the first 16 items to stay within limits.
+      // explicitly requests enrich=true, we enrich the first 6 items with DEXScreener only.
 
       let agents: any[] = data.map((coin: any) => ({
         id: coin.id,
@@ -245,14 +245,12 @@ serve(async (req) => {
       }));
 
       if (enrich) {
-        const enrichCount = Math.min(16, agents.length);
+        const enrichCount = Math.min(6, agents.length);
         const enriched = await Promise.all(
           agents.slice(0, enrichCount).map(async (a) => {
             try {
-              const [dexData, llamaData] = await Promise.all([
-                getDEXScreenerData(undefined, a.symbol),
-                getDefiLlamaData(a.symbol, a.id)
-              ]);
+              // Only DEXScreener enrichment for list view (DefiLlama removed to save CPU)
+              const dexData = await getDEXScreenerData(undefined, a.symbol);
               return {
                 ...a,
                 // Keep native chain, add liquidity chain separately
@@ -264,16 +262,7 @@ serve(async (req) => {
                 dex_chain: dexData?.dexChain || '',
                 dex_name: dexData?.dexName || '',
                 dex_pair: dexData?.dexPair || '',
-                fdv: dexData?.fdv || 0,
-                // DefiLlama enrichment
-                tvl: llamaData?.tvl || 0,
-                chain_tvls: llamaData?.chainTvls || {},
-                mcap_tvl_ratio: llamaData?.mcaptvl || 0,
-                defi_category: llamaData?.category || '',
-                chains: llamaData?.chains || [],
-                protocol_slug: llamaData?.protocolSlug || '',
-                twitter: llamaData?.twitter || '',
-                website: llamaData?.url || ''
+                fdv: dexData?.fdv || 0
               };
             } catch (_) {
               return a;

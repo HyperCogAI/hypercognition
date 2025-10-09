@@ -23,13 +23,42 @@ export class TokenMetricsService {
     try {
       console.log('[TokenMetrics] Fetching top tokens from AI agent market API...');
       
-      const { data, error } = await supabase.functions.invoke('ai-agents-market', {
+      // Try enriched first with timeout
+      const enrichPromise = supabase.functions.invoke('ai-agents-market', {
         body: { action: 'getTopAIAgents', limit, enrich: true }
       });
+      
+      const timeoutPromise = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Enrich timeout')), 3500)
+      );
 
-      if (error) {
-        console.error('[TokenMetrics] Edge function error:', error);
-        throw error;
+      let data, error;
+      
+      try {
+        const result = await Promise.race([enrichPromise, timeoutPromise]) as any;
+        data = result.data;
+        error = result.error;
+        
+        if (error || !data || data.length === 0) {
+          throw new Error('Enriched call failed or empty');
+        }
+        console.log('[TokenMetrics] ✓ Using enriched data');
+      } catch (enrichError) {
+        console.warn('[TokenMetrics] Enriched call failed, falling back to lite mode:', enrichError);
+        
+        // Fallback to lite mode
+        const liteResult = await supabase.functions.invoke('ai-agents-market', {
+          body: { action: 'getTopAIAgents', limit, enrich: false }
+        });
+        
+        data = liteResult.data;
+        error = liteResult.error;
+        
+        if (error) {
+          console.error('[TokenMetrics] Lite mode also failed:', error);
+          throw error;
+        }
+        console.log('[TokenMetrics] ✓ Using lite mode data');
       }
 
       const tokens = (data || []).map((agent: any, index: number) => ({

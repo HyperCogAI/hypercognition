@@ -52,7 +52,17 @@ export const EnterpriseChainAnalytics: React.FC = () => {
           bnb: results[3].value
         });
       }
-      if (results[4].status === 'fulfilled') setTopTokens(results[4].value);
+      
+      // Only update tokens if we got data; preserve previous on empty/error
+      if (results[4].status === 'fulfilled') {
+        const newTokens = results[4].value;
+        if (newTokens.length > 0) {
+          setTopTokens(newTokens);
+        } else {
+          setHasError(true);
+        }
+      }
+      
       if (results[5].status === 'fulfilled') setCrossChainData(results[5].value);
       if (results[6].status === 'fulfilled') setLiquidityPools(results[6].value);
 
