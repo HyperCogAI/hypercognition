@@ -439,7 +439,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             </div>
           )}
           
-          <div className="flex gap-2 mb-3">
+          <div className="flex gap-2">
             <input
               ref={fileInputRef}
               type="file"
@@ -466,6 +466,16 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               disabled={loading}
               className="flex-1 rounded-xl border border-border/40 bg-card/20 backdrop-blur-sm focus:border-primary/50 transition-colors"
             />
+            <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={portfolio} marketData={marketData}>
+              <Button
+                variant="ghost"
+                size="icon"
+                className="rounded-full w-10 h-10 bg-card/40 hover:bg-card/60 border border-border/40 backdrop-blur-sm transition-all duration-300 flex items-center justify-center"
+                title="Voice mode"
+              >
+                <Mic className="h-4 w-4" />
+              </Button>
+            </VoiceAssistantModal>
             <Button 
               variant="ghost"
               onClick={handleSendMessage} 
@@ -480,18 +490,6 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             )}
             </Button>
           </div>
-          
-          {/* Voice Interface Toggle */}
-          <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={portfolio} marketData={marketData}>
-            <Button
-              variant="ghost"
-              size="sm"
-              className="w-full flex items-center justify-center gap-2 h-9 rounded-full border border-border/40 bg-card/30 hover:bg-card/50 backdrop-blur-sm transition-all duration-300"
-            >
-              <Mic className="h-4 w-4" />
-              Switch to Voice Mode
-            </Button>
-          </VoiceAssistantModal>
         </div>
       </CardContent>
     </Card>
