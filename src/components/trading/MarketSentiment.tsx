@@ -98,31 +98,43 @@ export const MarketSentiment = () => {
         <div className="flex items-center justify-between">
           <CardTitle className="flex items-center gap-2">
             <Activity className="h-5 w-5" />
-            Market Sentiment
+            <span className="hidden sm:inline">Market Sentiment</span>
+            <span className="sm:hidden">Sentiment</span>
           </CardTitle>
-          <div className="flex items-center gap-3">
-            {/* Data Source Indicator */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-muted-foreground">Source:</span>
+          <div className="flex items-center gap-2 flex-wrap justify-end">
+            {/* Mobile: Only show key indicator + refresh */}
+            <div className="sm:hidden flex items-center gap-1.5">
               <Badge variant="outline" className="text-xs">
-                {dataSource === 'coingecko' ? '🟢 CoinGecko' : 
-                 dataSource === 'alternative' ? '🟡 Fallback' : 
-                 '🔴 Cached'}
+                {dataSource === 'coingecko' ? '🟢' : dataSource === 'alternative' ? '🟡' : '🔴'}
               </Badge>
-            </div>
-
-            {/* Data Quality Indicator */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className="text-muted-foreground">Quality:</span>
-              <Badge variant="outline" className={`text-xs ${quality.color}`}>
-                {quality.label}
-              </Badge>
+              <span className={`text-xs ${freshness.color}`}>{freshness.text}</span>
             </div>
             
-            {/* Freshness Indicator */}
-            <div className="flex items-center gap-1.5 text-xs">
-              <span className={freshness.color}>●</span>
-              <span className="text-muted-foreground">{freshness.text}</span>
+            {/* Desktop: Show all indicators */}
+            <div className="hidden sm:flex items-center gap-3">
+              {/* Data Source Indicator */}
+              <div className="flex items-center gap-1.5 text-xs">
+                <span className="text-muted-foreground">Source:</span>
+                <Badge variant="outline" className="text-xs">
+                  {dataSource === 'coingecko' ? '🟢 CoinGecko' : 
+                   dataSource === 'alternative' ? '🟡 Fallback' : 
+                   '🔴 Cached'}
+                </Badge>
+              </div>
+
+              {/* Data Quality Indicator */}
+              <div className="flex items-center gap-1.5 text-xs">
+                <span className="text-muted-foreground">Quality:</span>
+                <Badge variant="outline" className={`text-xs ${quality.color}`}>
+                  {quality.label}
+                </Badge>
+              </div>
+              
+              {/* Freshness Indicator */}
+              <div className="flex items-center gap-1.5 text-xs">
+                <span className={freshness.color}>●</span>
+                <span className="text-muted-foreground">{freshness.text}</span>
+              </div>
             </div>
             
             {/* Refresh Button */}
@@ -147,7 +159,7 @@ export const MarketSentiment = () => {
         )}
       </CardHeader>
       <CardContent>
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 md:gap-6">
           {/* Overall Sentiment */}
           <div className="space-y-2">
             <div className="text-sm text-muted-foreground">Overall Mood</div>
