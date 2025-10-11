@@ -287,10 +287,10 @@ export const EnterpriseChainAnalytics: React.FC = () => {
       )}
 
       <Tabs defaultValue="tokens" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
-          <TabsTrigger value="tokens">Top AI Tokens</TabsTrigger>
-          <TabsTrigger value="liquidity">Liquidity Pools</TabsTrigger>
-          <TabsTrigger value="comparison">Chain Comparison</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 gap-1 p-1 h-auto">
+          <TabsTrigger value="tokens" className="w-full text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1.5">Top AI Tokens</TabsTrigger>
+          <TabsTrigger value="liquidity" className="w-full text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1.5">Liquidity Pools</TabsTrigger>
+          <TabsTrigger value="comparison" className="w-full text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1.5">Chain Comparison</TabsTrigger>
         </TabsList>
 
         <TabsContent value="tokens" className="space-y-4">
@@ -311,27 +311,29 @@ export const EnterpriseChainAnalytics: React.FC = () => {
             {filteredTokens.map((token, index) => (
               <Card key={`${token.address}-${index}`} className="hover:shadow-md transition-shadow">
                 <CardContent className="p-4">
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3 flex-1">
+                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                    <div className="flex items-center gap-3 flex-1 min-w-0">
                       <span className="text-sm font-medium text-muted-foreground">#{index + 1}</span>
-                      <div>
+                      <div className="min-w-0">
                         <div className="font-semibold">{token.symbol}</div>
-                        <div className="text-sm text-muted-foreground">{token.name}</div>
+                        <div className="text-sm text-muted-foreground truncate max-w-[60vw] sm:max-w-none">{token.name}</div>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="flex items-center justify-between sm:justify-end gap-3 w-full sm:w-auto text-right">
                       <div className="font-bold">${token.price.toFixed(4)}</div>
                       <div className={`text-sm flex items-center gap-1 ${token.priceChange24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
                         {token.priceChange24h >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {token.priceChange24h.toFixed(2)}%
                       </div>
                     </div>
-                    <div className="text-right ml-8">
-                      <div className="text-sm text-muted-foreground">Vol 24h</div>
-                      <div className="font-medium">{formatNumber(token.volume24h)}</div>
-                    </div>
-                    <div className="flex items-center gap-2 ml-4">
-                      <Badge variant="outline" className="capitalize">{token.chain}</Badge>
+                    <div className="flex items-center justify-between sm:justify-end gap-4 w-full sm:w-auto">
+                      <div className="text-right">
+                        <div className="text-xs sm:text-sm text-muted-foreground">Vol 24h</div>
+                        <div className="font-medium">{formatNumber(token.volume24h)}</div>
+                      </div>
+                      <div className="flex items-center gap-2 shrink-0">
+                        <Badge variant="outline" className="capitalize">{token.chain}</Badge>
+                      </div>
                     </div>
                   </div>
                 </CardContent>
@@ -348,20 +350,20 @@ export const EnterpriseChainAnalytics: React.FC = () => {
             <CardContent>
               <div className="space-y-3">
                 {liquidityPools.slice(0, 15).map((pool, index) => (
-                  <div key={index} className="flex items-center justify-between p-3 bg-muted/30 rounded-lg">
-                    <div>
+                  <div key={index} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 bg-muted/30 rounded-lg">
+                    <div className="w-full sm:w-auto">
                       <div className="font-semibold">{pool.pair}</div>
-                      <div className="text-sm text-muted-foreground">{pool.chain}</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">{pool.chain}</div>
                     </div>
-                    <div className="text-right">
+                    <div className="flex items-center justify-between sm:block w-full sm:w-auto text-right">
                       <div className="font-medium">{formatNumber(pool.liquidity)}</div>
-                      <div className="text-sm text-muted-foreground">Liquidity</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Liquidity</div>
                     </div>
-                    <div className="text-right">
+                    <div className="flex items-center justify-between sm:block w-full sm:w-auto text-right">
                       <div className="font-medium">{formatNumber(pool.volume24h)}</div>
-                      <div className="text-sm text-muted-foreground">Volume 24h</div>
+                      <div className="text-xs sm:text-sm text-muted-foreground">Volume 24h</div>
                     </div>
-                    <Badge variant="secondary">{pool.apy.toFixed(1)}% APY</Badge>
+                    <Badge variant="secondary" className="shrink-0">{pool.apy.toFixed(1)}% APY</Badge>
                   </div>
                 ))}
               </div>
