@@ -11,6 +11,8 @@ interface MarketData {
   isLoading: boolean
   error: string | null
   lastUpdated: Date | null
+  dataSource?: 'coingecko' | 'alternative' | 'cache'
+  isCached?: boolean
 }
 
 interface PriceHistoryData {
@@ -26,15 +28,20 @@ export const useRealMarketData = () => {
     solana: [],
     isLoading: true,
     error: null,
-    lastUpdated: null
+    lastUpdated: null,
+    dataSource: undefined,
+    isCached: false
   })
 
   const { tokens: solanaTokens, isLoading: solanaLoading } = useSolanaRealtime()
 
-  const fetchCryptoData = useCallback(async (): Promise<CoinGeckoPrice[]> => {
+  const fetchCryptoData = useCallback(async (): Promise<{ data: CoinGeckoPrice[], source: 'coingecko' | 'alternative' | 'cache', isCached: boolean }> => {
     const cacheKey = 'crypto_market_data'
     const cached = cache.get<CoinGeckoPrice[]>(cacheKey)
-    if (cached) return cached
+    if (cached) {
+      console.log('📊 Using cached crypto data')
+      return { data: cached, source: 'cache', isCached: true }
+    }
 
     try {
       // Try primary source first
@@ -42,7 +49,7 @@ export const useRealMarketData = () => {
       
       // If primary source fails or returns empty, try alternative
       if (!data || data.length === 0) {
-        console.warn('Primary crypto API failed, trying alternative source')
+        console.warn('⚠️ Primary crypto API failed, trying alternative source')
         const alternativeData = await alternativeMarketDataApi.getAggregatedMarketData()
         
         // Convert alternative data to CoinGecko format
@@ -72,15 +79,20 @@ export const useRealMarketData = () => {
           atl_date: new Date().toISOString(),
           last_updated: new Date().toISOString()
         })) as CoinGeckoPrice[]
+        
+        console.log('✅ Using alternative data source')
+        cache.set(cacheKey, data, { ttl: 1 * 60 * 1000 })
+        return { data, source: 'alternative', isCached: false }
       }
       
-      cache.set(cacheKey, data, { ttl: 3 * 60 * 1000 }) // 3 minutes for live data
-      return data
+      console.log('✅ Using CoinGecko data')
+      cache.set(cacheKey, data, { ttl: 1 * 60 * 1000 }) // 1 minute for live data
+      return { data, source: 'coingecko', isCached: false }
     } catch (error) {
-      console.error('All crypto data sources failed:', error)
+      console.error('❌ All crypto data sources failed:', error)
       // Return cached data if available, even if expired
       const staleData = cache.get<CoinGeckoPrice[]>(cacheKey)
-      return staleData || []
+      return { data: staleData || [], source: 'cache', isCached: true }
     }
   }, [])
 
@@ -112,7 +124,7 @@ export const useRealMarketData = () => {
         updated_at: new Date().toISOString()
       }))
       
-      cache.set(cacheKey, validatedData, { ttl: 3 * 60 * 1000 }) // 3 minutes for live data
+      cache.set(cacheKey, validatedData, { ttl: 1 * 60 * 1000 }) // 1 minute for live data
       return validatedData
     } catch (error) {
       console.error('Failed to fetch Solana data:', error)
@@ -126,22 +138,24 @@ export const useRealMarketData = () => {
     setMarketData(prev => ({ ...prev, isLoading: true, error: null }))
 
     try {
-      const [cryptoData, solanaData] = await Promise.allSettled([
+      const [cryptoResult, solanaData] = await Promise.allSettled([
         fetchCryptoData(),
         fetchSolanaData()
       ])
 
-      const crypto: CoinGeckoPrice[] = cryptoData.status === 'fulfilled' ? cryptoData.value : []
+      const cryptoData = cryptoResult.status === 'fulfilled' ? cryptoResult.value : { data: [], source: 'cache' as const, isCached: true }
       const solana: any[] = solanaData.status === 'fulfilled' ? solanaData.value : []
 
       setMarketData({
-        crypto,
+        crypto: cryptoData.data,
         solana,
         isLoading: false,
-        error: cryptoData.status === 'rejected' && solanaData.status === 'rejected' 
+        error: cryptoResult.status === 'rejected' && solanaData.status === 'rejected' 
           ? 'Failed to fetch market data' 
           : null,
-        lastUpdated: new Date()
+        lastUpdated: new Date(),
+        dataSource: cryptoData.source,
+        isCached: cryptoData.isCached
       })
     } catch (error) {
       setMarketData(prev => ({

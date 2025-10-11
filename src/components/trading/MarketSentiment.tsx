@@ -1,16 +1,21 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import { useRealMarketData } from "@/hooks/useRealMarketData"
-import { TrendingUp, TrendingDown, Activity } from "lucide-react"
+import { TrendingUp, TrendingDown, Activity, RefreshCw, AlertCircle } from "lucide-react"
 import { Progress } from "@/components/ui/progress"
+import { useEffect } from "react"
 
 export const MarketSentiment = () => {
-  const { crypto = [], isLoading } = useRealMarketData()
+  const { crypto = [], isLoading, lastUpdated, dataSource, isCached, refreshData } = useRealMarketData()
 
   if (isLoading || crypto.length === 0) return null
 
-  // Calculate sentiment metrics
+  // Calculate sentiment metrics with market-cap weighting for top 10 coins
   const totalCoins = crypto.length
+  const top10 = crypto.slice(0, 10)
+  const totalMarketCap = top10.reduce((sum, c) => sum + c.market_cap, 0)
+  
   const gainers = crypto.filter(c => c.price_change_percentage_24h > 0).length
   const losers = crypto.filter(c => c.price_change_percentage_24h < 0).length
   const neutral = totalCoins - gainers - losers
@@ -18,27 +23,99 @@ export const MarketSentiment = () => {
   const bullishPercent = (gainers / totalCoins) * 100
   const bearishPercent = (losers / totalCoins) * 100
   
-  // Average market change
+  // Weighted average market change (top 10 coins by market cap)
+  const weightedAvgChange = top10.reduce((sum, c) => {
+    const weight = c.market_cap / totalMarketCap
+    return sum + (c.price_change_percentage_24h * weight)
+  }, 0)
+  
+  // Simple average for comparison
   const avgChange = crypto.reduce((sum, c) => sum + c.price_change_percentage_24h, 0) / totalCoins
 
-  // Determine overall sentiment
+  // Log sentiment data for debugging
+  useEffect(() => {
+    console.log('📊 Market Sentiment Debug:', {
+      totalCoins,
+      gainers,
+      losers,
+      neutral,
+      weightedAvgChange: weightedAvgChange.toFixed(2) + '%',
+      simpleAvgChange: avgChange.toFixed(2) + '%',
+      dataSource,
+      isCached,
+      lastUpdated: lastUpdated?.toISOString()
+    })
+  }, [crypto, dataSource, isCached, lastUpdated])
+
+  // Determine overall sentiment - using more realistic thresholds
   const getSentiment = () => {
-    if (avgChange > 2) return { label: "Extremely Bullish", color: "text-green-500", bg: "bg-green-500/20 border-green-500/30" }
-    if (avgChange > 0.5) return { label: "Bullish", color: "text-green-400", bg: "bg-green-400/20 border-green-400/30" }
-    if (avgChange > -0.5) return { label: "Neutral", color: "text-yellow-500", bg: "bg-yellow-500/20 border-yellow-500/30" }
-    if (avgChange > -2) return { label: "Bearish", color: "text-red-400", bg: "bg-red-400/20 border-red-400/30" }
+    const change = weightedAvgChange // Use weighted average
+    if (change > 5) return { label: "Extremely Bullish", color: "text-green-500", bg: "bg-green-500/20 border-green-500/30" }
+    if (change > 1.5) return { label: "Bullish", color: "text-green-400", bg: "bg-green-400/20 border-green-400/30" }
+    if (change > -1.5) return { label: "Neutral", color: "text-yellow-500", bg: "bg-yellow-500/20 border-yellow-500/30" }
+    if (change > -5) return { label: "Bearish", color: "text-red-400", bg: "bg-red-400/20 border-red-400/30" }
     return { label: "Extremely Bearish", color: "text-red-500", bg: "bg-red-500/20 border-red-500/30" }
   }
 
   const sentiment = getSentiment()
+  
+  // Data freshness indicator
+  const getDataFreshness = () => {
+    if (!lastUpdated) return { text: 'Unknown', color: 'text-muted-foreground' }
+    const ageSeconds = Math.floor((Date.now() - lastUpdated.getTime()) / 1000)
+    if (ageSeconds < 30) return { text: 'Live', color: 'text-green-400' }
+    if (ageSeconds < 60) return { text: `${ageSeconds}s ago`, color: 'text-yellow-400' }
+    if (ageSeconds < 120) return { text: '1m ago', color: 'text-yellow-500' }
+    return { text: `${Math.floor(ageSeconds / 60)}m ago`, color: 'text-red-400' }
+  }
+  
+  const freshness = getDataFreshness()
 
   return (
     <Card className="mb-6 bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Activity className="h-5 w-5" />
-          Market Sentiment
-        </CardTitle>
+        <div className="flex items-center justify-between">
+          <CardTitle className="flex items-center gap-2">
+            <Activity className="h-5 w-5" />
+            Market Sentiment
+          </CardTitle>
+          <div className="flex items-center gap-3">
+            {/* Data Source Indicator */}
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground">Source:</span>
+              <Badge variant="outline" className="text-xs">
+                {dataSource === 'coingecko' ? '🟢 CoinGecko' : 
+                 dataSource === 'alternative' ? '🟡 Fallback' : 
+                 '🔴 Cached'}
+              </Badge>
+            </div>
+            
+            {/* Freshness Indicator */}
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className={freshness.color}>●</span>
+              <span className="text-muted-foreground">{freshness.text}</span>
+            </div>
+            
+            {/* Refresh Button */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={refreshData}
+              className="h-8 w-8 p-0"
+              title="Refresh market data"
+            >
+              <RefreshCw className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+        
+        {/* Warning for stale data */}
+        {isCached && dataSource === 'cache' && (
+          <div className="flex items-center gap-2 mt-2 text-xs text-yellow-500">
+            <AlertCircle className="h-3 w-3" />
+            <span>Using cached data - API may be unavailable</span>
+          </div>
+        )}
       </CardHeader>
       <CardContent>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
@@ -48,11 +125,11 @@ export const MarketSentiment = () => {
             <Badge className={`${sentiment.bg} ${sentiment.color} text-lg font-semibold px-4 py-2`}>
               {sentiment.label}
             </Badge>
-            <div className={`text-2xl font-bold ${avgChange >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
-              {avgChange >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
-              {avgChange >= 0 ? '+' : ''}{avgChange.toFixed(2)}%
+            <div className={`text-2xl font-bold ${weightedAvgChange >= 0 ? 'text-green-500' : 'text-red-500'} flex items-center gap-1`}>
+              {weightedAvgChange >= 0 ? <TrendingUp className="h-5 w-5" /> : <TrendingDown className="h-5 w-5" />}
+              {weightedAvgChange >= 0 ? '+' : ''}{weightedAvgChange.toFixed(2)}%
             </div>
-            <div className="text-xs text-muted-foreground">Average 24h Change</div>
+            <div className="text-xs text-muted-foreground">Weighted Avg (Top 10)</div>
           </div>
 
           {/* Gainers */}
