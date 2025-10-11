@@ -181,7 +181,7 @@ export const KaitoInfluenceDashboard = () => {
             variant="outline"
             onClick={handleRefresh}
             disabled={isSyncing}
-            className="bg-blue-950/80 sm:bg-background border-blue-900/50 sm:border-border text-blue-100 sm:text-foreground hover:bg-blue-900/90 sm:hover:bg-accent"
+            className="bg-blue-950/80 sm:bg-background border-blue-900/50 sm:border-border text-blue-100 sm:text-foreground hover:bg-blue-900/90 sm:hover:bg-accent disabled:bg-blue-950/60 sm:disabled:bg-background disabled:opacity-100 sm:disabled:opacity-50"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
             Sync
