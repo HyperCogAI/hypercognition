@@ -181,6 +181,7 @@ export const KaitoInfluenceDashboard = () => {
             variant="outline"
             onClick={handleRefresh}
             disabled={isSyncing}
+            className="bg-blue-950/80 sm:bg-background border-blue-900/50 sm:border-border text-blue-100 sm:text-foreground hover:bg-blue-900/90 sm:hover:bg-accent"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
             Sync
@@ -199,9 +200,9 @@ export const KaitoInfluenceDashboard = () => {
             <Button 
               type="submit" 
               size="sm"
-              variant="outline"
+              variant="ghost"
               disabled={isSearching || isSyncing || !searchQuery.trim()}
-              className="w-full sm:w-auto bg-blue-950/80 sm:bg-background border-blue-900/50 sm:border-border text-blue-100 sm:text-foreground hover:bg-blue-900/90 sm:hover:bg-accent"
+              className="w-full sm:w-auto border bg-blue-950/80 sm:bg-background border-blue-900/50 sm:border-border text-blue-100 sm:text-foreground hover:bg-blue-900/90 sm:hover:bg-accent"
             >
               {isSearching ? (
                 <>
