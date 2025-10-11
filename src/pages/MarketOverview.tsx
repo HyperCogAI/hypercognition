@@ -11,6 +11,7 @@ import { HistoricalPerformance } from "@/components/trading/HistoricalPerformanc
 import { MarketHeatmap } from "@/components/trading/MarketHeatmap"
 import { SearchInput } from "@/components/ui/search-input"
 import { SEOHead } from "@/components/seo/SEOHead"
+import { ErrorBoundary } from "@/components/error/ErrorBoundary"
 import { ArrowLeft, Star, Bell, PieChart, Newspaper, Filter, GitCompare, Calendar, Map } from "lucide-react"
 import { Link } from "react-router-dom"
 import { Button } from "@/components/ui/button"
@@ -34,7 +35,7 @@ export default function MarketOverview() {
     sortOrder: "desc",
   })
 
-  const { data: crypto } = useQuery({
+  const { data: crypto, isLoading, isError, error } = useQuery({
     queryKey: ["coingecko-top", 100],
     queryFn: () => coinGeckoApi.getTopCryptos(100),
     staleTime: 30000,
@@ -46,40 +47,40 @@ export default function MarketOverview() {
   })
 
   const filteredAndSortedCrypto = useMemo(() => {
-    if (!crypto) return []
+    if (!crypto || !Array.isArray(crypto) || crypto.length === 0) return []
     
     let filtered = [...crypto]
 
-    // Apply filters
+    // Apply filters with null-safe guards
     if (filters.minPrice) {
-      filtered = filtered.filter(c => c.current_price >= parseFloat(filters.minPrice))
+      filtered = filtered.filter(c => (c.current_price ?? 0) >= parseFloat(filters.minPrice))
     }
     if (filters.maxPrice) {
-      filtered = filtered.filter(c => c.current_price <= parseFloat(filters.maxPrice))
+      filtered = filtered.filter(c => (c.current_price ?? 0) <= parseFloat(filters.maxPrice))
     }
     if (filters.minMarketCap) {
-      filtered = filtered.filter(c => c.market_cap >= parseFloat(filters.minMarketCap) * 1e9)
+      filtered = filtered.filter(c => (c.market_cap ?? 0) >= parseFloat(filters.minMarketCap) * 1e9)
     }
     if (filters.maxMarketCap) {
-      filtered = filtered.filter(c => c.market_cap <= parseFloat(filters.maxMarketCap) * 1e9)
+      filtered = filtered.filter(c => (c.market_cap ?? 0) <= parseFloat(filters.maxMarketCap) * 1e9)
     }
     if (filters.minVolume) {
-      filtered = filtered.filter(c => c.total_volume >= parseFloat(filters.minVolume) * 1e6)
+      filtered = filtered.filter(c => (c.total_volume ?? 0) >= parseFloat(filters.minVolume) * 1e6)
     }
     if (filters.maxVolume) {
-      filtered = filtered.filter(c => c.total_volume <= parseFloat(filters.maxVolume) * 1e6)
+      filtered = filtered.filter(c => (c.total_volume ?? 0) <= parseFloat(filters.maxVolume) * 1e6)
     }
     if (filters.minChange) {
-      filtered = filtered.filter(c => c.price_change_percentage_24h >= parseFloat(filters.minChange))
+      filtered = filtered.filter(c => (c.price_change_percentage_24h ?? 0) >= parseFloat(filters.minChange))
     }
     if (filters.maxChange) {
-      filtered = filtered.filter(c => c.price_change_percentage_24h <= parseFloat(filters.maxChange))
+      filtered = filtered.filter(c => (c.price_change_percentage_24h ?? 0) <= parseFloat(filters.maxChange))
     }
 
-    // Apply sorting
+    // Apply sorting with null-safe guards
     filtered.sort((a, b) => {
-      const aVal = a[filters.sortBy as keyof typeof a] as number
-      const bVal = b[filters.sortBy as keyof typeof b] as number
+      const aVal = (a[filters.sortBy as keyof typeof a] as number) ?? 0
+      const bVal = (b[filters.sortBy as keyof typeof b] as number) ?? 0
       return filters.sortOrder === "asc" ? aVal - bVal : bVal - aVal
     })
 
@@ -105,15 +106,44 @@ export default function MarketOverview() {
     })
   }
 
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary mx-auto mb-4"></div>
+          <p className="text-muted-foreground">Loading market data...</p>
+        </div>
+      </div>
+    )
+  }
+
+  if (isError) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <div className="text-center max-w-md p-6">
+          <div className="w-12 h-12 bg-destructive/10 rounded-full flex items-center justify-center mb-4 mx-auto">
+            <span className="text-destructive text-2xl">⚠</span>
+          </div>
+          <h2 className="text-xl font-semibold mb-2">Unable to Load Market Data</h2>
+          <p className="text-muted-foreground mb-4">
+            {error instanceof Error ? error.message : "An error occurred while fetching market data."}
+          </p>
+          <Button onClick={() => window.location.reload()}>Retry</Button>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="min-h-screen bg-background">
-      <SEOHead 
-        title="Market Overview - Live Cryptocurrency Data | HyperCognition"
-        description="View real-time cryptocurrency market data including prices, market caps, volume, and 24h changes for top cryptocurrencies."
-        keywords="crypto market, cryptocurrency prices, market overview, bitcoin price, ethereum price, live crypto data"
-      />
-      
-      <main className="container mx-auto px-6 py-8">
+    <ErrorBoundary name="MarketOverview">
+      <div className="min-h-screen bg-background">
+        <SEOHead 
+          title="Market Overview - Live Cryptocurrency Data | HyperCognition"
+          description="View real-time cryptocurrency market data including prices, market caps, volume, and 24h changes for top cryptocurrencies."
+          keywords="crypto market, cryptocurrency prices, market overview, bitcoin price, ethereum price, live crypto data"
+        />
+        
+        <main className="container mx-auto px-6 py-8">
         {/* Header with back button */}
         <div className="mb-6">
           <Link to="/">
@@ -234,5 +264,6 @@ export default function MarketOverview() {
         </Tabs>
       </main>
     </div>
+    </ErrorBoundary>
   )
 }
