@@ -217,6 +217,11 @@ class CoinGeckoAPI {
       market_cap: chartData.market_caps[index]?.[1] || 0
     }))
   }
+  public clearCache(): void {
+    this.cache.clear();
+    this.pendingRequests.clear();
+    this.lastRequestTime = 0;
+  }
 }
 
 export const coinGeckoApi = new CoinGeckoAPI()

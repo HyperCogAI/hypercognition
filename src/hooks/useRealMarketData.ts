@@ -166,11 +166,14 @@ export const useRealMarketData = () => {
     }
   }, [fetchCryptoData, fetchSolanaData])
 
-  const refreshData = useCallback(() => {
-    // Clear cache and refetch
+  const refreshData = useCallback(async () => {
+    // Clear cache and refetch (force bypass any internal caches)
+    try {
+      coinGeckoApi.clearCache()
+    } catch {}
     cache.invalidate('crypto_market_data')
     cache.invalidate('solana_market_data')
-    fetchAllMarketData()
+    await fetchAllMarketData()
   }, [fetchAllMarketData])
 
   const getPriceHistory = useCallback(async (
