@@ -1,4 +1,5 @@
 import { supabase } from '@/integrations/supabase/client';
+import { coinGeckoApi } from '@/lib/apis/coinGeckoApi';
 
 export interface MarketNews {
   id: string;
@@ -91,46 +92,90 @@ export class MarketNewsService {
 
   // Fetch live market sentiment from APIs
   static async getMarketSentiment(timeframe: '1h' | '4h' | '24h' | '7d' = '24h'): Promise<MarketSentiment | null> {
+    // 1) Try edge function
     try {
       console.log(`[MarketSentiment] Fetching live sentiment for ${timeframe} timeframe...`);
-      
       const { data, error } = await supabase.functions.invoke('market-sentiment-sync', {
         body: { returnData: true, timeframe }
       });
 
-      if (error) {
-        console.error('[MarketSentiment] Edge function error:', error);
-        throw error;
+      if (!error && data?.sentiment) {
+        const s = data.sentiment;
+        const safeNumber = (v: any, d: number) => (typeof v === 'number' && isFinite(v) ? v : d);
+        const result: MarketSentiment = {
+          timeframe,
+          overallSentiment: safeNumber(s.overall, 0),
+          fearGreedIndex: Math.round(safeNumber(s.fear_greed_index, 50)),
+          bullishPercentage: safeNumber(s.bullish, 33),
+          bearishPercentage: safeNumber(s.bearish, 33),
+          neutralPercentage: safeNumber(s.neutral, 34),
+          volumeSentiment: s.volume_sentiment ?? 'mixed',
+          socialSentiment: s.social_sentiment ?? 'mixed',
+          marketCapChange: safeNumber(s.market_cap_change, 0),
+          timestamp: new Date()
+        };
+        console.log('[MarketSentiment] Using edge function sentiment');
+        return result;
       }
 
-      const sentimentData = data?.sentiment || {};
+      console.warn('[MarketSentiment] No usable data from edge function, computing fallback...');
+    } catch (error) {
+      console.warn('[MarketSentiment] Edge function error, computing fallback...', error);
+    }
 
-      return {
+    // 2) Client-side fallback via CoinGecko (top 100, weighted by market cap of top 10)
+    try {
+      const coins = await coinGeckoApi.getTopCryptos(100, 1);
+      const total = coins.length || 1;
+
+      const changes = coins.map((c: any) => ({
+        mc: Number((c as any).market_cap) || 0,
+        ch: Number((c as any).price_change_percentage_24h) || 0
+      }));
+
+      const gainers = changes.filter(c => c.ch > 0).length;
+      const losers = changes.filter(c => c.ch < 0).length;
+      const neutral = Math.max(0, total - gainers - losers);
+
+      const top10 = changes
+        .slice()
+        .sort((a, b) => b.mc - a.mc)
+        .slice(0, 10);
+      const totalMc = top10.reduce((s, c) => s + c.mc, 0) || 1;
+      const weightedAvg = top10.reduce((s, c) => s + (c.mc / totalMc) * c.ch, 0);
+
+      // Normalize: ~±10% -> ±1
+      const clamp = (n: number, min: number, max: number) => Math.max(min, Math.min(max, n));
+      const score = clamp(weightedAvg / 10, -1, 1);
+      const fearGreed = Math.round(((score + 1) / 2) * 100);
+
+      const computed: MarketSentiment = {
         timeframe,
-        overallSentiment: sentimentData.overall || 0.65,
-        fearGreedIndex: sentimentData.fear_greed_index || 75,
-        bullishPercentage: sentimentData.bullish || 45,
-        bearishPercentage: sentimentData.bearish || 25,
-        neutralPercentage: sentimentData.neutral || 30,
-        volumeSentiment: sentimentData.volume_sentiment || 'bullish',
-        socialSentiment: sentimentData.social_sentiment || 'positive',
-        marketCapChange: sentimentData.market_cap_change || 3.2,
+        overallSentiment: score,
+        fearGreedIndex: fearGreed,
+        bullishPercentage: (gainers / total) * 100,
+        bearishPercentage: (losers / total) * 100,
+        neutralPercentage: (neutral / total) * 100,
+        volumeSentiment: 'mixed',
+        socialSentiment: 'mixed',
+        marketCapChange: weightedAvg,
         timestamp: new Date()
       };
-    } catch (error) {
-      console.error('Error fetching live market sentiment:', error);
-      
-      // Return fallback sentiment data
+
+      console.log('[MarketSentiment] Using computed fallback sentiment');
+      return computed;
+    } catch (fallbackErr) {
+      console.error('[MarketSentiment] Fallback computation failed, returning safe neutral', fallbackErr);
       return {
         timeframe,
-        overallSentiment: 0.65,
-        fearGreedIndex: 75,
-        bullishPercentage: 45,
-        bearishPercentage: 25,
-        neutralPercentage: 30,
-        volumeSentiment: 'bullish',
-        socialSentiment: 'positive',
-        marketCapChange: 3.2,
+        overallSentiment: 0,
+        fearGreedIndex: 50,
+        bullishPercentage: 33,
+        bearishPercentage: 33,
+        neutralPercentage: 34,
+        volumeSentiment: 'unknown',
+        socialSentiment: 'unknown',
+        marketCapChange: 0,
         timestamp: new Date()
       };
     }
