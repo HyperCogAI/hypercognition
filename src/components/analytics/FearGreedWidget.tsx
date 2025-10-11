@@ -46,21 +46,21 @@ export const FearGreedWidget: React.FC<FearGreedWidgetProps> = ({
 
   return (
     <Card className={`border-border/50 bg-gradient-to-br from-card/90 to-card/60 backdrop-blur-xl ${className}`}>
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-lg">
-          <Activity className="h-5 w-5" />
+      <CardHeader className="p-4 sm:p-6">
+        <CardTitle className="flex items-center gap-2 text-base sm:text-lg">
+          <Activity className="h-4 w-4 sm:h-5 sm:w-5" />
           Fear & Greed Index
         </CardTitle>
-        <CardDescription>Real-time market sentiment analysis</CardDescription>
+        <CardDescription className="text-xs sm:text-sm">Real-time market sentiment analysis</CardDescription>
       </CardHeader>
-      <CardContent>
-        <div className="space-y-6">
+      <CardContent className="p-4 sm:p-6">
+        <div className="space-y-4 sm:space-y-6">
           {/* Main Index Display */}
           <div className="text-center">
-            <div className={`text-6xl font-bold mb-2 ${getIndexColor(fearGreedIndex)}`}>
+            <div className={`text-4xl sm:text-6xl font-bold mb-2 ${getIndexColor(fearGreedIndex)}`}>
               {fearGreedIndex}
             </div>
-            <div className="text-xl font-semibold mb-1">{getIndexLabel(fearGreedIndex)}</div>
+            <div className="text-lg sm:text-xl font-semibold mb-1">{getIndexLabel(fearGreedIndex)}</div>
             
             {/* Progress Bar */}
             <div className="w-full h-4 bg-muted rounded-full overflow-hidden mb-4">
@@ -78,33 +78,33 @@ export const FearGreedWidget: React.FC<FearGreedWidgetProps> = ({
           </div>
 
           {/* Breakdown */}
-          <div className="grid grid-cols-3 gap-4">
-            <div className="text-center p-3 rounded-lg bg-green-500/10 border border-green-500/20">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4">
+            <div className="text-center p-2.5 sm:p-3 rounded-lg bg-green-500/10 border border-green-500/20">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingUp className="h-4 w-4 text-green-500" />
+                <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-green-500" />
                 <span className="text-xs text-muted-foreground">Bullish</span>
               </div>
-              <div className="text-2xl font-bold text-green-500">
+              <div className="text-xl sm:text-2xl font-bold text-green-500">
                 {bullishPercentage.toFixed(0)}%
               </div>
             </div>
 
-            <div className="text-center p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
+            <div className="text-center p-2.5 sm:p-3 rounded-lg bg-yellow-500/10 border border-yellow-500/20">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <Activity className="h-4 w-4 text-yellow-500" />
+                <Activity className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-yellow-500" />
                 <span className="text-xs text-muted-foreground">Neutral</span>
               </div>
-              <div className="text-2xl font-bold text-yellow-500">
+              <div className="text-xl sm:text-2xl font-bold text-yellow-500">
                 {neutralPercentage.toFixed(0)}%
               </div>
             </div>
 
-            <div className="text-center p-3 rounded-lg bg-red-500/10 border border-red-500/20">
+            <div className="text-center p-2.5 sm:p-3 rounded-lg bg-red-500/10 border border-red-500/20">
               <div className="flex items-center justify-center gap-1 mb-1">
-                <TrendingDown className="h-4 w-4 text-red-500" />
+                <TrendingDown className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-red-500" />
                 <span className="text-xs text-muted-foreground">Bearish</span>
               </div>
-              <div className="text-2xl font-bold text-red-500">
+              <div className="text-xl sm:text-2xl font-bold text-red-500">
                 {bearishPercentage.toFixed(0)}%
               </div>
             </div>

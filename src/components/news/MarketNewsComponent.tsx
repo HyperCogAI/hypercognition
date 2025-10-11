@@ -100,16 +100,16 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
     <div className={`space-y-6 ${className}`}>
       {/* Header */}
       <Card className="border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl">
-        <CardHeader>
-          <div className="flex items-center justify-between">
+        <CardHeader className="p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <div>
-              <CardTitle className="text-2xl font-bold flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-primary/10">
-                  <Newspaper className="h-5 w-5 text-primary" />
+              <CardTitle className="text-xl sm:text-2xl font-bold flex items-center gap-2 sm:gap-3">
+                <div className="p-1.5 sm:p-2 rounded-lg bg-primary/10">
+                  <Newspaper className="h-4 w-4 sm:h-5 sm:w-5 text-primary" />
                 </div>
                 Market News & Sentiment
               </CardTitle>
-              <CardDescription className="mt-2">
+              <CardDescription className="mt-2 text-xs sm:text-sm">
                 Real-time market insights and AI-powered sentiment analysis
               </CardDescription>
             </div>
@@ -119,7 +119,7 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
               size="sm"
               onClick={handleRefresh}
               disabled={loading || isSyncing}
-              className="gap-2"
+              className="gap-2 w-full sm:w-auto"
             >
               <RefreshCw className={`h-4 w-4 ${(loading || isSyncing) ? 'animate-spin' : ''}`} />
               {isSyncing ? 'Syncing...' : 'Refresh'}
@@ -137,18 +137,18 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
               Market Sentiment Overview
             </CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Overall Sentiment</p>
-                <p className={`text-2xl font-bold ${getSentimentColor(marketSentiment.overallSentiment)}`}>
+          <CardContent className="p-4 sm:p-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
+              <div className="space-y-1.5 sm:space-y-2">
+                <p className="text-xs sm:text-sm text-muted-foreground">Overall Sentiment</p>
+                <p className={`text-lg sm:text-2xl font-bold ${getSentimentColor(marketSentiment.overallSentiment)}`}>
                   {getSentimentText(marketSentiment.overallSentiment)}
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Fear & Greed Index</p>
-                <p className="text-2xl font-bold">{marketSentiment.fearGreedIndex}</p>
+              <div className="space-y-1.5 sm:space-y-2">
+                <p className="text-xs sm:text-sm text-muted-foreground">Fear & Greed Index</p>
+                <p className="text-lg sm:text-2xl font-bold">{marketSentiment.fearGreedIndex}</p>
                 <div className="w-full bg-muted rounded-full h-2">
                   <div 
                     className="bg-primary h-2 rounded-full transition-all" 
@@ -157,9 +157,9 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Bullish</p>
-                <p className="text-2xl font-bold text-green-500">
+              <div className="space-y-1.5 sm:space-y-2">
+                <p className="text-xs sm:text-sm text-muted-foreground">Bullish</p>
+                <p className="text-lg sm:text-2xl font-bold text-green-500">
                   {marketSentiment.bullishPercentage.toFixed(1)}%
                 </p>
                 <p className="text-xs text-muted-foreground">
@@ -167,9 +167,9 @@ export const MarketNewsComponent: React.FC<MarketNewsComponentProps> = ({
                 </p>
               </div>
 
-              <div className="space-y-2">
-                <p className="text-sm text-muted-foreground">Bearish</p>
-                <p className="text-2xl font-bold text-red-500">
+              <div className="space-y-1.5 sm:space-y-2">
+                <p className="text-xs sm:text-sm text-muted-foreground">Bearish</p>
+                <p className="text-lg sm:text-2xl font-bold text-red-500">
                   {marketSentiment.bearishPercentage.toFixed(1)}%
                 </p>
                 <p className="text-xs text-muted-foreground">

@@ -21,11 +21,11 @@ const Analytics = () => {
       />
       
       <div className="min-h-screen bg-background">
-        <main className="container mx-auto px-6 py-8 space-y-8">
+        <main className="container mx-auto px-4 sm:px-6 py-6 sm:py-8 space-y-6 sm:space-y-8">
         {/* Header */}
-        <header className="mb-6">
-          <h1 className="text-3xl md:text-4xl font-bold mb-2">Analytics</h1>
-          <p className="text-muted-foreground">
+        <header className="mb-4 sm:mb-6">
+          <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Analytics</h1>
+          <p className="text-sm sm:text-base text-muted-foreground">
             Real-time analytics with live chain metrics, cross-chain analysis, and market insights
           </p>
         </header>
@@ -41,36 +41,40 @@ const Analytics = () => {
           />
         )}
         
-        <Tabs defaultValue="chains" className="space-y-8">
+        <Tabs defaultValue="chains" className="space-y-6 sm:space-y-8">
           <div className="relative">
-            <TabsList className="grid w-full grid-cols-4 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl shadow-lg">
+            <TabsList className="grid w-full grid-cols-2 md:grid-cols-4 gap-1.5 sm:gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-1.5 sm:p-2 h-auto rounded-xl shadow-lg">
               <TabsTrigger 
                 value="chains" 
-                className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-2"
+                className="px-2 py-2 sm:px-4 sm:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
               >
-                <Layers className="h-4 w-4" />
-                <span>Chain Analytics</span>
+                <Layers className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Chain Analytics</span>
+                <span className="sm:hidden">Chains</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="agents" 
-                className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-2"
+                className="px-2 py-2 sm:px-4 sm:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
               >
-                <TrendingUp className="h-4 w-4" />
-                <span>AI Agents</span>
+                <TrendingUp className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">AI Agents</span>
+                <span className="sm:hidden">Agents</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="influence" 
-                className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-2"
+                className="px-2 py-2 sm:px-4 sm:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
               >
-                <Sparkles className="h-4 w-4" />
-                <span>Social Influence</span>
+                <Sparkles className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Social Influence</span>
+                <span className="sm:hidden">Social</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="news" 
-                className="px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-2"
+                className="px-2 py-2 sm:px-4 sm:py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
               >
-                <Newspaper className="h-4 w-4" />
-                <span>Market News</span>
+                <Newspaper className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
+                <span className="hidden sm:inline">Market News</span>
+                <span className="sm:hidden">News</span>
               </TabsTrigger>
             </TabsList>
           </div>

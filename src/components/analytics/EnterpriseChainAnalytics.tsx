@@ -160,11 +160,11 @@ export const EnterpriseChainAnalytics: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <Card className="border-border/50 bg-gradient-to-br from-card/80 to-card/40 backdrop-blur-xl">
-        <CardHeader className="flex flex-row items-center justify-between pb-4">
+        <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 sm:pb-4 sm:p-6">
           <div>
-            <CardTitle className="text-2xl font-bold mb-2">Real-Time Chain Analytics</CardTitle>
-            <CardDescription className="text-base flex items-center gap-2">
-              Live metrics from Helius API (Solana) & CoinGecko API (Price Data)
+            <CardTitle className="text-xl sm:text-2xl font-bold mb-2">Real-Time Chain Analytics</CardTitle>
+            <CardDescription className="text-sm sm:text-base flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2">
+              <span>Live metrics from Helius API (Solana) & CoinGecko API (Price Data)</span>
               {lastSyncTime && (
                 <span className="text-xs text-green-500">
                   Last updated: {lastSyncTime.toLocaleTimeString()}
@@ -179,7 +179,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
             }} 
             disabled={isSyncing || isLoading}
             size="sm"
-            className="gap-2"
+            className="gap-2 w-full sm:w-auto"
           >
             <RefreshCw className={`h-4 w-4 ${(isSyncing || isLoading) ? 'animate-spin' : ''}`} />
             {isSyncing ? 'Syncing...' : isLoading ? 'Loading...' : 'Refresh Data'}
@@ -188,10 +188,10 @@ export const EnterpriseChainAnalytics: React.FC = () => {
       </Card>
 
       {/* Chain Overview */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
         {allChains.map(({ key, data, name, color }) => data && (
           <Card key={key} className="hover:shadow-lg transition-shadow cursor-pointer" onClick={() => setSelectedChain(key as any)}>
-            <CardContent className="p-6">
+            <CardContent className="p-4 sm:p-6">
               <div className="flex items-center justify-between mb-4">
                 <span className="font-semibold">{name}</span>
                 <div className="flex items-center gap-2">
