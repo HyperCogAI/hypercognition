@@ -148,26 +148,29 @@ export class ChainMetricsService {
       const totalTVL = solana.tvl + ethereum.tvl + base.tvl + bnb.tvl;
       const totalVolume24h = solana.volume24h + ethereum.volume24h + base.volume24h + bnb.volume24h;
 
+      // Validate totalVolume24h to prevent Infinity percentages
+      const isValidVolume = totalVolume24h > 0 && isFinite(totalVolume24h);
+
       const chainDistribution = [
         { 
           chain: 'Solana', 
           volume: solana.volume24h, 
-          percentage: (solana.volume24h / totalVolume24h) * 100 
+          percentage: isValidVolume ? parseFloat(((solana.volume24h / totalVolume24h) * 100).toFixed(1)) : 0
         },
         { 
           chain: 'Ethereum', 
           volume: ethereum.volume24h, 
-          percentage: (ethereum.volume24h / totalVolume24h) * 100 
+          percentage: isValidVolume ? parseFloat(((ethereum.volume24h / totalVolume24h) * 100).toFixed(1)) : 0
         },
         { 
           chain: 'Base', 
           volume: base.volume24h, 
-          percentage: (base.volume24h / totalVolume24h) * 100 
+          percentage: isValidVolume ? parseFloat(((base.volume24h / totalVolume24h) * 100).toFixed(1)) : 0
         },
         { 
           chain: 'BNB Chain', 
           volume: bnb.volume24h, 
-          percentage: (bnb.volume24h / totalVolume24h) * 100 
+          percentage: isValidVolume ? parseFloat(((bnb.volume24h / totalVolume24h) * 100).toFixed(1)) : 0
         }
       ];
 

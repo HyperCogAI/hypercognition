@@ -165,7 +165,7 @@ export const KaitoInfluenceDashboard = () => {
 
   return (
     <Card>
-      <CardHeader>
+      <CardHeader className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
           <div>
             <CardTitle className="flex items-center gap-2">
@@ -178,9 +178,9 @@ export const KaitoInfluenceDashboard = () => {
           </div>
           <Button
             size="sm"
+            variant="outline"
             onClick={handleRefresh}
             disabled={isSyncing}
-            className="bg-gray-900/90 border border-gray-700/50 hover:bg-gray-800 hover:border-gray-600 text-white transition-all"
           >
             <RefreshCw className={`h-4 w-4 mr-2 ${isSyncing ? 'animate-spin' : ''}`} />
             Sync
@@ -188,19 +188,20 @@ export const KaitoInfluenceDashboard = () => {
         </div>
         
         <div className="mt-4">
-          <form onSubmit={handleSearch} className="flex gap-2 max-w-md">
+          <form onSubmit={handleSearch} className="flex flex-col sm:flex-row gap-2 max-w-md">
             <SearchInput
               placeholder="Search or fetch X username (e.g., VitalikButerin)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="flex-1 bg-gray-900/90 border-gray-700/50 text-white placeholder:text-gray-400 hover:border-gray-600 focus:border-gray-600"
+              className="w-full bg-gray-900/90 border-gray-700/50 text-white placeholder:text-gray-400 hover:border-gray-600 focus:border-gray-600"
               disabled={isSearching || isSyncing}
             />
             <Button 
               type="submit" 
               size="sm"
+              variant="outline"
               disabled={isSearching || isSyncing || !searchQuery.trim()}
-              className="bg-gray-900/90 border border-gray-700/50 hover:bg-gray-800 hover:border-gray-600 text-white transition-all"
+              className="w-full sm:w-auto"
             >
               {isSearching ? (
                 <>
@@ -220,7 +221,7 @@ export const KaitoInfluenceDashboard = () => {
           </p>
         </div>
       </CardHeader>
-      <CardContent>
+      <CardContent className="p-4 sm:p-6">
         {filteredAgents.length === 0 ? (
           <div className="text-center py-8 text-muted-foreground">
             {topAgents.length === 0 ? (
@@ -253,48 +254,48 @@ export const KaitoInfluenceDashboard = () => {
               return (
                 <div
                   key={agent.id}
-                  className="flex items-center justify-between p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold">
+                  <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
                       #{originalRank}
                     </div>
-                    <div>
+                    <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
-                        <span className="font-semibold">@{agent.twitter_username}</span>
+                        <span className="font-semibold truncate max-w-[50vw] sm:max-w-none">@{agent.twitter_username}</span>
                         <a
                           href={`https://x.com/${agent.twitter_username}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-muted-foreground hover:text-primary transition-colors"
+                          className="text-muted-foreground hover:text-primary transition-colors flex-shrink-0"
                           aria-label={`Visit @${agent.twitter_username} on X`}
                         >
                           <XLogo className="h-4 w-4" />
                         </a>
                       </div>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-muted-foreground">
                         <span className={influenceTier.color}>{influenceTier.tier}</span>
                         <span>•</span>
-                        <span>{influenceTier.description}</span>
+                        <span className="truncate">{influenceTier.description}</span>
                       </div>
                     </div>
                   </div>
                   
-                  <div className="flex items-center gap-6">
-                    <div className="text-right">
-                      <div className="text-sm text-muted-foreground">30d Yaps</div>
-                      <div className="text-lg font-bold text-primary">{yaps30d}</div>
+                  <div className="flex flex-col sm:flex-row gap-3 sm:gap-6 w-full sm:w-auto">
+                    <div className="flex justify-between sm:block">
+                      <div className="text-xs sm:text-sm text-muted-foreground">30d Yaps</div>
+                      <div className="text-base sm:text-lg font-bold text-primary">{yaps30d}</div>
                     </div>
                     
-                    <div className="text-right">
-                      <div className="text-sm text-muted-foreground">7d Yaps</div>
-                      <div className="text-lg font-semibold">{yaps7d}</div>
+                    <div className="flex justify-between sm:block">
+                      <div className="text-xs sm:text-sm text-muted-foreground">7d Yaps</div>
+                      <div className="text-base sm:text-lg font-semibold">{yaps7d}</div>
                     </div>
                     
-                    <div className={`flex items-center gap-1 text-sm font-medium ${
+                    <div className={`flex items-center gap-1 text-xs sm:text-sm font-medium ${
                       Number(change) > 0 ? 'text-green-500' : 'text-gray-500'
                     }`}>
-                      {Number(change) > 0 && <TrendingUp className="h-4 w-4" />}
+                      {Number(change) > 0 && <TrendingUp className="h-3 w-3 sm:h-4 sm:w-4" />}
                       {Number(change) > 0 ? `+${change}%` : 'Stable'}
                     </div>
                   </div>
