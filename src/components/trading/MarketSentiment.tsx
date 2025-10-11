@@ -34,6 +34,12 @@ export const MarketSentiment = () => {
 
   // Log sentiment data for debugging
   useEffect(() => {
+    const topDetails = top10.map(c => ({
+      id: c.id,
+      symbol: c.symbol,
+      change24h: c.price_change_percentage_24h,
+      weight: (c.market_cap / totalMarketCap)
+    }))
     console.log('📊 Market Sentiment Debug:', {
       totalCoins,
       gainers,
@@ -43,13 +49,17 @@ export const MarketSentiment = () => {
       simpleAvgChange: avgChange.toFixed(2) + '%',
       dataSource,
       isCached,
-      lastUpdated: lastUpdated?.toISOString()
+      lastUpdated: lastUpdated?.toISOString(),
+      top10: topDetails
     })
   }, [crypto, dataSource, isCached, lastUpdated])
 
   // Determine overall sentiment - using more realistic thresholds
   const getSentiment = () => {
+    const ageMs = lastUpdated ? Date.now() - lastUpdated.getTime() : Infinity
+    const isPoor = dataSource !== 'coingecko' || ageMs > 5 * 60 * 1000
     const change = weightedAvgChange // Use weighted average
+    if (isPoor) return { label: "Uncertain", color: "text-muted-foreground", bg: "bg-muted/30 border-border/50" }
     if (change > 5) return { label: "Extremely Bullish", color: "text-green-500", bg: "bg-green-500/20 border-green-500/30" }
     if (change > 1.5) return { label: "Bullish", color: "text-green-400", bg: "bg-green-400/20 border-green-400/30" }
     if (change > -1.5) return { label: "Neutral", color: "text-yellow-500", bg: "bg-yellow-500/20 border-yellow-500/30" }
@@ -71,6 +81,16 @@ export const MarketSentiment = () => {
   
   const freshness = getDataFreshness()
 
+  // Data quality evaluation
+  const ageMs = lastUpdated ? Date.now() - lastUpdated.getTime() : Infinity
+  const isDataStale = ageMs > 2 * 60 * 1000
+  const isDataVeryStale = ageMs > 5 * 60 * 1000
+  const isFallback = dataSource === 'alternative'
+  const isCacheSource = dataSource === 'cache'
+  const quality = (!isFallback && !isCacheSource && !isDataVeryStale)
+    ? (isDataStale ? { label: 'Stale', color: 'text-yellow-500' } : { label: 'Good', color: 'text-green-400' })
+    : { label: 'Poor', color: 'text-red-400' }
+
   return (
     <Card className="mb-6 bg-card/30 backdrop-blur-sm border-border/50">
       <CardHeader>
@@ -87,6 +107,14 @@ export const MarketSentiment = () => {
                 {dataSource === 'coingecko' ? '🟢 CoinGecko' : 
                  dataSource === 'alternative' ? '🟡 Fallback' : 
                  '🔴 Cached'}
+              </Badge>
+            </div>
+
+            {/* Data Quality Indicator */}
+            <div className="flex items-center gap-1.5 text-xs">
+              <span className="text-muted-foreground">Quality:</span>
+              <Badge variant="outline" className={`text-xs ${quality.color}`}>
+                {quality.label}
               </Badge>
             </div>
             
@@ -109,11 +137,11 @@ export const MarketSentiment = () => {
           </div>
         </div>
         
-        {/* Warning for stale data */}
-        {isCached && dataSource === 'cache' && (
+        {/* Warning for stale/fallback data */}
+        {(((isCached && dataSource === 'cache') || dataSource === 'alternative')) && (
           <div className="flex items-center gap-2 mt-2 text-xs text-yellow-500">
             <AlertCircle className="h-3 w-3" />
-            <span>Using cached data - API may be unavailable</span>
+            <span>{dataSource === 'alternative' ? 'Using fallback data - values may be inaccurate' : 'Using cached data - API may be unavailable'}</span>
           </div>
         )}
       </CardHeader>

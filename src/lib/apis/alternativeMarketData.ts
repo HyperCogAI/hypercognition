@@ -149,7 +149,7 @@ class AlternativeMarketDataAPI {
   }
 
   private getFallbackCryptoData(): AlternativeTokenData[] {
-    // Realistic fallback data for major cryptocurrencies
+    // Realistic bearish/neutral fallback data to avoid misleading sentiment
     return [
       {
         id: 'bitcoin',
@@ -157,7 +157,7 @@ class AlternativeMarketDataAPI {
         name: 'Bitcoin',
         current_price: 67500,
         market_cap: 1330000000000,
-        price_change_percentage_24h: 2.3,
+        price_change_percentage_24h: -3.5,
         total_volume: 28000000000
       },
       {
@@ -166,7 +166,7 @@ class AlternativeMarketDataAPI {
         name: 'Ethereum',
         current_price: 3800,
         market_cap: 456000000000,
-        price_change_percentage_24h: 1.8,
+        price_change_percentage_24h: -2.1,
         total_volume: 15000000000
       },
       {
@@ -175,7 +175,7 @@ class AlternativeMarketDataAPI {
         name: 'Solana',
         current_price: 150,
         market_cap: 65000000000,
-        price_change_percentage_24h: 4.2,
+        price_change_percentage_24h: -6.8,
         total_volume: 2500000000
       },
       {
@@ -184,16 +184,16 @@ class AlternativeMarketDataAPI {
         name: 'BNB',
         current_price: 620,
         market_cap: 90000000000,
-        price_change_percentage_24h: -0.5,
+        price_change_percentage_24h: -1.0,
         total_volume: 1800000000
       },
       {
         id: 'usd-coin',
         symbol: 'USDC',
         name: 'USDC',
-        current_price: 1.00,
+        current_price: 1.0,
         market_cap: 32000000000,
-        price_change_percentage_24h: 0.01,
+        price_change_percentage_24h: 0.0,
         total_volume: 5500000000
       }
     ]
