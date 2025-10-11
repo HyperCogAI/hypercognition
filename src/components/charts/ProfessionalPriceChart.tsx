@@ -70,6 +70,8 @@ export const ProfessionalPriceChart = ({
   const [chartType, setChartType] = useState<ChartType>('area')
   const [error, setError] = useState<string | null>(null)
 
+  const changePct = Number(change24h ?? 0)
+
   // Generate a graceful fallback series when APIs fail
   const generateFallback = (base: number): ChartDataPoint[] => {
     const now = Date.now()
@@ -242,11 +244,11 @@ export const ProfessionalPriceChart = ({
               <div className="flex items-baseline gap-3 mt-2">
                 <span className="text-3xl font-bold">{formatPrice(currentPrice)}</span>
                 <Badge 
-                  variant={change24h >= 0 ? "default" : "destructive"}
-                  className={`text-sm ${change24h >= 0 ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}`}
+                  variant={changePct >= 0 ? "default" : "destructive"}
+                  className={`text-sm ${changePct >= 0 ? "bg-green-500/20 text-green-400 border-green-500/30" : "bg-red-500/20 text-red-400 border-red-500/30"}`}
                 >
-                  {change24h >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
-                  {change24h >= 0 ? '+' : ''}{change24h.toFixed(2)}%
+                  {changePct >= 0 ? <TrendingUp className="h-3 w-3 mr-1" /> : <TrendingDown className="h-3 w-3 mr-1" />}
+                  {changePct >= 0 ? '+' : ''}{changePct.toFixed(2)}%
                 </Badge>
               </div>
             </div>
@@ -308,16 +310,16 @@ export const ProfessionalPriceChart = ({
                 <AreaChart data={chartData}>
                   <defs>
                     <linearGradient id="priceGradient" x1="0" y1="0" x2="0" y2="1">
-                      <stop 
-                        offset="5%" 
-                        stopColor={change24h >= 0 ? "#22c55e" : "#ef4444"} 
-                        stopOpacity={0.3}
-                      />
-                      <stop 
-                        offset="95%" 
-                        stopColor={change24h >= 0 ? "#22c55e" : "#ef4444"} 
-                        stopOpacity={0}
-                      />
+                       <stop 
+                         offset="5%" 
+                         stopColor={changePct >= 0 ? "#22c55e" : "#ef4444"} 
+                         stopOpacity={0.3}
+                       />
+                       <stop 
+                         offset="95%" 
+                         stopColor={changePct >= 0 ? "#22c55e" : "#ef4444"} 
+                         stopOpacity={0}
+                       />
                     </linearGradient>
                   </defs>
                   <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" opacity={0.3} />
@@ -338,7 +340,7 @@ export const ProfessionalPriceChart = ({
                   <Area
                     type="monotone"
                     dataKey="price"
-                    stroke={change24h >= 0 ? "#22c55e" : "#ef4444"}
+                    stroke={changePct >= 0 ? "#22c55e" : "#ef4444"}
                     strokeWidth={2}
                     fill="url(#priceGradient)"
                     animationDuration={1000}
@@ -364,7 +366,7 @@ export const ProfessionalPriceChart = ({
                   <Line
                     type="monotone"
                     dataKey="price"
-                    stroke={change24h >= 0 ? "#22c55e" : "#ef4444"}
+                    stroke={changePct >= 0 ? "#22c55e" : "#ef4444"}
                     strokeWidth={2}
                     dot={false}
                     activeDot={{ r: 6, strokeWidth: 2 }}

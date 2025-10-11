@@ -26,7 +26,7 @@ export const MarketHeatmap = () => {
   };
 
   const getSize = (marketCap: number, maxMarketCap: number) => {
-    const ratio = marketCap / maxMarketCap;
+    const ratio = maxMarketCap > 0 ? marketCap / maxMarketCap : 0;
     if (ratio > 0.5) return "col-span-2 row-span-2";
     if (ratio > 0.2) return "col-span-2";
     return "";
@@ -46,7 +46,7 @@ export const MarketHeatmap = () => {
     );
   }
 
-  const maxMarketCap = cryptos?.[0]?.market_cap || 1;
+  const maxMarketCap = Math.max(...cryptos.map((c: any) => Number(c?.market_cap ?? 0)), 1);
 
   return (
     <Card>
@@ -61,28 +61,28 @@ export const MarketHeatmap = () => {
           {cryptos?.map((crypto: any) => (
             <div
               key={crypto.id}
-              className={`${getColorClass(crypto.price_change_percentage_24h)} ${getSize(
-                crypto.market_cap,
+              className={`${getColorClass(Number(crypto.price_change_percentage_24h ?? 0))} ${getSize(
+                Number(crypto.market_cap ?? 0),
                 maxMarketCap
               )} p-3 rounded-lg flex flex-col justify-between min-h-[80px] hover:opacity-80 transition-opacity cursor-pointer group relative`}
-              title={`${crypto.name}: ${crypto.price_change_percentage_24h.toFixed(2)}%`}
+              title={`${crypto.name}: ${Number(crypto.price_change_percentage_24h ?? 0).toFixed(2)}%`}
             >
               <div className="text-white font-bold text-xs truncate">
-                {crypto.symbol.toUpperCase()}
+                {crypto.symbol?.toUpperCase?.() ?? ""}
               </div>
               <div className="text-white text-xs font-semibold">
-                {crypto.price_change_percentage_24h > 0 ? "+" : ""}
-                {crypto.price_change_percentage_24h.toFixed(1)}%
+                {(crypto.price_change_percentage_24h ?? 0) > 0 ? "+" : ""}
+                {Number(crypto.price_change_percentage_24h ?? 0).toFixed(1)}%
               </div>
               
               {/* Tooltip */}
               <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 px-3 py-2 bg-popover text-popover-foreground text-xs rounded-lg shadow-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap z-10 border">
                 <div className="font-semibold">{crypto.name}</div>
-                <div>Price: ${crypto.current_price.toLocaleString()}</div>
-                <div>Market Cap: ${(crypto.market_cap / 1e9).toFixed(2)}B</div>
+                <div>Price: ${Number(crypto.current_price ?? 0).toLocaleString()}</div>
+                <div>Market Cap: ${(Number(crypto.market_cap ?? 0) / 1e9).toFixed(2)}B</div>
                 <div>
-                  24h: {crypto.price_change_percentage_24h > 0 ? "+" : ""}
-                  {crypto.price_change_percentage_24h.toFixed(2)}%
+                  24h: {(crypto.price_change_percentage_24h ?? 0) > 0 ? "+" : ""}
+                  {Number(crypto.price_change_percentage_24h ?? 0).toFixed(2)}%
                 </div>
               </div>
             </div>

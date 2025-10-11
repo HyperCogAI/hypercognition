@@ -398,8 +398,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   </div>
                   <div className="text-right">
                     <div className="font-semibold text-sm sm:text-base">{formatVolume(token.total_volume)}</div>
-                    <div className={`text-xs sm:text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                      {token.price_change_percentage_24h >= 0 ? '+' : ''}{token.price_change_percentage_24h.toFixed(2)}%
+                    <div className={`text-xs sm:text-sm ${(token.price_change_percentage_24h ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                      {(token.price_change_percentage_24h ?? 0) >= 0 ? '+' : ''}{Number(token.price_change_percentage_24h ?? 0).toFixed(2)}%
                     </div>
                   </div>
                 </div>

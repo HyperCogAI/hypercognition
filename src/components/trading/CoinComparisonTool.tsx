@@ -122,20 +122,20 @@ export const CoinComparisonTool = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Price</p>
                   <p className="text-xl font-bold">
-                    ${coin.current_price.toLocaleString()}
+                    ${Number(coin.current_price ?? 0).toLocaleString()}
                   </p>
                 </div>
                 
                 <div>
                   <p className="text-sm text-muted-foreground">24h Change</p>
                   <div className="flex items-center gap-1">
-                    {coin.price_change_percentage_24h >= 0 ? (
+                    {(coin.price_change_percentage_24h ?? 0) >= 0 ? (
                       <TrendingUp className="h-4 w-4 text-green-500" />
                     ) : (
                       <TrendingDown className="h-4 w-4 text-red-500" />
                     )}
-                    <span className={coin.price_change_percentage_24h >= 0 ? "text-green-500" : "text-red-500"}>
-                      {coin.price_change_percentage_24h.toFixed(2)}%
+                    <span className={(coin.price_change_percentage_24h ?? 0) >= 0 ? "text-green-500" : "text-red-500"}>
+                      {Number(coin.price_change_percentage_24h ?? 0).toFixed(2)}%
                     </span>
                   </div>
                 </div>
@@ -143,14 +143,14 @@ export const CoinComparisonTool = () => {
                 <div>
                   <p className="text-sm text-muted-foreground">Market Cap</p>
                   <p className="font-semibold">
-                    ${(coin.market_cap / 1e9).toFixed(2)}B
+                    ${(Number(coin.market_cap ?? 0) / 1e9).toFixed(2)}B
                   </p>
                 </div>
 
                 <div>
                   <p className="text-sm text-muted-foreground">24h Volume</p>
                   <p className="font-semibold">
-                    ${(coin.total_volume / 1e9).toFixed(2)}B
+                    ${(Number(coin.total_volume ?? 0) / 1e9).toFixed(2)}B
                   </p>
                 </div>
 

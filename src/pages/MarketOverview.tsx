@@ -259,7 +259,9 @@ export default function MarketOverview() {
           </TabsContent>
 
           <TabsContent value="heatmap" className="mt-6">
-            <MarketHeatmap />
+            <ErrorBoundary name="MarketHeatmap">
+              <MarketHeatmap />
+            </ErrorBoundary>
           </TabsContent>
         </Tabs>
       </main>

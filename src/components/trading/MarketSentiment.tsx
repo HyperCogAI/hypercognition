@@ -9,12 +9,33 @@ import { useEffect } from "react"
 export const MarketSentiment = () => {
   const { crypto = [], isLoading, lastUpdated, dataSource, isCached, refreshData } = useRealMarketData()
 
+  // Always call hooks in the same order; log only after data is ready
+  useEffect(() => {
+    if (!isLoading && crypto.length > 0) {
+      const top10 = crypto.slice(0, 10)
+      const totalMarketCap = top10.reduce((sum, c) => sum + (c.market_cap || 0), 0)
+      const topDetails = top10.map(c => ({
+        id: c.id,
+        symbol: c.symbol,
+        change24h: c.price_change_percentage_24h,
+        weight: totalMarketCap > 0 ? ((c.market_cap || 0) / totalMarketCap) : 0
+      }))
+      console.log('📊 Market Sentiment Debug:', {
+        totalCoins: crypto.length,
+        dataSource,
+        isCached,
+        lastUpdated: lastUpdated?.toISOString(),
+        top10: topDetails
+      })
+    }
+  }, [crypto, dataSource, isCached, lastUpdated, isLoading])
+
   if (isLoading || crypto.length === 0) return null
 
   // Calculate sentiment metrics with market-cap weighting for top 10 coins
   const totalCoins = crypto.length
   const top10 = crypto.slice(0, 10)
-  const totalMarketCap = top10.reduce((sum, c) => sum + c.market_cap, 0)
+  const totalMarketCap = top10.reduce((sum, c) => sum + (c.market_cap || 0), 0)
   
   const gainers = crypto.filter(c => c.price_change_percentage_24h > 0).length
   const losers = crypto.filter(c => c.price_change_percentage_24h < 0).length
@@ -33,27 +54,6 @@ export const MarketSentiment = () => {
   // Simple average for comparison
   const avgChange = crypto.reduce((sum, c) => sum + Number(c.price_change_percentage_24h ?? 0), 0) / totalCoins
 
-  // Log sentiment data for debugging
-  useEffect(() => {
-    const topDetails = top10.map(c => ({
-      id: c.id,
-      symbol: c.symbol,
-      change24h: c.price_change_percentage_24h,
-      weight: (c.market_cap / totalMarketCap)
-    }))
-    console.log('📊 Market Sentiment Debug:', {
-      totalCoins,
-      gainers,
-      losers,
-      neutral,
-      weightedAvgChange: weightedAvgChange.toFixed(2) + '%',
-      simpleAvgChange: avgChange.toFixed(2) + '%',
-      dataSource,
-      isCached,
-      lastUpdated: lastUpdated?.toISOString(),
-      top10: topDetails
-    })
-  }, [crypto, dataSource, isCached, lastUpdated])
 
   // Determine overall sentiment - using more realistic thresholds
   const getSentiment = () => {
