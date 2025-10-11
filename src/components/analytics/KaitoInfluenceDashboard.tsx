@@ -193,7 +193,7 @@ export const KaitoInfluenceDashboard = () => {
               placeholder="Search or fetch X username (e.g., VitalikButerin)..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-gray-900/90 border-gray-700/50 text-white placeholder:text-gray-400 hover:border-gray-600 focus:border-gray-600"
+              className="w-full bg-gray-950 sm:bg-background border-gray-800 sm:border-border text-white sm:text-foreground placeholder:text-gray-500 sm:placeholder:text-muted-foreground hover:border-gray-700 sm:hover:border-gray-600 focus:border-gray-700 sm:focus:border-gray-600"
               disabled={isSearching || isSyncing}
             />
             <Button 
@@ -201,7 +201,7 @@ export const KaitoInfluenceDashboard = () => {
               size="sm"
               variant="outline"
               disabled={isSearching || isSyncing || !searchQuery.trim()}
-              className="w-full sm:w-auto"
+              className="w-full sm:w-auto bg-blue-950/80 sm:bg-background border-blue-900/50 sm:border-border text-blue-100 sm:text-foreground hover:bg-blue-900/90 sm:hover:bg-accent"
             >
               {isSearching ? (
                 <>
@@ -254,7 +254,7 @@ export const KaitoInfluenceDashboard = () => {
               return (
                 <div
                   key={agent.id}
-                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 rounded-lg border bg-card hover:bg-accent/50 transition-colors"
+                  className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 p-3 sm:p-4 rounded-lg border border-blue-900/30 sm:border-border bg-blue-950/40 sm:bg-card hover:bg-blue-900/50 sm:hover:bg-accent/50 transition-colors"
                 >
                   <div className="flex items-center gap-3 sm:gap-4 flex-1 min-w-0">
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary font-bold text-sm">
