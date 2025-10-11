@@ -58,15 +58,15 @@ export const TrendingCoins = () => {
       <div className="text-right">
         <div className="font-semibold">{formatPrice(coin.current_price)}</div>
         <Badge
-          variant={coin.price_change_percentage_24h >= 0 ? "default" : "destructive"}
+          variant={(coin.price_change_percentage_24h ?? 0) >= 0 ? "default" : "destructive"}
           className={`text-xs ${
-            coin.price_change_percentage_24h >= 0
+            (coin.price_change_percentage_24h ?? 0) >= 0
               ? "bg-green-500/20 text-green-400 border-green-500/30"
               : "bg-red-500/20 text-red-400 border-red-500/30"
           }`}
         >
-          {coin.price_change_percentage_24h >= 0 ? "+" : ""}
-          {coin.price_change_percentage_24h.toFixed(2)}%
+          {(coin.price_change_percentage_24h ?? 0) >= 0 ? "+" : ""}
+          {Number(coin.price_change_percentage_24h ?? 0).toFixed(2)}%
         </Badge>
       </div>
     </div>

@@ -299,8 +299,8 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                   <div className={isMobile ? "text-right" : "flex items-center gap-8 text-right"}>
                     <div>
                       <div className="font-semibold text-sm sm:text-base">{formatPrice(token.current_price)}</div>
-                      <div className={`text-xs sm:text-sm ${token.price_change_percentage_24h >= 0 ? 'text-green-500' : 'text-red-500'}`}>
-                        {token.price_change_percentage_24h >= 0 ? '+' : ''}{token.price_change_percentage_24h.toFixed(2)}%
+                      <div className={`text-xs sm:text-sm ${(token.price_change_percentage_24h ?? 0) >= 0 ? 'text-green-500' : 'text-red-500'}`}>
+                        {(token.price_change_percentage_24h ?? 0) >= 0 ? '+' : ''}{Number(token.price_change_percentage_24h ?? 0).toFixed(2)}%
                       </div>
                     </div>
                     {!isMobile && (
@@ -342,7 +342,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                     <div className="font-semibold text-sm sm:text-base">{formatPrice(token.current_price)}</div>
                     <div className="text-xs sm:text-sm text-green-500 flex items-center gap-1 justify-end">
                       <ArrowUpRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                      +{token.price_change_percentage_24h.toFixed(2)}%
+                      +{Number(token.price_change_percentage_24h ?? 0).toFixed(2)}%
                     </div>
                   </div>
                 </div>
@@ -371,7 +371,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                     <div className="font-semibold text-sm sm:text-base">{formatPrice(token.current_price)}</div>
                     <div className="text-xs sm:text-sm text-red-500 flex items-center gap-1 justify-end">
                       <ArrowDownRight className="h-3 w-3 sm:h-4 sm:w-4" />
-                      {token.price_change_percentage_24h.toFixed(2)}%
+                      {Number(token.price_change_percentage_24h ?? 0).toFixed(2)}%
                     </div>
                   </div>
                 </div>

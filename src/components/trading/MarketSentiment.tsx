@@ -25,12 +25,13 @@ export const MarketSentiment = () => {
   
   // Weighted average market change (top 10 coins by market cap)
   const weightedAvgChange = top10.reduce((sum, c) => {
-    const weight = c.market_cap / totalMarketCap
-    return sum + (c.price_change_percentage_24h * weight)
+    const weight = totalMarketCap > 0 ? ((c.market_cap || 0) / totalMarketCap) : 0
+    const change = Number(c.price_change_percentage_24h ?? 0)
+    return sum + (change * weight)
   }, 0)
   
   // Simple average for comparison
-  const avgChange = crypto.reduce((sum, c) => sum + c.price_change_percentage_24h, 0) / totalCoins
+  const avgChange = crypto.reduce((sum, c) => sum + Number(c.price_change_percentage_24h ?? 0), 0) / totalCoins
 
   // Log sentiment data for debugging
   useEffect(() => {
