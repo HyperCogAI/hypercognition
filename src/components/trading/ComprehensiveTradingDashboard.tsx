@@ -273,28 +273,6 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
                       <div className="font-semibold text-sm sm:text-base truncate">{token.name}</div>
                       <div className="text-xs sm:text-sm text-muted-foreground truncate">{token.symbol.toUpperCase()}</div>
                     </div>
-                    {!isMobile && (
-                      <div className="flex gap-1.5 mr-4">
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
-                          onClick={(e) => handleAddToPortfolio(token, e)}
-                          title="Add to Portfolio"
-                        >
-                          <ShoppingCart className="h-3.5 w-3.5" />
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-7 w-7 hover:bg-primary/10 hover:text-primary transition-colors"
-                          onClick={(e) => handleTrade(token, e)}
-                          title="Trade Now"
-                        >
-                          <ArrowRightLeft className="h-3.5 w-3.5" />
-                        </Button>
-                      </div>
-                    )}
                   </div>
                   <div className={isMobile ? "text-right" : "flex items-center gap-8 text-right"}>
                     <div>
