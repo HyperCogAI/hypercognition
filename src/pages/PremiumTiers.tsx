@@ -90,9 +90,7 @@ const PremiumTiers = () => {
         "Advanced risk management suite",
         "White-label solutions",
         "Custom AI agent development",
-        "Direct market access",
-        "Compliance tools",
-        "Multi-exchange integration"
+        "Direct market access"
       ],
       limits: {
         agents: "Unlimited",
