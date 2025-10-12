@@ -148,16 +148,6 @@ export const UserManagement = ({ adminRole }: UserManagementProps) => {
             </div>
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader className="pb-3">
-            <CardTitle className="text-sm font-medium">Verified</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="text-2xl font-bold">
-              {users.filter(u => u.kyc_verified).length}
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Search and Actions */}

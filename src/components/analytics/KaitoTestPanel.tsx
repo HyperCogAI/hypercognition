@@ -40,7 +40,7 @@ export const KaitoTestPanel = () => {
   };
 
   const runSampleTests = async () => {
-    const sampleUsernames = ['VitalikButerin', 'elonmusk', 'cz_binance', 'SBF_FTX'];
+    const sampleUsernames = ['VitalikButerin', 'elonmusk', 'brian_armstrong', 'naval'];
     for (const username of sampleUsernames) {
       await runTest(username);
       // Wait 3 seconds between calls to respect rate limits

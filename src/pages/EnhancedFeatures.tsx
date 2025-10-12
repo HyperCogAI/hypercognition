@@ -1,6 +1,5 @@
 import { EnhancedRealtimeSystem } from "@/components/realtime/EnhancedRealtimeSystem"
 import { AdvancedAIEngine } from "@/components/ai/AdvancedAIEngine"
-import { MultiExchangeConnector } from "@/components/exchanges/MultiExchangeConnector"
 import { AdvancedPerformanceOptimizer } from "@/components/performance/AdvancedPerformanceOptimizer"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -38,15 +37,6 @@ const EnhancedFeaturesPage = () => {
       models: "5"
     },
     {
-      id: "exchanges",
-      title: "Multi-Exchange",
-      description: "Connect to 6+ major cryptocurrency exchanges with unified API",
-      icon: <Plug className="h-5 w-5" />,
-      status: "Connected",
-      exchanges: "3/6",
-      volume: "$2.1B"
-    },
-    {
       id: "performance",
       title: "Performance",
       description: "Intelligent optimization and monitoring for maximum speed and efficiency",
@@ -77,7 +67,7 @@ const EnhancedFeaturesPage = () => {
         </div>
 
         {/* Feature Overview Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-8 md:mb-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-6 mb-8 md:mb-12">
           {features.map((feature) => (
             <Card key={feature.id} className="bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/20 transition-all duration-200">
               <CardHeader className="pb-3">
@@ -119,18 +109,6 @@ const EnhancedFeaturesPage = () => {
                       <div className="flex items-center gap-2 text-xs">
                         <Brain className="h-3 w-3 text-muted-foreground" />
                         <span className="font-medium">{feature.models} models</span>
-                      </div>
-                    </>
-                  )}
-                  {feature.exchanges && (
-                    <>
-                      <div className="flex items-center gap-2 text-xs">
-                        <Plug className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">{feature.exchanges}</span>
-                      </div>
-                      <div className="flex items-center gap-2 text-xs">
-                        <Globe className="h-3 w-3 text-muted-foreground" />
-                        <span className="font-medium">{feature.volume}</span>
                       </div>
                     </>
                   )}
@@ -176,14 +154,6 @@ const EnhancedFeaturesPage = () => {
                       <span className="sm:hidden">AI</span>
                     </TabsTrigger>
                     <TabsTrigger 
-                      value="exchanges" 
-                      className="flex items-center gap-2 px-4 py-3 flex-1 min-w-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
-                    >
-                      <Plug className="h-4 w-4" />
-                      <span className="hidden sm:inline">Multi-Exchange</span>
-                      <span className="sm:hidden">Exchange</span>
-                    </TabsTrigger>
-                    <TabsTrigger 
                       value="performance" 
                       className="flex items-center gap-2 px-4 py-3 flex-1 min-w-0 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground"
                     >
@@ -204,10 +174,6 @@ const EnhancedFeaturesPage = () => {
                   <AdvancedAIEngine />
                 </TabsContent>
 
-                <TabsContent value="exchanges" className="mt-0">
-                  <MultiExchangeConnector />
-                </TabsContent>
-
                 <TabsContent value="performance" className="mt-0">
                   <AdvancedPerformanceOptimizer />
                 </TabsContent>
@@ -222,7 +188,7 @@ const EnhancedFeaturesPage = () => {
             <CardTitle className="text-lg md:text-xl">Technology Stack</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
               <div className="text-center space-y-3">
                 <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto">
                   <Zap className="h-6 w-6 text-primary" />
@@ -239,15 +205,6 @@ const EnhancedFeaturesPage = () => {
                 <div className="font-semibold">AI/ML</div>
                 <div className="text-sm text-muted-foreground">
                   TensorFlow • OpenAI • Hugging Face
-                </div>
-              </div>
-              <div className="text-center space-y-3">
-                <div className="p-3 bg-primary/10 rounded-xl w-12 h-12 flex items-center justify-center mx-auto">
-                  <Plug className="h-6 w-6 text-primary" />
-                </div>
-                <div className="font-semibold">APIs</div>
-                <div className="text-sm text-muted-foreground">
-                  REST • GraphQL • gRPC
                 </div>
               </div>
               <div className="text-center space-y-3">

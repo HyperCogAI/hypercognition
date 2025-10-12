@@ -179,7 +179,7 @@ class AlternativeMarketDataAPI {
         total_volume: 2500000000
       },
       {
-        id: 'binancecoin',
+        id: 'bnb',
         symbol: 'BNB',
         name: 'BNB',
         current_price: 620,

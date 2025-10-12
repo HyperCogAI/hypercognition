@@ -1,5 +1,4 @@
 import React from 'react'
-import { ExchangeConnector } from '@/components/trading/ExchangeConnector'
 import { AdvancedOrderForm } from '@/components/trading/AdvancedOrderForm'
 import { RealTimeOrderBook } from '@/components/trading/RealTimeOrderBook'
 import { PortfolioManager } from '@/components/trading/PortfolioManager'
@@ -35,14 +34,13 @@ const ExchangeTrading = () => {
         </div>
 
         <Tabs defaultValue="trading" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-12">
+          <TabsList className="grid w-full grid-cols-6 lg:grid-cols-11">
             <TabsTrigger value="trading">Trading</TabsTrigger>
             <TabsTrigger value="orders">Orders</TabsTrigger>
             <TabsTrigger value="execution">Execution</TabsTrigger>
             <TabsTrigger value="positions">Positions</TabsTrigger>
             <TabsTrigger value="signals">Signals</TabsTrigger>
             <TabsTrigger value="arbitrage">Arbitrage</TabsTrigger>
-            <TabsTrigger value="exchanges">Exchanges</TabsTrigger>
             <TabsTrigger value="portfolio">Portfolio</TabsTrigger>
             <TabsTrigger value="risk">Risk</TabsTrigger>
             <TabsTrigger value="analytics">Analytics</TabsTrigger>
@@ -72,10 +70,6 @@ const ExchangeTrading = () => {
 
           <TabsContent value="arbitrage">
             <ArbitrageDetector />
-          </TabsContent>
-
-          <TabsContent value="exchanges">
-            <ExchangeConnector />
           </TabsContent>
 
           <TabsContent value="portfolio">

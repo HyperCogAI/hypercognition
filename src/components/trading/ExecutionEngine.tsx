@@ -73,7 +73,7 @@ export const ExecutionEngine: React.FC = () => {
       latency: Math.random() * 100 + 20,
       status: ['executing', 'completed', 'failed'][Math.floor(Math.random() * 3)] as any,
       timestamp: new Date(Date.now() - Math.random() * 3600000),
-      venue: ['Binance', 'Coinbase', 'Kraken'][Math.floor(Math.random() * 3)],
+      venue: ['Wallet', 'DEX', 'Direct'][Math.floor(Math.random() * 3)],
       fees: Math.random() * 10 + 1
     }))
 
@@ -408,12 +408,12 @@ export const ExecutionEngine: React.FC = () => {
 
               <Card>
                 <CardHeader>
-                  <CardTitle>Exchange Connectivity</CardTitle>
+                  <CardTitle>Wallet Connectivity</CardTitle>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {['Binance', 'Coinbase', 'Kraken'].map(exchange => (
-                    <div key={exchange} className="flex items-center justify-between">
-                      <span>{exchange}</span>
+                  {['MetaMask', 'Phantom', 'WalletConnect'].map(wallet => (
+                    <div key={wallet} className="flex items-center justify-between">
+                      <span>{wallet}</span>
                       <div className="flex items-center gap-2">
                         <div className="w-2 h-2 bg-success rounded-full animate-pulse" />
                         <span className="text-sm text-muted-foreground">Connected</span>

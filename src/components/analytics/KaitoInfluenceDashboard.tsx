@@ -9,7 +9,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
 const DEFAULT_USERNAMES = [
-  'VitalikButerin','cz_binance','brian_armstrong','saylor','APompliano','balajis','naval','aantonop','ErikVoorhees','TuurDemeester',
+  'VitalikButerin','brian_armstrong','saylor','APompliano','balajis','naval','aantonop','ErikVoorhees','TuurDemeester',
   'cobie','ChainLinkGod','sassal0x','udiWertheimer','ercwl','hosseeb','iamDCinvestor','VanceSpencer','tarunchitra','haydenzadams',
   'StaniKulechov','IOHK_Charles','garrytan','katie_haun','cdixon','fredwilson','BarrySilbert','elonmusk','jack','Melt_Dem',
   'notgrubles','nlw','RyanSAdams','TrustlessState','SatoshiLite','roasbeef','PeterMcCormack','LynAldenContact','aeyakovenko','BanklessHQ',
@@ -218,7 +218,7 @@ export const KaitoInfluenceDashboard = () => {
             </Button>
           </form>
           <p className="text-xs text-muted-foreground mt-2">
-            <strong>Note:</strong> Kaito tracks crypto-specific social influence. Try crypto accounts like VitalikButerin, cz_binance, or saylor. Non-crypto accounts will return zero Yaps.
+            <strong>Note:</strong> Kaito tracks crypto-specific social influence. Try crypto accounts like VitalikButerin, brian_armstrong, or saylor. Non-crypto accounts will return zero Yaps.
           </p>
         </div>
       </CardHeader>

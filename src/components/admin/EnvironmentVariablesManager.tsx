@@ -78,22 +78,6 @@ const SECRET_TEMPLATES: SecretTemplate[] = [
     documentation: 'https://stripe.com/docs/keys'
   },
   {
-    name: 'COINBASE_API_KEY',
-    description: 'Coinbase Pro API key for trading',
-    category: 'api',
-    isPublic: false,
-    placeholder: 'cb-access-key',
-    documentation: 'https://docs.cloud.coinbase.com/sign-in-with-coinbase/docs/api-key-authentication'
-  },
-  {
-    name: 'BINANCE_API_KEY',
-    description: 'Binance API key for trading',
-    category: 'api',
-    isPublic: false,
-    placeholder: 'your-api-key',
-    documentation: 'https://www.binance.com/en/support/faq/how-to-create-api-keys-on-binance-360002502072'
-  },
-  {
     name: 'WEBHOOK_SECRET',
     description: 'Webhook verification secret',
     category: 'service',

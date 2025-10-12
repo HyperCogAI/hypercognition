@@ -35,7 +35,7 @@ export const MarketDataFeed: React.FC = () => {
         { symbol: 'BTC/USDT', name: 'Bitcoin' },
         { symbol: 'ETH/USDT', name: 'Ethereum' },
         { symbol: 'SOL/USDT', name: 'Solana' },
-        { symbol: 'BNB/USDT', name: 'Binance Coin' },
+        { symbol: 'BNB/USDT', name: 'BNB' },
         { symbol: 'ADA/USDT', name: 'Cardano' },
         { symbol: 'XRP/USDT', name: 'Ripple' },
         { symbol: 'DOGE/USDT', name: 'Dogecoin' },

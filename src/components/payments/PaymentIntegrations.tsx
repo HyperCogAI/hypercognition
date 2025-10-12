@@ -61,15 +61,6 @@ const PaymentIntegrations: React.FC = () => {
         fees: '3.49% + fixed fee',
         supported: ['PayPal', 'Credit Cards', 'Bank Transfers'],
         description: 'Trusted digital payment platform for global transactions'
-      },
-      {
-        id: 'coinbase',
-        name: 'Coinbase Commerce',
-        icon: <div className="w-6 h-6 bg-primary rounded-full" />,
-        status: 'disconnected',
-        fees: '1% + network fees',
-        supported: ['Bitcoin', 'Ethereum', 'Litecoin', 'USDC'],
-        description: 'Accept cryptocurrency payments securely'
       }
     ];
     setProviders(mockProviders);

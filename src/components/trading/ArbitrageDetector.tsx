@@ -57,7 +57,7 @@ export const ArbitrageDetector: React.FC = () => {
   useEffect(() => {
     const generateOpportunities = () => {
       const symbols = ['BTC/USDT', 'ETH/USDT', 'SOL/USDT', 'BNB/USDT', 'ADA/USDT']
-      const exchanges = ['Binance', 'Coinbase', 'Kraken', 'Bybit', 'OKX']
+      const exchanges = ['DEX A', 'DEX B', 'DEX C', 'Uniswap', 'Raydium']
       
       const newOpportunities: ArbitrageOpportunity[] = []
       
@@ -341,7 +341,7 @@ export const ArbitrageDetector: React.FC = () => {
               <CardContent>
                 <div className="space-y-4">
                   {['BTC/USDT', 'ETH/USDT', 'SOL/USDT'].map(symbol => {
-                    const exchanges = ['Binance', 'Coinbase', 'Kraken']
+                    const exchanges = ['DEX A', 'DEX B', 'DEX C']
                     const prices = exchanges.map(() => Math.random() * 1000 + 30000)
                     const maxPrice = Math.max(...prices)
                     const minPrice = Math.min(...prices)

@@ -40,11 +40,6 @@ export const LazyTradingDashboard = createEnhancedLazy(
   'trading-dashboard'
 )
 
-export const LazyMultiExchangeDashboard = createEnhancedLazy(
-  () => import('@/components/trading/MultiExchangeDashboard').then(m => ({ default: m.MultiExchangeDashboard })),
-  'multi-exchange-dashboard'
-)
-
 export const LazyAnalyticsDashboard = createEnhancedLazy(
   () => import('@/components/analytics/AdvancedAnalyticsDashboard'),
   'analytics-dashboard'

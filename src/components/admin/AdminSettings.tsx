@@ -16,7 +16,6 @@ export const AdminSettings = ({ adminRole }: AdminSettingsProps) => {
   const [settings, setSettings] = useState({
     maintenanceMode: false,
     registrationEnabled: true,
-    kycRequired: false,
     maxOrderSize: 10000,
     minOrderSize: 10,
     tradingFeesPercent: 0.1,
@@ -81,24 +80,6 @@ export const AdminSettings = ({ adminRole }: AdminSettingsProps) => {
               checked={settings.registrationEnabled}
               onCheckedChange={(checked) =>
                 setSettings({ ...settings, registrationEnabled: checked })
-              }
-              disabled={!isSuperAdmin}
-            />
-          </div>
-
-          <Separator />
-
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>KYC Required</Label>
-              <p className="text-sm text-muted-foreground">
-                Require KYC verification for trading
-              </p>
-            </div>
-            <Switch
-              checked={settings.kycRequired}
-              onCheckedChange={(checked) =>
-                setSettings({ ...settings, kycRequired: checked })
               }
               disabled={!isSuperAdmin}
             />

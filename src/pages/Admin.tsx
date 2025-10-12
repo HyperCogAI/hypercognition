@@ -3,9 +3,8 @@ import { Navigate } from 'react-router-dom';
 import { supabase } from '@/integrations/supabase/client';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SEOHead } from '@/components/seo/SEOHead';
-import { Shield, Users, AlertTriangle, FileCheck, Activity, Settings } from 'lucide-react';
+import { Shield, Users, AlertTriangle, Activity, Settings } from 'lucide-react';
 import { UserManagement } from '@/components/admin/UserManagement';
-import { KYCManagement } from '@/components/admin/KYCManagement';
 import { ComplianceAlerts } from '@/components/admin/ComplianceAlerts';
 import { ContentModeration } from '@/components/admin/ContentModeration';
 import { SystemMonitoring } from '@/components/admin/SystemMonitoring';
@@ -91,14 +90,10 @@ const Admin = () => {
 
         {/* Admin Tabs */}
         <Tabs defaultValue="users" className="w-full">
-          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-6 gap-1 scrollbar-hide mb-6">
+          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-5 gap-1 scrollbar-hide mb-6">
             <TabsTrigger value="users" className="flex-shrink-0 gap-2">
               <Users className="h-4 w-4" />
               <span>Users</span>
-            </TabsTrigger>
-            <TabsTrigger value="kyc" className="flex-shrink-0 gap-2">
-              <FileCheck className="h-4 w-4" />
-              <span>KYC</span>
             </TabsTrigger>
             <TabsTrigger value="compliance" className="flex-shrink-0 gap-2">
               <AlertTriangle className="h-4 w-4" />
@@ -120,10 +115,6 @@ const Admin = () => {
 
           <TabsContent value="users" className="mt-6">
             <UserManagement adminRole={adminRole} />
-          </TabsContent>
-
-          <TabsContent value="kyc" className="mt-6">
-            <KYCManagement />
           </TabsContent>
 
           <TabsContent value="compliance" className="mt-6">

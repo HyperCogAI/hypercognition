@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { ExchangeSelector } from './ExchangeSelector'
 import { RealTimeOrderBook } from './RealTimeOrderBook'
 import { TradingPanel } from './TradingPanel'
 import { TradingViewChart } from '@/components/charts/TradingViewChart'
@@ -160,9 +159,6 @@ export const AdvancedTradingDashboard = ({
               />
             </TabsContent>
           </Tabs>
-
-          {/* Exchange Management */}
-          <ExchangeSelector />
         </div>
 
         {/* Right Column - Trading and Order Book */}

@@ -11,7 +11,6 @@ export const createLazyComponent = <T extends React.ComponentType<any>>(
 export const lazyImports = {
   // Trading components
   TradingDashboard: () => import('@/components/trading/AdvancedTradingDashboard'),
-  MultiExchangeDashboard: () => import('@/components/trading/MultiExchangeDashboard'),
   
   // Analytics components
   AnalyticsDashboard: () => import('@/components/analytics/AdvancedAnalyticsDashboard'),

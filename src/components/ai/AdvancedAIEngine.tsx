@@ -124,9 +124,9 @@ export const AdvancedAIEngine = () => {
           type: 'opportunity',
           confidence: 79,
           title: 'Arbitrage Opportunity Identified',
-          description: 'Price discrepancy detected across exchanges for BONK token. Potential profit margin of 0.8-1.2%.',
+          description: 'Price discrepancy detected across DEXs for BONK token. Potential profit margin of 0.8-1.2%.',
           timeframe: '15-30 minutes',
-          data: { symbol: 'BONK', margin: 1.1, exchanges: ['Binance', 'Coinbase'] },
+          data: { symbol: 'BONK', margin: 1.1, exchanges: ['Uniswap', 'Raydium'] },
           timestamp: new Date()
         },
         {

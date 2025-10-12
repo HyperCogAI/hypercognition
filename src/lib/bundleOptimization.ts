@@ -16,7 +16,6 @@ export const loadFeatureModule = async (feature: string) => {
     'staking-dashboard': () => import('@/components/staking/StakingDashboard'),
     'ai-assistant': () => import('@/components/ai/AITradingAssistant'),
     'voice-interface': () => import('@/components/ai/VoiceInterface'),
-    'multi-exchange': () => import('@/components/trading/MultiExchangeDashboard'),
     'real-time-market': () => import('@/components/trading/RealTimeMarketDashboard'),
   } as const
 
@@ -67,7 +66,7 @@ export const ROUTE_CHUNKS = {
   CORE: ['home', 'auth', 'marketplace'],
   
   // Trading features
-  TRADING: ['advanced-trading', 'real-time-market', 'multi-exchange', 'order-management'],
+  TRADING: ['advanced-trading', 'real-time-market', 'order-management'],
   
   // Portfolio & Analytics
   PORTFOLIO: ['portfolio', 'analytics', 'advanced-analytics', 'risk-management'],

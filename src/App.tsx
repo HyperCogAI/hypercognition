@@ -57,7 +57,6 @@ const OrderManagement = lazy(() => import('./pages/OrderManagement'));
 const RiskManagement = lazy(() => import('./pages/RiskManagement'));
 const TradingSignals = lazy(() => import('./pages/TradingSignals'));
 const RealTimeMarketPage = lazy(() => import('./pages/RealTimeMarket').then(m => ({ default: m.RealTimeMarketPage })));
-const MultiExchange = lazy(() => import('./pages/MultiExchange'));
 
 // Lazy loaded components - Social & Community
 const SocialTradingPage = lazy(() => import('./pages/SocialTrading'));
@@ -136,7 +135,6 @@ const web3Modal = createWeb3Modal({
   },
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
-    'ecc4036f814562b41a5268adc86270fca6567550d28a70c4dc1c6b3a5ccb8de', // Coinbase Wallet
   ]
 })
 
@@ -179,7 +177,6 @@ const AppLayout = () => {
             <Route path="/evm-auth" element={<LazyEVMAuth />} />
             <Route path="/solana-auth" element={<LazySolanaAuth />} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                 <Route path="/enhanced-trading" element={<MarketOverview />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
@@ -288,7 +285,6 @@ const AppLayout = () => {
                   <Route path="/evm-auth" element={<LazyEVMAuth />} />
                   <Route path="/solana-auth" element={<LazySolanaAuth />} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                  <Route path="/multi-exchange" element={<ProtectedRoute><MultiExchange /></ProtectedRoute>} />
                   <Route path="/enhanced-trading" element={<MarketOverview />} />
                   <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
             <Route path="/real-time-market" element={<RealTimeMarketPage />} />

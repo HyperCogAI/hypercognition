@@ -84,7 +84,7 @@ export const AddPortfolioDialog = ({ crypto, open, onOpenChange }: AddPortfolioD
           <div className="space-y-2">
             <Label>Exchange (Optional)</Label>
             <Input
-              placeholder="e.g., Binance, Coinbase"
+              placeholder="e.g., MetaMask, Phantom Wallet"
               value={exchange}
               onChange={(e) => setExchange(e.target.value)}
             />
