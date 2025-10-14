@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import { supabase } from "@/integrations/supabase/client"
-import { ArrowLeft, Upload, Bot, Settings, Zap, Brain, AlertCircle } from "lucide-react"
+import { ArrowLeft, Upload, Bot, Settings, Zap, Brain, AlertCircle, Check } from "lucide-react"
 import DOMPurify from "dompurify"
 import { useAuth } from "@/contexts/AuthContext"
 import { CyberButton } from "@/components/ui/cyber-button"
@@ -346,7 +346,14 @@ export const CreateAgent = () => {
                       }`}
                       onClick={() => handleFeatureToggle(feature)}
                     >
-                      <div className="text-sm font-medium text-foreground">{feature}</div>
+                      <div className="flex items-center justify-between">
+                        <div className="text-sm font-medium text-foreground">{feature}</div>
+                        {agentData.features.includes(feature) && (
+                          <span className="inline-flex items-center justify-center h-5 w-5 rounded-full bg-primary/20 text-primary ring-1 ring-primary/40">
+                            <Check className="h-3 w-3" />
+                          </span>
+                        )}
+                      </div>
                     </div>
                   ))}
                 </div>
