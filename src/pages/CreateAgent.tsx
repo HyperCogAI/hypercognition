@@ -333,16 +333,16 @@ export const CreateAgent = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-4">
+              <div className="space-y-4 p-4 rounded-xl bg-muted/40 border border-border/60">
                 <Label>Features & Capabilities</Label>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
                   {features.map((feature) => (
                     <div
                       key={feature}
-                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${
+                      className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-105 ${
                         agentData.features.includes(feature)
-                          ? 'border-primary/70 ring-1 ring-primary/40 bg-gradient-to-r from-primary/60 to-accent/40 shadow-lg shadow-primary/30'
-                          : 'border-border/60 bg-gradient-to-r from-muted/80 to-muted/60 hover:border-primary/50 hover:shadow-primary/20'
+                          ? 'bg-primary/10 border-primary/70 ring-2 ring-primary/50 shadow-lg shadow-primary/30'
+                          : 'bg-muted/60 border-border/70 hover:border-primary/60 hover:shadow-md'
                       }`}
                       onClick={() => handleFeatureToggle(feature)}
                     >
