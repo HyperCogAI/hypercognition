@@ -341,8 +341,8 @@ export const CreateAgent = () => {
                       key={feature}
                       className={`p-4 rounded-xl border cursor-pointer transition-all duration-200 hover:scale-105 hover:shadow-md ${
                         agentData.features.includes(feature)
-                          ? 'border-primary bg-gradient-to-r from-primary/20 to-accent/10 shadow-md shadow-primary/20'
-                          : 'border-border/20 bg-gradient-to-r from-muted/30 to-muted/10 hover:border-primary/50'
+                          ? 'border-primary bg-gradient-to-r from-primary/40 to-accent/30 bg-card/60 shadow-md shadow-primary/20'
+                          : 'border-border/40 bg-gradient-to-r from-muted/60 to-muted/40 bg-card/40 hover:border-primary/50'
                       }`}
                       onClick={() => handleFeatureToggle(feature)}
                     >
