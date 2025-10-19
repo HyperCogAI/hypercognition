@@ -5,6 +5,7 @@ import { SolanaPortfolioCard } from "@/components/portfolio/SolanaPortfolioCard"
 import { SolanaMarketOverview } from "@/components/trading/SolanaMarketOverview"
 import { SolanaAnalyticsDashboard } from "@/components/analytics/SolanaAnalyticsDashboard"
 import { SolanaDEX } from "@/components/solana/SolanaDEX"
+import { SolanaLimitOrderPanel } from "@/components/solana/SolanaLimitOrderPanel"
 import { RecentSwaps } from "@/components/solana/RecentSwaps"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { Button } from "@/components/ui/button"
@@ -149,8 +150,9 @@ const SolanaDashboard = () => {
 
         <TabsContent value="dex" className="space-y-6">
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <div className="lg:col-span-2">
+            <div className="lg:col-span-2 space-y-6">
               <SolanaDEX />
+              <SolanaLimitOrderPanel />
             </div>
             <div>
               <RecentSwaps />

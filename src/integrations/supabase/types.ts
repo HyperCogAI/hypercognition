@@ -5273,6 +5273,201 @@ export type Database = {
         }
         Relationships: []
       }
+      solana_limit_orders: {
+        Row: {
+          amount_in: number
+          amount_out: number
+          created_at: string | null
+          expires_at: string | null
+          filled_amount: number | null
+          filled_at: string | null
+          id: string
+          limit_price: number
+          mint_in: string
+          mint_out: string
+          order_type: string
+          pool_id: string | null
+          slippage_tolerance: number | null
+          status: string
+          token_in: string
+          token_out: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_in: number
+          amount_out: number
+          created_at?: string | null
+          expires_at?: string | null
+          filled_amount?: number | null
+          filled_at?: string | null
+          id?: string
+          limit_price: number
+          mint_in: string
+          mint_out: string
+          order_type: string
+          pool_id?: string | null
+          slippage_tolerance?: number | null
+          status?: string
+          token_in: string
+          token_out: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_in?: number
+          amount_out?: number
+          created_at?: string | null
+          expires_at?: string | null
+          filled_amount?: number | null
+          filled_at?: string | null
+          id?: string
+          limit_price?: number
+          mint_in?: string
+          mint_out?: string
+          order_type?: string
+          pool_id?: string | null
+          slippage_tolerance?: number | null
+          status?: string
+          token_in?: string
+          token_out?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_limit_orders_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "solana_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_order_book: {
+        Row: {
+          ask_price: number | null
+          ask_volume: number | null
+          bid_price: number | null
+          bid_volume: number | null
+          pool_id: string
+          spread: number | null
+          timestamp: string | null
+        }
+        Insert: {
+          ask_price?: number | null
+          ask_volume?: number | null
+          bid_price?: number | null
+          bid_volume?: number | null
+          pool_id: string
+          spread?: number | null
+          timestamp?: string | null
+        }
+        Update: {
+          ask_price?: number | null
+          ask_volume?: number | null
+          bid_price?: number | null
+          bid_volume?: number | null
+          pool_id?: string
+          spread?: number | null
+          timestamp?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_order_book_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: true
+            referencedRelation: "solana_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_order_executions: {
+        Row: {
+          executed_amount: number
+          executed_at: string | null
+          execution_price: number
+          fee_amount: number | null
+          id: string
+          metadata: Json | null
+          order_id: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          executed_amount: number
+          executed_at?: string | null
+          execution_price: number
+          fee_amount?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          executed_amount?: number
+          executed_at?: string | null
+          execution_price?: number
+          fee_amount?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "solana_order_executions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "solana_limit_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      solana_pools: {
+        Row: {
+          base_mint: string
+          base_token: string
+          created_at: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          pool_address: string | null
+          quote_mint: string
+          quote_token: string
+          tvl: number | null
+          updated_at: string | null
+          volume_24h: number | null
+        }
+        Insert: {
+          base_mint: string
+          base_token: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          pool_address?: string | null
+          quote_mint: string
+          quote_token: string
+          tvl?: number | null
+          updated_at?: string | null
+          volume_24h?: number | null
+        }
+        Update: {
+          base_mint?: string
+          base_token?: string
+          created_at?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          pool_address?: string | null
+          quote_mint?: string
+          quote_token?: string
+          tvl?: number | null
+          updated_at?: string | null
+          volume_24h?: number | null
+        }
+        Relationships: []
+      }
       solana_portfolios: {
         Row: {
           amount: number
@@ -7236,6 +7431,10 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      expire_solana_limit_orders: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       generate_referral_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -7274,6 +7473,16 @@ export type Database = {
           total_earnings: number
           total_referrals: number
           user_id: string
+        }[]
+      }
+      get_solana_order_book_summary: {
+        Args: { p_pool_id: string }
+        Returns: {
+          ask_price: number
+          ask_volume: number
+          bid_price: number
+          bid_volume: number
+          spread: number
         }[]
       }
       get_user_agent_count_today: {
@@ -7350,6 +7559,10 @@ export type Database = {
         Args: { p_pool_id: string }
         Returns: Json
       }
+      match_solana_limit_orders: {
+        Args: { p_pool_id: string }
+        Returns: Json
+      }
       process_referral_conversion: {
         Args: { p_referral_code: string; p_referred_user_id: string }
         Returns: Json
@@ -7359,6 +7572,10 @@ export type Database = {
         Returns: undefined
       }
       update_order_book_from_orders: {
+        Args: Record<PropertyKey, never>
+        Returns: undefined
+      }
+      update_solana_order_book: {
         Args: Record<PropertyKey, never>
         Returns: undefined
       }
