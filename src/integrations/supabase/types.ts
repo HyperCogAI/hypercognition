@@ -2920,6 +2920,74 @@ export type Database = {
           },
         ]
       }
+      language_request_votes: {
+        Row: {
+          created_at: string
+          id: string
+          request_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          request_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          request_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "language_request_votes_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "language_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      language_requests: {
+        Row: {
+          created_at: string
+          id: string
+          language_code: string
+          language_name: string
+          native_name: string | null
+          priority: string
+          status: string
+          updated_at: string
+          user_id: string
+          votes: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          language_code: string
+          language_name: string
+          native_name?: string | null
+          priority?: string
+          status?: string
+          updated_at?: string
+          user_id: string
+          votes?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          language_code?: string
+          language_name?: string
+          native_name?: string | null
+          priority?: string
+          status?: string
+          updated_at?: string
+          user_id?: string
+          votes?: number
+        }
+        Relationships: []
+      }
       liquidity_pools: {
         Row: {
           apy: number
@@ -5381,6 +5449,48 @@ export type Database = {
           },
         ]
       }
+      supported_languages: {
+        Row: {
+          completion_percentage: number
+          created_at: string
+          flag_emoji: string | null
+          id: string
+          is_active: boolean
+          is_rtl: boolean
+          language_code: string
+          language_name: string
+          native_name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          completion_percentage?: number
+          created_at?: string
+          flag_emoji?: string | null
+          id?: string
+          is_active?: boolean
+          is_rtl?: boolean
+          language_code: string
+          language_name: string
+          native_name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          completion_percentage?: number
+          created_at?: string
+          flag_emoji?: string | null
+          id?: string
+          is_active?: boolean
+          is_rtl?: boolean
+          language_code?: string
+          language_name?: string
+          native_name?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: []
+      }
       suspicious_transactions: {
         Row: {
           amount: number
@@ -5959,6 +6069,39 @@ export type Database = {
         }
         Relationships: []
       }
+      trading_regions: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          region_code: string
+          region_name: string
+          sort_order: number
+          supported_markets: Json
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          region_code: string
+          region_name: string
+          sort_order?: number
+          supported_markets?: Json
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          region_code?: string
+          region_name?: string
+          sort_order?: number
+          supported_markets?: Json
+          updated_at?: string
+        }
+        Relationships: []
+      }
       trading_signals: {
         Row: {
           agent_id: string
@@ -6449,6 +6592,42 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      user_language_preferences: {
+        Row: {
+          auto_translate: boolean
+          created_at: string
+          id: string
+          language_code: string
+          local_timezone: boolean
+          region_code: string
+          rtl_enabled: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auto_translate?: boolean
+          created_at?: string
+          id?: string
+          language_code: string
+          local_timezone?: boolean
+          region_code?: string
+          rtl_enabled?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auto_translate?: boolean
+          created_at?: string
+          id?: string
+          language_code?: string
+          local_timezone?: boolean
+          region_code?: string
+          rtl_enabled?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       user_profiles: {
         Row: {
@@ -7086,6 +7265,10 @@ export type Database = {
       }
       validate_url: {
         Args: { url_param: string }
+        Returns: Json
+      }
+      vote_language_request: {
+        Args: { request_id_param: string }
         Returns: Json
       }
     }

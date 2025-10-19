@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -6,34 +6,73 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Switch } from "@/components/ui/switch"
 import { Label } from "@/components/ui/label"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Globe, Languages, MapPin, Clock, Users, TrendingUp, CheckCircle } from "lucide-react"
+import { Input } from "@/components/ui/input"
+import { Globe, Languages, MapPin, Clock, Users, TrendingUp, CheckCircle, ThumbsUp, Loader2 } from "lucide-react"
 import { SEOHead } from "@/components/seo/SEOHead"
+import { useLanguagePreferences } from "@/hooks/useLanguagePreferences"
+import { useLanguageRequests } from "@/hooks/useLanguageRequests"
 
 const MultiLanguage = () => {
+  const { 
+    preferences, 
+    supportedLanguages, 
+    tradingRegions, 
+    loading: prefsLoading, 
+    savePreferences 
+  } = useLanguagePreferences();
+  
+  const {
+    requests,
+    loading: requestsLoading,
+    createRequest,
+    voteRequest
+  } = useLanguageRequests();
+
   const [selectedLanguage, setSelectedLanguage] = useState("en")
   const [selectedRegion, setSelectedRegion] = useState("global")
   const [rtlEnabled, setRtlEnabled] = useState(false)
+  const [autoTranslate, setAutoTranslate] = useState(true)
+  const [localTimezone, setLocalTimezone] = useState(true)
+  const [newLanguageCode, setNewLanguageCode] = useState("")
+  const [newLanguageName, setNewLanguageName] = useState("")
+  const [saving, setSaving] = useState(false)
 
-  const languages = [
-    { code: "en", name: "English", nativeName: "English", flag: "🇺🇸", completion: 100 },
-    { code: "es", name: "Spanish", nativeName: "Español", flag: "🇪🇸", completion: 95 },
-    { code: "fr", name: "French", nativeName: "Français", flag: "🇫🇷", completion: 90 },
-    { code: "de", name: "German", nativeName: "Deutsch", flag: "🇩🇪", completion: 88 },
-    { code: "zh", name: "Chinese", nativeName: "中文", flag: "🇨🇳", completion: 85 },
-    { code: "ja", name: "Japanese", nativeName: "日本語", flag: "🇯🇵", completion: 82 },
-    { code: "ko", name: "Korean", nativeName: "한국어", flag: "🇰🇷", completion: 80 },
-    { code: "ar", name: "Arabic", nativeName: "العربية", flag: "🇸🇦", completion: 75, rtl: true },
-    { code: "pt", name: "Portuguese", nativeName: "Português", flag: "🇵🇹", completion: 78 },
-    { code: "ru", name: "Russian", nativeName: "Русский", flag: "🇷🇺", completion: 70 }
-  ]
+  // Load user preferences when available
+  useEffect(() => {
+    if (preferences) {
+      setSelectedLanguage(preferences.language_code);
+      setSelectedRegion(preferences.region_code);
+      setRtlEnabled(preferences.rtl_enabled);
+      setAutoTranslate(preferences.auto_translate);
+      setLocalTimezone(preferences.local_timezone);
+    }
+  }, [preferences]);
 
-  const regions = [
-    { code: "global", name: "Global", markets: ["NYSE", "NASDAQ", "LSE", "TSE"] },
-    { code: "americas", name: "Americas", markets: ["NYSE", "NASDAQ", "TSX", "B3"] },
-    { code: "europe", name: "Europe", markets: ["LSE", "Euronext", "DAX", "SIX"] },
-    { code: "asia", name: "Asia Pacific", markets: ["TSE", "HKEX", "SGX", "ASX"] },
-    { code: "mena", name: "MENA", markets: ["TADAWUL", "DFM", "QE", "EGX"] }
-  ]
+  const handleSavePreferences = async () => {
+    setSaving(true);
+    await savePreferences({
+      language_code: selectedLanguage,
+      region_code: selectedRegion,
+      rtl_enabled: rtlEnabled,
+      auto_translate: autoTranslate,
+      local_timezone: localTimezone
+    } as any);
+    setSaving(false);
+  };
+
+  const handleSubmitRequest = async () => {
+    if (!newLanguageCode || !newLanguageName) return;
+    
+    const success = await createRequest(newLanguageCode, newLanguageName);
+    if (success) {
+      setNewLanguageCode("");
+      setNewLanguageName("");
+    }
+  };
+
+  const handleVote = async (requestId: string) => {
+    await voteRequest(requestId);
+  };
 
   const marketData = {
     totalUsers: "2.4M+",
@@ -42,17 +81,20 @@ const MultiLanguage = () => {
     tradingVolume: "$12.8B"
   }
 
-  const upcomingLanguages = [
-    { name: "Hindi", nativeName: "हिन्दी", flag: "🇮🇳", eta: "Q2 2024" },
-    { name: "Italian", nativeName: "Italiano", flag: "🇮🇹", eta: "Q2 2024" },
-    { name: "Dutch", nativeName: "Nederlands", flag: "🇳🇱", eta: "Q3 2024" },
-    { name: "Turkish", nativeName: "Türkçe", flag: "🇹🇷", eta: "Q3 2024" }
-  ]
-
   const getCompletionColor = (completion: number) => {
     if (completion >= 95) return "text-green-500"
     if (completion >= 80) return "text-yellow-500"
     return "text-orange-500"
+  };
+
+  if (prefsLoading && requestsLoading) {
+    return (
+      <div className="container mx-auto px-3 md:px-4 py-4 md:py-8">
+        <div className="flex items-center justify-center min-h-[400px]">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+        </div>
+      </div>
+    );
   }
 
   return (
@@ -115,24 +157,24 @@ const MultiLanguage = () => {
 
           <TabsContent value="languages" className="space-y-6">
             <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-              {languages.map((language) => (
+              {supportedLanguages.map((language) => (
                 <Card 
-                  key={language.code} 
+                  key={language.language_code} 
                   className={`bg-card/50 backdrop-blur-sm border-border/50 cursor-pointer transition-all hover:border-primary/50 ${
-                    selectedLanguage === language.code ? 'ring-2 ring-primary' : ''
+                    selectedLanguage === language.language_code ? 'ring-2 ring-primary' : ''
                   }`}
-                  onClick={() => setSelectedLanguage(language.code)}
+                  onClick={() => setSelectedLanguage(language.language_code)}
                 >
                   <CardContent className="p-6">
                     <div className="flex justify-between items-start mb-4">
                       <div className="flex items-center gap-3">
-                        <span className="text-2xl">{language.flag}</span>
+                        <span className="text-2xl">{language.flag_emoji || '🌐'}</span>
                         <div>
-                          <div className="font-semibold">{language.name}</div>
-                          <div className="text-sm text-muted-foreground">{language.nativeName}</div>
+                          <div className="font-semibold">{language.language_name}</div>
+                          <div className="text-sm text-muted-foreground">{language.native_name}</div>
                         </div>
                       </div>
-                      {language.completion === 100 && (
+                      {language.completion_percentage === 100 && (
                         <CheckCircle className="h-5 w-5 text-green-500" />
                       )}
                     </div>
@@ -140,17 +182,17 @@ const MultiLanguage = () => {
                     <div className="space-y-2">
                       <div className="flex justify-between text-sm">
                         <span>Translation Progress</span>
-                        <span className={getCompletionColor(language.completion)}>
-                          {language.completion}%
+                        <span className={getCompletionColor(language.completion_percentage)}>
+                          {language.completion_percentage}%
                         </span>
                       </div>
                       <div className="w-full bg-muted rounded-full h-2">
                         <div 
                           className="h-2 rounded-full bg-primary transition-all"
-                          style={{ width: `${language.completion}%` }}
+                          style={{ width: `${language.completion_percentage}%` }}
                         />
                       </div>
-                      {language.rtl && (
+                      {language.is_rtl && (
                         <Badge variant="outline" className="text-xs">RTL Support</Badge>
                       )}
                     </div>
@@ -162,12 +204,12 @@ const MultiLanguage = () => {
 
           <TabsContent value="regions" className="space-y-6">
             <div className="grid gap-6 md:grid-cols-2">
-              {regions.map((region) => (
-                <Card key={region.code} className="bg-card/50 backdrop-blur-sm border-border/50">
+              {tradingRegions.map((region) => (
+                <Card key={region.region_code} className="bg-card/50 backdrop-blur-sm border-border/50">
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
                       <MapPin className="h-5 w-5" />
-                      {region.name}
+                      {region.region_name}
                     </CardTitle>
                     <CardDescription>
                       Regional trading markets and compliance
@@ -177,17 +219,17 @@ const MultiLanguage = () => {
                     <div>
                       <div className="text-sm font-medium mb-2">Supported Markets</div>
                       <div className="flex flex-wrap gap-2">
-                        {region.markets.map((market) => (
+                        {Array.isArray(region.supported_markets) && region.supported_markets.map((market: string) => (
                           <Badge key={market} variant="secondary">{market}</Badge>
                         ))}
                       </div>
                     </div>
                     <Button 
-                      variant={selectedRegion === region.code ? "default" : "outline"}
+                      variant={selectedRegion === region.region_code ? "default" : "outline"}
                       className="w-full"
-                      onClick={() => setSelectedRegion(region.code)}
+                      onClick={() => setSelectedRegion(region.region_code)}
                     >
-                      {selectedRegion === region.code ? "Selected" : "Select Region"}
+                      {selectedRegion === region.region_code ? "Selected" : "Select Region"}
                     </Button>
                   </CardContent>
                 </Card>
@@ -212,11 +254,11 @@ const MultiLanguage = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {languages.map((lang) => (
-                          <SelectItem key={lang.code} value={lang.code}>
+                        {supportedLanguages.map((lang) => (
+                          <SelectItem key={lang.language_code} value={lang.language_code}>
                             <div className="flex items-center gap-2">
-                              <span>{lang.flag}</span>
-                              <span>{lang.name}</span>
+                              <span>{lang.flag_emoji || '🌐'}</span>
+                              <span>{lang.language_name}</span>
                             </div>
                           </SelectItem>
                         ))}
@@ -231,9 +273,9 @@ const MultiLanguage = () => {
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        {regions.map((region) => (
-                          <SelectItem key={region.code} value={region.code}>
-                            {region.name}
+                        {tradingRegions.map((region) => (
+                          <SelectItem key={region.region_code} value={region.region_code}>
+                            {region.region_name}
                           </SelectItem>
                         ))}
                       </SelectContent>
@@ -251,16 +293,37 @@ const MultiLanguage = () => {
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Switch id="auto-translate" defaultChecked />
+                  <Switch 
+                    id="auto-translate" 
+                    checked={autoTranslate}
+                    onCheckedChange={setAutoTranslate}
+                  />
                   <Label htmlFor="auto-translate">Auto-translate market news</Label>
                 </div>
 
                 <div className="flex items-center space-x-2">
-                  <Switch id="local-time" defaultChecked />
+                  <Switch 
+                    id="local-time" 
+                    checked={localTimezone}
+                    onCheckedChange={setLocalTimezone}
+                  />
                   <Label htmlFor="local-time">Show times in local timezone</Label>
                 </div>
 
-                <Button className="w-full">Save Preferences</Button>
+                <Button 
+                  className="w-full" 
+                  onClick={handleSavePreferences}
+                  disabled={saving}
+                >
+                  {saving ? (
+                    <>
+                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    'Save Preferences'
+                  )}
+                </Button>
               </CardContent>
             </Card>
           </TabsContent>
@@ -269,27 +332,47 @@ const MultiLanguage = () => {
             <Card className="bg-card/50 backdrop-blur-sm border-border/50">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
-                  <Clock className="h-5 w-5" />
-                  Upcoming Languages
+                  <Languages className="h-5 w-5" />
+                  Community Requests
                 </CardTitle>
                 <CardDescription>
-                  Languages currently in development
+                  Vote for languages you'd like to see added
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="space-y-4">
-                  {upcomingLanguages.map((lang, index) => (
-                    <div key={index} className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
-                      <div className="flex items-center gap-3">
-                        <span className="text-xl">{lang.flag}</span>
-                        <div>
-                          <div className="font-medium">{lang.name}</div>
-                          <div className="text-sm text-muted-foreground">{lang.nativeName}</div>
+                <div className="space-y-3">
+                  {requests.length === 0 ? (
+                    <p className="text-center text-muted-foreground py-8">
+                      No language requests yet. Be the first to request one!
+                    </p>
+                  ) : (
+                    requests.map((req) => (
+                      <div key={req.id} className="flex justify-between items-center p-4 bg-muted/30 rounded-lg">
+                        <div className="flex items-center gap-3 flex-1">
+                          <div>
+                            <div className="font-medium">{req.language_name}</div>
+                            {req.native_name && (
+                              <div className="text-sm text-muted-foreground">{req.native_name}</div>
+                            )}
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-3">
+                          <Badge variant={req.status === 'approved' ? 'default' : 'outline'}>
+                            {req.status}
+                          </Badge>
+                          <Button
+                            size="sm"
+                            variant={req.user_voted ? 'default' : 'outline'}
+                            onClick={() => handleVote(req.id)}
+                            className="min-w-[80px]"
+                          >
+                            <ThumbsUp className={`h-4 w-4 mr-1 ${req.user_voted ? 'fill-current' : ''}`} />
+                            {req.votes}
+                          </Button>
                         </div>
                       </div>
-                      <Badge variant="outline">{lang.eta}</Badge>
-                    </div>
-                  ))}
+                    ))
+                  )}
                 </div>
               </CardContent>
             </Card>
@@ -298,25 +381,39 @@ const MultiLanguage = () => {
               <CardHeader>
                 <CardTitle>Request a Language</CardTitle>
                 <CardDescription>
-                  Don't see your language? Let us know and we'll prioritize it
+                  Don't see your language? Submit a request and gather community support
                 </CardDescription>
               </CardHeader>
               <CardContent>
-                <div className="flex gap-4">
-                  <Select>
-                    <SelectTrigger className="flex-1">
-                      <SelectValue placeholder="Select language to request" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="vi">Vietnamese</SelectItem>
-                      <SelectItem value="th">Thai</SelectItem>
-                      <SelectItem value="id">Indonesian</SelectItem>
-                      <SelectItem value="ms">Malay</SelectItem>
-                      <SelectItem value="sv">Swedish</SelectItem>
-                      <SelectItem value="no">Norwegian</SelectItem>
-                    </SelectContent>
-                  </Select>
-                  <Button>Submit Request</Button>
+                <div className="space-y-4">
+                  <div className="grid gap-4 md:grid-cols-2">
+                    <div className="space-y-2">
+                      <Label htmlFor="lang-code">Language Code</Label>
+                      <Input
+                        id="lang-code"
+                        placeholder="e.g., vi, th, id"
+                        value={newLanguageCode}
+                        onChange={(e) => setNewLanguageCode(e.target.value)}
+                        maxLength={5}
+                      />
+                    </div>
+                    <div className="space-y-2">
+                      <Label htmlFor="lang-name">Language Name</Label>
+                      <Input
+                        id="lang-name"
+                        placeholder="e.g., Vietnamese"
+                        value={newLanguageName}
+                        onChange={(e) => setNewLanguageName(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                  <Button 
+                    className="w-full"
+                    onClick={handleSubmitRequest}
+                    disabled={!newLanguageCode || !newLanguageName}
+                  >
+                    Submit Request
+                  </Button>
                 </div>
               </CardContent>
             </Card>
