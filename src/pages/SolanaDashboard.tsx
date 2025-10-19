@@ -173,45 +173,14 @@ const SolanaDashboard = () => {
             <CardHeader>
               <CardTitle>Solana Staking</CardTitle>
               <CardDescription>
-                Stake your SOL and SPL tokens to earn rewards
+                Stake your SOL and SPL tokens to earn rewards - Features coming soon
               </CardDescription>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <Card className="p-4">
-                    <h4 className="font-semibold mb-2">SOL Staking</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Stake SOL to secure the network
-                    </p>
-                    <div className="text-lg font-bold text-green-500">5.2% APY</div>
-                    <Button size="sm" className="w-full mt-2" disabled>
-                      Coming Soon
-                    </Button>
-                  </Card>
-                  
-                  <Card className="p-4">
-                    <h4 className="font-semibold mb-2">Liquid Staking</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Stake while keeping liquidity
-                    </p>
-                    <div className="text-lg font-bold text-blue-500">4.8% APY</div>
-                    <Button size="sm" className="w-full mt-2" disabled>
-                      Coming Soon
-                    </Button>
-                  </Card>
-                  
-                  <Card className="p-4">
-                    <h4 className="font-semibold mb-2">DeFi Pools</h4>
-                    <p className="text-sm text-muted-foreground mb-3">
-                      Provide liquidity to earn fees
-                    </p>
-                    <div className="text-lg font-bold text-purple-500">12.5% APY</div>
-                    <Button size="sm" className="w-full mt-2" disabled>
-                      Coming Soon
-                    </Button>
-                  </Card>
-                </div>
+              <div className="text-center py-8">
+                <p className="text-muted-foreground">
+                  Staking features are currently under development. Check back soon for SOL staking, liquid staking, and DeFi pool options.
+                </p>
               </div>
             </CardContent>
           </Card>
