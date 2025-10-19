@@ -2315,6 +2315,118 @@ export type Database = {
         }
         Relationships: []
       }
+      defi_limit_orders: {
+        Row: {
+          amount_in: number
+          amount_out: number
+          created_at: string
+          expires_at: string | null
+          filled_amount: number | null
+          filled_at: string | null
+          id: string
+          limit_price: number
+          metadata: Json | null
+          order_type: string
+          pool_id: string
+          slippage_tolerance: number | null
+          status: string
+          token_in: string
+          token_out: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          amount_in: number
+          amount_out: number
+          created_at?: string
+          expires_at?: string | null
+          filled_amount?: number | null
+          filled_at?: string | null
+          id?: string
+          limit_price: number
+          metadata?: Json | null
+          order_type: string
+          pool_id: string
+          slippage_tolerance?: number | null
+          status?: string
+          token_in: string
+          token_out: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          amount_in?: number
+          amount_out?: number
+          created_at?: string
+          expires_at?: string | null
+          filled_amount?: number | null
+          filled_at?: string | null
+          id?: string
+          limit_price?: number
+          metadata?: Json | null
+          order_type?: string
+          pool_id?: string
+          slippage_tolerance?: number | null
+          status?: string
+          token_in?: string
+          token_out?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defi_limit_orders_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "defi_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      defi_order_book: {
+        Row: {
+          ask_price: number
+          ask_volume: number
+          bid_price: number
+          bid_volume: number
+          id: string
+          pool_id: string
+          spread: number
+          timestamp: string
+          token_pair: string
+        }
+        Insert: {
+          ask_price: number
+          ask_volume?: number
+          bid_price: number
+          bid_volume?: number
+          id?: string
+          pool_id: string
+          spread?: number
+          timestamp?: string
+          token_pair: string
+        }
+        Update: {
+          ask_price?: number
+          ask_volume?: number
+          bid_price?: number
+          bid_volume?: number
+          id?: string
+          pool_id?: string
+          spread?: number
+          timestamp?: string
+          token_pair?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defi_order_book_pool_id_fkey"
+            columns: ["pool_id"]
+            isOneToOne: false
+            referencedRelation: "defi_pools"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       defi_pools: {
         Row: {
           apy: number
@@ -7098,6 +7210,16 @@ export type Database = {
       get_developer_public_stats: {
         Args: { developer_profile_id: string }
         Returns: Json
+      }
+      get_order_book_summary: {
+        Args: { p_pool_id: string }
+        Returns: {
+          ask_price: number
+          ask_volume: number
+          bid_price: number
+          bid_volume: number
+          spread: number
+        }[]
       }
       get_referral_leaderboard: {
         Args: { limit_count?: number }

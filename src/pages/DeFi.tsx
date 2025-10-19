@@ -6,7 +6,8 @@ import { StakingDashboard } from '@/components/defi/StakingDashboard';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { SearchInput } from '@/components/ui/search-input';
-import { ArrowLeft, Coins, Lock, TrendingUp, Zap, Repeat } from 'lucide-react';
+import { ArrowLeft, Coins, Lock, TrendingUp, Zap, Repeat, LineChart } from 'lucide-react';
+import { LimitOrderPanel } from '@/components/defi/LimitOrderPanel';
 import { EVMDEX } from '@/components/evm/EVMDEX';
 import { EVMSwapHistory } from '@/components/evm/EVMSwapHistory';
 import { useEVMSwap } from '@/hooks/useEVMSwap';
@@ -173,10 +174,14 @@ const DeFi = () => {
 
         {/* Tabs */}
         <Tabs defaultValue="dex" className="w-full">
-          <TabsList className="w-full !grid grid-cols-2 lg:!flex lg:flex-nowrap !h-auto lg:h-10 gap-1 lg:gap-2 p-0.5 lg:p-1">
+          <TabsList className="w-full !grid grid-cols-3 lg:!flex lg:flex-nowrap !h-auto lg:h-10 gap-1 lg:gap-2 p-0.5 lg:p-1">
             <TabsTrigger value="dex" className="w-full gap-1.5 text-xs lg:text-sm">
               <Repeat className="h-3 w-3 lg:h-4 lg:w-4" />
               <span>DEX</span>
+            </TabsTrigger>
+            <TabsTrigger value="limit" className="w-full gap-1.5 text-xs lg:text-sm">
+              <LineChart className="h-3 w-3 lg:h-4 lg:w-4" />
+              <span>Limit Orders</span>
             </TabsTrigger>
             <TabsTrigger value="pools" className="w-full gap-1.5 text-xs lg:text-sm">
               <TrendingUp className="h-3 w-3 lg:h-4 lg:w-4" />
@@ -197,6 +202,10 @@ const DeFi = () => {
               <EVMDEX />
               <EVMSwapHistory swaps={swapHistory} />
             </div>
+          </TabsContent>
+
+          <TabsContent value="limit" className="mt-6">
+            <LimitOrderPanel pools={pools} />
           </TabsContent>
 
           <TabsContent value="pools" className="mt-6">
