@@ -2427,6 +2427,47 @@ export type Database = {
           },
         ]
       }
+      defi_order_executions: {
+        Row: {
+          executed_amount: number
+          executed_at: string | null
+          execution_price: number
+          fee_amount: number | null
+          id: string
+          metadata: Json | null
+          order_id: string
+          transaction_hash: string | null
+        }
+        Insert: {
+          executed_amount: number
+          executed_at?: string | null
+          execution_price: number
+          fee_amount?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id: string
+          transaction_hash?: string | null
+        }
+        Update: {
+          executed_amount?: number
+          executed_at?: string | null
+          execution_price?: number
+          fee_amount?: number | null
+          id?: string
+          metadata?: Json | null
+          order_id?: string
+          transaction_hash?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "defi_order_executions_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "defi_limit_orders"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       defi_pools: {
         Row: {
           apy: number
@@ -7191,6 +7232,10 @@ export type Database = {
         }
         Returns: boolean
       }
+      expire_limit_orders: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
       generate_referral_code: {
         Args: Record<PropertyKey, never>
         Returns: string
@@ -7301,12 +7346,20 @@ export type Database = {
         Args: { target_user_id?: string }
         Returns: undefined
       }
+      match_limit_orders: {
+        Args: { p_pool_id: string }
+        Returns: Json
+      }
       process_referral_conversion: {
         Args: { p_referral_code: string; p_referred_user_id: string }
         Returns: Json
       }
       update_community_user_stats: {
         Args: { p_increment?: number; p_stat_type: string; p_user_id: string }
+        Returns: undefined
+      }
+      update_order_book_from_orders: {
+        Args: Record<PropertyKey, never>
         Returns: undefined
       }
       upgrade_subscription: {

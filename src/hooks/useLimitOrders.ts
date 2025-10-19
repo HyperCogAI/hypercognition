@@ -111,6 +111,11 @@ export const useLimitOrders = () => {
         description: "Limit order created successfully",
       });
 
+      // Trigger order matching for this pool
+      await supabase.functions.invoke('process-limit-orders', {
+        body: { action: 'match_orders', poolId: orderData.pool_id }
+      });
+
       await fetchOrders();
       return data;
     } catch (error) {
