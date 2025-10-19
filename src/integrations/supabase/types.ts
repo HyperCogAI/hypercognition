@@ -1068,27 +1068,301 @@ export type Database = {
       ai_assistant_logs: {
         Row: {
           context: string | null
+          cost: number | null
           created_at: string | null
+          feedback_rating: number | null
           id: string
           query: string
           response: string
+          session_id: string | null
+          tokens_used: number | null
           user_id: string | null
         }
         Insert: {
           context?: string | null
+          cost?: number | null
           created_at?: string | null
+          feedback_rating?: number | null
           id?: string
           query: string
           response: string
+          session_id?: string | null
+          tokens_used?: number | null
           user_id?: string | null
         }
         Update: {
           context?: string | null
+          cost?: number | null
           created_at?: string | null
+          feedback_rating?: number | null
           id?: string
           query?: string
           response?: string
+          session_id?: string | null
+          tokens_used?: number | null
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      ai_backtest_results: {
+        Row: {
+          completed_at: string | null
+          created_at: string | null
+          detailed_results: Json | null
+          end_date: string
+          error_message: string | null
+          id: string
+          max_drawdown: number | null
+          period: string
+          profit_factor: number | null
+          sharpe_ratio: number | null
+          start_date: string
+          status: Database["public"]["Enums"]["backtest_status"] | null
+          strategy_id: string
+          total_return: number | null
+          total_trades: number | null
+          user_id: string
+          win_rate: number | null
+        }
+        Insert: {
+          completed_at?: string | null
+          created_at?: string | null
+          detailed_results?: Json | null
+          end_date: string
+          error_message?: string | null
+          id?: string
+          max_drawdown?: number | null
+          period: string
+          profit_factor?: number | null
+          sharpe_ratio?: number | null
+          start_date: string
+          status?: Database["public"]["Enums"]["backtest_status"] | null
+          strategy_id: string
+          total_return?: number | null
+          total_trades?: number | null
+          user_id: string
+          win_rate?: number | null
+        }
+        Update: {
+          completed_at?: string | null
+          created_at?: string | null
+          detailed_results?: Json | null
+          end_date?: string
+          error_message?: string | null
+          id?: string
+          max_drawdown?: number | null
+          period?: string
+          profit_factor?: number | null
+          sharpe_ratio?: number | null
+          start_date?: string
+          status?: Database["public"]["Enums"]["backtest_status"] | null
+          strategy_id?: string
+          total_return?: number | null
+          total_trades?: number | null
+          user_id?: string
+          win_rate?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_backtest_results_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "ai_trading_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_models: {
+        Row: {
+          accuracy: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_system: boolean | null
+          last_trained_at: string | null
+          model_type: Database["public"]["Enums"]["ai_model_type"]
+          name: string
+          parameters: Json | null
+          performance_metrics: Json | null
+          status: Database["public"]["Enums"]["ai_model_status"] | null
+          training_data_description: string | null
+          updated_at: string | null
+          version: string
+        }
+        Insert: {
+          accuracy?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          last_trained_at?: string | null
+          model_type: Database["public"]["Enums"]["ai_model_type"]
+          name: string
+          parameters?: Json | null
+          performance_metrics?: Json | null
+          status?: Database["public"]["Enums"]["ai_model_status"] | null
+          training_data_description?: string | null
+          updated_at?: string | null
+          version: string
+        }
+        Update: {
+          accuracy?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_system?: boolean | null
+          last_trained_at?: string | null
+          model_type?: Database["public"]["Enums"]["ai_model_type"]
+          name?: string
+          parameters?: Json | null
+          performance_metrics?: Json | null
+          status?: Database["public"]["Enums"]["ai_model_status"] | null
+          training_data_description?: string | null
+          updated_at?: string | null
+          version?: string
+        }
+        Relationships: []
+      }
+      ai_strategy_subscriptions: {
+        Row: {
+          created_at: string | null
+          id: string
+          is_auto_trade: boolean | null
+          max_position_size: number | null
+          risk_limit: number | null
+          status: Database["public"]["Enums"]["subscription_status"] | null
+          strategy_id: string
+          total_pnl: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          is_auto_trade?: boolean | null
+          max_position_size?: number | null
+          risk_limit?: number | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          strategy_id: string
+          total_pnl?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          is_auto_trade?: boolean | null
+          max_position_size?: number | null
+          risk_limit?: number | null
+          status?: Database["public"]["Enums"]["subscription_status"] | null
+          strategy_id?: string
+          total_pnl?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_strategy_subscriptions_strategy_id_fkey"
+            columns: ["strategy_id"]
+            isOneToOne: false
+            referencedRelation: "ai_trading_strategies"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      ai_trading_sessions: {
+        Row: {
+          cost: number | null
+          created_at: string | null
+          duration_seconds: number | null
+          ended_at: string | null
+          id: string
+          outcome: string | null
+          session_data: Json | null
+          session_type: Database["public"]["Enums"]["ai_session_type"]
+          tokens_used: number | null
+          user_id: string
+        }
+        Insert: {
+          cost?: number | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          outcome?: string | null
+          session_data?: Json | null
+          session_type: Database["public"]["Enums"]["ai_session_type"]
+          tokens_used?: number | null
+          user_id: string
+        }
+        Update: {
+          cost?: number | null
+          created_at?: string | null
+          duration_seconds?: number | null
+          ended_at?: string | null
+          id?: string
+          outcome?: string | null
+          session_data?: Json | null
+          session_type?: Database["public"]["Enums"]["ai_session_type"]
+          tokens_used?: number | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_trading_strategies: {
+        Row: {
+          avg_return: number | null
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          is_system: boolean | null
+          max_drawdown: number | null
+          model_version: string | null
+          name: string
+          parameters: Json | null
+          sharpe_ratio: number | null
+          strategy_type: Database["public"]["Enums"]["ai_strategy_type"]
+          total_trades: number | null
+          updated_at: string | null
+          user_id: string | null
+          win_rate: number | null
+        }
+        Insert: {
+          avg_return?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          max_drawdown?: number | null
+          model_version?: string | null
+          name: string
+          parameters?: Json | null
+          sharpe_ratio?: number | null
+          strategy_type: Database["public"]["Enums"]["ai_strategy_type"]
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          win_rate?: number | null
+        }
+        Update: {
+          avg_return?: number | null
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          is_system?: boolean | null
+          max_drawdown?: number | null
+          model_version?: string | null
+          name?: string
+          parameters?: Json | null
+          sharpe_ratio?: number | null
+          strategy_type?: Database["public"]["Enums"]["ai_strategy_type"]
+          total_trades?: number | null
+          updated_at?: string | null
+          user_id?: string | null
+          win_rate?: number | null
         }
         Relationships: []
       }
@@ -6452,20 +6726,31 @@ export type Database = {
       }
       trading_signals: {
         Row: {
+          actual_result: number | null
           agent_id: string
+          ai_model_id: string | null
           confidence: number
+          confidence_score: number | null
           created_at: string
           entry_price: number
+          execution_status:
+            | Database["public"]["Enums"]["signal_execution_status"]
+            | null
+          exit_price: number | null
           expires_at: string | null
           id: string
           likes_count: number
           metadata: Json | null
           reasoning: string
+          risk_level: Database["public"]["Enums"]["risk_level"] | null
           shares_count: number
           signal_type: string
           status: string
           stop_loss: number | null
+          stop_loss_price: number | null
+          take_profit_price: number | null
           target_price: number | null
+          technical_indicators: Json | null
           timeframe: string
           triggered_at: string | null
           updated_at: string
@@ -6473,20 +6758,31 @@ export type Database = {
           views_count: number
         }
         Insert: {
+          actual_result?: number | null
           agent_id: string
+          ai_model_id?: string | null
           confidence: number
+          confidence_score?: number | null
           created_at?: string
           entry_price: number
+          execution_status?:
+            | Database["public"]["Enums"]["signal_execution_status"]
+            | null
+          exit_price?: number | null
           expires_at?: string | null
           id?: string
           likes_count?: number
           metadata?: Json | null
           reasoning: string
+          risk_level?: Database["public"]["Enums"]["risk_level"] | null
           shares_count?: number
           signal_type: string
           status?: string
           stop_loss?: number | null
+          stop_loss_price?: number | null
+          take_profit_price?: number | null
           target_price?: number | null
+          technical_indicators?: Json | null
           timeframe?: string
           triggered_at?: string | null
           updated_at?: string
@@ -6494,20 +6790,31 @@ export type Database = {
           views_count?: number
         }
         Update: {
+          actual_result?: number | null
           agent_id?: string
+          ai_model_id?: string | null
           confidence?: number
+          confidence_score?: number | null
           created_at?: string
           entry_price?: number
+          execution_status?:
+            | Database["public"]["Enums"]["signal_execution_status"]
+            | null
+          exit_price?: number | null
           expires_at?: string | null
           id?: string
           likes_count?: number
           metadata?: Json | null
           reasoning?: string
+          risk_level?: Database["public"]["Enums"]["risk_level"] | null
           shares_count?: number
           signal_type?: string
           status?: string
           stop_loss?: number | null
+          stop_loss_price?: number | null
+          take_profit_price?: number | null
           target_price?: number | null
+          technical_indicators?: Json | null
           timeframe?: string
           triggered_at?: string | null
           updated_at?: string
@@ -6520,6 +6827,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "trading_signals_ai_model_id_fkey"
+            columns: ["ai_model_id"]
+            isOneToOne: false
+            referencedRelation: "ai_models"
             referencedColumns: ["id"]
           },
           {
@@ -7358,6 +7672,10 @@ export type Database = {
       }
     }
     Functions: {
+      calculate_strategy_performance: {
+        Args: { strategy_id_param: string }
+        Returns: undefined
+      }
       check_acp_rate_limit: {
         Args: { operation_type: string; user_id_param: string }
         Returns: Json
@@ -7488,6 +7806,10 @@ export type Database = {
       get_user_agent_count_today: {
         Args: Record<PropertyKey, never>
         Returns: number
+      }
+      get_user_ai_stats: {
+        Args: { user_id_param: string }
+        Returns: Json
       }
       get_user_dex_stats: {
         Args: { user_id_param: string }
@@ -7665,9 +7987,39 @@ export type Database = {
       }
     }
     Enums: {
+      ai_model_status: "active" | "training" | "testing" | "deprecated"
+      ai_model_type:
+        | "lstm"
+        | "random_forest"
+        | "transformer"
+        | "reinforcement"
+        | "gpt"
+        | "hybrid"
+      ai_session_type:
+        | "chat"
+        | "strategy_creation"
+        | "backtesting"
+        | "signal_generation"
+        | "portfolio_analysis"
+      ai_strategy_type:
+        | "momentum"
+        | "mean_reversion"
+        | "arbitrage"
+        | "sentiment"
+        | "machine_learning"
+        | "hybrid"
+      backtest_status: "pending" | "running" | "completed" | "failed"
       billing_period: "monthly" | "annual"
       notification_frequency: "instant" | "daily" | "weekly" | "never"
       privacy_level: "public" | "friends" | "private"
+      risk_level: "low" | "medium" | "high" | "extreme"
+      signal_execution_status:
+        | "pending"
+        | "active"
+        | "executed"
+        | "expired"
+        | "cancelled"
+      subscription_status: "active" | "paused" | "cancelled"
       subscription_tier: "basic" | "pro" | "elite"
       theme_mode: "light" | "dark" | "system"
     }
@@ -7797,9 +8149,43 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      ai_model_status: ["active", "training", "testing", "deprecated"],
+      ai_model_type: [
+        "lstm",
+        "random_forest",
+        "transformer",
+        "reinforcement",
+        "gpt",
+        "hybrid",
+      ],
+      ai_session_type: [
+        "chat",
+        "strategy_creation",
+        "backtesting",
+        "signal_generation",
+        "portfolio_analysis",
+      ],
+      ai_strategy_type: [
+        "momentum",
+        "mean_reversion",
+        "arbitrage",
+        "sentiment",
+        "machine_learning",
+        "hybrid",
+      ],
+      backtest_status: ["pending", "running", "completed", "failed"],
       billing_period: ["monthly", "annual"],
       notification_frequency: ["instant", "daily", "weekly", "never"],
       privacy_level: ["public", "friends", "private"],
+      risk_level: ["low", "medium", "high", "extreme"],
+      signal_execution_status: [
+        "pending",
+        "active",
+        "executed",
+        "expired",
+        "cancelled",
+      ],
+      subscription_status: ["active", "paused", "cancelled"],
       subscription_tier: ["basic", "pro", "elite"],
       theme_mode: ["light", "dark", "system"],
     },
