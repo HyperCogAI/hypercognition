@@ -74,13 +74,6 @@ const MultiLanguage = () => {
     await voteRequest(requestId);
   };
 
-  const marketData = {
-    totalUsers: "2.4M+",
-    activeMarkets: "150+",
-    supportedCurrencies: "45+",
-    tradingVolume: "$12.8B"
-  }
-
   const getCompletionColor = (completion: number) => {
     if (completion >= 95) return "text-green-500"
     if (completion >= 80) return "text-yellow-500"
@@ -119,30 +112,32 @@ const MultiLanguage = () => {
         <div className="grid gap-4 md:grid-cols-4 mb-8">
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-6 text-center">
-              <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">{marketData.totalUsers}</div>
-              <div className="text-sm text-muted-foreground">Global Users</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-6 text-center">
-              <TrendingUp className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">{marketData.activeMarkets}</div>
-              <div className="text-sm text-muted-foreground">Active Markets</div>
-            </CardContent>
-          </Card>
-          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
-            <CardContent className="p-6 text-center">
-              <Globe className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">{marketData.supportedCurrencies}</div>
-              <div className="text-sm text-muted-foreground">Currencies</div>
+              <Languages className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <div className="text-2xl font-bold">{supportedLanguages.length}</div>
+              <div className="text-sm text-muted-foreground">Supported Languages</div>
             </CardContent>
           </Card>
           <Card className="bg-card/50 backdrop-blur-sm border-border/50">
             <CardContent className="p-6 text-center">
               <MapPin className="h-8 w-8 mx-auto mb-2 text-primary" />
-              <div className="text-2xl font-bold">{marketData.tradingVolume}</div>
-              <div className="text-sm text-muted-foreground">Daily Volume</div>
+              <div className="text-2xl font-bold">{tradingRegions.length}</div>
+              <div className="text-sm text-muted-foreground">Trading Regions</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+            <CardContent className="p-6 text-center">
+              <Users className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <div className="text-2xl font-bold">{requests.length}</div>
+              <div className="text-sm text-muted-foreground">Community Requests</div>
+            </CardContent>
+          </Card>
+          <Card className="bg-card/50 backdrop-blur-sm border-border/50">
+            <CardContent className="p-6 text-center">
+              <TrendingUp className="h-8 w-8 mx-auto mb-2 text-primary" />
+              <div className="text-2xl font-bold">
+                {supportedLanguages.reduce((sum, lang) => sum + lang.completion_percentage, 0) / supportedLanguages.length || 0}%
+              </div>
+              <div className="text-sm text-muted-foreground">Avg Translation</div>
             </CardContent>
           </Card>
         </div>
