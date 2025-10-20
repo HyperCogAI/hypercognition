@@ -2,6 +2,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { TwitterAccessSetup } from "@/components/settings/twitter-kols/TwitterAccessSetup";
 import { WatchlistManager } from "@/components/settings/twitter-kols/WatchlistManager";
 import { KOLAccountManager } from "@/components/settings/twitter-kols/KOLAccountManager";
+import { NotificationSettings } from "@/components/settings/twitter-kols/NotificationSettings";
 import { Twitter } from "lucide-react";
 
 export default function TwitterKOLs() {
@@ -18,10 +19,11 @@ export default function TwitterKOLs() {
       </div>
 
       <Tabs defaultValue="access" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="access">Twitter Access</TabsTrigger>
           <TabsTrigger value="watchlists">Watchlists</TabsTrigger>
           <TabsTrigger value="kols">KOL Accounts</TabsTrigger>
+          <TabsTrigger value="notifications">Notifications</TabsTrigger>
         </TabsList>
 
         <TabsContent value="access" className="space-y-6">
@@ -34,6 +36,10 @@ export default function TwitterKOLs() {
 
         <TabsContent value="kols" className="space-y-6">
           <KOLAccountManager />
+        </TabsContent>
+
+        <TabsContent value="notifications" className="space-y-6">
+          <NotificationSettings />
         </TabsContent>
       </Tabs>
     </div>

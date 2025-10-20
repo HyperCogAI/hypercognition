@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
     // Get user's notification preferences
     const { data: prefs } = await supabase
       .from('notification_preferences')
-      .select('twitter_kol_alerts_enabled')
+      .select('*')
       .eq('user_id', signal.user_id)
       .single();
 
@@ -87,6 +87,30 @@ Deno.serve(async (req) => {
       .from('twitter_kol_signals')
       .update({ user_action: 'alerted' })
       .eq('id', signal.id);
+
+    // Send push notification if enabled
+    if (prefs.push_notifications_enabled && signal.confidence_score >= (prefs.min_confidence_for_push || 70)) {
+      await supabase.functions.invoke('send-push-notification', {
+        body: {
+          userId: signal.user_id,
+          title,
+          body: message,
+          url: `/kol-signals?signal=${signal.id}`,
+          signalId: signal.id,
+          priority: signal.confidence_score >= 85 ? 'high' : 'medium',
+        },
+      });
+    }
+
+    // Send email alert if enabled
+    if (prefs.email_alerts_enabled && signal.confidence_score >= (prefs.min_confidence_for_email || 85)) {
+      await supabase.functions.invoke('send-email-alert', {
+        body: {
+          userId: signal.user_id,
+          signal,
+        },
+      });
+    }
 
     console.log(`Alert dispatched successfully for signal ${signal.id}`);
 
