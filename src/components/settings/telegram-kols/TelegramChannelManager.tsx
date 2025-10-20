@@ -82,7 +82,7 @@ export function TelegramChannelManager() {
                 <CardTitle>Monitored Channels</CardTitle>
                 <CardDescription>Channels in this watchlist</CardDescription>
               </div>
-              <Button onClick={() => syncChannel()} variant="outline" size="sm">
+              <Button onClick={() => syncChannel(selectedWatchlistId)} variant="outline" size="sm">
                 <RefreshCw className="w-4 h-4 mr-2" />
                 Sync Now
               </Button>
