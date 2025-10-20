@@ -32,13 +32,13 @@ export function useSignalCommunity(signalId: string) {
     queryKey: ['signal-vote', signalId],
     queryFn: async () => {
       const { data, error } = await supabase
-        .from('signal_votes')
+        .from('signal_votes' as any)
         .select('vote_type')
         .eq('signal_id', signalId)
         .single();
 
       if (error && error.code !== 'PGRST116') throw error;
-      return data?.vote_type || null;
+      return (data as any)?.vote_type || null;
     },
   });
 
@@ -46,11 +46,11 @@ export function useSignalCommunity(signalId: string) {
   const addComment = useMutation({
     mutationFn: async (commentText: string) => {
       const { error } = await supabase
-        .from('signal_comments')
+        .from('signal_comments' as any)
         .insert({
           signal_id: signalId,
           comment_text: commentText,
-        });
+        } as any);
 
       if (error) throw error;
     },
@@ -74,11 +74,11 @@ export function useSignalCommunity(signalId: string) {
   const voteSignal = useMutation({
     mutationFn: async (voteType: 'up' | 'down') => {
       const { error } = await supabase
-        .from('signal_votes')
+        .from('signal_votes' as any)
         .upsert({
           signal_id: signalId,
           vote_type: voteType,
-        });
+        } as any);
 
       if (error) throw error;
     },
@@ -99,11 +99,11 @@ export function useSignalCommunity(signalId: string) {
   const shareSignal = useMutation({
     mutationFn: async (shareNote: string) => {
       const { error } = await supabase
-        .from('signal_shares')
+        .from('signal_shares' as any)
         .insert({
           signal_id: signalId,
           share_note: shareNote,
-        });
+        } as any);
 
       if (error) throw error;
     },

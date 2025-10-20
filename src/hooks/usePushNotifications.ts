@@ -65,7 +65,7 @@ export function usePushNotifications() {
       // Save subscription to database
       const subscriptionJSON = subscription.toJSON();
       const { error } = await supabase
-        .from('push_subscriptions')
+        .from('push_subscriptions' as any)
         .upsert({
           user_id: session.user.id,
           endpoint: subscriptionJSON.endpoint!,
@@ -74,7 +74,7 @@ export function usePushNotifications() {
           user_agent: navigator.userAgent,
           device_type: 'web',
           is_active: true,
-        });
+        } as any);
 
       if (error) throw error;
 
@@ -109,8 +109,8 @@ export function usePushNotifications() {
 
         // Remove from database
         await supabase
-          .from('push_subscriptions')
-          .update({ is_active: false })
+          .from('push_subscriptions' as any)
+          .update({ is_active: false } as any)
           .eq('user_id', session.user.id)
           .eq('endpoint', subscription.endpoint);
       }

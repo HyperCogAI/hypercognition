@@ -32,11 +32,12 @@ export function NotificationSettings() {
       .single();
 
     if (data) {
-      setPushEnabled(data.push_notifications_enabled ?? true);
-      setEmailEnabled(data.email_alerts_enabled ?? false);
-      setSmsEnabled(data.sms_alerts_enabled ?? false);
-      setMinConfidencePush(data.min_confidence_for_push ?? 70);
-      setMinConfidenceEmail(data.min_confidence_for_email ?? 85);
+      const prefs = data as any;
+      setPushEnabled(prefs.push_notifications_enabled ?? true);
+      setEmailEnabled(prefs.email_alerts_enabled ?? false);
+      setSmsEnabled(prefs.sms_alerts_enabled ?? false);
+      setMinConfidencePush(prefs.min_confidence_for_push ?? 70);
+      setMinConfidenceEmail(prefs.min_confidence_for_email ?? 85);
     }
   };
 
@@ -51,7 +52,7 @@ export function NotificationSettings() {
           sms_alerts_enabled: smsEnabled,
           min_confidence_for_push: minConfidencePush,
           min_confidence_for_email: minConfidenceEmail,
-        });
+        } as any);
 
       if (error) throw error;
 
