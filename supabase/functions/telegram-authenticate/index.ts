@@ -1,8 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { TelegramClient } from "npm:telegram@2.24.19";
-import { StringSession } from "npm:telegram@2.24.19/sessions";
-import { Api } from "npm:telegram@2.24.19";
+import { Client } from "https://esm.sh/@mtkruto/mtkruto@0.1.163";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -17,51 +15,66 @@ serve(async (req) => {
   try {
     const { apiId, apiHash, phoneNumber } = await req.json();
     
-    console.log('Starting Telegram authentication for phone:', phoneNumber);
+    console.log('Starting Telegram authentication for phone:', phoneNumber.slice(-4));
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
     
+    // Get authenticated user
     const authHeader = req.headers.get('Authorization');
     const token = authHeader?.replace('Bearer ', '');
-    const { data: { user } } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
-    if (!user) {
+    if (authError || !user) {
       throw new Error('Unauthorized');
     }
     
-    const session = new StringSession('');
-    const client = new TelegramClient(session, parseInt(apiId), apiHash, {
-      connectionRetries: 5,
+    console.log('User authenticated:', user.id);
+    
+    // Initialize MTKruto client
+    const client = new Client({
+      apiId: parseInt(apiId),
+      apiHash: apiHash,
     });
     
     await client.connect();
+    console.log('Client connected');
     
-    const { phoneCodeHash } = await client.sendCode({
-      apiId: parseInt(apiId),
-      apiHash: apiHash,
-    }, phoneNumber);
+    // Send code
+    await client.sendCode(phoneNumber);
+    console.log('Code sent successfully');
     
-    const sessionString = session.save() as string;
+    // Export auth string for later use
+    const authString = await client.exportAuthString();
+    console.log('Auth string exported');
     
-    await supabase.from('telegram_user_credentials').upsert({
-      user_id: user.id,
-      api_id_encrypted: apiId,
-      api_hash_encrypted: apiHash,
-      phone_number_encrypted: phoneNumber,
-      session_string_encrypted: sessionString,
-      phone_code_hash: phoneCodeHash,
-      is_authenticated: false,
-    });
+    // Store credentials
+    const { error: insertError } = await supabase
+      .from('telegram_user_credentials')
+      .upsert({
+        user_id: user.id,
+        api_id_encrypted: apiId,
+        api_hash_encrypted: apiHash,
+        phone_number_encrypted: phoneNumber,
+        session_string_encrypted: authString,
+        is_authenticated: false,
+      }, {
+        onConflict: 'user_id'
+      });
     
-    console.log('Authentication code sent successfully');
+    if (insertError) {
+      console.error('Error storing credentials:', insertError);
+      throw insertError;
+    }
+    
+    console.log('Credentials stored successfully');
     
     return new Response(
       JSON.stringify({ 
         success: true, 
-        message: 'Code sent to your Telegram app',
+        message: 'Code sent to your phone',
         phoneNumber: phoneNumber.slice(-4)
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

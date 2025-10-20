@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { TelegramClient } from "npm:telegram@2.24.19";
-import { StringSession } from "npm:telegram@2.24.19/sessions";
+import { Client } from "https://esm.sh/@mtkruto/mtkruto@0.1.163";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,15 +18,14 @@ async function getTelegramClient(userId: string, supabase: any) {
     throw new Error('User not authenticated with Telegram');
   }
   
-  const session = new StringSession(credentials.session_string_encrypted);
-  const client = new TelegramClient(
-    session, 
-    parseInt(credentials.api_id_encrypted), 
-    credentials.api_hash_encrypted,
-    { connectionRetries: 5 }
-  );
+  const client = new Client({
+    apiId: parseInt(credentials.api_id_encrypted),
+    apiHash: credentials.api_hash_encrypted,
+  });
   
   await client.connect();
+  await client.importAuthString(credentials.session_string_encrypted);
+  
   return client;
 }
 
@@ -65,7 +63,8 @@ serve(async (req) => {
           }
           
           try {
-            const messages = await client.getMessages(channel.channel_id, { 
+            // Get message history
+            const messages = await client.getHistory(channel.channel_id, {
               limit: 50,
               offsetId: channel.last_message_id || 0,
             });
@@ -73,10 +72,10 @@ serve(async (req) => {
             console.log(`Fetched ${messages.length} messages from ${channel.channel_username}`);
             
             for (const message of messages) {
-              if (!message.text && !message.message) continue;
+              const messageText = message.text || '';
+              if (!messageText) continue;
               
-              const messageText = message.text || message.message;
-              
+              // Check if already processed
               const { data: existing } = await supabase
                 .from('telegram_kol_signals')
                 .select('id')
@@ -86,6 +85,7 @@ serve(async (req) => {
               
               if (existing) continue;
               
+              // Invoke AI analyzer
               const { data: analyzeResult } = await supabase.functions.invoke(
                 'telegram-kol-ai-analyzer',
                 {
@@ -98,7 +98,7 @@ serve(async (req) => {
                       has_photo: !!message.photo,
                       has_video: !!message.video,
                       has_document: !!message.document,
-                      forward_from: message.fwdFrom,
+                      forward_from: message.forwardFrom,
                     },
                     channel_id: channel.id,
                     watchlist_id: watchlist.id,
@@ -113,6 +113,7 @@ serve(async (req) => {
               }
             }
             
+            // Update last message ID
             if (messages.length > 0) {
               const lastMessageId = Math.max(...messages.map(m => m.id));
               await supabase

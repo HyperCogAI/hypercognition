@@ -1,7 +1,6 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
-import { TelegramClient } from "npm:telegram@2.24.19";
-import { StringSession } from "npm:telegram@2.24.19/sessions";
+import { Client } from "https://esm.sh/@mtkruto/mtkruto@0.1.163";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -19,15 +18,14 @@ async function getTelegramClient(userId: string, supabase: any) {
     throw new Error('User not authenticated with Telegram');
   }
   
-  const session = new StringSession(credentials.session_string_encrypted);
-  const client = new TelegramClient(
-    session, 
-    parseInt(credentials.api_id_encrypted), 
-    credentials.api_hash_encrypted,
-    { connectionRetries: 5 }
-  );
+  const client = new Client({
+    apiId: parseInt(credentials.api_id_encrypted),
+    apiHash: credentials.api_hash_encrypted,
+  });
   
   await client.connect();
+  await client.importAuthString(credentials.session_string_encrypted);
+  
   return client;
 }
 
@@ -39,7 +37,7 @@ serve(async (req) => {
   try {
     const { channelUsername, watchlistId } = await req.json();
     
-    console.log('Adding Telegram channel:', channelUsername);
+    console.log('Adding channel:', channelUsername);
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
@@ -48,59 +46,68 @@ serve(async (req) => {
     
     const authHeader = req.headers.get('Authorization');
     const token = authHeader?.replace('Bearer ', '');
-    const { data: { user } } = await supabase.auth.getUser(token);
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
     
-    if (!user) {
+    if (authError || !user) {
       throw new Error('Unauthorized');
     }
     
+    // Get Telegram client
     const client = await getTelegramClient(user.id, supabase);
+    console.log('Client initialized');
     
+    // Resolve channel
     const cleanUsername = channelUsername.replace('@', '');
-    const channel = await client.getEntity(cleanUsername);
+    const chat = await client.getChat(cleanUsername);
     
-    if (!channel) {
-      return new Response(
-        JSON.stringify({ error: 'Channel not found' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      );
+    if (!chat) {
+      throw new Error('Channel not found');
     }
     
+    console.log('Channel found:', chat.title);
+    
+    // Check if user is a member by trying to get messages
     let isUserMember = false;
     try {
-      await client.getMessages(channel, { limit: 1 });
+      await client.getHistory(chat.id, { limit: 1 });
       isUserMember = true;
     } catch (error) {
-      console.log('User is not a member of this channel');
+      console.log('User not a member:', error.message);
       isUserMember = false;
     }
     
+    // Store channel
     const { data: newChannel, error } = await supabase
       .from('telegram_kol_channels')
       .insert({
         watchlist_id: watchlistId,
-        channel_username: channel.username || cleanUsername,
-        channel_id: channel.id.toString(),
-        channel_title: channel.title,
-        channel_type: channel.megagroup ? 'supergroup' : 'channel',
+        channel_username: cleanUsername,
+        channel_id: chat.id.toString(),
+        channel_title: chat.title,
+        channel_type: chat.type,
         is_user_member: isUserMember,
         added_at: new Date().toISOString(),
       })
       .select()
       .single();
     
-    if (error) throw error;
+    if (error) {
+      console.error('Error storing channel:', error);
+      throw error;
+    }
     
-    console.log('Channel added successfully:', newChannel.channel_title);
+    console.log('Channel stored successfully');
     
     return new Response(
       JSON.stringify({ 
         success: true,
         channel: {
-          title: channel.title,
-          username: channel.username,
+          title: chat.title,
+          username: cleanUsername,
           isUserMember,
-          message: isUserMember ? 'Channel added successfully' : 'You need to join this channel in Telegram first'
+          message: isUserMember 
+            ? 'Channel added successfully' 
+            : 'Channel added but you need to join it first in Telegram'
         }
       }),
       { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
