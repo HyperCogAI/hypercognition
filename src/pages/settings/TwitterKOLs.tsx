@@ -4,8 +4,12 @@ import { WatchlistManager } from "@/components/settings/twitter-kols/WatchlistMa
 import { KOLAccountManager } from "@/components/settings/twitter-kols/KOLAccountManager";
 import { NotificationSettings } from "@/components/settings/twitter-kols/NotificationSettings";
 import { Twitter } from "lucide-react";
+import { useSearchParams } from "react-router-dom";
 
 export default function TwitterKOLs() {
+  const [searchParams] = useSearchParams();
+  const defaultTab = searchParams.get('tab') || 'access';
+
   return (
     <div className="container max-w-6xl py-8">
       <div className="mb-8">
@@ -18,7 +22,7 @@ export default function TwitterKOLs() {
         </p>
       </div>
 
-      <Tabs defaultValue="access" className="space-y-6">
+      <Tabs defaultValue={defaultTab} className="space-y-6">
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="access">Twitter Access</TabsTrigger>
           <TabsTrigger value="watchlists">Watchlists</TabsTrigger>

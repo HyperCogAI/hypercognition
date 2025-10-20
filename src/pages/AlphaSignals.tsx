@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTwitterKOLSignals } from "@/hooks/useTwitterKOLSignals";
 import { useTwitterKOLWatchlists } from "@/hooks/useTwitterKOLWatchlists";
 import { useSignalCommunity } from "@/hooks/useSignalCommunity";
+import { useTwitterCredentials } from "@/hooks/useTwitterCredentials";
 import { useNavigate } from "react-router-dom";
 import { SignalConfidenceSection } from "@/components/signals/SignalConfidenceSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -16,12 +17,14 @@ import { SearchInput } from "@/components/ui/search-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { ExternalLink, Bookmark, X, Eye, TrendingUp, MessageCircle, ThumbsUp, ThumbsDown, Share2, Sparkles, Zap, Filter, BarChart3, Clock, Award, Settings, Users } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
+import { ExternalLink, Bookmark, X, Eye, TrendingUp, MessageCircle, ThumbsUp, ThumbsDown, Share2, Sparkles, Zap, Filter, BarChart3, Clock, Award, Settings, Users, Key, AlertTriangle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
 export default function AlphaSignals() {
   const navigate = useNavigate();
+  const { hasCredentials, isLoading: credsLoading } = useTwitterCredentials();
   const [selectedWatchlist, setSelectedWatchlist] = useState<string>("all");
   const [selectedGemType, setSelectedGemType] = useState<string>("all");
   const [minConfidence, setMinConfidence] = useState<number>(50);
@@ -83,6 +86,76 @@ export default function AlphaSignals() {
     highConfidence: signals?.filter(s => s.confidence_score >= 85).length || 0,
     bookmarked: signals?.filter(s => s.user_action === "bookmarked").length || 0,
   };
+
+  // Show loading state while checking credentials
+  if (credsLoading || isLoading) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="text-center">Loading...</div>
+      </div>
+    );
+  }
+
+  // Show setup screen if no credentials
+  if (!hasCredentials) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-card/30">
+        <div className="container max-w-4xl py-16 px-4 md:px-6">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-xl">
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 animate-pulse -z-10" />
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
+              <div className="p-6 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
+                <Key className="h-16 w-16 text-yellow-500" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold">Twitter API Required</h2>
+                <p className="text-muted-foreground text-lg max-w-md">
+                  Alpha Signals uses your personal Twitter API credentials to monitor KOL activity and detect gem opportunities
+                </p>
+              </div>
+              
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button
+                  size="lg"
+                  onClick={() => navigate('/settings?tab=twitter-kols')}
+                  className="gap-2"
+                >
+                  <Key className="h-5 w-5" />
+                  Add Twitter API Credentials
+                </Button>
+              </div>
+
+              <Alert className="max-w-xl text-left bg-muted/30 border-border/50">
+                <AlertTriangle className="h-4 w-4" />
+                <AlertDescription>
+                  <div className="space-y-2">
+                    <p className="font-semibold">Why do I need this?</p>
+                    <ul className="text-sm space-y-1 list-disc list-inside">
+                      <li>Your credentials power real-time Twitter monitoring</li>
+                      <li>Each user needs their own API access (Twitter requirement)</li>
+                      <li>We never store your tweets or personal data</li>
+                      <li>Credentials are encrypted in our secure database</li>
+                    </ul>
+                    <p className="text-sm pt-2">
+                      Get free API access at{" "}
+                      <a 
+                        href="https://developer.twitter.com/en/portal/dashboard" 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="text-primary hover:underline"
+                      >
+                        Twitter Developer Portal
+                      </a>
+                    </p>
+                  </div>
+                </AlertDescription>
+              </Alert>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   // Show setup message if no watchlists exist
   if (!watchlists || watchlists.length === 0) {

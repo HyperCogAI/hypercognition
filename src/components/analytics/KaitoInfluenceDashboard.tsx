@@ -1,12 +1,14 @@
 import React, { useState, useMemo, useEffect, useRef } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
-import { Sparkles, TrendingUp, Zap, RefreshCw, Search } from 'lucide-react';
+import { Sparkles, TrendingUp, Zap, RefreshCw, Search, AlertTriangle, Key } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { SearchInput } from '@/components/ui/search-input';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
+import { useTwitterCredentials } from '@/hooks/useTwitterCredentials';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 const DEFAULT_USERNAMES = [
   'VitalikButerin','brian_armstrong','saylor','APompliano','balajis','naval','aantonop','ErikVoorhees','TuurDemeester',
@@ -24,12 +26,29 @@ const XLogo = ({ className = "h-4 w-4" }: { className?: string }) => (
 );
 
 export const KaitoInfluenceDashboard = () => {
+  const { hasCredentials } = useTwitterCredentials();
   const { topAgents, isLoadingTop, syncMultiple, isSyncing, formatYaps, getInfluenceTier, syncForUsernameAsync } = useKaitoAttention();
   const [searchQuery, setSearchQuery] = useState('');
   const [searchedAgents, setSearchedAgents] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
   const autoSyncedRef = useRef(false);
   const { toast } = useToast();
+
+  // Show alert if no credentials
+  if (!hasCredentials) {
+    return (
+      <Alert className="mb-6 bg-yellow-500/10 border-yellow-500/30">
+        <Key className="h-4 w-4 text-yellow-500" />
+        <AlertTitle>Twitter API Required</AlertTitle>
+        <AlertDescription>
+          Advanced analytics require Twitter API credentials.{" "}
+          <a href="/settings?tab=twitter-kols" className="text-primary hover:underline font-medium">
+            Add credentials in settings
+          </a>
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   // Auto-bootstrap: if list is sparse, sync a default set of influencers
   useEffect(() => {

@@ -4,17 +4,36 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useKaitoAttention } from '@/hooks/useKaitoAttention';
-import { Sparkles, Check, X, Loader2 } from 'lucide-react';
+import { Sparkles, Check, X, Loader2, AlertTriangle, Key } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useTwitterCredentials } from '@/hooks/useTwitterCredentials';
+import { Alert, AlertTitle, AlertDescription } from '@/components/ui/alert';
 
 /**
  * Test panel for Kaito integration
  * Add this component to Analytics page temporarily for testing
  */
 export const KaitoTestPanel = () => {
+  const { hasCredentials } = useTwitterCredentials();
   const [username, setUsername] = useState('VitalikButerin');
   const [testResults, setTestResults] = useState<any[]>([]);
   const { syncForUsername, isSyncing, score, formatYaps, getInfluenceTier } = useKaitoAttention();
+
+  // Show alert if no credentials
+  if (!hasCredentials) {
+    return (
+      <Alert className="mb-6 bg-yellow-500/10 border-yellow-500/30">
+        <Key className="h-4 w-4 text-yellow-500" />
+        <AlertTitle>Twitter API Required</AlertTitle>
+        <AlertDescription>
+          Testing tools require Twitter API credentials.{" "}
+          <a href="/settings?tab=twitter-kols" className="text-primary hover:underline font-medium">
+            Add credentials in settings
+          </a>
+        </AlertDescription>
+      </Alert>
+    );
+  }
 
   const runTest = async (testUsername: string) => {
     setTestResults(prev => [...prev, {
