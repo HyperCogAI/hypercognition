@@ -91,9 +91,6 @@ export default function AlphaSignals() {
         <div className="container max-w-4xl py-16 px-4 md:px-6">
           <Card className="border-border/50 bg-card/80 backdrop-blur-xl">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
-              <div className="p-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30">
-                <Users className="h-16 w-16 text-primary" />
-              </div>
               <div className="space-y-2">
                 <h2 className="text-3xl font-bold text-white">No Watchlists Found</h2>
                 <p className="text-muted-foreground text-lg max-w-md">
