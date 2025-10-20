@@ -51,6 +51,8 @@ serve(async (req) => {
     }
 
     const body: CreateJobRequest = await req.json()
+    const startTime = Date.now()
+
 
     // Atomic rate limiting check
     const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
@@ -169,6 +171,18 @@ serve(async (req) => {
     }
 
     console.log(`Job created: ${job.id} by user ${user.id}`)
+
+    // Log operation for monitoring
+    await supabaseAdmin.rpc('log_acp_operation', {
+      user_id_param: user.id,
+      operation_param: 'create_job',
+      operation_type_param: 'create',
+      resource_type_param: 'acp_jobs',
+      resource_id_param: job.id,
+      status_param: 'success',
+      execution_time_ms_param: Date.now() - startTime
+    })
+
 
     return new Response(
       JSON.stringify({

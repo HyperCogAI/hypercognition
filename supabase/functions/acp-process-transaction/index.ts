@@ -53,6 +53,8 @@ serve(async (req) => {
     }
 
     const body: ProcessTransactionRequest = await req.json()
+    const startTime = Date.now()
+
 
     // Atomic rate limiting check
     const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
@@ -252,6 +254,18 @@ serve(async (req) => {
     const transaction = txResult.transaction
 
     console.log(`Transaction processed: ${transaction.id} from ${user.id} to ${body.to_user_id}`)
+
+    // Log operation for monitoring
+    await supabaseAdmin.rpc('log_acp_operation', {
+      user_id_param: user.id,
+      operation_param: 'process_transaction',
+      operation_type_param: 'create',
+      resource_type_param: 'acp_transactions',
+      resource_id_param: transaction.id,
+      status_param: 'success',
+      execution_time_ms_param: Date.now() - startTime
+    })
+
 
     return new Response(
       JSON.stringify({
