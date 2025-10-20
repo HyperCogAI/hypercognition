@@ -80,7 +80,7 @@ export function SignalCard({ signal, onUpdateStatus, onToggleBookmark }: SignalC
                 {getGemTypeConfig(signal.gem_type).emoji} {signal.gem_type}
               </Badge>
             )}
-            {signal.extracted_data?.extracted_tokens?.map((token: any, idx: number) => (
+            {signal.extracted_data?.tokens?.map((token: any, idx: number) => (
               <Badge key={idx} variant="outline">
                 ${token.ticker}
               </Badge>
