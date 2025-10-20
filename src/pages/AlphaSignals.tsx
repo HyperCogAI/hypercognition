@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useTwitterKOLSignals } from "@/hooks/useTwitterKOLSignals";
 import { useTwitterKOLWatchlists } from "@/hooks/useTwitterKOLWatchlists";
 import { useSignalCommunity } from "@/hooks/useSignalCommunity";
+import { useNavigate } from "react-router-dom";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -14,11 +15,12 @@ import { SearchInput } from "@/components/ui/search-input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
-import { ExternalLink, Bookmark, X, Eye, TrendingUp, MessageCircle, ThumbsUp, ThumbsDown, Share2, Sparkles, Zap, Filter, BarChart3, Clock, Award } from "lucide-react";
+import { ExternalLink, Bookmark, X, Eye, TrendingUp, MessageCircle, ThumbsUp, ThumbsDown, Share2, Sparkles, Zap, Filter, BarChart3, Clock, Award, Settings, Users } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
 
 export default function AlphaSignals() {
+  const navigate = useNavigate();
   const [selectedWatchlist, setSelectedWatchlist] = useState<string>("all");
   const [selectedGemType, setSelectedGemType] = useState<string>("all");
   const [minConfidence, setMinConfidence] = useState<number>(50);
@@ -80,6 +82,58 @@ export default function AlphaSignals() {
     highConfidence: signals?.filter(s => s.confidence_score >= 85).length || 0,
     bookmarked: signals?.filter(s => s.user_action === "bookmarked").length || 0,
   };
+
+  // Show setup message if no watchlists exist
+  if (!watchlists || watchlists.length === 0) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-background via-background to-card/30">
+        <div className="container max-w-4xl py-16 px-4 md:px-6">
+          <Card className="border-border/50 bg-card/80 backdrop-blur-xl">
+            <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
+              <div className="p-6 rounded-full bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30">
+                <Users className="h-16 w-16 text-primary" />
+              </div>
+              <div className="space-y-2">
+                <h2 className="text-3xl font-bold text-white">No Watchlists Found</h2>
+                <p className="text-muted-foreground text-lg max-w-md">
+                  To start receiving AI-powered alpha signals, you need to create a KOL watchlist first
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-4 pt-4">
+                <Button
+                  size="lg"
+                  onClick={() => navigate('/settings?tab=twitter-kols')}
+                  className="gap-2"
+                >
+                  <Settings className="h-5 w-5" />
+                  Set Up KOL Monitoring
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  onClick={() => navigate('/settings?tab=twitter-kols')}
+                  className="gap-2"
+                >
+                  <Users className="h-5 w-5" />
+                  Create Watchlist
+                </Button>
+              </div>
+              <div className="pt-6 space-y-3 text-left bg-muted/30 p-6 rounded-lg border border-border/30 max-w-md">
+                <p className="text-sm font-semibold text-foreground">Getting Started:</p>
+                <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
+                  <li>Add your Twitter API credentials</li>
+                  <li>Create a watchlist</li>
+                  <li>Add KOL Twitter accounts to monitor</li>
+                  <li>Configure notification preferences</li>
+                  <li>Start receiving alpha signals!</li>
+                </ol>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-background to-card/30">
