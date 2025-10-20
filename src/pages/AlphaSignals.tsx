@@ -109,10 +109,10 @@ export default function AlphaSignals() {
                   <div className="p-2 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
                     <Key className="h-8 w-8 text-yellow-500" />
                   </div>
-                  <h2 className="text-3xl font-bold">Twitter API Required</h2>
+                  <h2 className="text-3xl font-bold">X API Required</h2>
                 </div>
                 <p className="text-muted-foreground text-base max-w-md">
-                  Alpha Signals uses your personal Twitter API credentials to monitor KOL activity and detect gem opportunities
+                  Alpha Signals uses your personal X API credentials to monitor KOL activity and detect gem opportunities
                 </p>
               </div>
               
@@ -123,7 +123,7 @@ export default function AlphaSignals() {
                   className="gap-2"
                 >
                   <Key className="h-5 w-5" />
-                  Add Twitter API Credentials
+                  Add X API Credentials
                 </Button>
               </div>
 
@@ -133,9 +133,9 @@ export default function AlphaSignals() {
                   <div className="space-y-2">
                     <p className="font-semibold">Why do I need this?</p>
                     <ul className="text-sm space-y-1 list-disc list-inside">
-                      <li>Your credentials power real-time Twitter monitoring</li>
-                      <li>Each user needs their own API access (Twitter requirement)</li>
-                      <li>We never store your tweets or personal data</li>
+                      <li>Your credentials power real-time X monitoring</li>
+                      <li>Each user needs their own API access (X requirement)</li>
+                      <li>We never store your posts or personal data</li>
                       <li>Credentials are encrypted in our secure database</li>
                     </ul>
                     <p className="text-sm pt-2">
@@ -146,7 +146,7 @@ export default function AlphaSignals() {
                         rel="noopener noreferrer" 
                         className="text-primary hover:underline"
                       >
-                        Twitter Developer Portal
+                        X Developer Portal
                       </a>
                     </p>
                   </div>
@@ -194,9 +194,9 @@ export default function AlphaSignals() {
               <div className="pt-6 space-y-3 text-left bg-muted/30 p-6 rounded-lg border border-border/30 max-w-md">
                 <p className="text-sm font-semibold text-foreground">Getting Started:</p>
                 <ol className="text-sm text-muted-foreground space-y-2 list-decimal list-inside">
-                  <li>Add your Twitter API credentials</li>
+                  <li>Add your X API credentials</li>
                   <li>Create a watchlist</li>
-                  <li>Add KOL Twitter accounts to monitor</li>
+                  <li>Add KOL X accounts to monitor</li>
                   <li>Configure notification preferences</li>
                   <li>Start receiving alpha signals!</li>
                 </ol>
@@ -220,7 +220,7 @@ export default function AlphaSignals() {
                 Alpha Signals
               </h1>
               <p className="text-muted-foreground text-lg">
-                AI-powered insights from crypto Twitter's most influential voices
+                AI-powered insights from crypto X's most influential voices
               </p>
             </div>
             
