@@ -94,8 +94,10 @@ export function useTelegramKOLChannels(watchlistId?: string) {
   });
 
   const syncChannel = useMutation({
-    mutationFn: async () => {
-      const { data, error } = await supabase.functions.invoke('telegram-kol-scraper');
+    mutationFn: async (watchlistId?: string) => {
+      const { data, error } = await supabase.functions.invoke('telegram-user-scraper', {
+        body: { watchlistId }
+      });
       if (error) throw error;
       return data;
     },

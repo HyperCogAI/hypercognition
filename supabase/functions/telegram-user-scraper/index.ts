@@ -1,7 +1,9 @@
+// Phase 2.1: User-scoped Telegram scraper
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Client } from "jsr:@mtkruto/mtkruto@0.63";
 import { decrypt } from "../_shared/encryption.ts";
+import { checkRateLimit } from "../_shared/rateLimiter.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -36,29 +38,56 @@ serve(async (req) => {
   }
 
   try {
-    console.log('Starting Telegram scraper (cron job - all users)');
+    const { watchlistId } = await req.json();
+    
+    console.log('Starting user-scoped Telegram scraper');
     
     const supabase = createClient(
       Deno.env.get('SUPABASE_URL')!,
       Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')!
     );
     
-    const { data: activeWatchlists } = await supabase
+    // Get authenticated user
+    const authHeader = req.headers.get('Authorization');
+    const token = authHeader?.replace('Bearer ', '');
+    const { data: { user }, error: authError } = await supabase.auth.getUser(token);
+    
+    if (authError || !user) {
+      throw new Error('Unauthorized');
+    }
+    
+    // Rate limiting
+    const rateCheck = checkRateLimit(`telegram-sync:${user.id}`, { maxRequests: 10, windowMinutes: 5 });
+    if (!rateCheck.allowed) {
+      return new Response(
+        JSON.stringify({ error: 'Rate limit exceeded', retryAfter: rateCheck.retryAfter }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+    
+    // Get user's watchlists
+    const watchlistQuery = supabase
       .from('telegram_kol_watchlists')
       .select(`
         *,
         telegram_kol_channels (*)
       `)
+      .eq('user_id', user.id)
       .eq('is_active', true);
     
-    let totalSignalsCreated = 0;
+    if (watchlistId) {
+      watchlistQuery.eq('id', watchlistId);
+    }
     
-    for (const watchlist of activeWatchlists || []) {
-      let client: any = null;
-      try {
-        client = await getTelegramClient(watchlist.user_id, supabase);
-        console.log(`Processing watchlist for user: ${watchlist.user_id}`);
-        
+    const { data: watchlists } = await watchlistQuery;
+    
+    let totalSignalsCreated = 0;
+    let client: any = null;
+    
+    try {
+      client = await getTelegramClient(user.id, supabase);
+      
+      for (const watchlist of watchlists || []) {
         for (const channel of watchlist.telegram_kol_channels || []) {
           if (!channel.is_user_member) {
             console.log(`User not member of ${channel.channel_username}, skipping`);
@@ -105,7 +134,7 @@ serve(async (req) => {
                     },
                     channel_id: channel.id,
                     watchlist_id: watchlist.id,
-                    user_id: watchlist.user_id,
+                    user_id: user.id,
                     channel_title: channel.channel_title,
                   }
                 }
@@ -132,18 +161,14 @@ serve(async (req) => {
             console.error(`Error processing channel ${channel.channel_username}:`, channelError);
           }
         }
-        
-      } catch (userError) {
-        console.error(`Error processing watchlist for user ${watchlist.user_id}:`, userError);
-      } finally {
-        if (client) {
-          await client.disconnect();
-          console.log(`Client disconnected for user: ${watchlist.user_id}`);
-        }
+      }
+    } finally {
+      if (client) {
+        await client.disconnect();
       }
     }
     
-    console.log(`Scraper completed. Created ${totalSignalsCreated} signals`);
+    console.log(`User scraper completed. Created ${totalSignalsCreated} signals`);
     
     return new Response(
       JSON.stringify({ 
@@ -154,7 +179,7 @@ serve(async (req) => {
     );
     
   } catch (error) {
-    console.error('Scraper error:', error);
+    console.error('User scraper error:', error);
     return new Response(
       JSON.stringify({ error: error.message }),
       { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }

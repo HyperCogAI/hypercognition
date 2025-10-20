@@ -171,12 +171,16 @@ serve(async (req) => {
         has_video: message.has_video,
         has_document: message.has_document,
         media_urls: JSON.stringify([]),
-        forward_from_chat_id: message.forward_from?.fromId?.channelId?.toString(),
-        forward_from_chat_title: message.forward_from?.fromName,
+        forward_from_chat_id: message.forward_from?.chat?.id?.toString(),
+        forward_from_chat_title: message.forward_from?.chat?.title,
         forward_date: message.forward_from?.date ? new Date(message.forward_from.date * 1000).toISOString() : null,
         confidence_score: analysis.confidence_score,
         gem_type: analysis.gem_type,
-        extracted_data: analysis,
+        extracted_data: {
+          tokens: analysis.extracted_tokens || [],
+          links: analysis.extracted_links || {},
+          key_details: analysis.key_details || []
+        },
         ai_reasoning: analysis.reasoning,
         status: 'new'
       })

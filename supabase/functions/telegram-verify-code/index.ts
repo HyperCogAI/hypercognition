@@ -1,6 +1,7 @@
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 import { Client } from "jsr:@mtkruto/mtkruto@0.63";
+import { decrypt, encrypt } from "../_shared/encryption.ts";
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -44,50 +45,66 @@ serve(async (req) => {
     
     console.log('Credentials loaded');
     
+    // Decrypt credentials
+    const apiId = await decrypt(credentials.api_id_encrypted);
+    const apiHash = await decrypt(credentials.api_hash_encrypted);
+    const sessionString = await decrypt(credentials.session_string_encrypted);
+    const phoneCodeHash = credentials.phone_code_hash ? await decrypt(credentials.phone_code_hash) : null;
+    
+    if (!phoneCodeHash) {
+      throw new Error('No phone code hash found. Please restart authentication.');
+    }
+    
     // Initialize client with stored credentials
     const client = new Client({
-      apiId: parseInt(credentials.api_id_encrypted),
-      apiHash: credentials.api_hash_encrypted,
+      apiId: parseInt(apiId),
+      apiHash: apiHash,
     });
     
-    await client.connect();
-    console.log('Client connected');
-    
-    // Import the partial auth string
-    if (credentials.session_string_encrypted) {
-      await client.importAuthString(credentials.session_string_encrypted);
+    try {
+      await client.connect();
+      console.log('Client connected');
+      
+      // Import the partial auth string
+      if (sessionString) {
+        await client.importAuthString(sessionString);
+      }
+      
+      // Complete sign in with code and phone_code_hash
+      await client.signIn({ code, phoneCodeHash });
+      console.log('Signed in successfully');
+      
+      // Get user info
+      const me = await client.getMe();
+      console.log('Got user info:', me.firstName);
+      
+      // Export new auth string with full session
+      const newAuthString = await client.exportAuthString();
+      const encryptedSession = await encrypt(newAuthString);
+      
+      // Update credentials with authenticated session
+      const { error: updateError } = await supabase
+        .from('telegram_user_credentials')
+        .update({
+          session_string_encrypted: encryptedSession,
+          is_authenticated: true,
+          telegram_user_id: me.id.toString(),
+          telegram_username: me.username || null,
+          telegram_first_name: me.firstName,
+          last_validated_at: new Date().toISOString(),
+        })
+        .eq('user_id', user.id);
+      
+      if (updateError) {
+        console.error('Error updating credentials:', updateError);
+        throw updateError;
+      }
+      
+      console.log('Authentication completed successfully');
+    } finally {
+      await client.disconnect();
+      console.log('Client disconnected');
     }
-    
-    // Complete sign in with code
-    await client.signIn(code);
-    console.log('Signed in successfully');
-    
-    // Get user info
-    const me = await client.getMe();
-    console.log('Got user info:', me.firstName);
-    
-    // Export new auth string with full session
-    const newAuthString = await client.exportAuthString();
-    
-    // Update credentials with authenticated session
-    const { error: updateError } = await supabase
-      .from('telegram_user_credentials')
-      .update({
-        session_string_encrypted: newAuthString,
-        is_authenticated: true,
-        telegram_user_id: me.id.toString(),
-        telegram_username: me.username || null,
-        telegram_first_name: me.firstName,
-        last_validated_at: new Date().toISOString(),
-      })
-      .eq('user_id', user.id);
-    
-    if (updateError) {
-      console.error('Error updating credentials:', updateError);
-      throw updateError;
-    }
-    
-    console.log('Authentication completed successfully');
     
     return new Response(
       JSON.stringify({ 

@@ -192,3 +192,12 @@ verify_jwt = false
 
 [functions.telegram-kol-ai-analyzer]
 verify_jwt = false
+
+[functions.telegram-user-scraper]
+verify_jwt = true
+
+[functions.telegram-health]
+verify_jwt = false
+
+[functions.telegram-kol-scraper.cron]
+schedule = "*/15 * * * *"
