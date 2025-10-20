@@ -179,3 +179,18 @@ verify_jwt = false
 
 [functions.recalculate-reputations]
 verify_jwt = false
+
+[functions.telegram-authenticate]
+verify_jwt = true
+
+[functions.telegram-verify-code]
+verify_jwt = true
+
+[functions.telegram-add-channel]
+verify_jwt = true
+
+[functions.telegram-kol-scraper]
+verify_jwt = false
+
+[functions.telegram-kol-ai-analyzer]
+verify_jwt = false

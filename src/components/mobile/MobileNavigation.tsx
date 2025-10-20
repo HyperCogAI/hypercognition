@@ -8,7 +8,7 @@ import {
   Target, Coins, Sparkles, Lock, Layers, Bell, Users, GraduationCap, 
   ArrowLeftRight, Activity, Share2, ListOrdered, Shield, LineChart, 
   Building2, Scale, Package, Globe, Settings, HelpCircle, Crown, FileText,
-  Bot, UserCog, Zap, Briefcase, BookOpen, TrendingDown
+  Bot, UserCog, Zap, Briefcase, BookOpen, TrendingDown, MessageCircle
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -45,6 +45,7 @@ const navigationSections = [
       { icon: Wallet, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
       { icon: Target, label: 'Trading Signals', path: '/trading-signals', id: 'trading-signals' },
       { icon: Sparkles, label: 'Alpha Signals', path: '/alpha-signals', id: 'alpha-signals' },
+      { icon: Sparkles, label: 'Telegram Signals', path: '/telegram-signals', id: 'telegram-signals' },
     ]
   },
   {

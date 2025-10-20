@@ -15,6 +15,9 @@ import { SettingsTestPanel } from '@/components/settings/SettingsTestPanel';
 import { useUserSettings } from '@/hooks/useUserSettings';
 import { useNotificationPreferences } from '@/hooks/useNotificationPreferences';
 import { usePrivacySettings } from '@/hooks/usePrivacySettings';
+import { TelegramAuthentication } from '@/components/settings/telegram-kols/TelegramAuthentication';
+import { TelegramWatchlistManager } from '@/components/settings/telegram-kols/TelegramWatchlistManager';
+import { TelegramChannelManager } from '@/components/settings/telegram-kols/TelegramChannelManager';
 import {
   User,
   Shield,
@@ -37,7 +40,9 @@ import {
   RefreshCw,
   Download,
   Upload,
-  Trash2
+  Trash2,
+  MessageCircle,
+  Twitter
 } from 'lucide-react';
 
 const Settings = () => {
@@ -192,6 +197,20 @@ const Settings = () => {
                 >
                   <Monitor className="w-4 h-4" />
                   <span className="hidden sm:inline">Advanced</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="twitter-kols" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <Twitter className="w-4 h-4" />
+                  <span className="hidden sm:inline">Twitter KOLs</span>
+                </TabsTrigger>
+                <TabsTrigger 
+                  value="telegram-kols" 
+                  className="flex items-center gap-2 px-3 md:px-4 py-2 text-sm font-medium transition-all data-[state=active]:bg-primary/20 data-[state=active]:text-primary data-[state=active]:shadow-sm"
+                >
+                  <MessageCircle className="w-4 h-4" />
+                  <span className="hidden sm:inline">Telegram KOLs</span>
                 </TabsTrigger>
               </TabsList>
             </div>
@@ -745,6 +764,31 @@ const Settings = () => {
                   </div>
                 </CardContent>
               </Card>
+            </TabsContent>
+
+            {/* Twitter KOLs Settings */}
+            <TabsContent value="twitter-kols" className="space-y-6">
+              <Card className="bg-card/50 border-border/50 backdrop-blur-sm">
+                <CardHeader>
+                  <CardTitle className="flex items-center space-x-2">
+                    <Twitter className="h-5 w-5 text-primary" />
+                    <span>Twitter KOL Monitoring</span>
+                  </CardTitle>
+                  <CardDescription>
+                    Configure Twitter API credentials and manage KOL watchlists
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-muted-foreground">Twitter KOL settings coming soon...</p>
+                </CardContent>
+              </Card>
+            </TabsContent>
+
+            {/* Telegram KOLs Settings */}
+            <TabsContent value="telegram-kols" className="space-y-6">
+              <TelegramAuthentication />
+              <TelegramWatchlistManager />
+              <TelegramChannelManager />
             </TabsContent>
           </Tabs>
         </div>
