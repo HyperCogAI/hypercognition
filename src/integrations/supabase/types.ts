@@ -4952,6 +4952,27 @@ export type Database = {
         }
         Relationships: []
       }
+      rate_limit_requests: {
+        Row: {
+          created_at: string
+          endpoint: string
+          id: string
+          identifier: string
+        }
+        Insert: {
+          created_at?: string
+          endpoint: string
+          id?: string
+          identifier: string
+        }
+        Update: {
+          created_at?: string
+          endpoint?: string
+          id?: string
+          identifier?: string
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           created_at: string
@@ -8554,6 +8575,14 @@ export type Database = {
         Args: { operation_type: string; user_id_param: string }
         Returns: Json
       }
+      check_agent_creation_limit: {
+        Args: { max_agents_param?: number; user_id_param: string }
+        Returns: {
+          allowed: boolean
+          current_count: number
+          reset_time: string
+        }[]
+      }
       check_brute_force: {
         Args: {
           identifier_param: string
@@ -8601,14 +8630,16 @@ export type Database = {
       }
       enhanced_rate_limit_check: {
         Args: {
-          burst_protection?: boolean
           endpoint_param: string
           identifier_param: string
-          ip_address_param?: unknown
-          max_requests?: number
-          window_minutes?: number
+          max_requests_param?: number
+          window_minutes_param?: number
         }
-        Returns: Json
+        Returns: {
+          allowed: boolean
+          current_count: number
+          retry_after: number
+        }[]
       }
       enhanced_sensitive_rate_limit: {
         Args: {
