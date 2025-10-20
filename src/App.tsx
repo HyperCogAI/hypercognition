@@ -145,7 +145,7 @@ const AppLayout = () => {
   const isMobile = useIsMobile()
   const location = window.location
   const pathname = location.pathname
-  const isAIAssistantPage = pathname === '/ai-assistant'
+  const isAssistantContextPage = ['/ai-assistant', '/advanced-ai'].includes(pathname)
   const isACPPage = pathname === '/acp'
 
   if (isMobile) {
@@ -229,7 +229,7 @@ const AppLayout = () => {
               </Routes>
             </Suspense>
           </ErrorBoundary>
-          {!isAIAssistantPage && (
+          {!isAssistantContextPage && (
             <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
               <AITradingAssistant />
             </div>
@@ -337,7 +337,7 @@ const AppLayout = () => {
                 </Routes>
               </Suspense>
             </ErrorBoundary>
-            {!isAIAssistantPage && (
+            {!isAssistantContextPage && (
               <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
                 <AITradingAssistant />
               </div>
