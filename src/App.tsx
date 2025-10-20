@@ -38,6 +38,7 @@ const CreateAgent = lazy(() => import('./pages/CreateAgent').then(m => ({ defaul
 const Portfolio = lazy(() => import('./pages/Portfolio'));
 const AlphaSignals = lazy(() => import('./pages/AlphaSignals'));
 const KOLAnalytics = lazy(() => import('./pages/KOLAnalytics'));
+const TelegramSignals = lazy(() => import('./pages/TelegramSignals'));
 
 // Lazy loaded components - Analytics & Data
 const Analytics = lazy(() => import('./pages/Analytics'));
@@ -194,6 +195,7 @@ const AppLayout = () => {
                 <Route path="/trading-signals" element={<TradingSignals />} />
                 <Route path="/alpha-signals" element={<AlphaSignals />} />
                 <Route path="/kol-analytics" element={<KOLAnalytics />} />
+                <Route path="/telegram-signals" element={<TelegramSignals />} />
                 <Route path="/real-time-market" element={<RealTimeMarketPage />} />
                 <Route path="/social-trading" element={<SocialTradingPage />} />
                 <Route path="/order-management" element={<ProtectedRoute><OrderManagement /></ProtectedRoute>} />
@@ -310,6 +312,7 @@ const AppLayout = () => {
                    <Route path="/trading-signals" element={<TradingSignals />} />
                    <Route path="/alpha-signals" element={<AlphaSignals />} />
                    <Route path="/kol-analytics" element={<KOLAnalytics />} />
+                   <Route path="/telegram-signals" element={<TelegramSignals />} />
                    <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
                    <Route path="/notifications" element={<ProtectedRoute><Notifications /></ProtectedRoute>} />
                   <Route path="/favorites" element={<ProtectedRoute><Favorites /></ProtectedRoute>} />

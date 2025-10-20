@@ -4134,6 +4134,7 @@ export type Database = {
           price_alerts_enabled: boolean | null
           push_notifications_enabled: boolean | null
           social_updates_enabled: boolean | null
+          telegram_kol_alerts_enabled: boolean | null
           twitter_kol_alerts_enabled: boolean | null
           updated_at: string | null
           user_id: string | null
@@ -4148,6 +4149,7 @@ export type Database = {
           price_alerts_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           social_updates_enabled?: boolean | null
+          telegram_kol_alerts_enabled?: boolean | null
           twitter_kol_alerts_enabled?: boolean | null
           updated_at?: string | null
           user_id?: string | null
@@ -4162,6 +4164,7 @@ export type Database = {
           price_alerts_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           social_updates_enabled?: boolean | null
+          telegram_kol_alerts_enabled?: boolean | null
           twitter_kol_alerts_enabled?: boolean | null
           updated_at?: string | null
           user_id?: string | null
@@ -6517,6 +6520,297 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      telegram_kol_channels: {
+        Row: {
+          added_at: string | null
+          channel_id: string | null
+          channel_title: string | null
+          channel_type: string | null
+          channel_username: string | null
+          id: string
+          is_user_member: boolean | null
+          last_checked_at: string | null
+          last_message_id: number | null
+          priority: string | null
+          watchlist_id: string | null
+        }
+        Insert: {
+          added_at?: string | null
+          channel_id?: string | null
+          channel_title?: string | null
+          channel_type?: string | null
+          channel_username?: string | null
+          id?: string
+          is_user_member?: boolean | null
+          last_checked_at?: string | null
+          last_message_id?: number | null
+          priority?: string | null
+          watchlist_id?: string | null
+        }
+        Update: {
+          added_at?: string | null
+          channel_id?: string | null
+          channel_title?: string | null
+          channel_type?: string | null
+          channel_username?: string | null
+          id?: string
+          is_user_member?: boolean | null
+          last_checked_at?: string | null
+          last_message_id?: number | null
+          priority?: string | null
+          watchlist_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_kol_channels_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "telegram_kol_watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_kol_signals: {
+        Row: {
+          ai_reasoning: string | null
+          bookmarked: boolean | null
+          channel_id: string
+          confidence_score: number | null
+          detected_at: string | null
+          extracted_data: Json | null
+          forward_date: string | null
+          forward_from_chat_id: string | null
+          forward_from_chat_title: string | null
+          gem_type: string | null
+          has_document: boolean | null
+          has_photo: boolean | null
+          has_video: boolean | null
+          id: string
+          media_urls: Json | null
+          message_id: number
+          message_text: string
+          message_url: string | null
+          posted_at: string
+          status: string | null
+          user_id: string
+          user_notes: string | null
+          watchlist_id: string
+        }
+        Insert: {
+          ai_reasoning?: string | null
+          bookmarked?: boolean | null
+          channel_id: string
+          confidence_score?: number | null
+          detected_at?: string | null
+          extracted_data?: Json | null
+          forward_date?: string | null
+          forward_from_chat_id?: string | null
+          forward_from_chat_title?: string | null
+          gem_type?: string | null
+          has_document?: boolean | null
+          has_photo?: boolean | null
+          has_video?: boolean | null
+          id?: string
+          media_urls?: Json | null
+          message_id: number
+          message_text: string
+          message_url?: string | null
+          posted_at: string
+          status?: string | null
+          user_id: string
+          user_notes?: string | null
+          watchlist_id: string
+        }
+        Update: {
+          ai_reasoning?: string | null
+          bookmarked?: boolean | null
+          channel_id?: string
+          confidence_score?: number | null
+          detected_at?: string | null
+          extracted_data?: Json | null
+          forward_date?: string | null
+          forward_from_chat_id?: string | null
+          forward_from_chat_title?: string | null
+          gem_type?: string | null
+          has_document?: boolean | null
+          has_photo?: boolean | null
+          has_video?: boolean | null
+          id?: string
+          media_urls?: Json | null
+          message_id?: number
+          message_text?: string
+          message_url?: string | null
+          posted_at?: string
+          status?: string | null
+          user_id?: string
+          user_notes?: string | null
+          watchlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_kol_signals_channel_id_fkey"
+            columns: ["channel_id"]
+            isOneToOne: false
+            referencedRelation: "telegram_kol_channels"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "telegram_kol_signals_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "telegram_kol_watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_kol_watchlists: {
+        Row: {
+          created_at: string | null
+          description: string | null
+          id: string
+          is_active: boolean | null
+          name: string
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name: string
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          created_at?: string | null
+          description?: string | null
+          id?: string
+          is_active?: boolean | null
+          name?: string
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
+      telegram_signal_comments: {
+        Row: {
+          comment_text: string
+          created_at: string | null
+          id: string
+          signal_id: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          comment_text: string
+          created_at?: string | null
+          id?: string
+          signal_id?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          comment_text?: string
+          created_at?: string | null
+          id?: string
+          signal_id?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_signal_comments_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "telegram_kol_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_signal_votes: {
+        Row: {
+          created_at: string | null
+          id: string
+          signal_id: string | null
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string | null
+          id?: string
+          signal_id?: string | null
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string | null
+          id?: string
+          signal_id?: string | null
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "telegram_signal_votes_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "telegram_kol_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      telegram_user_credentials: {
+        Row: {
+          api_hash_encrypted: string
+          api_id_encrypted: string
+          created_at: string | null
+          id: string
+          is_authenticated: boolean | null
+          last_validated_at: string | null
+          phone_code_hash: string | null
+          phone_number_encrypted: string
+          session_string_encrypted: string | null
+          telegram_first_name: string | null
+          telegram_user_id: string | null
+          telegram_username: string | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          api_hash_encrypted: string
+          api_id_encrypted: string
+          created_at?: string | null
+          id?: string
+          is_authenticated?: boolean | null
+          last_validated_at?: string | null
+          phone_code_hash?: string | null
+          phone_number_encrypted: string
+          session_string_encrypted?: string | null
+          telegram_first_name?: string | null
+          telegram_user_id?: string | null
+          telegram_username?: string | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          api_hash_encrypted?: string
+          api_id_encrypted?: string
+          created_at?: string | null
+          id?: string
+          is_authenticated?: boolean | null
+          last_validated_at?: string | null
+          phone_code_hash?: string | null
+          phone_number_encrypted?: string
+          session_string_encrypted?: string | null
+          telegram_first_name?: string | null
+          telegram_user_id?: string | null
+          telegram_username?: string | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
       }
       token_chain_overrides: {
         Row: {
