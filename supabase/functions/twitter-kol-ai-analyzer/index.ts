@@ -74,29 +74,90 @@ RETURN JSON:
 async function analyzeWithAI(tweetText: string): Promise<any> {
   try {
     // Call Lovable AI for analysis
-    const response = await fetch('https://api.lovable.app/v1/ai/chat', {
+    const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('LOVABLE_AI_API_KEY')}`,
+        'Authorization': `Bearer ${Deno.env.get('LOVABLE_API_KEY')}`,
       },
       body: JSON.stringify({
+        model: 'google/gemini-2.5-flash',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
           { role: 'user', content: `ANALYZE THIS TWEET:\n${tweetText}` },
         ],
-        model: 'gemini-2.0-flash',
-        response_format: { type: 'json_object' },
+        tools: [{
+          type: 'function',
+          function: {
+            name: 'report_gem_signal',
+            description: 'Report gem signal analysis results',
+            parameters: {
+              type: 'object',
+              properties: {
+                is_gem_signal: { type: 'boolean' },
+                confidence_score: { type: 'integer', minimum: 0, maximum: 100 },
+                gem_type: { 
+                  type: 'string', 
+                  enum: ['token', 'nft', 'protocol', 'airdrop', 'alpha'] 
+                },
+                extracted_tokens: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      ticker: { type: 'string' },
+                      name: { type: 'string' },
+                      contract: { type: 'string' },
+                      chain: { 
+                        type: 'string', 
+                        enum: ['ethereum', 'solana', 'base'] 
+                      }
+                    },
+                    required: ['ticker']
+                  }
+                },
+                extracted_links: { 
+                  type: 'object',
+                  properties: {
+                    website: { type: 'string' },
+                    telegram: { type: 'string' },
+                    discord: { type: 'string' },
+                    dex: { type: 'string' },
+                    cmc: { type: 'string' }
+                  }
+                },
+                key_details: { 
+                  type: 'array', 
+                  items: { type: 'string' } 
+                },
+                reasoning: { type: 'string' }
+              },
+              required: ['is_gem_signal', 'confidence_score', 'reasoning'],
+              additionalProperties: false
+            }
+          }
+        }],
+        tool_choice: { type: 'function', function: { name: 'report_gem_signal' } }
       }),
     });
 
     if (!response.ok) {
-      console.error('AI API error:', await response.text());
+      const errorText = await response.text();
+      console.error('AI API error:', response.status, errorText);
       return null;
     }
 
     const data = await response.json();
-    return JSON.parse(data.choices[0].message.content);
+    const toolCall = data.choices?.[0]?.message?.tool_calls?.[0];
+    
+    if (toolCall?.function?.arguments) {
+      const result = JSON.parse(toolCall.function.arguments);
+      console.log('AI analysis result:', result);
+      return result;
+    }
+    
+    console.error('No tool call in response:', JSON.stringify(data));
+    return null;
   } catch (error) {
     console.error('AI analysis error:', error);
     return null;
