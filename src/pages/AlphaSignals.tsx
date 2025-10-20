@@ -89,14 +89,9 @@ export default function AlphaSignals() {
           <div className="absolute inset-0 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 blur-3xl -z-10 animate-pulse" />
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
             <div>
-              <div className="flex items-center gap-3 mb-2">
-                <div className="p-2 rounded-xl bg-gradient-to-br from-primary/20 to-accent/20 border border-primary/30">
-                  <Sparkles className="h-6 w-6 text-primary" />
-                </div>
-                <h1 className="text-4xl md:text-5xl font-bold bg-gradient-to-r from-primary via-accent to-primary bg-[length:200%_100%] bg-clip-text text-transparent animate-gradient-shift">
-                  Alpha Signals
-                </h1>
-              </div>
+              <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">
+                Alpha Signals
+              </h1>
               <p className="text-muted-foreground text-lg">
                 AI-powered insights from crypto Twitter's most influential voices
               </p>
