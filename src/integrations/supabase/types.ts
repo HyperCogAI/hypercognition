@@ -4916,6 +4916,39 @@ export type Database = {
         }
         Relationships: []
       }
+      push_subscriptions: {
+        Row: {
+          auth: string
+          created_at: string
+          endpoint: string
+          id: string
+          is_active: boolean
+          p256dh: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          auth: string
+          created_at?: string
+          endpoint: string
+          id?: string
+          is_active?: boolean
+          p256dh: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          auth?: string
+          created_at?: string
+          endpoint?: string
+          id?: string
+          is_active?: boolean
+          p256dh?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       rate_limits: {
         Row: {
           created_at: string
@@ -7961,6 +7994,50 @@ export type Database = {
           user_id?: string
         }
         Relationships: []
+      }
+      watchlist_sync_errors: {
+        Row: {
+          created_at: string
+          error_message: string
+          error_type: string
+          function_name: string
+          id: string
+          metadata: Json | null
+          resolved: boolean
+          user_id: string
+          watchlist_id: string
+        }
+        Insert: {
+          created_at?: string
+          error_message: string
+          error_type: string
+          function_name: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean
+          user_id: string
+          watchlist_id: string
+        }
+        Update: {
+          created_at?: string
+          error_message?: string
+          error_type?: string
+          function_name?: string
+          id?: string
+          metadata?: Json | null
+          resolved?: boolean
+          user_id?: string
+          watchlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "watchlist_sync_errors_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
       }
     }
     Views: {

@@ -182,12 +182,39 @@ Deno.serve(async (req) => {
             
             if (analysisResponse.error) {
               console.error('Ticker analysis failed:', analysisResponse.error);
+              
+              // CRITICAL FIX: Log error to database
+              await supabase.from('watchlist_sync_errors').insert({
+                watchlist_id: watchlist_id,
+                user_id: user_id,
+                error_type: 'ticker_analysis_error',
+                error_message: analysisResponse.error.message || 'Ticker analysis failed',
+                function_name: 'analyze-signal-ticker',
+                metadata: {
+                  signal_id: signal.id,
+                  ticker: primaryTicker,
+                  timestamp: new Date().toISOString(),
+                },
+              });
             } else {
               console.log('Ticker analysis completed successfully');
             }
-          } catch (error) {
+          } catch (error: any) {
             console.error('Failed to invoke ticker analysis:', error);
-            // Don't fail signal creation if analysis fails
+            
+            // Log error
+            await supabase.from('watchlist_sync_errors').insert({
+              watchlist_id: watchlist_id,
+              user_id: user_id,
+              error_type: 'ticker_analysis_invoke_error',
+              error_message: error.message || 'Failed to invoke ticker analysis',
+              function_name: 'analyze-signal-tracker',
+              metadata: {
+                signal_id: signal.id,
+                ticker: primaryTicker,
+                timestamp: new Date().toISOString(),
+              },
+            });
           }
         }
 

@@ -167,3 +167,6 @@ verify_jwt = false
 
 [functions.refresh-signal-analyses]
 verify_jwt = false
+
+[functions.trigger-kaito-sync]
+verify_jwt = false

@@ -7,6 +7,7 @@ const corsHeaders = {
 };
 
 interface TwitterCredentials {
+  user_id: string;
   api_key: string;
   api_secret: string;
   access_token: string;
@@ -124,6 +125,20 @@ async function searchTickerOnTwitter(
       const response = await fetch(url, {
         headers: { Authorization: oauthHeader }
       });
+      
+      // CRITICAL FIX: Parse and update rate limit from response headers
+      const rateLimitRemaining = response.headers.get('x-rate-limit-remaining');
+      const rateLimitReset = response.headers.get('x-rate-limit-reset');
+      
+      if (rateLimitRemaining && rateLimitReset) {
+        await supabase
+          .from('twitter_credentials')
+          .update({
+            rate_limit_remaining: parseInt(rateLimitRemaining),
+            rate_limit_reset_at: new Date(parseInt(rateLimitReset) * 1000).toISOString(),
+          })
+          .eq('user_id', creds.user_id);
+      }
       
       if (response.ok) {
         const data = await response.json();
@@ -294,6 +309,7 @@ Deno.serve(async (req) => {
       ticker,
       kolUsernames,
       {
+        user_id: signal.user_id,
         api_key: credentials.api_key,
         api_secret: credentials.api_secret,
         access_token: credentials.access_token,

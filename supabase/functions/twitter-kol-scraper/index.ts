@@ -94,6 +94,20 @@ async function searchRecentTweets(username: string, credentials: TwitterCredenti
     },
   });
 
+  // CRITICAL FIX: Parse and update rate limit from response headers
+  const rateLimitRemaining = response.headers.get('x-rate-limit-remaining');
+  const rateLimitReset = response.headers.get('x-rate-limit-reset');
+  
+  if (rateLimitRemaining && rateLimitReset) {
+    await supabase
+      .from('twitter_user_credentials')
+      .update({
+        rate_limit_remaining: parseInt(rateLimitRemaining),
+        rate_limit_reset_at: new Date(parseInt(rateLimitReset) * 1000).toISOString(),
+      })
+      .eq('user_id', credentials.user_id);
+  }
+
   if (!response.ok) {
     const error = await response.text();
     console.error(`Twitter API error for @${username}:`, error);
@@ -190,8 +204,22 @@ Deno.serve(async (req) => {
             .update({ last_checked_at: new Date().toISOString() })
             .eq('id', account.id);
 
-        } catch (error) {
+        } catch (error: any) {
           console.error(`Error processing @${account.twitter_username}:`, error);
+          
+          // CRITICAL FIX: Log error to database for user visibility
+          await supabase.from('watchlist_sync_errors').insert({
+            watchlist_id: watchlist.id,
+            user_id: watchlist.user_id,
+            error_type: 'twitter_api_error',
+            error_message: error.message || 'Unknown error',
+            function_name: 'twitter-kol-scraper',
+            metadata: {
+              kol_username: account.twitter_username,
+              kol_account_id: account.id,
+              timestamp: new Date().toISOString(),
+            },
+          });
         }
       }
 
