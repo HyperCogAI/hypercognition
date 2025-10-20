@@ -52,35 +52,41 @@ serve(async (req) => {
 
     const body: CreateServiceRequest = await req.json()
 
-    // Check rate limiting
+    // Atomic rate limiting check
     const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
       .rpc('check_acp_rate_limit', {
         user_id_param: user.id,
-        operation_type: 'create_service'
+        operation_type: 'create_service',
+        max_requests: 10
       })
 
     if (rateLimitError) {
       console.error('Rate limit check error:', rateLimitError)
-    } else if (rateLimitCheck && typeof rateLimitCheck === 'object') {
-      const limitData = rateLimitCheck as any
-      if (!limitData.allowed) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Rate limit exceeded',
-            message: `You can only create ${limitData.limit} services per day. Please try again later.`
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
+      return new Response(
+        JSON.stringify({ error: 'Rate limit check failed' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Validate using database function
+    if (rateLimitCheck && !rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: `You can only create ${rateLimitCheck.limit} services per day. ${rateLimitCheck.remaining || 0} remaining.`,
+          reset_at: rateLimitCheck.reset_at
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Validate using enhanced database function with array and category validation
     const { data: validationResult, error: validationError } = await supabaseAdmin
       .rpc('validate_acp_service', {
         title_param: body.title?.trim(),
         description_param: body.description?.trim(),
         price_param: body.price,
-        category_param: body.category?.trim()
+        category_param: body.category?.trim(),
+        features_param: body.features || null
       })
 
     if (validationError) {

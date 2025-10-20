@@ -52,32 +52,44 @@ serve(async (req) => {
 
     const body: ProcessTransactionRequest = await req.json()
 
-    // Check rate limiting
+    // Atomic rate limiting check
     const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
       .rpc('check_acp_rate_limit', {
         user_id_param: user.id,
-        operation_type: 'create_transaction'
+        operation_type: 'process_transaction',
+        max_requests: 50
       })
 
     if (rateLimitError) {
       console.error('Rate limit check error:', rateLimitError)
-    } else if (rateLimitCheck && typeof rateLimitCheck === 'object') {
-      const limitData = rateLimitCheck as any
-      if (!limitData.allowed) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Rate limit exceeded',
-            message: `Transaction limit reached. Please try again later.`
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
+      return new Response(
+        JSON.stringify({ error: 'Rate limit check failed' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Validate input
-    if (!body.amount || body.amount <= 0 || body.amount > 1000000) {
+    if (rateLimitCheck && !rateLimitCheck.allowed) {
       return new Response(
-        JSON.stringify({ error: 'Amount must be between 0 and $1,000,000' }),
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: `You can only process ${rateLimitCheck.limit} transactions per day. ${rateLimitCheck.remaining || 0} remaining.`,
+          reset_at: rateLimitCheck.reset_at
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Validate amount
+    if (!body.amount || body.amount <= 0) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid amount', message: 'Amount must be greater than 0' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    if (body.amount > 1000000) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid amount', message: 'Amount cannot exceed 1,000,000' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
@@ -87,6 +99,26 @@ serve(async (req) => {
         JSON.stringify({ error: 'Recipient user ID is required' }),
         { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    // Validate currency
+    const validCurrencies = ['USDC', 'SOL']
+    const currency = body.currency || 'USDC'
+    if (!validCurrencies.includes(currency)) {
+      return new Response(
+        JSON.stringify({ error: 'Invalid currency', message: `Currency must be one of: ${validCurrencies.join(', ')}` }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Validate escrow_days
+    if (body.escrow_days) {
+      if (body.escrow_days < 0 || body.escrow_days > 90) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid escrow period', message: 'Escrow days must be between 0 and 90' }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
     }
 
     // Verify recipient exists
@@ -103,8 +135,13 @@ serve(async (req) => {
       )
     }
 
-    // Calculate platform fee (2.5%)
-    const platformFee = body.amount * 0.025
+    // Calculate platform fee (2.5%) using precise arithmetic
+    const amount = BigInt(Math.floor(body.amount * 1000000)) // Convert to micro-units
+    const platformFeeAmount = (amount * BigInt(25)) / BigInt(1000) // 2.5%
+    const netAmountBigInt = amount - platformFeeAmount
+    
+    const platformFee = Number(platformFeeAmount) / 1000000
+    const netAmount = Number(netAmountBigInt) / 1000000
 
     // Calculate escrow date if needed
     let escrowUntil = null
@@ -114,60 +151,116 @@ serve(async (req) => {
       escrowUntil = escrowDate.toISOString()
     }
 
-    // Create transaction
-    const { data: transaction, error: createError } = await supabaseAdmin
-      .from('acp_transactions')
-      .insert({
-        transaction_type: body.transaction_type,
+    // Process wallet transaction with atomic balance verification
+    const { data: walletResult, error: walletError } = await supabaseAdmin
+      .rpc('process_wallet_transaction', {
         from_user_id: user.id,
         to_user_id: body.to_user_id,
-        agent_id: body.agent_id || null,
-        service_id: body.service_id || null,
-        job_id: body.job_id || null,
-        amount: body.amount,
-        currency: body.currency || 'USDC',
-        fee: platformFee,
-        status: escrowUntil ? 'processing' : 'pending',
-        payment_method: body.payment_method || 'wallet',
-        escrow_until: escrowUntil,
-        metadata: {
-          created_by_function: true,
-          timestamp: new Date().toISOString()
-        }
+        amount_param: netAmount,
+        currency_param: currency,
+        transaction_id_param: null
       })
-      .select()
-      .single()
 
-    if (createError) {
-      console.error('Transaction creation error:', createError)
+    if (walletError || !walletResult?.success) {
+      const errorMsg = walletResult?.error || 'Wallet transaction failed'
+      const statusCode = errorMsg === 'insufficient_balance' ? 402 : 500
+      
       return new Response(
-        JSON.stringify({ error: 'Failed to process transaction', details: createError.message }),
+        JSON.stringify({ 
+          error: errorMsg,
+          message: errorMsg === 'insufficient_balance' 
+            ? `Insufficient balance. Required: ${netAmount} ${currency}, Available: ${walletResult?.current_balance || 0}`
+            : 'Failed to process wallet transaction',
+          current_balance: walletResult?.current_balance,
+          required: walletResult?.required
+        }),
+        { status: statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Create transaction record
+    let transaction
+    try {
+      const { data: txData, error: txError } = await supabaseAdmin
+        .from('acp_transactions')
+        .insert({
+          transaction_type: body.transaction_type,
+          from_user_id: user.id,
+          to_user_id: body.to_user_id,
+          agent_id: body.agent_id || null,
+          service_id: body.service_id || null,
+          job_id: body.job_id || null,
+          amount: body.amount,
+          currency: currency,
+          fee: platformFee,
+          status: escrowUntil ? 'processing' : 'completed',
+          payment_method: body.payment_method || 'wallet',
+          escrow_until: escrowUntil,
+          metadata: {
+            created_by_function: true,
+            timestamp: new Date().toISOString(),
+            wallet_transaction: walletResult
+          }
+        })
+        .select()
+        .single()
+
+      if (txError) {
+        console.error('CRITICAL: Transaction creation error after wallet deduction:', txError)
+        throw txError
+      }
+      
+      transaction = txData
+    } catch (error) {
+      console.error('CRITICAL: Transaction creation failed. Manual intervention required.')
+      return new Response(
+        JSON.stringify({ 
+          error: 'Transaction creation failed',
+          message: 'Critical error: wallet debited but transaction record failed. Contact support immediately.',
+          details: error instanceof Error ? error.message : 'Unknown error'
+        }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Update related records
+    // Update service total_orders (non-critical side effect)
     if (body.service_id) {
-      await supabaseAdmin
-        .from('acp_services')
-        .update({ 
-          total_orders: supabaseAdmin.raw('total_orders + 1')
-        })
-        .eq('id', body.service_id)
+      try {
+        const { error: updateError } = await supabaseAdmin
+          .from('acp_services')
+          .update({ total_orders: supabaseAdmin.sql`total_orders + 1` })
+          .eq('id', body.service_id)
+
+        if (updateError) {
+          console.error('WARNING: Failed to update service orders for service', body.service_id, updateError)
+        }
+      } catch (err) {
+        console.error('WARNING: Exception updating service orders:', err)
+      }
     }
 
-    // Create earnings record
-    await supabaseAdmin
-      .from('agents_earnings')
-      .insert({
-        agent_id: body.agent_id || null,
-        user_id: body.to_user_id,
-        amount: body.amount - platformFee,
-        earnings_type: body.transaction_type,
-        currency: body.currency || 'USDC',
-        source_transaction_id: transaction.id,
-        description: `Payment from ${body.transaction_type.replace(/_/g, ' ')}`
-      })
+    // Create earnings record (non-critical side effect)
+    if (body.agent_id || body.service_id) {
+      try {
+        const { error: earningsError } = await supabaseAdmin
+          .from('agents_earnings')
+          .insert({
+            agent_id: body.agent_id || null,
+            user_id: body.to_user_id,
+            amount: netAmount,
+            earnings_type: body.transaction_type,
+            currency: currency,
+            source_transaction_id: transaction.id,
+            description: `Payment from ${body.transaction_type.replace(/_/g, ' ')}`
+          })
+
+        if (earningsError) {
+          console.error('WARNING: Failed to create earnings record for transaction', transaction.id, earningsError)
+        }
+      } catch (err) {
+        console.error('WARNING: Exception creating earnings record:', err)
+      }
+    }
 
     console.log(`Transaction processed: ${transaction.id} from ${user.id} to ${body.to_user_id}`)
 

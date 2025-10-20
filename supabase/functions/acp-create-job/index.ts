@@ -52,34 +52,41 @@ serve(async (req) => {
 
     const body: CreateJobRequest = await req.json()
 
-    // Check rate limiting
+    // Atomic rate limiting check
     const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
       .rpc('check_acp_rate_limit', {
         user_id_param: user.id,
-        operation_type: 'create_job'
+        operation_type: 'create_job',
+        max_requests: 5
       })
 
     if (rateLimitError) {
       console.error('Rate limit check error:', rateLimitError)
-    } else if (rateLimitCheck && typeof rateLimitCheck === 'object') {
-      const limitData = rateLimitCheck as any
-      if (!limitData.allowed) {
-        return new Response(
-          JSON.stringify({ 
-            error: 'Rate limit exceeded',
-            message: `You can only create ${limitData.limit} jobs per day. Please try again later.`
-          }),
-          { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        )
-      }
+      return new Response(
+        JSON.stringify({ error: 'Rate limit check failed' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
     }
 
-    // Validate using database function
+    if (rateLimitCheck && !rateLimitCheck.allowed) {
+      return new Response(
+        JSON.stringify({ 
+          error: 'Rate limit exceeded',
+          message: `You can only create ${rateLimitCheck.limit} jobs per day. ${rateLimitCheck.remaining || 0} remaining.`,
+          reset_at: rateLimitCheck.reset_at
+        }),
+        { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Validate using enhanced database function with array validation
     const { data: validationResult, error: validationError } = await supabaseAdmin
       .rpc('validate_acp_job', {
         title_param: body.title?.trim(),
         description_param: body.description?.trim(),
-        budget_param: body.budget
+        budget_param: body.budget,
+        requirements_param: body.requirements || null,
+        deliverables_param: body.deliverables || null
       })
 
     if (validationError) {
