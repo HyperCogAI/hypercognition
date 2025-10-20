@@ -8,7 +8,7 @@ import {
   Target, Coins, Sparkles, Lock, Layers, Bell, Users, GraduationCap, 
   ArrowLeftRight, Activity, Share2, ListOrdered, Shield, LineChart, 
   Building2, Scale, Package, Globe, Settings, HelpCircle, Crown, FileText,
-  Bot, UserCog, Zap, Briefcase, BookOpen
+  Bot, UserCog, Zap, Briefcase, BookOpen, TrendingDown
 } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { useIsMobile } from '@/hooks/use-mobile'
@@ -44,6 +44,7 @@ const navigationSections = [
       { icon: TrendingUp, label: 'Market Overview', path: '/market-overview', id: 'market-overview' },
       { icon: Wallet, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
       { icon: Target, label: 'Trading Signals', path: '/trading-signals', id: 'trading-signals' },
+      { icon: Sparkles, label: 'Alpha Signals', path: '/alpha-signals', id: 'alpha-signals' },
     ]
   },
   {
@@ -59,6 +60,7 @@ const navigationSections = [
     title: "Analytics",
     items: [
       { icon: BarChart3, label: 'Analytics', path: '/analytics', id: 'analytics' },
+      { icon: TrendingDown, label: 'KOL Analytics', path: '/kol-analytics', id: 'kol-analytics' },
       { icon: BarChart3, label: 'Compare', path: '/compare', id: 'compare' },
     ]
   },
