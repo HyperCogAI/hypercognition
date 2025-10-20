@@ -4134,6 +4134,7 @@ export type Database = {
           price_alerts_enabled: boolean | null
           push_notifications_enabled: boolean | null
           social_updates_enabled: boolean | null
+          twitter_kol_alerts_enabled: boolean | null
           updated_at: string | null
           user_id: string | null
         }
@@ -4147,6 +4148,7 @@ export type Database = {
           price_alerts_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           social_updates_enabled?: boolean | null
+          twitter_kol_alerts_enabled?: boolean | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -4160,6 +4162,7 @@ export type Database = {
           price_alerts_enabled?: boolean | null
           push_notifications_enabled?: boolean | null
           social_updates_enabled?: boolean | null
+          twitter_kol_alerts_enabled?: boolean | null
           updated_at?: string | null
           user_id?: string | null
         }
@@ -6970,6 +6973,191 @@ export type Database = {
         }
         Relationships: []
       }
+      twitter_kol_accounts: {
+        Row: {
+          added_at: string
+          id: string
+          last_checked_at: string | null
+          priority: Database["public"]["Enums"]["kol_priority"]
+          twitter_user_id: string | null
+          twitter_username: string
+          watchlist_id: string
+        }
+        Insert: {
+          added_at?: string
+          id?: string
+          last_checked_at?: string | null
+          priority?: Database["public"]["Enums"]["kol_priority"]
+          twitter_user_id?: string | null
+          twitter_username: string
+          watchlist_id: string
+        }
+        Update: {
+          added_at?: string
+          id?: string
+          last_checked_at?: string | null
+          priority?: Database["public"]["Enums"]["kol_priority"]
+          twitter_user_id?: string | null
+          twitter_username?: string
+          watchlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_kol_accounts_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twitter_kol_signals: {
+        Row: {
+          ai_analysis: string | null
+          confidence_score: number
+          detected_at: string
+          extracted_data: Json | null
+          gem_type: Database["public"]["Enums"]["gem_type"] | null
+          id: string
+          kol_account_id: string
+          posted_at: string
+          status: Database["public"]["Enums"]["signal_status"]
+          tweet_id: string
+          tweet_text: string
+          tweet_url: string
+          user_action: string | null
+          user_id: string
+          watchlist_id: string
+        }
+        Insert: {
+          ai_analysis?: string | null
+          confidence_score: number
+          detected_at?: string
+          extracted_data?: Json | null
+          gem_type?: Database["public"]["Enums"]["gem_type"] | null
+          id?: string
+          kol_account_id: string
+          posted_at: string
+          status?: Database["public"]["Enums"]["signal_status"]
+          tweet_id: string
+          tweet_text: string
+          tweet_url: string
+          user_action?: string | null
+          user_id: string
+          watchlist_id: string
+        }
+        Update: {
+          ai_analysis?: string | null
+          confidence_score?: number
+          detected_at?: string
+          extracted_data?: Json | null
+          gem_type?: Database["public"]["Enums"]["gem_type"] | null
+          id?: string
+          kol_account_id?: string
+          posted_at?: string
+          status?: Database["public"]["Enums"]["signal_status"]
+          tweet_id?: string
+          tweet_text?: string
+          tweet_url?: string
+          user_action?: string | null
+          user_id?: string
+          watchlist_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_kol_signals_kol_account_id_fkey"
+            columns: ["kol_account_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_kol_signals_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      twitter_kol_watchlists: {
+        Row: {
+          access_mode: Database["public"]["Enums"]["access_mode"]
+          created_at: string
+          description: string | null
+          id: string
+          is_active: boolean
+          name: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          access_mode?: Database["public"]["Enums"]["access_mode"]
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          access_mode?: Database["public"]["Enums"]["access_mode"]
+          created_at?: string
+          description?: string | null
+          id?: string
+          is_active?: boolean
+          name?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      twitter_user_credentials: {
+        Row: {
+          created_at: string
+          id: string
+          is_valid: boolean
+          last_validated_at: string | null
+          rate_limit_remaining: number | null
+          rate_limit_reset_at: string | null
+          twitter_access_secret_encrypted: string
+          twitter_access_token_encrypted: string
+          twitter_api_key_encrypted: string
+          twitter_api_secret_encrypted: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_valid?: boolean
+          last_validated_at?: string | null
+          rate_limit_remaining?: number | null
+          rate_limit_reset_at?: string | null
+          twitter_access_secret_encrypted: string
+          twitter_access_token_encrypted: string
+          twitter_api_key_encrypted: string
+          twitter_api_secret_encrypted: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_valid?: boolean
+          last_validated_at?: string | null
+          rate_limit_remaining?: number | null
+          rate_limit_reset_at?: string | null
+          twitter_access_secret_encrypted?: string
+          twitter_access_token_encrypted?: string
+          twitter_api_key_encrypted?: string
+          twitter_api_secret_encrypted?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_2fa: {
         Row: {
           backup_codes: string[] | null
@@ -7987,6 +8175,7 @@ export type Database = {
       }
     }
     Enums: {
+      access_mode: "personal_api" | "platform_shared"
       ai_model_status: "active" | "training" | "testing" | "deprecated"
       ai_model_type:
         | "lstm"
@@ -8010,6 +8199,8 @@ export type Database = {
         | "hybrid"
       backtest_status: "pending" | "running" | "completed" | "failed"
       billing_period: "monthly" | "annual"
+      gem_type: "token" | "nft" | "protocol" | "airdrop" | "alpha"
+      kol_priority: "high" | "medium" | "low"
       notification_frequency: "instant" | "daily" | "weekly" | "never"
       privacy_level: "public" | "friends" | "private"
       risk_level: "low" | "medium" | "high" | "extreme"
@@ -8019,6 +8210,7 @@ export type Database = {
         | "executed"
         | "expired"
         | "cancelled"
+      signal_status: "new" | "reviewed" | "dismissed"
       subscription_status: "active" | "paused" | "cancelled"
       subscription_tier: "basic" | "pro" | "elite"
       theme_mode: "light" | "dark" | "system"
@@ -8149,6 +8341,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      access_mode: ["personal_api", "platform_shared"],
       ai_model_status: ["active", "training", "testing", "deprecated"],
       ai_model_type: [
         "lstm",
@@ -8175,6 +8368,8 @@ export const Constants = {
       ],
       backtest_status: ["pending", "running", "completed", "failed"],
       billing_period: ["monthly", "annual"],
+      gem_type: ["token", "nft", "protocol", "airdrop", "alpha"],
+      kol_priority: ["high", "medium", "low"],
       notification_frequency: ["instant", "daily", "weekly", "never"],
       privacy_level: ["public", "friends", "private"],
       risk_level: ["low", "medium", "high", "extreme"],
@@ -8185,6 +8380,7 @@ export const Constants = {
         "expired",
         "cancelled",
       ],
+      signal_status: ["new", "reviewed", "dismissed"],
       subscription_status: ["active", "paused", "cancelled"],
       subscription_tier: ["basic", "pro", "elite"],
       theme_mode: ["light", "dark", "system"],
