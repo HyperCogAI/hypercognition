@@ -16,6 +16,8 @@ interface ProcessTransactionRequest {
   currency?: string
   payment_method?: string
   escrow_days?: number
+  metadata?: Record<string, any>
+  idempotency_key?: string
 }
 
 serve(async (req) => {
@@ -77,6 +79,33 @@ serve(async (req) => {
         }),
         { status: 429, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    // Check idempotency to prevent duplicate transactions
+    if (body.idempotency_key) {
+      const { data: idempotencyCheck, error: idempotencyError } = await supabaseAdmin
+        .rpc('check_transaction_idempotency', {
+          idempotency_key_param: body.idempotency_key,
+          user_id_param: user.id
+        })
+
+      if (idempotencyError) {
+        console.error('Idempotency check error:', idempotencyError)
+      } else if (idempotencyCheck?.is_duplicate) {
+        console.log('Duplicate transaction detected, returning existing:', body.idempotency_key)
+        const existingTx = idempotencyCheck.transaction
+        return new Response(
+          JSON.stringify({
+            success: true,
+            transaction: existingTx,
+            platform_fee: existingTx.fee,
+            recipient_receives: existingTx.amount - existingTx.fee,
+            message: 'Transaction already processed (idempotent)',
+            duplicate: true
+          }),
+          { status: 200, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
     }
 
     // Validate amount
@@ -192,10 +221,12 @@ serve(async (req) => {
       status: escrowUntil ? 'processing' : 'completed',
       payment_method: body.payment_method || 'wallet',
       escrow_until: escrowUntil,
+      idempotency_key: body.idempotency_key || null,
       metadata: {
         created_by_function: true,
         timestamp: new Date().toISOString(),
-        wallet_transaction: walletResult
+        wallet_transaction: walletResult,
+        ...(body.metadata || {})
       }
     }
 

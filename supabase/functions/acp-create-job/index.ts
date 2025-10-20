@@ -108,6 +108,27 @@ serve(async (req) => {
       )
     }
 
+    // Validate deadline if provided
+    if (body.deadline) {
+      const { data: deadlineCheck, error: deadlineError } = await supabaseAdmin
+        .rpc('validate_deadline', {
+          deadline_param: body.deadline,
+          max_days_future: 365
+        })
+
+      if (deadlineError) {
+        console.error('Deadline validation error:', deadlineError)
+      } else if (!deadlineCheck?.valid) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Invalid deadline',
+            message: deadlineCheck.error
+          }),
+          { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        )
+      }
+    }
+
     // Create job with sanitized data
     const { data: job, error: createError } = await supabaseAdmin
       .from('acp_jobs')
@@ -129,9 +150,21 @@ serve(async (req) => {
 
     if (createError) {
       console.error('Job creation error:', createError)
+      
+      // Map database error to user-friendly message
+      const { data: errorMapping } = await supabaseAdmin
+        .rpc('map_database_error', {
+          error_code: createError.code || '500',
+          error_message: createError.message,
+          table_name: 'acp_jobs'
+        })
+      
       return new Response(
-        JSON.stringify({ error: 'Failed to create job', details: createError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: errorMapping?.user_message || 'Failed to create job',
+          details: createError.message
+        }),
+        { status: errorMapping?.status_code || 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 

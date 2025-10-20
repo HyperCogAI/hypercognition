@@ -107,19 +107,34 @@ serve(async (req) => {
       )
     }
 
-    // Verify agent ownership
-    const { data: agent, error: agentError } = await supabaseAdmin
-      .from('agents')
-      .select('id')
-      .eq('id', body.agent_id)
-      .eq('creator_id', user.id)
-      .single()
+    // Enhanced agent verification with status checks
+    const { data: agentCheck, error: agentError } = await supabaseAdmin
+      .rpc('verify_agent_eligibility', {
+        agent_id_param: body.agent_id,
+        user_id_param: user.id
+      })
 
-    if (agentError || !agent) {
+    if (agentError) {
+      console.error('Agent verification error:', agentError)
       return new Response(
-        JSON.stringify({ error: 'Agent not found or you do not own this agent' }),
-        { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ error: 'Agent verification failed' }),
+        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
+    }
+
+    if (!agentCheck?.eligible) {
+      return new Response(
+        JSON.stringify({ 
+          error: agentCheck.error || 'agent_ineligible',
+          message: agentCheck.message || 'Agent is not eligible for service creation'
+        }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Log warning if agent not verified
+    if (agentCheck.warning) {
+      console.warn(`Service creation warning: ${agentCheck.warning} - ${agentCheck.message}`)
     }
 
     // Create service with sanitized data
@@ -143,9 +158,21 @@ serve(async (req) => {
 
     if (createError) {
       console.error('Service creation error:', createError)
+      
+      // Map database error to user-friendly message
+      const { data: errorMapping } = await supabaseAdmin
+        .rpc('map_database_error', {
+          error_code: createError.code || '500',
+          error_message: createError.message,
+          table_name: 'acp_services'
+        })
+      
       return new Response(
-        JSON.stringify({ error: 'Failed to create service', details: createError.message }),
-        { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        JSON.stringify({ 
+          error: errorMapping?.user_message || 'Failed to create service',
+          details: createError.message
+        }),
+        { status: errorMapping?.status_code || 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
