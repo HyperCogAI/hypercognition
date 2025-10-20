@@ -104,11 +104,13 @@ export default function AlphaSignals() {
         <div className="container max-w-4xl py-16 px-4 md:px-6">
           <Card className="border-border/50 bg-card/80 backdrop-blur-xl">
             <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
-              <div className="p-6 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
-                <Key className="h-16 w-16 text-yellow-500" />
-              </div>
               <div className="space-y-2">
-                <h2 className="text-3xl font-bold">Twitter API Required</h2>
+                <div className="flex items-center justify-center gap-3">
+                  <div className="p-2 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
+                    <Key className="h-8 w-8 text-yellow-500" />
+                  </div>
+                  <h2 className="text-3xl font-bold">Twitter API Required</h2>
+                </div>
                 <p className="text-muted-foreground text-lg max-w-md">
                   Alpha Signals uses your personal Twitter API credentials to monitor KOL activity and detect gem opportunities
                 </p>
