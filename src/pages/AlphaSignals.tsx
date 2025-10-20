@@ -111,7 +111,7 @@ export default function AlphaSignals() {
                   </div>
                   <h2 className="text-3xl font-bold">Twitter API Required</h2>
                 </div>
-                <p className="text-muted-foreground text-lg max-w-md">
+                <p className="text-muted-foreground text-base max-w-md">
                   Alpha Signals uses your personal Twitter API credentials to monitor KOL activity and detect gem opportunities
                 </p>
               </div>
