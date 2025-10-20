@@ -102,7 +102,6 @@ export default function AlphaSignals() {
       <div className="min-h-screen bg-gradient-to-br from-background via-background to-card/30">
         <div className="container max-w-4xl py-16 px-4 md:px-6">
           <Card className="border-border/50 bg-card/80 backdrop-blur-xl">
-            <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-accent/5 to-primary/5 animate-pulse -z-10" />
             <CardContent className="flex flex-col items-center justify-center py-16 text-center space-y-6">
               <div className="p-6 rounded-full bg-gradient-to-br from-yellow-500/20 to-amber-500/20 border border-yellow-500/30">
                 <Key className="h-16 w-16 text-yellow-500" />
