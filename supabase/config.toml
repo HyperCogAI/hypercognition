@@ -170,3 +170,12 @@ verify_jwt = false
 
 [functions.trigger-kaito-sync]
 verify_jwt = false
+
+[functions.track-signal-performance]
+verify_jwt = false
+
+[functions.update-signal-performance]
+verify_jwt = false
+
+[functions.recalculate-reputations]
+verify_jwt = false

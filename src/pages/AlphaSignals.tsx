@@ -18,6 +18,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Textarea } from "@/components/ui/textarea";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { SignalPerformanceBadge } from "@/components/signals/SignalPerformanceBadge";
 import { ExternalLink, Bookmark, X, Eye, TrendingUp, MessageCircle, ThumbsUp, ThumbsDown, Share2, Sparkles, Zap, Filter, BarChart3, Clock, Award, Settings, Users, Key, AlertTriangle } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { cn } from "@/lib/utils";
@@ -220,6 +221,15 @@ export default function AlphaSignals() {
                 AI-powered insights from crypto Twitter's most influential voices
               </p>
             </div>
+            
+            <Button
+              variant="outline"
+              onClick={() => navigate('/kol-analytics')}
+              className="gap-2"
+            >
+              <BarChart3 className="h-4 w-4" />
+              KOL Analytics
+            </Button>
             
             <div className="flex gap-4">
               <Button variant="outline" size="lg" className="group">

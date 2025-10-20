@@ -5475,6 +5475,89 @@ export type Database = {
         }
         Relationships: []
       }
+      signal_performance_tracking: {
+        Row: {
+          chain: string | null
+          contract_address: string | null
+          created_at: string | null
+          data_source: string | null
+          id: string
+          last_updated_at: string | null
+          outcome: string | null
+          peak_price: number | null
+          peak_reached_at: string | null
+          peak_return: number | null
+          performance_score: number | null
+          price_1h: number | null
+          price_24h: number | null
+          price_4h: number | null
+          price_7d: number | null
+          price_at_signal: number
+          return_1h: number | null
+          return_24h: number | null
+          return_4h: number | null
+          return_7d: number | null
+          signal_id: string
+          ticker: string
+        }
+        Insert: {
+          chain?: string | null
+          contract_address?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          id?: string
+          last_updated_at?: string | null
+          outcome?: string | null
+          peak_price?: number | null
+          peak_reached_at?: string | null
+          peak_return?: number | null
+          performance_score?: number | null
+          price_1h?: number | null
+          price_24h?: number | null
+          price_4h?: number | null
+          price_7d?: number | null
+          price_at_signal: number
+          return_1h?: number | null
+          return_24h?: number | null
+          return_4h?: number | null
+          return_7d?: number | null
+          signal_id: string
+          ticker: string
+        }
+        Update: {
+          chain?: string | null
+          contract_address?: string | null
+          created_at?: string | null
+          data_source?: string | null
+          id?: string
+          last_updated_at?: string | null
+          outcome?: string | null
+          peak_price?: number | null
+          peak_reached_at?: string | null
+          peak_return?: number | null
+          performance_score?: number | null
+          price_1h?: number | null
+          price_24h?: number | null
+          price_4h?: number | null
+          price_7d?: number | null
+          price_at_signal?: number
+          return_1h?: number | null
+          return_24h?: number | null
+          return_4h?: number | null
+          return_7d?: number | null
+          signal_id?: string
+          ticker?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_performance_tracking_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: true
+            referencedRelation: "twitter_kol_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       signal_shares: {
         Row: {
           created_at: string
@@ -5579,6 +5662,7 @@ export type Database = {
           signal_id: string
           user_id: string
           vote_type: string
+          vote_weight: number | null
         }
         Insert: {
           created_at?: string
@@ -5586,6 +5670,7 @@ export type Database = {
           signal_id: string
           user_id: string
           vote_type: string
+          vote_weight?: number | null
         }
         Update: {
           created_at?: string
@@ -5593,6 +5678,7 @@ export type Database = {
           signal_id?: string
           user_id?: string
           vote_type?: string
+          vote_weight?: number | null
         }
         Relationships: [
           {
@@ -7236,6 +7322,13 @@ export type Database = {
             foreignKeyName: "twitter_kol_signals_kol_account_id_fkey"
             columns: ["kol_account_id"]
             isOneToOne: false
+            referencedRelation: "kol_performance_summary"
+            referencedColumns: ["kol_account_id"]
+          },
+          {
+            foreignKeyName: "twitter_kol_signals_kol_account_id_fkey"
+            columns: ["kol_account_id"]
+            isOneToOne: false
             referencedRelation: "twitter_kol_accounts"
             referencedColumns: ["id"]
           },
@@ -7738,6 +7831,54 @@ export type Database = {
         }
         Relationships: []
       }
+      user_reputation: {
+        Row: {
+          accuracy_rate: number | null
+          badges: Json | null
+          comments_posted: number | null
+          correct_votes: number | null
+          created_at: string | null
+          last_calculated_at: string | null
+          reputation_score: number | null
+          reputation_tier: string | null
+          signals_bookmarked: number | null
+          signals_shared: number | null
+          total_votes_cast: number | null
+          updated_at: string | null
+          user_id: string
+        }
+        Insert: {
+          accuracy_rate?: number | null
+          badges?: Json | null
+          comments_posted?: number | null
+          correct_votes?: number | null
+          created_at?: string | null
+          last_calculated_at?: string | null
+          reputation_score?: number | null
+          reputation_tier?: string | null
+          signals_bookmarked?: number | null
+          signals_shared?: number | null
+          total_votes_cast?: number | null
+          updated_at?: string | null
+          user_id: string
+        }
+        Update: {
+          accuracy_rate?: number | null
+          badges?: Json | null
+          comments_posted?: number | null
+          correct_votes?: number | null
+          created_at?: string | null
+          last_calculated_at?: string | null
+          reputation_score?: number | null
+          reputation_tier?: string | null
+          signals_bookmarked?: number | null
+          signals_shared?: number | null
+          total_votes_cast?: number | null
+          updated_at?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_sessions: {
         Row: {
           created_at: string
@@ -8041,6 +8182,37 @@ export type Database = {
       }
     }
     Views: {
+      kol_performance_summary: {
+        Row: {
+          avg_confidence_score: number | null
+          avg_enhanced_confidence: number | null
+          avg_peak_return: number | null
+          avg_performance_score: number | null
+          avg_return_24h: number | null
+          bearish_signals: number | null
+          best_signal_return: number | null
+          bullish_signals: number | null
+          first_signal_at: string | null
+          kol_account_id: string | null
+          last_signal_at: string | null
+          pending_signals: number | null
+          success_rate: number | null
+          total_signals: number | null
+          twitter_username: string | null
+          watchlist_id: string | null
+          yaps_30d: number | null
+          yaps_7d: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "twitter_kol_accounts_watchlist_id_fkey"
+            columns: ["watchlist_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_watchlists"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       marketplace_developers_public: {
         Row: {
           company_name: string | null
@@ -8078,6 +8250,10 @@ export type Database = {
     Functions: {
       calculate_strategy_performance: {
         Args: { strategy_id_param: string }
+        Returns: undefined
+      }
+      calculate_user_reputation: {
+        Args: { p_user_id: string }
         Returns: undefined
       }
       check_acp_rate_limit: {
