@@ -3,6 +3,7 @@ import { useTwitterKOLSignals } from "@/hooks/useTwitterKOLSignals";
 import { useTwitterKOLWatchlists } from "@/hooks/useTwitterKOLWatchlists";
 import { useSignalCommunity } from "@/hooks/useSignalCommunity";
 import { useNavigate } from "react-router-dom";
+import { SignalConfidenceSection } from "@/components/signals/SignalConfidenceSection";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -451,6 +452,15 @@ export default function AlphaSignals() {
                               <p className="text-sm text-foreground/90 leading-relaxed">{signal.ai_analysis}</p>
                             </div>
                           </div>
+
+                          {/* Enhanced Confidence Section */}
+                          {signal.extracted_data?.tokens && signal.extracted_data.tokens.length > 0 && (
+                            <SignalConfidenceSection
+                              signalId={signal.id}
+                              ticker={signal.extracted_data.tokens[0].ticker}
+                              originalConfidence={signal.confidence_score}
+                            />
+                          )}
 
                           <Separator className="bg-border/50" />
 

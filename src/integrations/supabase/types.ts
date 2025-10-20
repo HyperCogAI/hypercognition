@@ -5442,6 +5442,71 @@ export type Database = {
         }
         Relationships: []
       }
+      signal_ticker_analysis: {
+        Row: {
+          analysis_timestamp: string | null
+          average_influence_score: number | null
+          confidence_multiplier: number | null
+          created_at: string | null
+          emerging_kols: number | null
+          final_confidence_score: number | null
+          id: string
+          kols_mentioning: Json | null
+          metadata: Json | null
+          mid_tier_kols: number | null
+          signal_id: string
+          ticker: string
+          top_tier_kols: number | null
+          total_influence_score: number | null
+          total_kols_count: number | null
+          updated_at: string | null
+        }
+        Insert: {
+          analysis_timestamp?: string | null
+          average_influence_score?: number | null
+          confidence_multiplier?: number | null
+          created_at?: string | null
+          emerging_kols?: number | null
+          final_confidence_score?: number | null
+          id?: string
+          kols_mentioning?: Json | null
+          metadata?: Json | null
+          mid_tier_kols?: number | null
+          signal_id: string
+          ticker: string
+          top_tier_kols?: number | null
+          total_influence_score?: number | null
+          total_kols_count?: number | null
+          updated_at?: string | null
+        }
+        Update: {
+          analysis_timestamp?: string | null
+          average_influence_score?: number | null
+          confidence_multiplier?: number | null
+          created_at?: string | null
+          emerging_kols?: number | null
+          final_confidence_score?: number | null
+          id?: string
+          kols_mentioning?: Json | null
+          metadata?: Json | null
+          mid_tier_kols?: number | null
+          signal_id?: string
+          ticker?: string
+          top_tier_kols?: number | null
+          total_influence_score?: number | null
+          total_kols_count?: number | null
+          updated_at?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_ticker_analysis_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       social_activities: {
         Row: {
           activity_type: string
@@ -7016,12 +7081,14 @@ export type Database = {
           ai_analysis: string | null
           confidence_score: number
           detected_at: string
+          enhanced_confidence_score: number | null
           extracted_data: Json | null
           gem_type: Database["public"]["Enums"]["gem_type"] | null
           id: string
           kol_account_id: string
           posted_at: string
           status: Database["public"]["Enums"]["signal_status"]
+          ticker_analysis_id: string | null
           tweet_id: string
           tweet_text: string
           tweet_url: string
@@ -7033,12 +7100,14 @@ export type Database = {
           ai_analysis?: string | null
           confidence_score: number
           detected_at?: string
+          enhanced_confidence_score?: number | null
           extracted_data?: Json | null
           gem_type?: Database["public"]["Enums"]["gem_type"] | null
           id?: string
           kol_account_id: string
           posted_at: string
           status?: Database["public"]["Enums"]["signal_status"]
+          ticker_analysis_id?: string | null
           tweet_id: string
           tweet_text: string
           tweet_url: string
@@ -7050,12 +7119,14 @@ export type Database = {
           ai_analysis?: string | null
           confidence_score?: number
           detected_at?: string
+          enhanced_confidence_score?: number | null
           extracted_data?: Json | null
           gem_type?: Database["public"]["Enums"]["gem_type"] | null
           id?: string
           kol_account_id?: string
           posted_at?: string
           status?: Database["public"]["Enums"]["signal_status"]
+          ticker_analysis_id?: string | null
           tweet_id?: string
           tweet_text?: string
           tweet_url?: string
@@ -7069,6 +7140,13 @@ export type Database = {
             columns: ["kol_account_id"]
             isOneToOne: false
             referencedRelation: "twitter_kol_accounts"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "twitter_kol_signals_ticker_analysis_id_fkey"
+            columns: ["ticker_analysis_id"]
+            isOneToOne: false
+            referencedRelation: "signal_ticker_analysis"
             referencedColumns: ["id"]
           },
           {

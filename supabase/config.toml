@@ -152,3 +152,6 @@ verify_jwt = true
 
 [functions.update-support-ticket]
 verify_jwt = true
+
+[functions.analyze-signal-ticker]
+verify_jwt = true
