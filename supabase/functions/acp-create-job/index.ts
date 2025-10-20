@@ -79,12 +79,13 @@ serve(async (req) => {
       )
     }
 
-    // Validate using enhanced database function with array validation
+    // Validate using enhanced database function with category whitelist
     const { data: validationResult, error: validationError } = await supabaseAdmin
       .rpc('validate_acp_job', {
         title_param: body.title?.trim(),
         description_param: body.description?.trim(),
         budget_param: body.budget,
+        category_param: body.category?.trim(),
         requirements_param: body.requirements || null,
         deliverables_param: body.deliverables || null
       })

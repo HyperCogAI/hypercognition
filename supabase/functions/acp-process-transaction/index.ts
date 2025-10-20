@@ -178,89 +178,47 @@ serve(async (req) => {
       )
     }
 
-    // Create transaction record
-    let transaction
-    try {
-      const { data: txData, error: txError } = await supabaseAdmin
-        .from('acp_transactions')
-        .insert({
-          transaction_type: body.transaction_type,
-          from_user_id: user.id,
-          to_user_id: body.to_user_id,
-          agent_id: body.agent_id || null,
-          service_id: body.service_id || null,
-          job_id: body.job_id || null,
-          amount: body.amount,
-          currency: currency,
-          fee: platformFee,
-          status: escrowUntil ? 'processing' : 'completed',
-          payment_method: body.payment_method || 'wallet',
-          escrow_until: escrowUntil,
-          metadata: {
-            created_by_function: true,
-            timestamp: new Date().toISOString(),
-            wallet_transaction: walletResult
-          }
-        })
-        .select()
-        .single()
-
-      if (txError) {
-        console.error('CRITICAL: Transaction creation error after wallet deduction:', txError)
-        throw txError
+    // Use atomic transaction creation function
+    const transactionData = {
+      transaction_type: body.transaction_type,
+      from_user_id: user.id,
+      to_user_id: body.to_user_id,
+      agent_id: body.agent_id || null,
+      service_id: body.service_id || null,
+      job_id: body.job_id || null,
+      amount: body.amount,
+      currency: currency,
+      fee: platformFee,
+      status: escrowUntil ? 'processing' : 'completed',
+      payment_method: body.payment_method || 'wallet',
+      escrow_until: escrowUntil,
+      metadata: {
+        created_by_function: true,
+        timestamp: new Date().toISOString(),
+        wallet_transaction: walletResult
       }
-      
-      transaction = txData
-    } catch (error) {
-      console.error('CRITICAL: Transaction creation failed. Manual intervention required.')
+    }
+
+    const { data: txResult, error: txError } = await supabaseAdmin
+      .rpc('create_acp_transaction_atomic', {
+        transaction_data: transactionData,
+        service_id_param: body.service_id || null,
+        agent_id_param: body.agent_id || null
+      })
+
+    if (txError || !txResult?.success) {
+      console.error('CRITICAL: Atomic transaction failed:', txError || txResult?.error)
       return new Response(
         JSON.stringify({ 
           error: 'Transaction creation failed',
-          message: 'Critical error: wallet debited but transaction record failed. Contact support immediately.',
-          details: error instanceof Error ? error.message : 'Unknown error'
+          message: 'Failed to create transaction record. Please contact support.',
+          details: txError?.message || txResult?.error
         }),
         { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
-    // Update service total_orders (non-critical side effect)
-    if (body.service_id) {
-      try {
-        const { error: updateError } = await supabaseAdmin
-          .from('acp_services')
-          .update({ total_orders: supabaseAdmin.sql`total_orders + 1` })
-          .eq('id', body.service_id)
-
-        if (updateError) {
-          console.error('WARNING: Failed to update service orders for service', body.service_id, updateError)
-        }
-      } catch (err) {
-        console.error('WARNING: Exception updating service orders:', err)
-      }
-    }
-
-    // Create earnings record (non-critical side effect)
-    if (body.agent_id || body.service_id) {
-      try {
-        const { error: earningsError } = await supabaseAdmin
-          .from('agents_earnings')
-          .insert({
-            agent_id: body.agent_id || null,
-            user_id: body.to_user_id,
-            amount: netAmount,
-            earnings_type: body.transaction_type,
-            currency: currency,
-            source_transaction_id: transaction.id,
-            description: `Payment from ${body.transaction_type.replace(/_/g, ' ')}`
-          })
-
-        if (earningsError) {
-          console.error('WARNING: Failed to create earnings record for transaction', transaction.id, earningsError)
-        }
-      } catch (err) {
-        console.error('WARNING: Exception creating earnings record:', err)
-      }
-    }
+    const transaction = txResult.transaction
 
     console.log(`Transaction processed: ${transaction.id} from ${user.id} to ${body.to_user_id}`)
 
