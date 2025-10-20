@@ -37,6 +37,7 @@ const tradingItems = [
   { title: "Market Overview", url: "/market-overview", icon: TrendingUp },
   { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Trading Signals", url: "/trading-signals", icon: Target },
+  { title: "Alpha Signals", url: "/alpha-signals", icon: Sparkles },
 ]
 
 // DeFi and crypto features
