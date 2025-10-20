@@ -1,9 +1,17 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2.57.4';
+import { createHmac } from 'node:crypto';
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
   'Access-Control-Allow-Headers': 'authorization, x-client-info, apikey, content-type',
 };
+
+interface TwitterCredentials {
+  api_key: string;
+  api_secret: string;
+  access_token: string;
+  access_token_secret: string;
+}
 
 interface KOLMention {
   username: string;
@@ -51,6 +59,110 @@ function calculateConfidenceMultiplier(
   multiplier += emergingCount * 0.05; // +0.05 for each emerging KOL (<1000 Yaps)
   
   return Math.min(multiplier, 3.0); // Cap at 3.0x
+}
+
+function generateOAuthSignature(
+  method: string,
+  url: string,
+  params: Record<string, string>,
+  consumerSecret: string,
+  tokenSecret: string
+): string {
+  const signatureBaseString = `${method}&${encodeURIComponent(url)}&${encodeURIComponent(
+    Object.entries(params)
+      .sort()
+      .map(([k, v]) => `${k}=${v}`)
+      .join('&')
+  )}`;
+  const signingKey = `${encodeURIComponent(consumerSecret)}&${encodeURIComponent(tokenSecret)}`;
+  const hmacSha1 = createHmac('sha1', signingKey);
+  return hmacSha1.update(signatureBaseString).digest('base64');
+}
+
+function generateOAuthHeader(method: string, url: string, creds: TwitterCredentials): string {
+  const oauthParams = {
+    oauth_consumer_key: creds.api_key,
+    oauth_nonce: Math.random().toString(36).substring(2),
+    oauth_signature_method: 'HMAC-SHA1',
+    oauth_timestamp: Math.floor(Date.now() / 1000).toString(),
+    oauth_token: creds.access_token,
+    oauth_version: '1.0',
+  };
+
+  const signature = generateOAuthSignature(
+    method,
+    url,
+    oauthParams,
+    creds.api_secret,
+    creds.access_token_secret
+  );
+
+  const signedOAuthParams = { ...oauthParams, oauth_signature: signature };
+  const entries = Object.entries(signedOAuthParams).sort((a, b) => a[0].localeCompare(b[0]));
+
+  return 'OAuth ' + entries.map(([k, v]) => `${encodeURIComponent(k)}="${encodeURIComponent(v)}"`).join(', ');
+}
+
+async function searchTickerOnTwitter(
+  ticker: string,
+  kolUsernames: string[],
+  creds: TwitterCredentials,
+  supabase: any
+): Promise<KOLMention[]> {
+  const mentions: KOLMention[] = [];
+  
+  console.log(`Searching Twitter for $${ticker} mentions by ${kolUsernames.length} KOLs`);
+  
+  for (const username of kolUsernames) {
+    try {
+      const searchQuery = `$${ticker} from:${username}`;
+      const baseUrl = 'https://api.x.com/2/tweets/search/recent';
+      const url = `${baseUrl}?query=${encodeURIComponent(searchQuery)}&max_results=10`;
+      
+      const oauthHeader = generateOAuthHeader('GET', baseUrl, creds);
+      
+      const response = await fetch(url, {
+        headers: { Authorization: oauthHeader }
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        const tweetCount = data.meta?.result_count || 0;
+        
+        if (tweetCount > 0) {
+          // Fetch Kaito score for this KOL
+          const { data: kaitoScore } = await supabase
+            .from('kaito_attention_scores')
+            .select('yaps_all, yaps_24h, yaps_7d')
+            .eq('twitter_username', username)
+            .single();
+          
+          const yaps = kaitoScore?.yaps_all || 0;
+          
+          mentions.push({
+            username,
+            yaps_all: yaps,
+            yaps_24h: kaitoScore?.yaps_24h,
+            yaps_7d: kaitoScore?.yaps_7d,
+            tier: getInfluenceTier(yaps),
+            tweet_count: tweetCount,
+          });
+          
+          console.log(`Found ${tweetCount} tweets from @${username} (${yaps} Yaps)`);
+        }
+      } else {
+        console.error(`Twitter API error for @${username}:`, await response.text());
+      }
+      
+      // Rate limiting: wait 1 second between requests
+      await new Promise(resolve => setTimeout(resolve, 1000));
+      
+    } catch (error) {
+      console.error(`Error searching tweets for @${username}:`, error);
+    }
+  }
+  
+  return mentions;
 }
 
 Deno.serve(async (req) => {
@@ -158,46 +270,50 @@ Deno.serve(async (req) => {
     // Extract unique KOL usernames
     const kolUsernames = [...new Set(watchlistKOLs.map(k => k.twitter_username))];
     
-    // Fetch Kaito attention scores for these KOLs
-    const { data: kaitoScores } = await supabase
-      .from('kaito_attention_scores')
-      .select('twitter_username, yaps_all, yaps_24h, yaps_7d')
-      .in('twitter_username', kolUsernames);
+    // Get user's Twitter credentials for API access
+    const { data: credentials } = await supabase
+      .from('twitter_credentials')
+      .select('*')
+      .eq('user_id', signal.user_id)
+      .eq('is_valid', true)
+      .single();
 
-    // Build KOL mentions array (simulated - in production would search Twitter API)
-    const kolMentions: KOLMention[] = [];
+    if (!credentials) {
+      console.log('No valid Twitter credentials found for user');
+      return new Response(
+        JSON.stringify({
+          success: false,
+          error: 'Twitter API credentials required. Please configure in Settings > Twitter KOLs.',
+        }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      );
+    }
+
+    // Search Twitter for real mentions of the ticker by KOLs
+    const kolMentions = await searchTickerOnTwitter(
+      ticker,
+      kolUsernames,
+      {
+        api_key: credentials.api_key,
+        api_secret: credentials.api_secret,
+        access_token: credentials.access_token,
+        access_token_secret: credentials.access_token_secret,
+      },
+      supabase
+    );
+
+    // Calculate metrics from real data
     let topTierCount = 0;
     let midTierCount = 0;
     let emergingCount = 0;
     let totalInfluence = 0;
 
-    // For demo purposes, randomly select 30-50% of KOLs as "mentioning" the ticker
-    const mentionRate = 0.3 + Math.random() * 0.2; // 30-50%
-    
-    if (kaitoScores) {
-      for (const score of kaitoScores) {
-        if (Math.random() < mentionRate) {
-          const yaps = score.yaps_all || 0;
-          const tier = getInfluenceTier(yaps);
-          const tweetCount = Math.floor(Math.random() * 5) + 1; // 1-5 tweets
-          
-          kolMentions.push({
-            username: score.twitter_username,
-            yaps_all: yaps,
-            yaps_24h: score.yaps_24h,
-            yaps_7d: score.yaps_7d,
-            tier,
-            tweet_count: tweetCount,
-          });
-
-          totalInfluence += yaps;
-
-          // Count by tier
-          if (yaps >= 5000) topTierCount++;
-          else if (yaps >= 1000) midTierCount++;
-          else emergingCount++;
-        }
-      }
+    for (const mention of kolMentions) {
+      totalInfluence += mention.yaps_all;
+      
+      if (mention.yaps_all >= 5000) topTierCount++;
+      else if (mention.yaps_all >= 1000) midTierCount++;
+      else emergingCount++;
     }
 
     // Sort by influence (highest first)
@@ -230,7 +346,7 @@ Deno.serve(async (req) => {
         metadata: {
           analyzed_at: new Date().toISOString(),
           total_watchlist_kols: kolUsernames.length,
-          mention_rate: mentionRate,
+          search_method: 'twitter_api',
         }
       })
       .select()

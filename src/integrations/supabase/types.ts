@@ -5358,7 +5358,7 @@ export type Database = {
       }
       signal_comments: {
         Row: {
-          content: string
+          comment_text: string
           created_at: string
           id: string
           likes_count: number
@@ -5368,7 +5368,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          content: string
+          comment_text: string
           created_at?: string
           id?: string
           likes_count?: number
@@ -5378,7 +5378,7 @@ export type Database = {
           user_id: string
         }
         Update: {
-          content?: string
+          comment_text?: string
           created_at?: string
           id?: string
           likes_count?: number
@@ -5442,6 +5442,38 @@ export type Database = {
         }
         Relationships: []
       }
+      signal_shares: {
+        Row: {
+          created_at: string
+          id: string
+          share_note: string | null
+          signal_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          share_note?: string | null
+          signal_id: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          share_note?: string | null
+          signal_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_shares_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       signal_ticker_analysis: {
         Row: {
           analysis_timestamp: string | null
@@ -5500,6 +5532,38 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "signal_ticker_analysis_signal_id_fkey"
+            columns: ["signal_id"]
+            isOneToOne: false
+            referencedRelation: "twitter_kol_signals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      signal_votes: {
+        Row: {
+          created_at: string
+          id: string
+          signal_id: string
+          user_id: string
+          vote_type: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          signal_id: string
+          user_id: string
+          vote_type: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          signal_id?: string
+          user_id?: string
+          vote_type?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "signal_votes_signal_id_fkey"
             columns: ["signal_id"]
             isOneToOne: false
             referencedRelation: "twitter_kol_signals"

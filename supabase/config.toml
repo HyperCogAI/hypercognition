@@ -155,3 +155,15 @@ verify_jwt = true
 
 [functions.analyze-signal-ticker]
 verify_jwt = true
+
+[functions.twitter-kol-scraper]
+verify_jwt = false
+
+[functions.twitter-kol-ai-analyzer]
+verify_jwt = false
+
+[functions.twitter-alert-dispatcher]
+verify_jwt = false
+
+[functions.refresh-signal-analyses]
+verify_jwt = false

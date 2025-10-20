@@ -166,6 +166,31 @@ Deno.serve(async (req) => {
         console.log(`Created signal ${signal.id} with ${analysis.confidence_score}% confidence`);
         signals.push(signal);
 
+        // Auto-trigger ticker analysis if tokens were extracted
+        if (analysis.extracted_tokens && analysis.extracted_tokens.length > 0) {
+          const primaryTicker = analysis.extracted_tokens[0].ticker;
+          console.log(`Auto-triggering ticker analysis for $${primaryTicker}`);
+          
+          try {
+            const analysisResponse = await supabase.functions.invoke('analyze-signal-ticker', {
+              body: {
+                signal_id: signal.id,
+                ticker: primaryTicker,
+                force_refresh: false,
+              },
+            });
+            
+            if (analysisResponse.error) {
+              console.error('Ticker analysis failed:', analysisResponse.error);
+            } else {
+              console.log('Ticker analysis completed successfully');
+            }
+          } catch (error) {
+            console.error('Failed to invoke ticker analysis:', error);
+            // Don't fail signal creation if analysis fails
+          }
+        }
+
         // Trigger alert dispatcher for high-confidence signals
         if (analysis.confidence_score >= 70) {
           await supabase.functions.invoke('twitter-alert-dispatcher', {
