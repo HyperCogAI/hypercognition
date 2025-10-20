@@ -7082,7 +7082,6 @@ export type Database = {
       }
       twitter_kol_watchlists: {
         Row: {
-          access_mode: Database["public"]["Enums"]["access_mode"]
           created_at: string
           description: string | null
           id: string
@@ -7092,7 +7091,6 @@ export type Database = {
           user_id: string
         }
         Insert: {
-          access_mode?: Database["public"]["Enums"]["access_mode"]
           created_at?: string
           description?: string | null
           id?: string
@@ -7102,7 +7100,6 @@ export type Database = {
           user_id: string
         }
         Update: {
-          access_mode?: Database["public"]["Enums"]["access_mode"]
           created_at?: string
           description?: string | null
           id?: string

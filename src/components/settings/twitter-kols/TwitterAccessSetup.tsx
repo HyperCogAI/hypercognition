@@ -3,14 +3,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Badge } from "@/components/ui/badge";
 import { Info, Key, CheckCircle2, XCircle } from "lucide-react";
 import { useTwitterCredentials } from "@/hooks/useTwitterCredentials";
 
 export function TwitterAccessSetup() {
-  const [accessMode, setAccessMode] = useState<'personal_api' | 'platform_shared'>('platform_shared');
   const [apiKey, setApiKey] = useState("");
   const [apiSecret, setApiSecret] = useState("");
   const [accessToken, setAccessToken] = useState("");
@@ -28,56 +27,7 @@ export function TwitterAccessSetup() {
   };
 
   return (
-    <div className="space-y-6">
-      <Card>
-        <CardHeader>
-          <CardTitle>Twitter Access Method</CardTitle>
-          <CardDescription>
-            Choose how HyperCognition accesses Twitter to monitor your KOLs
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <RadioGroup value={accessMode} onValueChange={(value) => setAccessMode(value as any)}>
-            <div className="flex items-start space-x-3 space-y-0">
-              <RadioGroupItem value="platform_shared" id="platform" />
-              <div className="flex-1">
-                <Label htmlFor="platform" className="font-medium">
-                  Use Platform Account (Recommended)
-                </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Use HyperCognition's shared Twitter account. Limited to 10 KOL accounts per watchlist.
-                </p>
-                <Badge variant="secondary" className="mt-2">Free</Badge>
-              </div>
-            </div>
-
-            <div className="flex items-start space-x-3 space-y-0">
-              <RadioGroupItem value="personal_api" id="personal" />
-              <div className="flex-1">
-                <Label htmlFor="personal" className="font-medium">
-                  Use My Twitter API
-                </Label>
-                <p className="text-sm text-muted-foreground mt-1">
-                  Use your own Twitter API credentials. No limits on KOL accounts, faster updates.
-                </p>
-                <Badge variant="outline" className="mt-2">Requires Twitter API Access</Badge>
-              </div>
-            </div>
-          </RadioGroup>
-
-          <Alert>
-            <Info className="h-4 w-4" />
-            <AlertDescription>
-              {accessMode === 'platform_shared' 
-                ? "You're using the shared platform account. This is perfect for getting started with up to 10 KOL accounts."
-                : "You'll need a Twitter Developer account with API v2 access. Get started at developer.twitter.com"}
-            </AlertDescription>
-          </Alert>
-        </CardContent>
-      </Card>
-
-      {accessMode === 'personal_api' && (
-        <Card>
+    <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
               <Key className="h-5 w-5" />
@@ -170,8 +120,6 @@ export function TwitterAccessSetup() {
               </AlertDescription>
             </Alert>
           </CardContent>
-        </Card>
-      )}
-    </div>
+    </Card>
   );
 }
