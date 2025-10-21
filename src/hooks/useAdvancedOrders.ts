@@ -39,7 +39,7 @@ export function useAdvancedOrders() {
   const { toast } = useToast()
   const queryClient = useQueryClient()
 
-  // Fetch user's orders with executions
+  // Fetch user's orders with executions - optimized polling
   const { data: orders = [], isLoading } = useQuery({
     queryKey: ['advanced-orders', user?.id],
     queryFn: async () => {
@@ -58,7 +58,9 @@ export function useAdvancedOrders() {
       return data || []
     },
     enabled: !!user?.id,
-    refetchInterval: 5000 // Refresh every 5 seconds for real-time updates
+    staleTime: 15000, // Consider data fresh for 15 seconds
+    refetchInterval: typeof document !== 'undefined' && document.hidden ? false : 15000, // Only poll when visible, 15s interval
+    refetchIntervalInBackground: false,
   })
 
   // Create advanced order

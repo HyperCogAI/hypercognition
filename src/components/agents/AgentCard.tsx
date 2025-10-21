@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useState, memo } from "react"
 import { useNavigate } from "react-router-dom"
 import { Star } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
@@ -24,7 +24,7 @@ interface AgentCardProps {
   variant?: "trending" | "default"
 }
 
-export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
+export const AgentCard = memo(({ agent, variant = "default" }: AgentCardProps) => {
   const navigate = useNavigate()
   const priceData = usePriceSimulation(agent.id, parseFloat(agent.fdv?.replace(/[$m,]/g, '') || '7.41'))
   const { isFavorite, addToFavorites, removeFromFavorites } = useFavorites()
@@ -99,4 +99,4 @@ export const AgentCard = ({ agent, variant = "default" }: AgentCardProps) => {
       </div>
     </div>
   )
-}
+})

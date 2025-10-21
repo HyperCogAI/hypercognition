@@ -138,6 +138,8 @@ export const CACHE_KEYS = {
   // Agent data
   AGENTS: 'agents',
   AGENTS_LIST: (page: number, filters?: string) => `agents_list_${page}_${filters || 'all'}`,
+  AGENT_LIST: (page: number, pageSize: number, search: string, sortBy: string) => 
+    `agent_list_${page}_${pageSize}_${search}_${sortBy}`,
   AGENT_DETAIL: (id: string) => `agent_detail_${id}`,
   AGENT_PERFORMANCE: (id: string, period: string) => `agent_performance_${id}_${period}`,
   AGENT_RATINGS: (id: string) => `agent_ratings_${id}`,
@@ -148,6 +150,7 @@ export const CACHE_KEYS = {
   MARKET_DATA: (symbol: string) => `market_data_${symbol}`,
   ORDERBOOK: (symbol: string) => `orderbook_${symbol}`,
   TRADES: (symbol: string, limit: number) => `trades_${symbol}_${limit}`,
+  CRYPTO_PRICES: (limit: number, page: number) => `crypto_prices_${limit}_${page}`,
   
   // User data
   USER_PROFILE: (userId: string) => `user_profile_${userId}`,
@@ -186,6 +189,7 @@ export const CACHE_TTL = {
   
   // Moderately updated data
   AGENT_DATA: 5 * 60 * 1000,     // 5 minutes
+  AGENT_LIST: 60 * 1000,         // 1 minute for agent lists
   USER_PROFILE: 10 * 60 * 1000,  // 10 minutes
   SOCIAL_DATA: 5 * 60 * 1000,    // 5 minutes
   
@@ -197,6 +201,7 @@ export const CACHE_TTL = {
   AGENTS: 5 * 60 * 1000,         // 5 minutes
   PRICE_HISTORY: 30 * 1000,      // 30 seconds
   USER_DATA: 60 * 1000,          // 1 minute
+  CRYPTO_PRICES: 60 * 1000,      // 1 minute for crypto prices
 } as const
 
 // Cache tags for granular invalidation

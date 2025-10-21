@@ -145,7 +145,7 @@ class CoinGeckoAPI {
     return requestPromise
   }
 
-  async getTopCryptos(limit: number = 100, page: number = 1): Promise<CoinGeckoPrice[]> {
+  async getTopCryptos(limit: number = 50, page: number = 1): Promise<CoinGeckoPrice[]> {
     const url = `${this.baseUrl}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${limit}&page=${page}&sparkline=false`
     return this.fetchWithErrorHandling<CoinGeckoPrice[]>(url)
   }

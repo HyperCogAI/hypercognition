@@ -37,10 +37,12 @@ class RealtimePriceService {
     // Fetch initial prices
     this.fetchPrices()
 
-    // Poll for updates every 30 seconds
+    // Poll for updates every 60 seconds, pause when tab is hidden
     this.updateInterval = setInterval(() => {
-      this.fetchPrices()
-    }, 30000)
+      if (typeof document === 'undefined' || !document.hidden) {
+        this.fetchPrices()
+      }
+    }, 60000)
   }
 
   /**
@@ -96,9 +98,9 @@ class RealtimePriceService {
    */
   private async fetchPrices() {
     try {
-      // Dynamically import to avoid circular dependencies
+      // Dynamically import to avoid circular dependencies - fetch only 50 instead of 100
       const { coinGeckoApi } = await import('@/lib/apis/coinGeckoApi')
-      const data = await coinGeckoApi.getTopCryptos(100)
+      const data = await coinGeckoApi.getTopCryptos(50)
       
       if (!data || data.length === 0) {
         console.warn('[RealtimePrice] No data received from API')

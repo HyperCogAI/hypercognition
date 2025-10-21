@@ -8,7 +8,7 @@ export function usePortfolioHoldings() {
   const { user } = useAuth()
   const queryClient = useQueryClient()
 
-  // Fetch holdings
+  // Fetch holdings - optimized with longer interval and stale time
   const { data: holdings = [], isLoading, error, refetch } = useQuery({
     queryKey: ['portfolio-holdings', user?.id],
     queryFn: () => {
@@ -16,7 +16,9 @@ export function usePortfolioHoldings() {
       return portfolioService.getHoldings(user.id)
     },
     enabled: !!user?.id,
-    refetchInterval: 30000, // Refresh every 30 seconds
+    staleTime: 60000, // Consider data fresh for 60 seconds
+    refetchInterval: typeof document !== 'undefined' && document.hidden ? false : 60000, // Only poll when tab is visible, refresh every 60 seconds
+    refetchIntervalInBackground: false, // Don't poll in background
   })
 
   // Fetch transactions
@@ -29,7 +31,7 @@ export function usePortfolioHoldings() {
     enabled: !!user?.id,
   })
 
-  // Fetch portfolio summary
+  // Fetch portfolio summary - optimized with longer interval and stale time
   const { data: summary } = useQuery({
     queryKey: ['portfolio-summary', user?.id],
     queryFn: () => {
@@ -45,7 +47,9 @@ export function usePortfolioHoldings() {
       return portfolioService.getPortfolioSummary(user.id)
     },
     enabled: !!user?.id,
-    refetchInterval: 30000,
+    staleTime: 60000,
+    refetchInterval: typeof document !== 'undefined' && document.hidden ? false : 60000,
+    refetchIntervalInBackground: false,
   })
 
   // Add holding mutation
