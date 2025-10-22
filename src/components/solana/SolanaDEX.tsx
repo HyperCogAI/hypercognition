@@ -12,7 +12,7 @@ import { useToast } from "@/hooks/use-toast"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
 import { jupiterApi } from "@/lib/apis/jupiterApi"
-import { ArrowDownUp, Settings, TrendingUp, Wallet, AlertCircle, Loader2, RefreshCw } from "lucide-react"
+import { ArrowDown, ArrowDownUp, Settings, Wallet, AlertCircle, Loader2 } from "lucide-react"
 import { Connection, VersionedTransaction } from "@solana/web3.js"
 import { supabase } from "@/integrations/supabase/client"
 import { AddCustomToken } from "./AddCustomToken"
@@ -242,13 +242,7 @@ export const SolanaDEX = () => {
     <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
       <CardHeader>
         <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Solana DEX
-            </CardTitle>
-            <CardDescription>Swap tokens instantly via Jupiter Aggregator</CardDescription>
-          </div>
+          <CardTitle>Swap</CardTitle>
           <div className="flex items-center gap-2">
             <AddCustomToken onTokenAdded={() => refetchTokens?.(true, publicKey?.toString())} />
             <Button
@@ -261,62 +255,20 @@ export const SolanaDEX = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4">
+      <CardContent className="space-y-6 p-6">
         {/* From Token */}
-        <div className="space-y-2">
-          <Label>From</Label>
-          <div className="flex gap-2">
-            <Select value={fromToken} onValueChange={setFromToken}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select token" />
-              </SelectTrigger>
-              <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.mint_address} value={token.mint_address}>
-                    <div className="flex items-center gap-2">
-                      {token.image_url && (
-                        <img src={token.image_url} alt={token.symbol} className="w-5 h-5 rounded-full" />
-                      )}
-                      {token.symbol}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+        <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
+          <div className="flex items-start justify-between gap-4">
             <Input
               type="number"
               placeholder="0.00"
               value={fromAmount}
               onChange={(e) => setFromAmount(e.target.value)}
-              className="flex-1"
+              className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
             />
-          </div>
-          {selectedFromToken && (
-            <p className="text-xs text-muted-foreground">
-              Balance: 0.00 {selectedFromToken.symbol} • ${selectedFromToken.price.toFixed(4)}
-            </p>
-          )}
-        </div>
-
-        {/* Swap Button */}
-        <div className="flex justify-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSwapTokens}
-            className="rounded-full"
-          >
-            <ArrowDownUp className="h-4 w-4" />
-          </Button>
-        </div>
-
-        {/* To Token */}
-        <div className="space-y-2">
-          <Label>To</Label>
-          <div className="flex gap-2">
-            <Select value={toToken} onValueChange={setToToken}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select token" />
+            <Select value={fromToken} onValueChange={setFromToken}>
+              <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
+                <SelectValue placeholder="Select" />
               </SelectTrigger>
               <SelectContent>
                 {tokens.map((token) => (
@@ -325,25 +277,68 @@ export const SolanaDEX = () => {
                       {token.image_url && (
                         <img src={token.image_url} alt={token.symbol} className="w-5 h-5 rounded-full" />
                       )}
-                      {token.symbol}
+                      <span className="font-semibold">{token.symbol}</span>
                     </div>
                   </SelectItem>
                 ))}
               </SelectContent>
             </Select>
+          </div>
+          <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
+            <span>≈${selectedFromToken ? (parseFloat(fromAmount || '0') * selectedFromToken.price).toFixed(2) : '0.00'}</span>
+            {selectedFromToken && (
+              <span className="flex items-center gap-1">
+                <Wallet className="h-4 w-4" />
+                0.00 {selectedFromToken.symbol}
+              </span>
+            )}
+          </div>
+        </div>
+
+        {/* Swap Button */}
+        <div className="flex justify-center -my-4 relative z-10">
+          <button
+            onClick={handleSwapTokens}
+            className="w-12 h-12 rounded-full bg-background/95 border-2 border-border/30 hover:border-border/50 flex items-center justify-center transition-all hover:scale-110"
+          >
+            <ArrowDown className="h-5 w-5 text-muted-foreground" />
+          </button>
+        </div>
+
+        {/* For Label */}
+        <p className="text-muted-foreground text-sm font-medium px-6 -mb-2">For</p>
+
+        {/* To Token */}
+        <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
+          <div className="flex items-start justify-between gap-4">
             <Input
               type="number"
               placeholder="0.00"
               value={toAmount}
               disabled
-              className="flex-1"
+              className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
             />
+            <Select value={toToken} onValueChange={setToToken}>
+              <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
+                <SelectValue placeholder="Select" />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens.map((token) => (
+                  <SelectItem key={token.mint_address} value={token.mint_address}>
+                    <div className="flex items-center gap-2">
+                      {token.image_url && (
+                        <img src={token.image_url} alt={token.symbol} className="w-5 h-5 rounded-full" />
+                      )}
+                      <span className="font-semibold">{token.symbol}</span>
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
-          {selectedToToken && (
-            <p className="text-xs text-muted-foreground">
-              ${selectedToToken.price.toFixed(4)}
-            </p>
-          )}
+          <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
+            <span>≈${selectedToToken ? (parseFloat(toAmount || '0') * selectedToToken.price).toFixed(2) : '0.00'}</span>
+          </div>
         </div>
 
         {isLoadingQuote && (
