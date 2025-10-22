@@ -405,7 +405,7 @@ export function AppSidebar() {
                       >
                         {({ isActive }) => (
                           <>
-                            <item.icon className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-60'} group-hover/menu:opacity-100 group-hover/menu:scale-110 transition-all duration-300`} />
+                            <item.icon className="h-4 w-4 opacity-100 group-hover/menu:scale-110 transition-all duration-300" />
                             {!isCollapsed && <span className="font-medium">{item.title}</span>}
                           </>
                         )}
@@ -432,7 +432,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <Settings className={`h-4 w-4 ${isActive ? 'opacity-100' : 'opacity-60'} group-hover/menu:opacity-100 group-hover/menu:rotate-90 transition-all duration-300`} />
+                          <Settings className="h-4 w-4 opacity-100 group-hover/menu:rotate-90 transition-all duration-300" />
                           {!isCollapsed && <span className="font-medium">Settings</span>}
                         </>
                       )}
