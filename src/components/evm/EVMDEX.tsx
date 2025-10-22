@@ -244,6 +244,7 @@ export const EVMDEX = () => {
           <div className="flex flex-col gap-2">
             {/* From Token */}
             <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
+              <p className="text-muted-foreground text-sm font-medium mb-4">Swap</p>
               <div className="flex items-start justify-between gap-4">
                 <Input
                   type="number"
@@ -315,7 +316,8 @@ export const EVMDEX = () => {
           {/* Absolutely Positioned Swap Button */}
           <button
             onClick={handleSwapTokens}
-            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-background border-2 border-border/30 hover:border-border/50 flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+            className="absolute left-1/2 -translate-x-1/2 z-20 w-12 h-12 rounded-full bg-background border-2 border-border/30 hover:border-border/50 flex items-center justify-center transition-all hover:scale-110 shadow-lg"
+            style={{ top: '50%', marginTop: '-24px' }}
           >
             <ArrowDown className="h-5 w-5 text-muted-foreground" />
           </button>
