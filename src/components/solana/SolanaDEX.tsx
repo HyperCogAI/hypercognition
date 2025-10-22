@@ -378,7 +378,7 @@ export const SolanaDEX = () => {
         {/* Swap Button */}
         {publicKey ? (
           <Button
-            className="w-full mt-6"
+            className="w-full mt-8"
             size="lg"
             onClick={() => setShowConfirm(true)}
             disabled={!quote || isLoadingQuote || !fromAmount || !toAmount}
@@ -386,7 +386,7 @@ export const SolanaDEX = () => {
             {isLoadingQuote ? "Loading..." : "Review Swap"}
           </Button>
         ) : (
-          <Button className="w-full mt-6" size="lg" disabled>
+          <Button className="w-full mt-8" size="lg" disabled>
             <Wallet className="h-4 w-4 mr-2" />
             Connect Wallet to Swap
           </Button>
