@@ -238,86 +238,87 @@ export const EVMDEX = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-6 p-6">
-        {/* From Token */}
-        <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
-          <div className="flex items-start justify-between gap-4">
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={fromAmount}
-              onChange={(e) => setFromAmount(e.target.value)}
-              className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            <Select value={fromToken} onValueChange={(val) => setFromToken(val as Address)}>
-              <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.address} value={token.address}>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{token.symbol}</span>
-                      {token.isCustom && <Badge variant="outline" className="text-xs">Custom</Badge>}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
-            <span>≈$0.00</span>
-            {fromBalance && (
-              <span className="flex items-center gap-1">
-                <Wallet className="h-4 w-4" />
-                {parseFloat(fromBalance.formatted).toFixed(6)}
-              </span>
-            )}
-          </div>
-        </div>
+      <CardContent className="space-y-4 p-6">
+        {/* Token Swap Container */}
+        <div className="relative">
+          <div className="flex flex-col gap-2">
+            {/* From Token */}
+            <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
+              <div className="flex items-start justify-between gap-4">
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={fromAmount}
+                  onChange={(e) => setFromAmount(e.target.value)}
+                  className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Select value={fromToken} onValueChange={(val) => setFromToken(val as Address)}>
+                  <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tokens.map((token) => (
+                      <SelectItem key={token.address} value={token.address}>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{token.symbol}</span>
+                          {token.isCustom && <Badge variant="outline" className="text-xs">Custom</Badge>}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
+                <span>≈$0.00</span>
+                {fromBalance && (
+                  <span className="flex items-center gap-1">
+                    <Wallet className="h-4 w-4" />
+                    {parseFloat(fromBalance.formatted).toFixed(6)}
+                  </span>
+                )}
+              </div>
+            </div>
 
-        {/* Swap Button */}
-        <div className="flex justify-center -my-4 relative z-10">
+            {/* To Token */}
+            <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
+              <p className="text-muted-foreground text-sm font-medium mb-4">For</p>
+              <div className="flex items-start justify-between gap-4">
+                <Input
+                  type="number"
+                  placeholder="0.00"
+                  value={toAmount}
+                  disabled
+                  className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                />
+                <Select value={toToken} onValueChange={(val) => setToToken(val as Address)}>
+                  <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
+                    <SelectValue placeholder="Select" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {tokens.map((token) => (
+                      <SelectItem key={token.address} value={token.address}>
+                        <div className="flex items-center gap-2">
+                          <span className="font-semibold">{token.symbol}</span>
+                          {token.isCustom && <Badge variant="outline" className="text-xs">Custom</Badge>}
+                        </div>
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
+                <span>≈$0.00</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Absolutely Positioned Swap Button */}
           <button
             onClick={handleSwapTokens}
-            className="w-12 h-12 rounded-full bg-background/95 border-2 border-border/30 hover:border-border/50 flex items-center justify-center transition-all hover:scale-110"
+            className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-12 h-12 rounded-full bg-background border-2 border-border/30 hover:border-border/50 flex items-center justify-center transition-all hover:scale-110 shadow-lg"
           >
             <ArrowDown className="h-5 w-5 text-muted-foreground" />
           </button>
-        </div>
-
-        {/* For Label */}
-        <p className="text-muted-foreground text-sm font-medium px-6 -mb-2">For</p>
-
-        {/* To Token */}
-        <div className="p-6 bg-muted/20 rounded-2xl border border-border/20">
-          <div className="flex items-start justify-between gap-4">
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={toAmount}
-              disabled
-              className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
-            />
-            <Select value={toToken} onValueChange={(val) => setToToken(val as Address)}>
-              <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
-                <SelectValue placeholder="Select" />
-              </SelectTrigger>
-              <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.address} value={token.address}>
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold">{token.symbol}</span>
-                      {token.isCustom && <Badge variant="outline" className="text-xs">Custom</Badge>}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
-            <span>≈$0.00</span>
-          </div>
         </div>
 
         {isLoadingQuote && (
