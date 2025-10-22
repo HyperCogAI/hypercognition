@@ -255,7 +255,7 @@ export const SolanaDEX = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-3 p-6">
+      <CardContent className="space-y-3 px-6 pt-2 pb-6">
         {/* Token Swap Container */}
         <div className="relative">
           <div className="flex flex-col gap-2">
@@ -386,7 +386,7 @@ export const SolanaDEX = () => {
             {isLoadingQuote ? "Loading..." : "Review Swap"}
           </Button>
         ) : (
-          <Button className="w-full" size="lg" disabled>
+          <Button className="w-full mt-6" size="lg" disabled>
             <Wallet className="h-4 w-4 mr-2" />
             Connect Wallet to Swap
           </Button>
