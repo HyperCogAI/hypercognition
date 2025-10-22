@@ -1,21 +1,18 @@
 import { useState, useEffect, useMemo } from "react";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { useToast } from "@/hooks/use-toast";
 import { useWallet } from "@/hooks/useWallet";
 import { useEVMSwap } from "@/hooks/useEVMSwap";
-import { ArrowDownUp, Settings, AlertCircle, RefreshCw } from "lucide-react";
+import { ArrowDownUp, Settings, TrendingUp, Wallet, AlertCircle, Loader2, Plus } from "lucide-react";
 import { useAccount, useBalance } from "wagmi";
 import { type Address, isAddress } from "viem";
-import { DEX_STYLES } from "@/lib/dex-styles";
-import { TokenInputField } from "@/components/dex/TokenInputField";
-import { TokenSelectModal } from "@/components/dex/TokenSelectModal";
-import { SwapQuoteDisplay } from "@/components/dex/SwapQuoteDisplay";
-import { GradientBorderButton } from "@/components/wallet/GradientBorderButton";
-import { cn } from "@/lib/utils";
+import { Slider } from "@/components/ui/slider";
 
 interface Token {
   address: Address;
@@ -29,28 +26,28 @@ interface Token {
 // Popular tokens by chain
 const POPULAR_TOKENS: Record<number, Token[]> = {
   1: [ // Ethereum Mainnet
-    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png' },
-    { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6, logoURI: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png' },
-    { address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as Address, symbol: 'USDT', name: 'Tether', decimals: 6, logoURI: 'https://assets.coingecko.com/coins/images/325/small/Tether.png' },
-    { address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' as Address, symbol: 'WBTC', name: 'Wrapped Bitcoin', decimals: 8, logoURI: 'https://assets.coingecko.com/coins/images/7598/small/wrapped_bitcoin_wbtc.png' },
+    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18 },
+    { address: '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6 },
+    { address: '0xdAC17F958D2ee523a2206206994597C13D831ec7' as Address, symbol: 'USDT', name: 'Tether', decimals: 6 },
+    { address: '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599' as Address, symbol: 'WBTC', name: 'Wrapped Bitcoin', decimals: 8 },
   ],
   56: [ // BSC
-    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'BNB', name: 'BNB', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/825/small/bnb-icon2_2x.png' },
-    { address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png' },
-    { address: '0x55d398326f99059fF775485246999027B3197955' as Address, symbol: 'USDT', name: 'Tether', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/325/small/Tether.png' },
+    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'BNB', name: 'BNB', decimals: 18 },
+    { address: '0x8AC76a51cc950d9822D68b83fE1Ad97B32Cd580d' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 18 },
+    { address: '0x55d398326f99059fF775485246999027B3197955' as Address, symbol: 'USDT', name: 'Tether', decimals: 18 },
   ],
   8453: [ // Base
-    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png' },
-    { address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6, logoURI: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png' },
+    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18 },
+    { address: '0x833589fCD6eDb6E08f4c7C32D4f71b54bdA02913' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6 },
   ],
   42161: [ // Arbitrum
-    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png' },
-    { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6, logoURI: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png' },
-    { address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9' as Address, symbol: 'USDT', name: 'Tether', decimals: 6, logoURI: 'https://assets.coingecko.com/coins/images/325/small/Tether.png' },
+    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18 },
+    { address: '0xaf88d065e77c8cC2239327C5EDb3A432268e5831' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6 },
+    { address: '0xFd086bC7CD5C481DCC9C85ebE478A1C0b69FCbb9' as Address, symbol: 'USDT', name: 'Tether', decimals: 6 },
   ],
   10: [ // Optimism
-    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18, logoURI: 'https://assets.coingecko.com/coins/images/279/small/ethereum.png' },
-    { address: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6, logoURI: 'https://assets.coingecko.com/coins/images/6319/small/USD_Coin_icon.png' },
+    { address: '0xEeeeeEeeeEeEeeEeEeEeeEEEeeeeEeeeeeeeEEeE' as Address, symbol: 'ETH', name: 'Ethereum', decimals: 18 },
+    { address: '0x0b2C639c533813f4Aa9D7837CAf62653d097Ff85' as Address, symbol: 'USDC', name: 'USD Coin', decimals: 6 },
   ],
 };
 
@@ -58,7 +55,7 @@ export const EVMDEX = () => {
   const { address, chain } = useAccount();
   const { connectWallet, isConnected } = useWallet();
   const { toast } = useToast();
-  const { getQuote, executeSwap, quote, isLoadingQuote, isSwapping, fetchSwapHistory } = useEVMSwap();
+  const { getQuote, executeSwap, quote, isLoadingQuote, isSwapping, swapHistory, fetchSwapHistory } = useEVMSwap();
 
   const [tokens, setTokens] = useState<Token[]>([]);
   const [fromToken, setFromToken] = useState<Address | ''>('');
@@ -67,12 +64,10 @@ export const EVMDEX = () => {
   const [toAmount, setToAmount] = useState<string>('');
   const [slippage, setSlippage] = useState<number>(1);
   const [showSettings, setShowSettings] = useState(false);
-  const [showFromTokenModal, setShowFromTokenModal] = useState(false);
-  const [showToTokenModal, setShowToTokenModal] = useState(false);
   const [showAddToken, setShowAddToken] = useState(false);
   const [customTokenAddress, setCustomTokenAddress] = useState('');
 
-  // Load tokens for current chain
+  // Load tokens for current chain and fetch swap history
   useEffect(() => {
     if (chain?.id) {
       const popularTokens = POPULAR_TOKENS[chain.id] || [];
@@ -149,10 +144,6 @@ export const EVMDEX = () => {
       );
       setFromAmount('');
       setToAmount('');
-      toast({
-        title: "Swap Successful",
-        description: `Swapped ${fromAmount} ${selectedFromToken.symbol} for ${toAmount} ${selectedToToken.symbol}`,
-      });
     } catch (error) {
       console.error('Swap failed:', error);
     }
@@ -169,6 +160,7 @@ export const EVMDEX = () => {
     }
 
     try {
+      // In a real implementation, fetch token details from chain
       const newToken: Token = {
         address: customTokenAddress as Address,
         symbol: 'CUSTOM',
@@ -201,223 +193,234 @@ export const EVMDEX = () => {
 
   const pricePerToken = useMemo(() => {
     if (!fromAmount || !toAmount || parseFloat(fromAmount) === 0) return null;
-    return (parseFloat(toAmount) / parseFloat(fromAmount)).toFixed(6);
+    return parseFloat(toAmount) / parseFloat(fromAmount);
   }, [fromAmount, toAmount]);
 
-  const quoteData = quote && selectedFromToken && selectedToToken ? {
-    fromTokenSymbol: selectedFromToken.symbol,
-    toTokenSymbol: selectedToToken.symbol,
-    rate: pricePerToken || undefined,
-    priceImpactPct: quote.priceImpactPct,
-    estimatedGas: quote.estimatedGas
-  } : null;
-
   return (
-    <div className={DEX_STYLES.card.container}>
-      {/* Background glow */}
-      <div className={DEX_STYLES.card.glow} />
-      
-      {/* Main card */}
-      <Card className={DEX_STYLES.card.main}>
-        {/* Header */}
-        <div className="p-4 flex items-center justify-between border-b border-border/20">
-          <h3 className="text-lg font-semibold">Swap</h3>
+    <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
+      <CardHeader>
+        <div className="flex items-center justify-between">
+          <div>
+            <CardTitle className="flex items-center gap-2">
+              <TrendingUp className="h-5 w-5 text-primary" />
+              EVM DEX
+            </CardTitle>
+            <CardDescription>
+              Swap tokens on {chain?.name || 'EVM chains'} via 1inch
+            </CardDescription>
+          </div>
           <div className="flex items-center gap-2">
-            <button 
-              onClick={() => fetchSwapHistory()}
-              className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
-            >
-              <RefreshCw className="h-4 w-4 text-muted-foreground" />
-            </button>
-            <button 
+            <Dialog open={showAddToken} onOpenChange={setShowAddToken}>
+              <DialogTrigger asChild>
+                <Button variant="outline" size="icon">
+                  <Plus className="h-4 w-4" />
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Add Custom Token</DialogTitle>
+                  <DialogDescription>Enter the token contract address</DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label>Token Contract Address</Label>
+                    <Input
+                      placeholder="0x..."
+                      value={customTokenAddress}
+                      onChange={(e) => setCustomTokenAddress(e.target.value)}
+                    />
+                  </div>
+                  <Button onClick={addCustomToken} className="w-full">
+                    Add Token
+                  </Button>
+                </div>
+              </DialogContent>
+            </Dialog>
+            <Button
+              variant="outline"
+              size="icon"
               onClick={() => setShowSettings(true)}
-              className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <Settings className="h-4 w-4 text-muted-foreground" />
-            </button>
+              <Settings className="h-4 w-4" />
+            </Button>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {/* From Token */}
+        <div className="space-y-2">
+          <Label>From</Label>
+          <div className="flex gap-2">
+            <Select value={fromToken} onValueChange={(val) => setFromToken(val as Address)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select token" />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens.map((token) => (
+                  <SelectItem key={token.address} value={token.address}>
+                    <div className="flex items-center gap-2">
+                      {token.symbol}
+                      {token.isCustom && <Badge variant="outline" className="text-xs">Custom</Badge>}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="number"
+              placeholder="0.00"
+              value={fromAmount}
+              onChange={(e) => setFromAmount(e.target.value)}
+              className="flex-1"
+            />
+          </div>
+          {fromBalance && (
+            <p className="text-xs text-muted-foreground">
+              Balance: {parseFloat(fromBalance.formatted).toFixed(6)} {fromBalance.symbol}
+            </p>
+          )}
+        </div>
+
+        {/* Swap Button */}
+        <div className="flex justify-center">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleSwapTokens}
+            className="rounded-full"
+          >
+            <ArrowDownUp className="h-4 w-4" />
+          </Button>
+        </div>
+
+        {/* To Token */}
+        <div className="space-y-2">
+          <Label>To</Label>
+          <div className="flex gap-2">
+            <Select value={toToken} onValueChange={(val) => setToToken(val as Address)}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Select token" />
+              </SelectTrigger>
+              <SelectContent>
+                {tokens.map((token) => (
+                  <SelectItem key={token.address} value={token.address}>
+                    <div className="flex items-center gap-2">
+                      {token.symbol}
+                      {token.isCustom && <Badge variant="outline" className="text-xs">Custom</Badge>}
+                    </div>
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Input
+              type="number"
+              placeholder="0.00"
+              value={toAmount}
+              disabled
+              className="flex-1"
+            />
           </div>
         </div>
 
-        <CardContent className="space-y-3 pt-6">
-          {/* From Token Input */}
-          <TokenInputField
-            token={selectedFromToken || null}
-            amount={fromAmount}
-            balance={fromBalance?.formatted}
-            onAmountChange={setFromAmount}
-            onTokenSelect={() => setShowFromTokenModal(true)}
-            label="From"
-            onMaxClick={() => fromBalance && setFromAmount(fromBalance.formatted)}
-          />
-
-          {/* Swap Direction Button */}
-          <div className="flex justify-center -my-3 relative z-10">
-            <button
-              onClick={handleSwapTokens}
-              className={DEX_STYLES.swap.button}
-            >
-              <ArrowDownUp className="h-5 w-5" />
-            </button>
+        {isLoadingQuote && (
+          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Fetching best price...
           </div>
+        )}
 
-          {/* To Token Input */}
-          <TokenInputField
-            token={selectedToToken || null}
-            amount={toAmount}
-            onAmountChange={() => {}}
-            onTokenSelect={() => setShowToTokenModal(true)}
-            label="To"
-            disabled={true}
-          />
-
-          {/* Quote Display */}
-          <SwapQuoteDisplay quote={quoteData} isLoading={isLoadingQuote} />
-
-          {/* Swap Button */}
-          {isConnected ? (
-            <GradientBorderButton
-              className="w-full h-14 text-lg font-semibold"
-              onClick={handleSwap}
-              disabled={!quote || isLoadingQuote || isSwapping || !fromAmount || !toAmount}
-            >
-              {isSwapping ? 'Swapping...' : 'Swap'}
-            </GradientBorderButton>
-          ) : (
-            <GradientBorderButton
-              className="w-full h-14 text-lg font-semibold"
-              onClick={connectWallet}
-            >
-              Connect Wallet
-            </GradientBorderButton>
-          )}
-
-          {/* High Price Impact Warning */}
-          {quote && quote.priceImpactPct > 5 && (
-            <div className="relative p-4 bg-destructive/10 border border-destructive/30 rounded-xl overflow-hidden">
-              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,hsl(var(--destructive)/0.05)_25%,hsl(var(--destructive)/0.05)_50%,transparent_50%,transparent_75%,hsl(var(--destructive)/0.05)_75%)] bg-[length:20px_20px] animate-gradient-shift" />
-              
-              <div className="relative flex items-start gap-3">
-                <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-semibold text-destructive">High Price Impact Warning</p>
-                  <p className="text-sm text-muted-foreground mt-1">
-                    This swap has a {quote.priceImpactPct.toFixed(2)}% price impact. Consider splitting into smaller trades.
-                  </p>
-                </div>
-              </div>
+        {/* Quote Details */}
+        {quote && !isLoadingQuote && (
+          <div className="space-y-2 p-3 bg-muted/50 rounded-lg text-sm">
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Rate</span>
+              <span>1 {selectedFromToken?.symbol} = {pricePerToken?.toFixed(6)} {selectedToToken?.symbol}</span>
             </div>
-          )}
-        </CardContent>
-      </Card>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Price Impact</span>
+              <span className={quote.priceImpactPct > 1 ? "text-destructive" : "text-green-500"}>
+                {quote.priceImpactPct.toFixed(2)}%
+              </span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-muted-foreground">Slippage Tolerance</span>
+              <span>{slippage}%</span>
+            </div>
+          </div>
+        )}
 
-      {/* Token Selection Modals */}
-      <TokenSelectModal
-        open={showFromTokenModal}
-        onOpenChange={setShowFromTokenModal}
-        tokens={tokens}
-        onSelect={(token) => setFromToken(token.address as Address)}
-        onAddCustomToken={() => {
-          setShowFromTokenModal(false);
-          setShowAddToken(true);
-        }}
-        title="Select token to swap from"
-      />
+        {/* Swap Button */}
+        {isConnected ? (
+          <Button
+            className="w-full"
+            size="lg"
+            onClick={handleSwap}
+            disabled={!quote || isLoadingQuote || isSwapping || !fromAmount || !toAmount}
+          >
+            {isSwapping ? (
+              <>
+                <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                Swapping...
+              </>
+            ) : (
+              'Swap'
+            )}
+          </Button>
+        ) : (
+          <Button className="w-full" size="lg" onClick={connectWallet}>
+            <Wallet className="h-4 w-4 mr-2" />
+            Connect Wallet to Swap
+          </Button>
+        )}
 
-      <TokenSelectModal
-        open={showToTokenModal}
-        onOpenChange={setShowToTokenModal}
-        tokens={tokens}
-        onSelect={(token) => setToToken(token.address as Address)}
-        onAddCustomToken={() => {
-          setShowToTokenModal(false);
-          setShowAddToken(true);
-        }}
-        title="Select token to receive"
-      />
+        {/* Warning for high price impact */}
+        {quote && quote.priceImpactPct > 5 && (
+          <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
+            <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
+            <div className="text-sm">
+              <p className="font-medium text-destructive">High Price Impact</p>
+              <p className="text-muted-foreground">
+                This swap has a price impact of {quote.priceImpactPct.toFixed(2)}%. Consider reducing your swap amount.
+              </p>
+            </div>
+          </div>
+        )}
+      </CardContent>
 
       {/* Settings Dialog */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent className={DEX_STYLES.modal.content}>
+        <DialogContent>
           <DialogHeader>
-            <DialogTitle className="text-xl">Swap Settings</DialogTitle>
-            <DialogDescription>Adjust slippage tolerance</DialogDescription>
+            <DialogTitle>Swap Settings</DialogTitle>
+            <DialogDescription>Adjust your swap preferences</DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
             <div className="space-y-3">
-              <Label className="text-sm font-medium">Slippage Tolerance</Label>
-              <div className="flex gap-2">
-                <button 
-                  onClick={() => setSlippage(0.5)}
-                  className={cn(
-                    "flex-1 py-3 rounded-xl font-medium transition-all",
-                    slippage === 0.5 
-                      ? "bg-primary/20 text-primary border-2 border-primary/40" 
-                      : "bg-muted/30 hover:bg-muted/50 border border-border/30"
-                  )}
-                >
-                  0.5%
-                </button>
-                <button 
-                  onClick={() => setSlippage(1)}
-                  className={cn(
-                    "flex-1 py-3 rounded-xl font-medium transition-all",
-                    slippage === 1 
-                      ? "bg-primary/20 text-primary border-2 border-primary/40" 
-                      : "bg-muted/30 hover:bg-muted/50 border border-border/30"
-                  )}
-                >
-                  1%
-                </button>
-                <button 
-                  onClick={() => setSlippage(2)}
-                  className={cn(
-                    "flex-1 py-3 rounded-xl font-medium transition-all",
-                    slippage === 2 
-                      ? "bg-primary/20 text-primary border-2 border-primary/40" 
-                      : "bg-muted/30 hover:bg-muted/50 border border-border/30"
-                  )}
-                >
-                  2%
-                </button>
+              <div className="flex justify-between items-center">
+                <Label>Slippage Tolerance</Label>
+                <Badge variant="outline">{slippage}%</Badge>
               </div>
-              <Input
-                type="number"
-                value={slippage}
-                onChange={(e) => setSlippage(parseFloat(e.target.value) || 1)}
-                className="bg-muted/30 border-border/30"
-                placeholder="Custom"
+              <Slider
+                value={[slippage]}
+                onValueChange={(value) => setSlippage(value[0])}
                 min={0.1}
-                max={50}
+                max={5}
                 step={0.1}
+                className="w-full"
               />
+              <div className="flex justify-between text-xs text-muted-foreground">
+                <span>0.1%</span>
+                <span>5%</span>
+              </div>
+            </div>
+            <div className="flex gap-2">
+              <Button variant="outline" size="sm" onClick={() => setSlippage(0.5)}>0.5%</Button>
+              <Button variant="outline" size="sm" onClick={() => setSlippage(1)}>1%</Button>
+              <Button variant="outline" size="sm" onClick={() => setSlippage(2)}>2%</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
-
-      {/* Add Custom Token Dialog */}
-      <Dialog open={showAddToken} onOpenChange={setShowAddToken}>
-        <DialogContent className={DEX_STYLES.modal.content}>
-          <DialogHeader>
-            <DialogTitle className="text-xl">Add Custom Token</DialogTitle>
-            <DialogDescription>Enter the token contract address</DialogDescription>
-          </DialogHeader>
-          <div className="space-y-4 py-4">
-            <div className="space-y-2">
-              <Label>Token Contract Address</Label>
-              <Input
-                placeholder="0x..."
-                value={customTokenAddress}
-                onChange={(e) => setCustomTokenAddress(e.target.value)}
-                className="bg-muted/30 border-border/30"
-              />
-            </div>
-            <GradientBorderButton onClick={addCustomToken} className="w-full h-12">
-              Add Token
-            </GradientBorderButton>
-          </div>
-        </DialogContent>
-      </Dialog>
-    </div>
+    </Card>
   );
 };
