@@ -143,7 +143,7 @@ export function AppSidebar() {
     <Sidebar
       collapsible="icon"
     >
-      <SidebarContent className="bg-card border-r border-border/30 shadow-2xl">
+      <SidebarContent className="bg-card border-r border-border/30">
         {/* Logo */}
         <div className={`border-b border-border/30 bg-background ${isCollapsed ? 'p-2 flex justify-center' : 'p-4'}`}>
           <div className={`flex items-center ${isCollapsed ? 'justify-center' : 'justify-start gap-4'}`}>
