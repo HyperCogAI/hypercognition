@@ -238,7 +238,7 @@ export const EVMDEX = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-3 p-6">
         {/* Token Swap Container */}
         <div className="relative">
           <div className="flex flex-col gap-2">
@@ -271,12 +271,10 @@ export const EVMDEX = () => {
               </div>
               <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
                 <span>≈$0.00</span>
-                {fromBalance && (
-                  <span className="flex items-center gap-1">
-                    <Wallet className="h-4 w-4" />
-                    {parseFloat(fromBalance.formatted).toFixed(6)}
-                  </span>
-                )}
+                <span className="flex items-center gap-1">
+                  <Wallet className="h-4 w-4" />
+                  {fromBalance ? parseFloat(fromBalance.formatted).toFixed(6) : '0.00'}
+                </span>
               </div>
             </div>
 
@@ -357,7 +355,7 @@ export const EVMDEX = () => {
         {/* Swap Button */}
         {isConnected ? (
           <Button
-            className="w-full"
+            className="w-full mt-6"
             size="lg"
             onClick={handleSwap}
             disabled={!quote || isLoadingQuote || isSwapping || !fromAmount || !toAmount}

@@ -255,7 +255,7 @@ export const SolanaDEX = () => {
           </div>
         </div>
       </CardHeader>
-      <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-3 p-6">
         {/* Token Swap Container */}
         <div className="relative">
           <div className="flex flex-col gap-2">
@@ -290,12 +290,10 @@ export const SolanaDEX = () => {
               </div>
               <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
                 <span>≈${selectedFromToken ? (parseFloat(fromAmount || '0') * selectedFromToken.price).toFixed(2) : '0.00'}</span>
-                {selectedFromToken && (
-                  <span className="flex items-center gap-1">
-                    <Wallet className="h-4 w-4" />
-                    0.00 {selectedFromToken.symbol}
-                  </span>
-                )}
+                <span className="flex items-center gap-1">
+                  <Wallet className="h-4 w-4" />
+                  {selectedFromToken ? '0.00' : '0.00'} {selectedFromToken?.symbol || ''}
+                </span>
               </div>
             </div>
 
@@ -380,7 +378,7 @@ export const SolanaDEX = () => {
         {/* Swap Button */}
         {publicKey ? (
           <Button
-            className="w-full"
+            className="w-full mt-6"
             size="lg"
             onClick={() => setShowConfirm(true)}
             disabled={!quote || isLoadingQuote || !fromAmount || !toAmount}
