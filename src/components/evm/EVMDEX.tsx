@@ -251,7 +251,7 @@ export const EVMDEX = () => {
                   placeholder="0.00"
                   value={fromAmount}
                   onChange={(e) => setFromAmount(e.target.value)}
-                  className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="text-3xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <Select value={fromToken} onValueChange={(val) => setFromToken(val as Address)}>
                   <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
@@ -289,7 +289,7 @@ export const EVMDEX = () => {
                   placeholder="0.00"
                   value={toAmount}
                   disabled
-                  className="text-4xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
+                  className="text-3xl font-light bg-transparent border-none shadow-none p-0 h-auto focus-visible:ring-0 focus-visible:ring-offset-0"
                 />
                 <Select value={toToken} onValueChange={(val) => setToToken(val as Address)}>
                   <SelectTrigger className="w-auto gap-2 bg-background/50 px-4 py-2 rounded-xl border-border/40">
@@ -309,6 +309,10 @@ export const EVMDEX = () => {
               </div>
               <div className="flex justify-between items-center mt-3 text-sm text-muted-foreground">
                 <span>≈$0.00</span>
+                <span className="flex items-center gap-1">
+                  <Wallet className="h-4 w-4" />
+                  0.00
+                </span>
               </div>
             </div>
           </div>
