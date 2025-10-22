@@ -355,7 +355,7 @@ export const EVMDEX = () => {
         {/* Swap Button */}
         {isConnected ? (
           <Button
-            className="w-full mt-8"
+            className="w-full !mt-12"
             size="lg"
             onClick={handleSwap}
             disabled={!quote || isLoadingQuote || isSwapping || !fromAmount || !toAmount}
@@ -370,7 +370,7 @@ export const EVMDEX = () => {
             )}
           </Button>
         ) : (
-          <Button className="w-full mt-8" size="lg" onClick={connectWallet}>
+          <Button className="w-full !mt-12" size="lg" onClick={connectWallet}>
             <Wallet className="h-4 w-4 mr-2" />
             Connect Wallet to Swap
           </Button>
