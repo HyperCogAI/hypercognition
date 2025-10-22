@@ -1,21 +1,24 @@
 import { useState, useEffect, useMemo, useCallback } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Slider } from "@/components/ui/slider"
-import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { useToast } from "@/hooks/use-toast"
 import { useWallet } from "@solana/wallet-adapter-react"
 import { useSolanaRealtime } from "@/hooks/useSolanaRealtime"
 import { jupiterApi } from "@/lib/apis/jupiterApi"
-import { ArrowDownUp, Settings, TrendingUp, Wallet, AlertCircle, Loader2, RefreshCw } from "lucide-react"
+import { ArrowDownUp, Settings, AlertCircle, RefreshCw } from "lucide-react"
 import { Connection, VersionedTransaction } from "@solana/web3.js"
 import { supabase } from "@/integrations/supabase/client"
 import { AddCustomToken } from "./AddCustomToken"
+import { DEX_STYLES } from "@/lib/dex-styles"
+import { TokenInputField, Token as TokenType } from "@/components/dex/TokenInputField"
+import { TokenSelectModal } from "@/components/dex/TokenSelectModal"
+import { SwapQuoteDisplay } from "@/components/dex/SwapQuoteDisplay"
+import { GradientBorderButton } from "@/components/wallet/GradientBorderButton"
+import { cn } from "@/lib/utils"
 
 interface SwapQuote {
   inputMint: string
@@ -29,11 +32,23 @@ interface SwapQuote {
 }
 
 export const SolanaDEX = () => {
-  const { tokens, refetchTokens } = useSolanaRealtime()
+  const { tokens: solanaTokens, refetchTokens } = useSolanaRealtime()
   const { publicKey, signTransaction, connected } = useWallet()
   const { toast } = useToast()
 
-  // Refetch tokens when wallet connects to include custom tokens
+  // Convert Solana tokens to generic Token interface
+  const tokens: TokenType[] = useMemo(() => 
+    solanaTokens.map(t => ({
+      address: t.mint_address as `0x${string}`,
+      symbol: t.symbol,
+      name: t.name,
+      decimals: t.decimals,
+      logoURI: t.image_url || undefined,
+    })),
+    [solanaTokens]
+  )
+
+  // Refetch tokens when wallet connects
   useEffect(() => {
     if (publicKey && refetchTokens) {
       refetchTokens(true, publicKey.toString())
@@ -50,24 +65,26 @@ export const SolanaDEX = () => {
   const [quote, setQuote] = useState<SwapQuote | null>(null)
   const [showSettings, setShowSettings] = useState(false)
   const [showConfirm, setShowConfirm] = useState(false)
+  const [showFromTokenModal, setShowFromTokenModal] = useState(false)
+  const [showToTokenModal, setShowToTokenModal] = useState(false)
 
   // Default to SOL and USDC
   useEffect(() => {
     if (tokens.length > 0 && !fromToken) {
       const sol = tokens.find(t => t.symbol === 'SOL')
       const usdc = tokens.find(t => t.symbol === 'USDC')
-      if (sol) setFromToken(sol.mint_address)
-      if (usdc) setToToken(usdc.mint_address)
+      if (sol) setFromToken(sol.address)
+      if (usdc) setToToken(usdc.address)
     }
   }, [tokens, fromToken])
 
   const selectedFromToken = useMemo(() => 
-    tokens.find(t => t.mint_address === fromToken),
+    tokens.find(t => t.address === fromToken),
     [tokens, fromToken]
   )
 
   const selectedToToken = useMemo(() => 
-    tokens.find(t => t.mint_address === toToken),
+    tokens.find(t => t.address === toToken),
     [tokens, toToken]
   )
 
@@ -81,7 +98,7 @@ export const SolanaDEX = () => {
     setIsLoadingQuote(true)
     try {
       const amount = parseFloat(fromAmount) * Math.pow(10, selectedFromToken?.decimals || 9)
-      const slippageBps = slippage * 100 // Convert percentage to basis points
+      const slippageBps = slippage * 100
 
       const quoteResponse = await jupiterApi.getSwapRoute(
         fromToken,
@@ -148,7 +165,6 @@ export const SolanaDEX = () => {
 
     setIsSwapping(true)
     try {
-      // Call backend to prepare swap and record in database
       const { data: swapData, error: backendError } = await supabase.functions.invoke(
         'solana-swap',
         {
@@ -169,13 +185,11 @@ export const SolanaDEX = () => {
 
       const { swapTransaction, swapId } = swapData;
 
-      // Deserialize and sign transaction
       const swapTransactionBuf = Buffer.from(swapTransaction, 'base64')
       const transaction = VersionedTransaction.deserialize(swapTransactionBuf)
       
       const signedTransaction = await signTransaction(transaction)
 
-      // Send transaction
       const connection = new Connection(
         'https://api.mainnet-beta.solana.com',
         'confirmed'
@@ -189,7 +203,6 @@ export const SolanaDEX = () => {
 
       console.log("Transaction sent:", txid);
       
-      // Update swap record with transaction hash
       await supabase
         .from('solana_swaps')
         .update({ 
@@ -198,10 +211,8 @@ export const SolanaDEX = () => {
         })
         .eq('id', swapId);
 
-      // Confirm transaction
       await connection.confirmTransaction(txid, 'confirmed')
 
-      // Mark as completed
       await supabase
         .from('solana_swaps')
         .update({ 
@@ -215,7 +226,6 @@ export const SolanaDEX = () => {
         description: `Swapped ${fromAmount} ${selectedFromToken?.symbol} for ${toAmount} ${selectedToToken?.symbol}`,
       })
 
-      // Reset form
       setFromAmount("")
       setToAmount("")
       setQuote(null)
@@ -235,277 +245,238 @@ export const SolanaDEX = () => {
 
   const pricePerToken = useMemo(() => {
     if (!fromAmount || !toAmount || parseFloat(fromAmount) === 0) return null
-    return parseFloat(toAmount) / parseFloat(fromAmount)
+    return (parseFloat(toAmount) / parseFloat(fromAmount)).toFixed(6)
   }, [fromAmount, toAmount])
 
+  const quoteData = quote && selectedFromToken && selectedToToken ? {
+    fromTokenSymbol: selectedFromToken.symbol,
+    toTokenSymbol: selectedToToken.symbol,
+    rate: pricePerToken || undefined,
+    priceImpactPct: quote.priceImpactPct,
+  } : null
+
   return (
-    <Card className="border-border/40 bg-card/60 backdrop-blur-sm">
-      <CardHeader>
-        <div className="flex items-center justify-between">
-          <div>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5 text-primary" />
-              Solana DEX
-            </CardTitle>
-            <CardDescription>Swap tokens instantly via Jupiter Aggregator</CardDescription>
-          </div>
+    <div className={DEX_STYLES.card.container}>
+      <div className={DEX_STYLES.card.glow} />
+      
+      <Card className={DEX_STYLES.card.main}>
+        <div className="p-4 flex items-center justify-between border-b border-border/20">
+          <h3 className="text-lg font-semibold">Swap</h3>
           <div className="flex items-center gap-2">
-            <AddCustomToken onTokenAdded={() => refetchTokens?.(true, publicKey?.toString())} />
-            <Button
-              variant="outline"
-              size="icon"
-              onClick={() => setShowSettings(true)}
+            <button 
+              onClick={() => refetchTokens?.(true, publicKey?.toString())}
+              className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
             >
-              <Settings className="h-4 w-4" />
-            </Button>
+              <RefreshCw className="h-4 w-4 text-muted-foreground" />
+            </button>
+            <AddCustomToken onTokenAdded={() => refetchTokens?.(true, publicKey?.toString())} />
+            <button 
+              onClick={() => setShowSettings(true)}
+              className="p-2 rounded-lg hover:bg-muted/50 transition-colors"
+            >
+              <Settings className="h-4 w-4 text-muted-foreground" />
+            </button>
           </div>
         </div>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        {/* From Token */}
-        <div className="space-y-2">
-          <Label>From</Label>
-          <div className="flex gap-2">
-            <Select value={fromToken} onValueChange={setFromToken}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select token" />
-              </SelectTrigger>
-              <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.mint_address} value={token.mint_address}>
-                    <div className="flex items-center gap-2">
-                      {token.image_url && (
-                        <img src={token.image_url} alt={token.symbol} className="w-5 h-5 rounded-full" />
-                      )}
-                      {token.symbol}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={fromAmount}
-              onChange={(e) => setFromAmount(e.target.value)}
-              className="flex-1"
-            />
+
+        <CardContent className="space-y-3 pt-6">
+          <TokenInputField
+            token={selectedFromToken || null}
+            amount={fromAmount}
+            onAmountChange={setFromAmount}
+            onTokenSelect={() => setShowFromTokenModal(true)}
+            label="From"
+          />
+
+          <div className="flex justify-center -my-3 relative z-10">
+            <button
+              onClick={handleSwapTokens}
+              className={DEX_STYLES.swap.button}
+            >
+              <ArrowDownUp className="h-5 w-5" />
+            </button>
           </div>
-          {selectedFromToken && (
-            <p className="text-xs text-muted-foreground">
-              Balance: 0.00 {selectedFromToken.symbol} • ${selectedFromToken.price.toFixed(4)}
-            </p>
-          )}
-        </div>
 
-        {/* Swap Button */}
-        <div className="flex justify-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={handleSwapTokens}
-            className="rounded-full"
-          >
-            <ArrowDownUp className="h-4 w-4" />
-          </Button>
-        </div>
+          <TokenInputField
+            token={selectedToToken || null}
+            amount={toAmount}
+            onAmountChange={() => {}}
+            onTokenSelect={() => setShowToTokenModal(true)}
+            label="To"
+            disabled={true}
+          />
 
-        {/* To Token */}
-        <div className="space-y-2">
-          <Label>To</Label>
-          <div className="flex gap-2">
-            <Select value={toToken} onValueChange={setToToken}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Select token" />
-              </SelectTrigger>
-              <SelectContent>
-                {tokens.map((token) => (
-                  <SelectItem key={token.mint_address} value={token.mint_address}>
-                    <div className="flex items-center gap-2">
-                      {token.image_url && (
-                        <img src={token.image_url} alt={token.symbol} className="w-5 h-5 rounded-full" />
-                      )}
-                      {token.symbol}
-                    </div>
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            <Input
-              type="number"
-              placeholder="0.00"
-              value={toAmount}
+          <SwapQuoteDisplay quote={quoteData} isLoading={isLoadingQuote} />
+
+          {publicKey ? (
+            <GradientBorderButton
+              className="w-full h-14 text-lg font-semibold"
+              onClick={() => setShowConfirm(true)}
+              disabled={!quote || isLoadingQuote || !fromAmount || !toAmount}
+            >
+              {isLoadingQuote ? "Loading..." : "Review Swap"}
+            </GradientBorderButton>
+          ) : (
+            <GradientBorderButton
+              className="w-full h-14 text-lg font-semibold"
               disabled
-              className="flex-1"
-            />
-          </div>
-          {selectedToToken && (
-            <p className="text-xs text-muted-foreground">
-              ${selectedToToken.price.toFixed(4)}
-            </p>
+            >
+              Connect Wallet
+            </GradientBorderButton>
           )}
-        </div>
 
-        {isLoadingQuote && (
-          <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
-            <Loader2 className="h-4 w-4 animate-spin" />
-            Fetching best price...
-          </div>
-        )}
-
-        {/* Quote Details */}
-        {quote && !isLoadingQuote && (
-          <div className="space-y-2 p-3 bg-muted/50 rounded-lg text-sm">
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Rate</span>
-              <span>1 {selectedFromToken?.symbol} = {pricePerToken?.toFixed(6)} {selectedToToken?.symbol}</span>
+          {quote && quote.priceImpactPct > 5 && (
+            <div className="relative p-4 bg-destructive/10 border border-destructive/30 rounded-xl overflow-hidden">
+              <div className="absolute inset-0 bg-[linear-gradient(45deg,transparent_25%,hsl(var(--destructive)/0.05)_25%,hsl(var(--destructive)/0.05)_50%,transparent_50%,transparent_75%,hsl(var(--destructive)/0.05)_75%)] bg-[length:20px_20px] animate-gradient-shift" />
+              
+              <div className="relative flex items-start gap-3">
+                <AlertCircle className="h-5 w-5 text-destructive flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-semibold text-destructive">High Price Impact Warning</p>
+                  <p className="text-sm text-muted-foreground mt-1">
+                    This swap has a {quote.priceImpactPct.toFixed(2)}% price impact. Consider splitting into smaller trades.
+                  </p>
+                </div>
+              </div>
             </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Price Impact</span>
-              <span className={quote.priceImpactPct > 1 ? "text-destructive" : "text-green-500"}>
-                {quote.priceImpactPct.toFixed(2)}%
-              </span>
-            </div>
-            <div className="flex justify-between">
-              <span className="text-muted-foreground">Slippage Tolerance</span>
-              <span>{slippage}%</span>
-            </div>
-          </div>
-        )}
+          )}
+        </CardContent>
+      </Card>
 
-        {/* Swap Button */}
-        {publicKey ? (
-          <Button
-            className="w-full"
-            size="lg"
-            onClick={() => setShowConfirm(true)}
-            disabled={!quote || isLoadingQuote || !fromAmount || !toAmount}
-          >
-            {isLoadingQuote ? "Loading..." : "Review Swap"}
-          </Button>
-        ) : (
-          <Button className="w-full" size="lg" disabled>
-            <Wallet className="h-4 w-4 mr-2" />
-            Connect Wallet to Swap
-          </Button>
-        )}
+      <TokenSelectModal
+        open={showFromTokenModal}
+        onOpenChange={setShowFromTokenModal}
+        tokens={tokens}
+        onSelect={(token) => setFromToken(token.address)}
+        title="Select token to swap from"
+      />
 
-        {/* Warning for high price impact */}
-        {quote && quote.priceImpactPct > 5 && (
-          <div className="flex items-start gap-2 p-3 bg-destructive/10 border border-destructive/20 rounded-lg">
-            <AlertCircle className="h-4 w-4 text-destructive mt-0.5" />
-            <div className="text-sm">
-              <p className="font-medium text-destructive">High Price Impact</p>
-              <p className="text-muted-foreground">This swap has a price impact of {quote.priceImpactPct.toFixed(2)}%. Consider reducing your swap amount.</p>
-            </div>
-          </div>
-        )}
-      </CardContent>
+      <TokenSelectModal
+        open={showToTokenModal}
+        onOpenChange={setShowToTokenModal}
+        tokens={tokens}
+        onSelect={(token) => setToToken(token.address)}
+        title="Select token to receive"
+      />
 
-      {/* Settings Dialog */}
       <Dialog open={showSettings} onOpenChange={setShowSettings}>
-        <DialogContent>
+        <DialogContent className={DEX_STYLES.modal.content}>
           <DialogHeader>
-            <DialogTitle>Swap Settings</DialogTitle>
-            <DialogDescription>Adjust your swap preferences</DialogDescription>
+            <DialogTitle className="text-xl">Swap Settings</DialogTitle>
+            <DialogDescription>Adjust slippage tolerance</DialogDescription>
           </DialogHeader>
           <div className="space-y-6 py-4">
             <div className="space-y-3">
-              <div className="flex justify-between items-center">
-                <Label>Slippage Tolerance</Label>
-                <Badge variant="outline">{slippage}%</Badge>
+              <Label className="text-sm font-medium">Slippage Tolerance</Label>
+              <div className="flex gap-2">
+                <button 
+                  onClick={() => setSlippage(0.5)}
+                  className={cn(
+                    "flex-1 py-3 rounded-xl font-medium transition-all",
+                    slippage === 0.5 
+                      ? "bg-primary/20 text-primary border-2 border-primary/40" 
+                      : "bg-muted/30 hover:bg-muted/50 border border-border/30"
+                  )}
+                >
+                  0.5%
+                </button>
+                <button 
+                  onClick={() => setSlippage(1)}
+                  className={cn(
+                    "flex-1 py-3 rounded-xl font-medium transition-all",
+                    slippage === 1 
+                      ? "bg-primary/20 text-primary border-2 border-primary/40" 
+                      : "bg-muted/30 hover:bg-muted/50 border border-border/30"
+                  )}
+                >
+                  1%
+                </button>
+                <button 
+                  onClick={() => setSlippage(2)}
+                  className={cn(
+                    "flex-1 py-3 rounded-xl font-medium transition-all",
+                    slippage === 2 
+                      ? "bg-primary/20 text-primary border-2 border-primary/40" 
+                      : "bg-muted/30 hover:bg-muted/50 border border-border/30"
+                  )}
+                >
+                  2%
+                </button>
               </div>
-              <Slider
-                value={[slippage]}
-                onValueChange={(value) => setSlippage(value[0])}
+              <Input
+                type="number"
+                value={slippage}
+                onChange={(e) => setSlippage(parseFloat(e.target.value) || 1)}
+                className="bg-muted/30 border-border/30"
+                placeholder="Custom"
                 min={0.1}
-                max={5}
+                max={50}
                 step={0.1}
-                className="w-full"
               />
-              <div className="flex justify-between text-xs text-muted-foreground">
-                <span>0.1%</span>
-                <span>5%</span>
-              </div>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" size="sm" onClick={() => setSlippage(0.5)}>0.5%</Button>
-              <Button variant="outline" size="sm" onClick={() => setSlippage(1)}>1%</Button>
-              <Button variant="outline" size="sm" onClick={() => setSlippage(2)}>2%</Button>
             </div>
           </div>
         </DialogContent>
       </Dialog>
 
-      {/* Confirm Swap Dialog */}
       <Dialog open={showConfirm} onOpenChange={setShowConfirm}>
-        <DialogContent>
+        <DialogContent className={DEX_STYLES.modal.content}>
           <DialogHeader>
-            <DialogTitle>Confirm Swap</DialogTitle>
+            <DialogTitle className="text-xl">Confirm Swap</DialogTitle>
             <DialogDescription>Review your swap details carefully</DialogDescription>
           </DialogHeader>
           <div className="space-y-4 py-4">
             <div className="space-y-3">
-              <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                <span className="text-muted-foreground">You Pay</span>
+              <div className="flex justify-between items-center p-4 bg-muted/30 rounded-xl border border-border/20">
+                <span className="text-muted-foreground text-sm">You Pay</span>
                 <div className="text-right">
                   <p className="font-semibold">{fromAmount} {selectedFromToken?.symbol}</p>
-                  <p className="text-xs text-muted-foreground">
-                    ${(parseFloat(fromAmount) * (selectedFromToken?.price || 0)).toFixed(2)}
-                  </p>
                 </div>
               </div>
               <div className="flex justify-center">
                 <ArrowDownUp className="h-4 w-4 text-muted-foreground" />
               </div>
-              <div className="flex justify-between items-center p-3 bg-muted rounded-lg">
-                <span className="text-muted-foreground">You Receive</span>
+              <div className="flex justify-between items-center p-4 bg-muted/30 rounded-xl border border-border/20">
+                <span className="text-muted-foreground text-sm">You Receive</span>
                 <div className="text-right">
                   <p className="font-semibold">{toAmount} {selectedToToken?.symbol}</p>
-                  <p className="text-xs text-muted-foreground">
-                    ${(parseFloat(toAmount) * (selectedToToken?.price || 0)).toFixed(2)}
-                  </p>
                 </div>
               </div>
             </div>
 
-            <Separator />
+            <Separator className="bg-border/20" />
 
             <div className="space-y-2 text-sm">
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Rate</span>
-                <span>1 {selectedFromToken?.symbol} = {pricePerToken?.toFixed(6)} {selectedToToken?.symbol}</span>
+                <span className="font-medium">1 {selectedFromToken?.symbol} = {pricePerToken} {selectedToToken?.symbol}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Price Impact</span>
-                <span className={quote && quote.priceImpactPct > 1 ? "text-destructive" : "text-green-500"}>
+                <span className={cn(
+                  "font-medium",
+                  quote && quote.priceImpactPct > 5 ? "text-destructive" :
+                  quote && quote.priceImpactPct > 1 ? "text-yellow-500" :
+                  "text-green-500"
+                )}>
                   {quote?.priceImpactPct.toFixed(2)}%
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-muted-foreground">Slippage Tolerance</span>
-                <span>{slippage}%</span>
+                <span className="font-medium">{slippage}%</span>
               </div>
             </div>
 
-            <Button
-              className="w-full"
-              size="lg"
+            <GradientBorderButton
+              className="w-full h-12"
               onClick={executeSwap}
               disabled={isSwapping}
             >
-              {isSwapping ? (
-                <>
-                  <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                  Swapping...
-                </>
-              ) : (
-                "Confirm Swap"
-              )}
-            </Button>
+              {isSwapping ? "Swapping..." : "Confirm Swap"}
+            </GradientBorderButton>
           </div>
         </DialogContent>
       </Dialog>
-    </Card>
+    </div>
   )
 }
