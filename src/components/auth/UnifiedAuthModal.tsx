@@ -9,6 +9,7 @@ import { useNetworkSelector } from "@/hooks/useNetworkSelector"
 import { Mail, Wallet, Check } from "lucide-react"
 import { useToast } from "@/hooks/use-toast"
 import { z } from "zod"
+import hypercognitionLogo from "@/assets/Hyper_Cognition_logo3large.png"
 
 interface UnifiedAuthModalProps {
   isOpen: boolean
@@ -112,12 +113,21 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-[hsl(var(--card))] border border-[hsl(var(--border))] rounded-2xl">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-center text-foreground">
+      <DialogContent className="sm:max-w-md bg-[#0a0c0f] border-2 border-[hsl(var(--primary))/0.3] rounded-2xl">
+        <DialogHeader className="space-y-4">
+          {/* HyperCognition Logo */}
+          <div className="flex justify-center mb-2">
+            <img 
+              src={hypercognitionLogo} 
+              alt="HyperCognition" 
+              className="h-14 w-auto"
+            />
+          </div>
+          
+          <DialogTitle className="text-2xl font-bold text-center text-white">
             {emailSent ? "Check your email" : "Log in or sign up"}
           </DialogTitle>
-          <DialogDescription className="text-center text-muted-foreground">
+          <DialogDescription className="text-center text-gray-400">
             {emailSent 
               ? "We sent you a magic link. Click it to sign in."
               : "Choose your preferred sign-in method"
@@ -136,13 +146,13 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
                   placeholder="your@email.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="pl-10 bg-[hsl(var(--input))] border-[hsl(var(--border))] text-foreground"
+                  className="pl-10 bg-[#16181f] border-gray-700 text-white placeholder:text-gray-500"
                   disabled={isLoading}
                 />
               </div>
               <Button
                 type="submit"
-                className="w-full bg-[hsl(var(--primary))] hover:bg-[hsl(var(--primary-glow))] text-[hsl(var(--primary-foreground))]"
+                className="w-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))] hover:opacity-90 text-black font-semibold transition-all"
                 disabled={isLoading}
               >
                 {isLoading ? "Sending..." : "Continue with Email"}
@@ -151,10 +161,10 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
 
             <div className="relative">
               <div className="absolute inset-0 flex items-center">
-                <span className="w-full border-t border-[hsl(var(--border))]" />
+                <span className="w-full border-t border-gray-700" />
               </div>
               <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-[hsl(var(--card))] px-2 text-muted-foreground">Or continue with</span>
+                <span className="bg-[#0a0c0f] px-2 text-gray-500">Or continue with</span>
               </div>
             </div>
 
@@ -162,7 +172,7 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
             <Button
               onClick={handleGoogleSignIn}
               variant="outline"
-              className="w-full border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]"
+              className="w-full border-gray-700 bg-[#16181f] hover:bg-[#1d2029] text-white"
               disabled={isLoading}
             >
               <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
@@ -190,7 +200,7 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
             <Button
               onClick={handleTwitterSignIn}
               variant="outline"
-              className="w-full border-[hsl(var(--border))] hover:bg-[hsl(var(--muted))]"
+              className="w-full border-gray-700 bg-[#16181f] hover:bg-[#1d2029] text-white"
               disabled={isLoading}
             >
               <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
@@ -203,28 +213,28 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
             <Button
               onClick={handleWalletConnect}
               variant="outline"
-              className="w-full border-[hsl(var(--primary-border))] bg-[hsl(var(--primary-semi))] hover:bg-[hsl(var(--primary))/0.5] text-foreground"
+              className="w-full border-2 border-[hsl(var(--primary))] bg-[hsl(var(--primary))/0.1] hover:bg-[hsl(var(--primary))/0.2] text-[hsl(var(--primary))] font-semibold transition-all"
             >
               <Wallet className="h-5 w-5 mr-2" />
               Continue with a wallet
             </Button>
 
-            <p className="text-xs text-center text-muted-foreground mt-4">
-              Protected by Supabase
-            </p>
+              <p className="text-xs text-center text-[hsl(var(--primary))/0.6] mt-4">
+                Secured Authentication
+              </p>
           </div>
         ) : (
           <div className="flex flex-col items-center gap-4 py-8">
-            <div className="h-16 w-16 rounded-full bg-[hsl(var(--primary))/0.2] flex items-center justify-center">
+            <div className="h-16 w-16 rounded-full bg-[hsl(var(--primary))/0.2] border-2 border-[hsl(var(--primary))] flex items-center justify-center">
               <Check className="h-8 w-8 text-[hsl(var(--primary))]" />
             </div>
-            <p className="text-sm text-muted-foreground">
+            <p className="text-sm text-gray-400">
               Click the link in your email to complete sign in
             </p>
             <Button
               variant="ghost"
               onClick={() => setEmailSent(false)}
-              className="text-sm text-[hsl(var(--primary))]"
+              className="text-sm text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8]"
             >
               Try a different email
             </Button>
