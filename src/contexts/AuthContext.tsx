@@ -14,6 +14,9 @@ interface AuthContextType {
   signInWithWallet: () => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>
+  signInWithGoogle: () => Promise<void>
+  signInWithTwitter: () => Promise<void>
+  signInWithMagicLink: (email: string) => Promise<void>
   signOut: () => Promise<void>
 }
 
@@ -201,6 +204,45 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  const signInWithGoogle = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: {
+        redirectTo: `${window.location.origin}/`
+      }
+    })
+    
+    if (error) {
+      throw error
+    }
+  }
+
+  const signInWithTwitter = async () => {
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'twitter',
+      options: {
+        redirectTo: `${window.location.origin}/`
+      }
+    })
+    
+    if (error) {
+      throw error
+    }
+  }
+
+  const signInWithMagicLink = async (email: string) => {
+    const { error } = await supabase.auth.signInWithOtp({
+      email,
+      options: {
+        emailRedirectTo: `${window.location.origin}/`
+      }
+    })
+    
+    if (error) {
+      throw error
+    }
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
     evmWallet.disconnectWallet()
@@ -219,6 +261,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signInWithWallet,
       signInWithEmail,
       signUpWithEmail,
+      signInWithGoogle,
+      signInWithTwitter,
+      signInWithMagicLink,
       signOut,
     }}>
       {children}
