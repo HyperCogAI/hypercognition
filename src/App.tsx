@@ -138,9 +138,11 @@ const web3Modal = createWeb3Modal({
   themeMode: 'dark',
   themeVariables: {
     '--w3m-font-family': 'inherit',
-    '--w3m-accent': '#000000',
-    '--w3m-color-mix': '#000000',
-    '--w3m-color-mix-strength': 60,
+    '--w3m-accent': '#00d9ff',
+    '--w3m-color-mix': '#00d9ff',
+    '--w3m-color-mix-strength': 20,
+    '--w3m-border-radius-master': '8px',
+    '--w3m-z-index': 9999,
   },
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask

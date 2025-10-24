@@ -1,4 +1,4 @@
-import { useEffect } from "react"
+import { useEffect, useState } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { GradientBorderButton } from "./GradientBorderButton"
 import { useWallet } from "@/hooks/useWallet"
@@ -10,9 +10,11 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import hyperLogo from "@/assets/Hyper_Cognition_logo3large-7.png"
+import { BrandedConnectDialog } from "./BrandedConnectDialog"
 
 export const WalletButton = () => {
   const { address, isConnected, isConnecting, connectWallet, disconnectWallet } = useWallet()
+  const [showBrandedDialog, setShowBrandedDialog] = useState(false)
 
   console.log('WalletButton state:', { address, isConnected, isConnecting })
 
@@ -60,10 +62,21 @@ export const WalletButton = () => {
 
 
     return (
-      <GradientBorderButton onClick={connectWallet} className="w-[130px] justify-center">
-        <Wallet className="h-4 w-4 text-white" />
-        <span className="text-white">Connect EVM</span>
-      </GradientBorderButton>
+      <>
+        <GradientBorderButton onClick={() => setShowBrandedDialog(true)} className="w-[130px] justify-center">
+          <Wallet className="h-4 w-4 text-white" />
+          <span className="text-white">Connect EVM</span>
+        </GradientBorderButton>
+        
+        <BrandedConnectDialog
+          open={showBrandedDialog}
+          onOpenChange={setShowBrandedDialog}
+          onConnectEvm={() => {
+            setShowBrandedDialog(false)
+            connectWallet()
+          }}
+        />
+      </>
     )
   }
 
