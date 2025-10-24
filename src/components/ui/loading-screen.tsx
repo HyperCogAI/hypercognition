@@ -48,7 +48,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="relative bg-card/40 border border-border/30 rounded-xl p-3 backdrop-blur-sm"
+              className="relative bg-card/40 border border-border/30 rounded-xl p-2 backdrop-blur-sm"
             >
               <img 
                 src={hyperLogo} 
@@ -66,7 +66,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
             >
               <Progress 
                 value={progress} 
-                className="h-[3px] bg-muted/10 rounded-full"
+                className="h-1 bg-white/10 [&>div]:bg-primary rounded-full overflow-hidden"
               />
             </motion.div>
           </div>
