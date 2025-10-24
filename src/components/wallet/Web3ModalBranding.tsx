@@ -1,31 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useWeb3ModalState } from '@web3modal/wagmi/react'
 import hyperLogo from '@/assets/Hyper_Cognition_logo3large-7.png'
 
 export const Web3ModalBranding = () => {
-  const [isOpen, setIsOpen] = useState(false)
-
-  useEffect(() => {
-    const checkModalOpen = () => {
-      const modal = document.querySelector('w3m-modal, wcm-modal, [data-testid="w3m-modal"]')
-      const isVisible = modal && (modal as HTMLElement).style.display !== 'none'
-      setIsOpen(!!isVisible)
-    }
-
-    const observer = new MutationObserver(checkModalOpen)
-    observer.observe(document.body, {
-      childList: true,
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['style', 'class']
-    })
-
-    const interval = setInterval(checkModalOpen, 300)
-    
-    return () => {
-      observer.disconnect()
-      clearInterval(interval)
-    }
-  }, [])
+  const { open: isOpen } = useWeb3ModalState()
 
   if (!isOpen) return null
 
