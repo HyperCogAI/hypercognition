@@ -398,13 +398,16 @@ export type Database = {
           agent_id: string | null
           amount: number
           blockchain: string | null
+          blockchain_tx_id: string | null
           completed_at: string | null
           created_at: string
           currency: string
+          escrow_id: number | null
           escrow_until: string | null
           fee: number | null
           from_user_id: string | null
           id: string
+          is_blockchain: boolean | null
           job_id: string | null
           metadata: Json | null
           payment_method: string | null
@@ -419,13 +422,16 @@ export type Database = {
           agent_id?: string | null
           amount: number
           blockchain?: string | null
+          blockchain_tx_id?: string | null
           completed_at?: string | null
           created_at?: string
           currency?: string
+          escrow_id?: number | null
           escrow_until?: string | null
           fee?: number | null
           from_user_id?: string | null
           id?: string
+          is_blockchain?: boolean | null
           job_id?: string | null
           metadata?: Json | null
           payment_method?: string | null
@@ -440,13 +446,16 @@ export type Database = {
           agent_id?: string | null
           amount?: number
           blockchain?: string | null
+          blockchain_tx_id?: string | null
           completed_at?: string | null
           created_at?: string
           currency?: string
+          escrow_id?: number | null
           escrow_until?: string | null
           fee?: number | null
           from_user_id?: string | null
           id?: string
+          is_blockchain?: boolean | null
           job_id?: string | null
           metadata?: Json | null
           payment_method?: string | null
@@ -463,6 +472,13 @@ export type Database = {
             columns: ["agent_id"]
             isOneToOne: false
             referencedRelation: "agents"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "acp_transactions_blockchain_tx_id_fkey"
+            columns: ["blockchain_tx_id"]
+            isOneToOne: false
+            referencedRelation: "blockchain_transactions"
             referencedColumns: ["id"]
           },
           {
@@ -1600,6 +1616,57 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      blockchain_transactions: {
+        Row: {
+          amount: number
+          block_number: number | null
+          chain: string
+          confirmed_at: string | null
+          contract_address: string
+          created_at: string
+          from_address: string
+          gas_used: number | null
+          id: string
+          status: string
+          to_address: string
+          token_address: string
+          tx_hash: string
+          user_id: string
+        }
+        Insert: {
+          amount: number
+          block_number?: number | null
+          chain?: string
+          confirmed_at?: string | null
+          contract_address: string
+          created_at?: string
+          from_address: string
+          gas_used?: number | null
+          id?: string
+          status?: string
+          to_address: string
+          token_address: string
+          tx_hash: string
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          block_number?: number | null
+          chain?: string
+          confirmed_at?: string | null
+          contract_address?: string
+          created_at?: string
+          from_address?: string
+          gas_used?: number | null
+          id?: string
+          status?: string
+          to_address?: string
+          token_address?: string
+          tx_hash?: string
+          user_id?: string
+        }
+        Relationships: []
       }
       chain_metrics: {
         Row: {
@@ -7858,39 +7925,6 @@ export type Database = {
         }
         Relationships: []
       }
-      user_balances: {
-        Row: {
-          available_balance: number
-          created_at: string
-          currency: string
-          id: string
-          locked_balance: number
-          total_balance: number | null
-          updated_at: string
-          user_id: string
-        }
-        Insert: {
-          available_balance?: number
-          created_at?: string
-          currency?: string
-          id?: string
-          locked_balance?: number
-          total_balance?: number | null
-          updated_at?: string
-          user_id: string
-        }
-        Update: {
-          available_balance?: number
-          created_at?: string
-          currency?: string
-          id?: string
-          locked_balance?: number
-          total_balance?: number | null
-          updated_at?: string
-          user_id?: string
-        }
-        Relationships: []
-      }
       user_community_memberships: {
         Row: {
           community_id: string
@@ -8475,6 +8509,33 @@ export type Database = {
           tier?: Database["public"]["Enums"]["subscription_tier"]
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      user_verified_wallets: {
+        Row: {
+          chain: string
+          id: string
+          is_primary: boolean | null
+          user_id: string
+          verified_at: string
+          wallet_address: string
+        }
+        Insert: {
+          chain?: string
+          id?: string
+          is_primary?: boolean | null
+          user_id: string
+          verified_at?: string
+          wallet_address: string
+        }
+        Update: {
+          chain?: string
+          id?: string
+          is_primary?: boolean | null
+          user_id?: string
+          verified_at?: string
+          wallet_address?: string
         }
         Relationships: []
       }

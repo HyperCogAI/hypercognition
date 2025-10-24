@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { ArrowRightLeft, TrendingUp, TrendingDown, Info } from 'lucide-react'
 import { toast } from 'sonner'
 import { useAuth } from '@/contexts/AuthContext'
-import { useUserBalance } from '@/hooks/useUserBalance'
+import { useWalletBalance } from '@/hooks/useWalletBalance'
 
 interface QuickTradeModalProps {
   open: boolean
@@ -25,7 +25,7 @@ interface QuickTradeModalProps {
 
 export function QuickTradeModal({ open, onOpenChange, crypto }: QuickTradeModalProps) {
   const { user } = useAuth()
-  const { balance } = useUserBalance()
+  const { usdcBalance } = useWalletBalance()
   const [orderType, setOrderType] = useState<'buy' | 'sell'>('buy')
   const [amount, setAmount] = useState('')
   const [price, setPrice] = useState(crypto.current_price.toString())
@@ -52,8 +52,8 @@ export function QuickTradeModal({ open, onOpenChange, crypto }: QuickTradeModalP
 
     const total = calculateTotal()
 
-    if (orderType === 'buy' && balance && total > balance.available_balance) {
-      toast.error('Insufficient balance')
+    if (orderType === 'buy' && total > usdcBalance) {
+      toast.error('Insufficient USDC balance')
       return
     }
 
@@ -120,16 +120,14 @@ export function QuickTradeModal({ open, onOpenChange, crypto }: QuickTradeModalP
           <TabsContent value={orderType} className="space-y-4 mt-4">
             <form onSubmit={handleSubmit} className="space-y-4">
               {/* Balance Display */}
-              {balance && (
-                <Card className="bg-muted/50">
-                  <CardContent className="p-3">
-                    <div className="flex items-center justify-between text-sm">
-                      <span className="text-muted-foreground">Available:</span>
-                      <span className="font-medium">{formatCurrency(balance.available_balance)}</span>
-                    </div>
-                  </CardContent>
-                </Card>
-              )}
+              <Card className="bg-muted/50">
+                <CardContent className="p-3">
+                  <div className="flex items-center justify-between text-sm">
+                    <span className="text-muted-foreground">Available USDC:</span>
+                    <span className="font-medium">{formatCurrency(usdcBalance)}</span>
+                  </div>
+                </CardContent>
+              </Card>
 
               {/* Amount Input */}
               <div className="space-y-2">

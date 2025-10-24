@@ -13,7 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { LoadingButton } from "@/components/ui/loading-button"
 import { useOrders } from "@/hooks/useOrders"
-import { useUserBalance } from "@/hooks/useUserBalance"
+import { useWalletBalance } from "@/hooks/useWalletBalance"
 import { TrendingUp, TrendingDown } from "lucide-react"
 
 interface QuickTradeDialogProps {
@@ -34,7 +34,7 @@ export function QuickTradeDialog({ agent, open, onOpenChange }: QuickTradeDialog
   const [limitPrice, setLimitPrice] = useState('')
   
   const { createOrder, isCreatingOrder } = useOrders()
-  const { balance } = useUserBalance()
+  const { usdcBalance } = useWalletBalance()
 
   const handleTrade = () => {
     const numAmount = parseFloat(amount)
@@ -62,7 +62,7 @@ export function QuickTradeDialog({ agent, open, onOpenChange }: QuickTradeDialog
   const canAfford = () => {
     if (side === 'sell') return true
     const total = parseFloat(calculateTotal())
-    return balance ? balance.available_balance >= total : false
+    return usdcBalance >= total
   }
 
   return (
@@ -132,12 +132,10 @@ export function QuickTradeDialog({ agent, open, onOpenChange }: QuickTradeDialog
               <span className="font-medium">${calculateTotal()}</span>
             </div>
 
-            {balance && (
-              <div className="flex justify-between text-sm">
-                <span className="text-muted-foreground">Available Balance:</span>
-                <span className="font-medium">${balance.available_balance.toFixed(2)}</span>
-              </div>
-            )}
+            <div className="flex justify-between text-sm">
+              <span className="text-muted-foreground">Available USDC:</span>
+              <span className="font-medium">${usdcBalance.toFixed(2)}</span>
+            </div>
 
             <LoadingButton
               onClick={handleTrade}

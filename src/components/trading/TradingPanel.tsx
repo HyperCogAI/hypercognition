@@ -9,7 +9,7 @@ import { Badge } from "@/components/ui/badge"
 import { PaperTradingToggle } from "@/components/ui/paper-trading-toggle"
 import { useAuth } from "@/contexts/AuthContext"
 import { useOrderExecution } from "@/hooks/useOrderExecution"
-import { useUserBalance } from "@/hooks/useUserBalance"
+import { useWalletBalance } from "@/hooks/useWalletBalance"
 import { usePaperTrading } from "@/hooks/usePaperTrading"
 
 interface TradingPanelProps {
@@ -28,8 +28,8 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
   const [slippage, setSlippage] = useState("0.5")
   const { isConnected, address } = useAuth()
   const { placeBuyOrder, placeSellOrder, isExecuting } = useOrderExecution()
-  const { balance } = useUserBalance()
-  const { 
+  const { usdcBalance } = useWalletBalance()
+  const {
     isEnabled: paperTradingEnabled, 
     togglePaperTrading, 
     executePaperTrade, 
@@ -111,11 +111,11 @@ export const TradingPanel = ({ agentId, agent }: TradingPanelProps) => {
         ) : (
           <>
             {/* Balance Display */}
-            {balance && !paperTradingEnabled && (
+            {!paperTradingEnabled && (
               <div className="mb-4 p-3 bg-card/50 rounded-lg border border-border/50">
                 <div className="flex items-center justify-between">
-                  <span className="text-sm text-muted-foreground">Available Balance:</span>
-                  <span className="font-semibold">${balance.available_balance.toFixed(2)}</span>
+                  <span className="text-sm text-muted-foreground">Available USDC:</span>
+                  <span className="font-semibold">${usdcBalance.toFixed(2)}</span>
                 </div>
               </div>
             )}

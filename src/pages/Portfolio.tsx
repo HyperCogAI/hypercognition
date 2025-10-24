@@ -7,7 +7,7 @@ import { useQuery } from '@tanstack/react-query'
 import { supabase } from '@/integrations/supabase/client'
 import { useAuth } from '@/contexts/AuthContext'
 import { usePortfolioHoldings } from '@/hooks/usePortfolioHoldings'
-import { useUserBalance } from '@/hooks/useUserBalance'
+import { useWalletBalance } from '@/hooks/useWalletBalance'
 import { SEOHead } from '@/components/seo/SEOHead'
 import { PortfolioAnalytics } from '@/components/portfolio/PortfolioAnalytics'
 import { PortfolioOptimizer } from '@/components/portfolio/PortfolioOptimizer'
@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom'
 
 export default function Portfolio() {
   const { user } = useAuth()
-  const { balance } = useUserBalance()
+  const { usdcBalance, ethBalance, isConnected } = useWalletBalance()
   const { 
     holdings, 
     summary,
@@ -76,18 +76,18 @@ export default function Portfolio() {
           </p>
         </div>
 
-        {/* Balance Card - Always show if available */}
-        {balance && (
+        {/* Wallet Balance Card - Show when connected */}
+        {isConnected && (
           <Card className="mb-6">
             <CardContent className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-muted-foreground mb-2">Available Cash</p>
-                  <p className="text-2xl font-bold">${balance.available_balance.toFixed(2)}</p>
-                  <p className="text-xs text-muted-foreground mt-1">Total: ${balance.total_balance.toFixed(2)}</p>
+                  <p className="text-sm font-medium text-muted-foreground mb-2">Wallet Balance (Base)</p>
+                  <p className="text-2xl font-bold">${usdcBalance.toFixed(2)} USDC</p>
+                  <p className="text-xs text-muted-foreground mt-1">Gas: {ethBalance.toFixed(4)} ETH</p>
                 </div>
                 <div className="p-3 rounded-lg bg-muted">
-                  <DollarSign className="h-6 w-6" />
+                  <Wallet className="h-6 w-6" />
                 </div>
               </div>
             </CardContent>
