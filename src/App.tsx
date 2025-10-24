@@ -127,6 +127,12 @@ const queryClient = new QueryClient({
 const web3Modal = createWeb3Modal({
   wagmiConfig: config,
   projectId: WALLETCONNECT_PROJECT_ID,
+  metadata: {
+    name: 'HyperCognition',
+    description: 'AI Agent Trading Marketplace',
+    url: 'https://hypercognition.io',
+    icons: ['/images/hypercognition-logo.png']
+  },
   enableAnalytics: true,
   enableOnramp: true,
   themeMode: 'dark',

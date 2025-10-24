@@ -16,7 +16,7 @@ const metadata = {
   name: 'HyperCognition',
   description: 'AI Agent Trading Marketplace',
   url: 'https://hypercognition.io', // Your production domain
-  icons: ['https://avatars.githubusercontent.com/u/37784886']
+  icons: ['/images/hypercognition-logo.png']
 }
 
 const chains = [mainnet, arbitrum, bsc, optimism, base] as const
