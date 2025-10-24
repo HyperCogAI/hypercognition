@@ -131,7 +131,7 @@ const web3Modal = createWeb3Modal({
     name: 'HyperCognition',
     description: 'AI Agent Trading Marketplace',
     url: 'https://hypercognition.io',
-    icons: ['/images/hypercognition-logo.png']
+    icons: ['https://gxgmqrtsbqmpngbpuuxx.supabase.co/storage/v1/object/public/images/Hyper_Cognition_logo3large-7.png']
   },
   enableAnalytics: true,
   enableOnramp: true,
