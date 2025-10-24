@@ -10,6 +10,7 @@ import ethereumLogo from "@/assets/networks/ethereum-coingecko.png"
 import bnbLogo from "@/assets/networks/bnb-coingecko.png"
 import solanaLogo from "@/assets/networks/solana-coingecko.png"
 import baseLogo from "@/assets/networks/base-official.png"
+import hyperLogo from "@/assets/Hyper_Cognition_logo3large-7.png"
 
 const networks = [
   { id: 'base' as NetworkType, name: 'Base', logo: baseLogo },
@@ -34,18 +35,15 @@ export const NetworkSelectorButton = () => {
           </GradientBorderButton>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 bg-[hsl(var(--menu-surface))] border-white/20 z-50">
+      <DropdownMenuContent align="end" className="w-48 bg-[#0a0c0f] border-2 border-[hsl(var(--primary))/0.3] z-50 shadow-xl">
+        <div className="px-4 py-3 border-b border-white/10 flex justify-center">
+          <img src={hyperLogo} alt="HyperCognition" className="h-6 w-auto" />
+        </div>
         {networks.map((network) => (
           <DropdownMenuItem 
             key={network.id}
             onClick={() => setNetwork(network.id)}
-            className="text-white/70 hover:text-white focus:text-white cursor-pointer transition-colors"
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = `hsl(${hoverColor})`
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = ''
-            }}
+            className="text-white hover:bg-[hsl(var(--primary))/0.1] focus:bg-[hsl(var(--primary))/0.1] cursor-pointer transition-colors"
           >
             <img src={network.logo} alt={network.name + ' logo'} loading="lazy" className="h-4 w-auto object-contain mr-2 shrink-0" />
             {network.name}

@@ -11,6 +11,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import hyperLogo from "@/assets/Hyper_Cognition_logo3large-7.png"
 
 export const UnifiedWalletButton = () => {
   const { selectedNetwork } = useNetworkSelector()
@@ -116,8 +117,11 @@ export const UnifiedWalletButton = () => {
           </GradientBorderButton>
         </div>
       </DropdownMenuTrigger>
-      <DropdownMenuContent align="end" className="w-48 bg-[hsl(var(--menu-surface))] border-white/20 z-50">
-        <DropdownMenuItem onClick={disconnectWallet} className="text-white hover:bg-white/10 focus:bg-white/10">
+      <DropdownMenuContent align="end" className="w-48 bg-[#0a0c0f] border-2 border-[hsl(var(--primary))/0.3] z-50 shadow-xl">
+        <div className="px-4 py-3 border-b border-white/10 flex justify-center">
+          <img src={hyperLogo} alt="HyperCognition" className="h-6 w-auto" />
+        </div>
+        <DropdownMenuItem onClick={disconnectWallet} className="text-white hover:bg-[hsl(var(--primary))/0.1] focus:bg-[hsl(var(--primary))/0.1] cursor-pointer">
           <LogOut className="h-4 w-4 mr-2" />
           Disconnect
         </DropdownMenuItem>
