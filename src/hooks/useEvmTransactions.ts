@@ -21,7 +21,7 @@ export const useEvmTransactions = () => {
       abi: USDCABI as any,
       functionName: 'approve',
       args: [escrowAddress, amountWei],
-    })
+    } as any)
   }
 
   // Create escrow
@@ -32,7 +32,7 @@ export const useEvmTransactions = () => {
       abi: EscrowABI as any,
       functionName: 'createEscrow',
       args: [seller as `0x${string}`, amountWei],
-    })
+    } as any)
   }
 
   // Release escrow
@@ -42,7 +42,7 @@ export const useEvmTransactions = () => {
       abi: EscrowABI as any,
       functionName: 'releaseEscrow',
       args: [escrowId],
-    })
+    } as any)
   }
 
   // Refund escrow
@@ -52,7 +52,7 @@ export const useEvmTransactions = () => {
       abi: EscrowABI as any,
       functionName: 'refundEscrow',
       args: [escrowId],
-    })
+    } as any)
   }
 
   return {
