@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { GradientBorderButton } from "./GradientBorderButton"
 import { useWallet } from "@/hooks/useWallet"
@@ -12,65 +12,47 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import hyperLogo from "@/assets/Hyper_Cognition_logo3large-7.png"
-import { BrandedConnectDialog } from "./BrandedConnectDialog"
 
 export const UnifiedWalletButton = () => {
+  // Get hooks for both wallets
+  const evmWallet = useWallet()
+  const solWallet = useSolanaWallet()
   const { selectedNetwork } = useNetworkSelector()
-  const [showBrandedDialog, setShowBrandedDialog] = useState(false)
-  
-  // EVM wallet
-  const { 
-    address: evmAddress, 
-    isConnected: evmConnected, 
-    isConnecting: evmConnecting, 
-    connectWallet: connectEvm, 
-    disconnectWallet: disconnectEvm 
-  } = useWallet()
 
-  // Solana wallet
-  const { 
-    address: solAddress, 
-    isConnected: solConnected, 
-    isConnecting: solConnecting, 
-    connectWallet: connectSol, 
-    disconnectWallet: disconnectSol,
-    formatAddress: formatSolAddress
-  } = useSolanaWallet()
+  // Determine if selected network is EVM or Solana
+  const isEvmNetwork = selectedNetwork === 'base' || selectedNetwork === 'ethereum' || selectedNetwork === 'bnb'
+  
+  const isConnected = isEvmNetwork ? evmWallet.isConnected : solWallet.isConnected
+  const isConnecting = isEvmNetwork ? evmWallet.isConnecting : solWallet.isConnecting
+  const address = isEvmNetwork ? evmWallet.address : solWallet.address
+  const connectWallet = isEvmNetwork ? evmWallet.connectWallet : solWallet.connectWallet
+  const disconnectWallet = isEvmNetwork ? evmWallet.disconnectWallet : solWallet.disconnectWallet
+
+  const formatAddress = (addr: string) => {
+    if (!isEvmNetwork) {
+      return solWallet.formatAddress(addr)
+    }
+    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
+  }
 
   // Auto-trigger wallet modal based on network
   useEffect(() => {
     try {
       const url = new URL(window.location.href)
       if (url.searchParams.get('w3m-connect') === '1') {
-        connectEvm()
+        evmWallet.connectWallet()
         url.searchParams.delete('w3m-connect')
         window.history.replaceState({}, '', url.toString())
       }
       if (url.searchParams.get('solana-connect') === '1') {
-        connectSol()
+        solWallet.connectWallet()
         url.searchParams.delete('solana-connect')
         window.history.replaceState({}, '', url.toString())
       }
     } catch (_) {
       // ignore
     }
-  }, [connectEvm, connectSol])
-
-  // Determine if selected network is EVM or Solana
-  const isEvmNetwork = selectedNetwork === 'base' || selectedNetwork === 'ethereum' || selectedNetwork === 'bnb'
-  
-  const isConnected = isEvmNetwork ? evmConnected : solConnected
-  const isConnecting = isEvmNetwork ? evmConnecting : solConnecting
-  const address = isEvmNetwork ? evmAddress : solAddress
-  const connectWallet = isEvmNetwork ? connectEvm : connectSol
-  const disconnectWallet = isEvmNetwork ? disconnectEvm : disconnectSol
-
-  const formatAddress = (addr: string) => {
-    if (!isEvmNetwork) {
-      return formatSolAddress(addr)
-    }
-    return `${addr.slice(0, 6)}...${addr.slice(-4)}`
-  }
+  }, [evmWallet.connectWallet, solWallet.connectWallet])
 
   if (!isConnected) {
     const inIframe = typeof window !== 'undefined' && window.top !== window.self
@@ -84,8 +66,8 @@ export const UnifiedWalletButton = () => {
       } catch (_) {}
       return (
         <div className="w-full flex flex-col gap-2">
-          <div className="relative rounded-full w-[130px] p-[1px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift">
-            <a href={href} target="_top" aria-label="Connect wallet (open in full window)" className="inline-flex items-center justify-center gap-2 w-full h-8 rounded-full bg-[#16181f] hover:bg-[#1d2029] text-white text-xs font-medium">
+          <div className="relative rounded-full w-[130px] p-[2px] bg-[linear-gradient(90deg,hsl(var(--primary)),hsl(var(--secondary)),hsl(var(--primary)))] bg-[length:300%_100%] animate-gradient-shift shadow-[0_0_12px_hsl(var(--primary)/0.35)]">
+            <a href={href} target="_top" aria-label="Connect wallet (open in full window)" className="inline-flex items-center justify-center gap-2 w-full h-8 rounded-full bg-black/90 hover:bg-black/95 text-white text-xs font-medium">
               <Wallet className="h-4 w-4 text-white" />
               <span className="text-white">Connect</span>
             </a>
@@ -102,21 +84,10 @@ export const UnifiedWalletButton = () => {
     }
 
     return (
-      <>
-        <GradientBorderButton onClick={() => setShowBrandedDialog(true)} className="w-[130px] justify-center">
-          <Wallet className="h-4 w-4 text-white" />
-          <span className="text-white">Connect</span>
-        </GradientBorderButton>
-        
-        <BrandedConnectDialog
-          open={showBrandedDialog}
-          onOpenChange={setShowBrandedDialog}
-          onConnectEvm={() => {
-            setShowBrandedDialog(false)
-            connectWallet()
-          }}
-        />
-      </>
+      <GradientBorderButton onClick={connectWallet} className="w-[130px] justify-center">
+        <Wallet className="h-4 w-4 text-white" />
+        <span className="text-white">Connect</span>
+      </GradientBorderButton>
     )
   }
 
