@@ -48,7 +48,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="relative bg-card/40 border border-border/30 rounded-xl p-6 backdrop-blur-sm"
+              className="relative bg-card/40 border border-border/30 rounded-xl p-3 backdrop-blur-sm"
             >
               <img 
                 src={hyperLogo} 
@@ -57,7 +57,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               />
             </motion.div>
 
-            {/* Sleek loading bar */}
+            {/* Apple-style loading bar */}
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
@@ -66,19 +66,9 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
             >
               <Progress 
                 value={progress} 
-                className="h-1 bg-muted/20"
+                className="h-[3px] bg-muted/10 rounded-full"
               />
             </motion.div>
-
-            {/* Loading text */}
-            <motion.p
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.5, duration: 0.4 }}
-              className="text-muted-foreground text-sm font-medium tracking-wide"
-            >
-              Initializing HyperCognition...
-            </motion.p>
           </div>
         </motion.div>
       )}
