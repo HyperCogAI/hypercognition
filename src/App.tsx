@@ -21,6 +21,7 @@ import { LoadingScreen } from "@/components/ui/loading-screen"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
+import { Web3ModalBranding } from "@/components/wallet/Web3ModalBranding"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
@@ -162,6 +163,7 @@ const AppLayout = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen flex flex-col">
+        <Web3ModalBranding />
         <MobileToolbar />
         <main className="flex-1 pb-16 pt-[calc(4rem+env(safe-area-inset-top))]">
           <ErrorBoundary level="page" name="Mobile App">
@@ -258,6 +260,7 @@ const AppLayout = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
+        <Web3ModalBranding />
         <AppSidebar />
         <div className="flex-1 flex flex-col h-screen overflow-y-auto" data-scroll-root>
           {!isACPPage && (
