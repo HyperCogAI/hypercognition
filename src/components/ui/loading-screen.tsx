@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
-import hyperLogo from '@/assets/Hyper_Cognition_logo3large-5.png'
+import hyperLogo from '@/assets/Hyper_Cognition_logo3large.png'
 import { Progress } from '@/components/ui/progress'
 
 interface LoadingScreenProps {
@@ -48,16 +48,13 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
               transition={{ duration: 0.6, ease: "easeOut" }}
-              className="relative"
+              className="relative bg-card/40 border border-border/30 rounded-xl p-6 backdrop-blur-sm"
             >
               <img 
                 src={hyperLogo} 
-                alt="HyperCognition" 
-                className="w-40 h-auto md:w-48"
+                alt="HyperCognition logo" 
+                className="w-48 h-auto md:w-56 brightness-125 contrast-125"
               />
-              
-              {/* Subtle glow effect */}
-              <div className="absolute inset-0 bg-gradient-to-r from-primary/20 to-blue-500/20 blur-xl rounded-lg" />
             </motion.div>
 
             {/* Sleek loading bar */}

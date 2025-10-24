@@ -1,4 +1,4 @@
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/AuthContext"
 import { UnifiedAuthModal } from "@/components/auth/UnifiedAuthModal"
 
@@ -9,7 +9,13 @@ interface ProtectedRouteProps {
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isLoading, session } = useAuth()
   const hasAccess = !!session
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(!hasAccess && !isLoading)
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
+
+  useEffect(() => {
+    if (!isLoading && !hasAccess) {
+      setIsAuthModalOpen(true)
+    }
+  }, [isLoading, hasAccess])
 
   if (isLoading) {
     return (
