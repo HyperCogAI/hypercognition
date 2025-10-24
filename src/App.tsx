@@ -21,7 +21,6 @@ import { LoadingScreen } from "@/components/ui/loading-screen"
 import AITradingAssistant from "@/components/ai/AITradingAssistant"
 import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton"
 import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
-import { Web3ModalBranding } from "@/components/wallet/Web3ModalBranding"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
 const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
@@ -144,7 +143,7 @@ const web3Modal = createWeb3Modal({
     '--w3m-color-mix-strength': 20,
     '--w3m-border-radius-master': '8px',
     '--w3m-z-index': 9999,
-  },
+  } as any,
   featuredWalletIds: [
     'c57ca95b47569778a828d19178114f4db188b89b763c899ba0be274e97267d96', // MetaMask
   ]
@@ -163,7 +162,6 @@ const AppLayout = () => {
   if (isMobile) {
     return (
       <div className="min-h-screen flex flex-col">
-        <Web3ModalBranding />
         <MobileToolbar />
         <main className="flex-1 pb-16 pt-[calc(4rem+env(safe-area-inset-top))]">
           <ErrorBoundary level="page" name="Mobile App">
@@ -260,7 +258,6 @@ const AppLayout = () => {
   return (
     <SidebarProvider>
       <div className="min-h-screen flex w-full">
-        <Web3ModalBranding />
         <AppSidebar />
         <div className="flex-1 flex flex-col h-screen overflow-y-auto" data-scroll-root>
           {!isACPPage && (
