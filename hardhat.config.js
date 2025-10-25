@@ -1,4 +1,4 @@
-require("@nomicfoundation/hardhat-toolbox");
+require("@nomicfoundation/hardhat-toolbox-mocha-ethers");
 require("dotenv").config();
 
 /** @type import('hardhat/config').HardhatUserConfig */
