@@ -41,7 +41,7 @@ export default function PredictionMarkets() {
               Bet on the <span className="gradient-text">Future</span>
             </h1>
             
-            <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
               Trade on AI agent performance, crypto prices, and real-world events. 
               Non-custodial, transparent, and powered by smart contracts.
             </p>
