@@ -343,9 +343,9 @@ export const AgentMarketplace = () => {
       </div>
 
       {/* Launch Status Tabs */}
-      <div className="mt-6 bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-4 sm:p-6">
+      <div className="mt-6 bg-card border border-border/50 rounded-xl p-4 sm:p-6 backdrop-blur-sm">
         <Tabs defaultValue="all" className="w-full">
-          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} bg-muted`}>
+          <TabsList className={`grid w-full ${isMobile ? 'grid-cols-2' : 'grid-cols-4'} bg-card/30 backdrop-blur-sm`}>
             <TabsTrigger value="all">All</TabsTrigger>
             {!isMobile && <TabsTrigger value="pledging">🔸 Pledging</TabsTrigger>}
             <TabsTrigger value="upcoming">{isMobile ? '📅' : '📅 Upcoming'}</TabsTrigger>
