@@ -62,8 +62,8 @@ export const mockMarkets: PredictionMarket[] = [
   },
   {
     id: '4',
-    question: 'Will ETH reach $5,000 by end of 2025?',
-    description: 'This market resolves YES if Ethereum (ETH) reaches or exceeds $5,000 USD before December 31, 2025.',
+    question: 'Will ETH reach $6,000 by end of 2025?',
+    description: 'This market resolves YES if Ethereum (ETH) reaches or exceeds $6,000 USD before December 31, 2025.',
     category: 'crypto',
     status: 'open',
     outcomeType: 'binary',
