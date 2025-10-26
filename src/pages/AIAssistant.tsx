@@ -127,8 +127,8 @@ const AIAssistant = () => {
                 <div className="flex flex-col sm:flex-row gap-3 md:gap-4 justify-center pt-2 md:pt-4">
                   <VoiceAssistantModal selectedAgent={selectedAgent} portfolio={mockPortfolio} marketData={{}}>
                     <Button 
-                      variant="secondary" 
-                      size="default"
+                      variant="default" 
+                      size="lg"
                       className="gap-2 text-sm md:text-base"
                     >
                       <Mic className="h-4 w-4 md:h-5 md:w-5" />
