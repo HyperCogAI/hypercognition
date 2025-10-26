@@ -64,19 +64,19 @@ export function MarketCard({ market }: MarketCardProps) {
           </div>
         )}
 
-        <div className="p-5 space-y-4">
+        <div className="p-5 flex flex-col gap-4">
           {/* Question */}
           <div>
-            <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+            <h3 className="font-bold text-lg mb-4 line-clamp-2 group-hover:text-primary transition-colors h-14">
               {market.question}
             </h3>
-            <p className="text-sm text-muted-foreground line-clamp-2">
+            <p className="text-sm text-muted-foreground line-clamp-2 h-10">
               {market.description}
             </p>
           </div>
 
           {/* Outcomes */}
-          <div className="space-y-2">
+          <div className="space-y-2 h-20 flex flex-col justify-center">
             {market.outcomes.slice(0, 2).map((outcome) => (
               <div key={outcome.id} className="flex items-center justify-between">
                 <span className="text-sm font-medium">{outcome.label}</span>
@@ -96,7 +96,7 @@ export function MarketCard({ market }: MarketCardProps) {
           </div>
 
           {/* Stats */}
-          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50">
+          <div className="grid grid-cols-2 gap-4 pt-4 border-t border-border/50 min-h-[72px]">
             <div className="space-y-1">
               <div className="flex items-center gap-1 text-muted-foreground">
                 <DollarSign className="h-3 w-3" />
