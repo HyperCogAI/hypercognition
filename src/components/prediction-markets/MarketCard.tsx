@@ -42,29 +42,16 @@ export function MarketCard({ market }: MarketCardProps) {
         className="group overflow-hidden bg-card/50 backdrop-blur-sm border-border/50 hover:border-primary/30 transition-all duration-300 hover:shadow-lg hover:shadow-primary/5 cursor-pointer"
         onClick={() => navigate(`/prediction-markets/${market.id}`)}
       >
-        {/* Image */}
-        {market.imageUrl && (
-          <div className="relative h-48 overflow-hidden">
-            <img 
-              src={market.imageUrl} 
-              alt={market.question}
-              className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-105"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-card via-card/50 to-transparent" />
-            
-            {/* Badges Overlay */}
-            <div className="absolute top-3 left-3 flex gap-2">
-              <Badge className={getCategoryColor(market.category)}>
-                {market.category.replace('-', ' ')}
-              </Badge>
-              <Badge className={getStatusColor(market.status)}>
-                {market.status}
-              </Badge>
-            </div>
-          </div>
-        )}
-
         <div className="p-5 flex flex-col gap-4">
+          {/* Badges */}
+          <div className="flex gap-2 mb-4">
+            <Badge className={getCategoryColor(market.category)}>
+              {market.category.replace('-', ' ')}
+            </Badge>
+            <Badge className={getStatusColor(market.status)}>
+              {market.status}
+            </Badge>
+          </div>
           {/* Question */}
           <div>
             <h3 className="font-bold text-lg mb-4 line-clamp-2 group-hover:text-primary transition-colors h-14">
