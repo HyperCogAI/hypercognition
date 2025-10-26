@@ -22,8 +22,8 @@ export const mockMarkets: PredictionMarket[] = [
   },
   {
     id: '2',
-    question: 'Will BTC hit $100,000 by Q1 2026?',
-    description: 'This market resolves YES if Bitcoin (BTC) reaches or exceeds $100,000 USD before March 31, 2026.',
+    question: 'Will BTC hit $150,000 by Q1 2026?',
+    description: 'This market resolves YES if Bitcoin (BTC) reaches or exceeds $150,000 USD before March 31, 2026.',
     category: 'crypto',
     status: 'open',
     outcomeType: 'binary',
