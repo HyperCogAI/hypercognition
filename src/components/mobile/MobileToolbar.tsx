@@ -1,6 +1,7 @@
 import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
 import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
 import { LogoCutout } from '@/components/LogoCutout'
+import { ThemeToggle } from '@/components/ui/theme-toggle'
 import logoUrl from '@/assets/HyperCognition6b.png'
 
 // Preload the logo to prevent fuzzy loading
@@ -21,8 +22,9 @@ export const MobileToolbar = () => {
           />
         </div>
 
-        {/* Wallet buttons on the right */}
+        {/* Wallet buttons and theme toggle on the right */}
         <div className="flex items-center gap-2">
+          <ThemeToggle />
           <NetworkSelectorButton />
           <UnifiedWalletButton />
         </div>

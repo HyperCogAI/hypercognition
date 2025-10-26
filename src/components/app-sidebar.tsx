@@ -19,6 +19,7 @@ import { Badge } from "@/components/ui/badge"
 import { CyberButton } from "@/components/ui/cyber-button"
 import { UserMenu } from "@/components/UserMenu"
 import { NotificationCenter } from "@/components/ui/notification-center"
+import { ThemeToggle } from "@/components/ui/theme-toggle"
 
 // Telegram Icon Component
 const TelegramIcon = ({ className }: { className?: string }) => (
@@ -420,7 +421,7 @@ export function AppSidebar() {
         </SidebarGroup>
 
 
-        {/* Settings at bottom */}
+        {/* Settings and Theme Toggle at bottom */}
         <div className="mt-auto border-t border-border/30 bg-background">
           <SidebarGroup>
             <SidebarGroupContent>
@@ -443,6 +444,9 @@ export function AppSidebar() {
               </SidebarMenu>
             </SidebarGroupContent>
           </SidebarGroup>
+          <div className={`border-t border-border/30 ${isCollapsed ? 'p-2 flex justify-center' : 'p-4'}`}>
+            <ThemeToggle />
+          </div>
         </div>
       </SidebarContent>
     </Sidebar>

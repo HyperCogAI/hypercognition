@@ -8,9 +8,92 @@
 
 @layer base {
   :root {
-    color-scheme: dark;
     /* Viewport fallback for JS-backed viewport fix */
     --vh: 1vh;
+    
+    /* Light Mode - Clean and Professional */
+    color-scheme: light;
+    
+    /* Light Backgrounds */
+    --background: 0 0% 98%;
+    --foreground: 222 15% 15%;
+
+    /* Card System */
+    --card: 0 0% 100%;
+    --card-foreground: 222 15% 15%;
+    --card-glow: 210 20% 96%;
+
+    /* Interactive Elements */
+    --popover: 0 0% 100%;
+    --popover-foreground: 222 15% 15%;
+
+    /* Primary - Vibrant Cyan */
+    --primary: 190 100% 45%;
+    --primary-foreground: 0 0% 100%;
+    --primary-glow: 190 100% 55%;
+    
+    /* Semi-transparent cyan variants */
+    --primary-semi: 190 100% 45% / 0.3;
+    --primary-border: 190 100% 45%;
+
+    /* Secondary - Refined Blue */
+    --secondary: 210 100% 50%;
+    --secondary-foreground: 0 0% 100%;
+    --secondary-glow: 210 100% 60%;
+
+    /* Muted Elements */
+    --muted: 210 10% 96%;
+    --muted-foreground: 215 10% 45%;
+
+    /* Accent */
+    --accent: 210 100% 50%;
+    --accent-foreground: 0 0% 100%;
+    --accent-glow: 210 100% 60%;
+
+    /* Danger */
+    --destructive: 0 60% 50%;
+    --destructive-foreground: 0 0% 100%;
+    --destructive-glow: 0 70% 65%;
+
+    /* UI Elements */
+    --border: 220 10% 90%;
+    --input: 0 0% 100%;
+    --ring: 190 100% 45%;
+    --menu-surface: 0 0% 100%;
+
+    /* Design Tokens */
+    --radius: 0.75rem;
+    
+    /* Custom Scroll Color */
+    --scroll-color: 220 10% 95%;
+
+    --sidebar-background: 0 0% 100%;
+    --sidebar-foreground: 222 15% 15%;
+    --sidebar-primary: 190 100% 45%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 10% 96%;
+    --sidebar-accent-foreground: 222 15% 15%;
+    --sidebar-border: 220 10% 90%;
+    --sidebar-ring: 190 100% 45%;
+    --sidebar-active: 210 20% 96%;
+
+    /* Gradients for Backgrounds */
+    --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
+    --gradient-card: linear-gradient(145deg, hsl(var(--card)), hsl(var(--card-glow)));
+    --gradient-hero: linear-gradient(135deg, hsl(210 20% 98%), hsl(0 0% 100%));
+    
+    /* Shadows and Glows */
+    --shadow-glow: 0 0 40px hsl(var(--primary) / 0.15);
+    --shadow-card: 0 8px 32px hsl(220 10% 50% / 0.1);
+    --shadow-intense: 0 0 60px hsl(var(--accent) / 0.2);
+    
+    /* Animation Timings */
+    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+  }
+
+  .dark {
+    color-scheme: dark;
     
     /* Deep Black Base - Darker by 30% */
     --background: 222 30% 5%;
@@ -25,7 +108,7 @@
     --popover: 0 0% 4%;
     --popover-foreground: 210 15% 90%;
 
-    /* Primary - Bright Cyan like in image */
+    /* Primary - Bright Cyan */
     --primary: 190 100% 70%;
     --primary-foreground: 0 0% 0%;
     --primary-glow: 190 100% 80%;
@@ -59,31 +142,18 @@
     --ring: 220 100% 60%;
     --menu-surface: 220 22% 6%;
 
-    /* Design Tokens */
-    --radius: 0.75rem;
-    
     /* Custom Scroll Color */
     --scroll-color: 220 25% 2.5%;
 
-    --sidebar-background: 0 0% 98%;
-
-    --sidebar-foreground: 240 5.3% 26.1%;
-
-    --sidebar-primary: 240 5.9% 10%;
-
-    --sidebar-primary-foreground: 0 0% 98%;
-
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 222 15% 8.8%;
-
-    --sidebar-accent-foreground: 0 0% 98%;
-
-    --sidebar-border: 220 13% 91%;
-
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
-    
-    /* Sidebar active state */
     --sidebar-active: 222 30% 4%;
-  }
 
     /* Gradients for Backgrounds */
     --gradient-primary: linear-gradient(135deg, hsl(var(--primary)), hsl(var(--secondary)));
@@ -94,42 +164,6 @@
     --shadow-glow: 0 0 40px hsl(var(--primary) / 0.3);
     --shadow-card: 0 8px 32px hsl(222 15% 4% / 0.6);
     --shadow-intense: 0 0 60px hsl(var(--accent) / 0.4);
-    
-    /* Animation Timings */
-    --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    --transition-bounce: all 0.3s cubic-bezier(0.68, -0.55, 0.265, 1.55);
-  }
-
-  .dark {
-    /* Keep same values for dark mode since we're already dark-themed */
-    --background: 222 15% 6%;
-    --foreground: 210 40% 98%;
-    --card: 222 20% 8%;
-    --card-foreground: 210 40% 95%;
-    --popover: 222 25% 10%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 195 100% 50%;
-    --primary-foreground: 222 15% 6%;
-    --secondary: 210 100% 65%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 222 20% 15%;
-    --muted-foreground: 215 15% 65%;
-    --accent: 140 100% 50%;
-    --accent-foreground: 222 15% 6%;
-    --destructive: 0 85% 55%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 222 20% 20%;
-    --input: 222 25% 12%;
-    --ring: 195 100% 50%;
-    --menu-surface: 220 22% 6%;
-    --sidebar-background: 240 5.9% 10%;
-    --sidebar-foreground: 240 4.8% 95.9%;
-    --sidebar-primary: 224.3 76.3% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 222 15% 8.8%;
-    --sidebar-accent-foreground: 240 4.8% 95.9%;
-    --sidebar-border: 240 3.7% 15.9%;
-    --sidebar-ring: 217.2 91.2% 59.8%;
   }
 
 @layer base {
@@ -140,14 +174,25 @@
   body,
   #root {
     @apply bg-background text-foreground overflow-x-hidden;
-    background: linear-gradient(135deg, hsl(var(--background)), hsl(0 0% 4%));
     min-height: 100vh;
     overscroll-behavior-y: none;
   }
 
-  /* Big headings use the same styling as "Enter the Future of Autonomous Trading" */
+  /* Light mode gradient background */
+  body:not(.dark),
+  :root:not(.dark) #root {
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(210 20% 98%));
+  }
+
+  /* Dark mode gradient background */
+  .dark body,
+  .dark #root {
+    background: linear-gradient(135deg, hsl(var(--background)), hsl(0 0% 4%));
+  }
+
+  /* Big headings */
   h1, h2 {
-    @apply text-white;
+    @apply text-foreground;
   }
 
   /* For gradient text spans within headings */
@@ -174,28 +219,54 @@
     height: 8px;
   }
 
-  ::-webkit-scrollbar-track {
+  /* Light mode scrollbar */
+  :root:not(.dark) ::-webkit-scrollbar-track {
+    background: hsl(220 10% 95%);
+  }
+
+  :root:not(.dark) ::-webkit-scrollbar-thumb {
+    background: hsl(220 10% 85%);
+    border-radius: 9999px;
+  }
+
+  :root:not(.dark) ::-webkit-scrollbar-thumb:hover {
+    background: hsl(220 10% 75%);
+  }
+
+  :root:not(.dark) ::-webkit-scrollbar-corner {
+    background: hsl(220 10% 95%);
+  }
+
+  /* Dark mode scrollbar */
+  .dark ::-webkit-scrollbar-track {
     background: #050608;
   }
 
-  ::-webkit-scrollbar-thumb {
+  .dark ::-webkit-scrollbar-thumb {
     background: #050608;
     border-radius: 9999px;
   }
 
-  ::-webkit-scrollbar-thumb:hover {
+  .dark ::-webkit-scrollbar-thumb:hover {
     background: #050608;
   }
 
-  ::-webkit-scrollbar-corner {
+  .dark ::-webkit-scrollbar-corner {
     background: #050608;
   }
 
   /* Firefox scrollbar */
   html {
     scrollbar-width: thin;
-    scrollbar-color: #050608 #050608;
     background-color: hsl(var(--background));
+  }
+
+  :root:not(.dark) html {
+    scrollbar-color: hsl(220 10% 85%) hsl(220 10% 95%);
+  }
+
+  .dark html {
+    scrollbar-color: #050608 #050608;
   }
 
   /* Global iOS tap highlight and accent color */
@@ -222,18 +293,31 @@
     }
   }
 }
+}
 
 @layer components {
   /* Glow Effects */
-  .glow-primary {
+  :root:not(.dark) .glow-primary {
+    box-shadow: 0 0 20px hsl(var(--primary) / 0.25);
+  }
+
+  :root:not(.dark) .glow-accent {
+    box-shadow: 0 0 20px hsl(var(--accent) / 0.25);
+  }
+
+  :root:not(.dark) .glow-secondary {
+    box-shadow: 0 0 20px hsl(var(--secondary) / 0.25);
+  }
+
+  .dark .glow-primary {
     box-shadow: 0 0 20px hsl(var(--primary) / 0.5);
   }
 
-  .glow-accent {
+  .dark .glow-accent {
     box-shadow: 0 0 20px hsl(var(--accent) / 0.5);
   }
 
-  .glow-secondary {
+  .dark .glow-secondary {
     box-shadow: 0 0 20px hsl(var(--secondary) / 0.5);
   }
 
@@ -256,9 +340,16 @@
 
   /* Animated Gradients */
   .gradient-animated {
-    background: linear-gradient(270deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
     background-size: 600% 600%;
     animation: gradientShift 8s ease infinite;
+  }
+
+  :root:not(.dark) .gradient-animated {
+    background: linear-gradient(270deg, hsl(190 100% 50%), hsl(210 100% 55%), hsl(190 100% 45%));
+  }
+
+  .dark .gradient-animated {
+    background: linear-gradient(270deg, hsl(var(--primary)), hsl(var(--secondary)), hsl(var(--accent)));
   }
 
   @keyframes gradientShift {
@@ -269,10 +360,19 @@
 
   /* Cyber Grid Pattern */
   .cyber-grid {
+    background-size: 50px 50px;
+  }
+
+  :root:not(.dark) .cyber-grid {
+    background-image: 
+      linear-gradient(hsl(var(--primary) / 0.05) 1px, transparent 1px),
+      linear-gradient(90deg, hsl(var(--primary) / 0.05) 1px, transparent 1px);
+  }
+
+  .dark .cyber-grid {
     background-image: 
       linear-gradient(hsl(var(--primary) / 0.1) 1px, transparent 1px),
       linear-gradient(90deg, hsl(var(--primary) / 0.1) 1px, transparent 1px);
-    background-size: 50px 50px;
   }
 
   /* Enhanced Floating Animation */
