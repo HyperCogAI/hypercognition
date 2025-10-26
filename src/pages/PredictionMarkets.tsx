@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Target, TrendingUp, Trophy, Calendar, Plus, Search } from 'lucide-react'
+import { Target, TrendingUp, Trophy, Calendar, Plus, Search, Bot } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
@@ -122,12 +122,27 @@ export default function PredictionMarkets() {
           </div>
 
           <Tabs value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as MarketCategory | 'all')}>
-            <TabsList className="grid w-full max-w-2xl grid-cols-2 sm:grid-cols-3 md:grid-cols-5 h-auto gap-1 p-1">
-              <TabsTrigger value="all" className="h-10">All</TabsTrigger>
-              <TabsTrigger value="ai-agents" className="h-10">AI Agents</TabsTrigger>
-              <TabsTrigger value="crypto" className="h-10">Crypto</TabsTrigger>
-              <TabsTrigger value="competitions" className="h-10">Competitions</TabsTrigger>
-              <TabsTrigger value="events" className="h-10">Events</TabsTrigger>
+            <TabsList className="grid w-full max-w-2xl grid-cols-5 h-auto gap-1 p-1">
+              <TabsTrigger value="all" className="h-10 gap-2">
+                <Target className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">All</span>
+              </TabsTrigger>
+              <TabsTrigger value="ai-agents" className="h-10 gap-2">
+                <Bot className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">AI Agents</span>
+              </TabsTrigger>
+              <TabsTrigger value="crypto" className="h-10 gap-2">
+                <TrendingUp className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">Crypto</span>
+              </TabsTrigger>
+              <TabsTrigger value="competitions" className="h-10 gap-2">
+                <Trophy className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">Competitions</span>
+              </TabsTrigger>
+              <TabsTrigger value="events" className="h-10 gap-2">
+                <Calendar className="h-5 w-5 md:h-4 md:w-4" />
+                <span className="hidden md:inline">Events</span>
+              </TabsTrigger>
             </TabsList>
           </Tabs>
         </div>
