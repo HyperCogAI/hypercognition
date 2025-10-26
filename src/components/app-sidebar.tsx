@@ -85,6 +85,7 @@ const tradingItems = [
 // DeFi and crypto features
 const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
+  { title: "Prediction Markets", url: "/prediction-markets", icon: Target },
   { title: "Solana", url: "/solana", icon: SolanaLogo },
   { title: "Solana Staking", url: "/solana-staking", icon: Lock },
   { title: "Staking", url: "/staking", icon: Layers },

@@ -69,6 +69,8 @@ const Favorites = lazy(() => import('./pages/Favorites'));
 
 // Lazy loaded components - DeFi & Blockchain
 const DeFi = lazy(() => import('./pages/DeFi'));
+const PredictionMarkets = lazy(() => import('./pages/PredictionMarkets'));
+const MarketDetails = lazy(() => import('./pages/MarketDetails'));
 
 const Staking = lazy(() => import('./pages/Staking'));
 const SolanaDashboard = lazy(() => import('./pages/SolanaDashboard'));
@@ -194,6 +196,8 @@ const AppLayout = () => {
                 <Route path="/market-overview" element={<MarketOverview />} />
                 <Route path="/customer-support" element={<CustomerSupport />} />
                 <Route path="/defi" element={<DeFi />} />
+                <Route path="/prediction-markets" element={<PredictionMarkets />} />
+                <Route path="/prediction-markets/:id" element={<MarketDetails />} />
                 <Route path="/solana" element={<SolanaDashboard />} />
                 <Route path="/staking" element={<Staking />} />
                 <Route path="/solana-staking" element={<SolanaStaking />} />
@@ -307,6 +311,8 @@ const AppLayout = () => {
                   <Route path="/market-overview" element={<MarketOverview />} />
             <Route path="/customer-support" element={<CustomerSupport />} />
             <Route path="/defi" element={<DeFi />} />
+            <Route path="/prediction-markets" element={<PredictionMarkets />} />
+            <Route path="/prediction-markets/:id" element={<MarketDetails />} />
             <Route path="/solana" element={<SolanaDashboard />} />
             
             <Route path="/staking" element={<Staking />} />
