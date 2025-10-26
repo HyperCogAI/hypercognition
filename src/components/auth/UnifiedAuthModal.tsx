@@ -113,14 +113,14 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-b from-[#0f1419] to-[#0a0c0f] border-2 border-[hsl(var(--primary))] rounded-2xl shadow-2xl shadow-[hsl(var(--primary))/0.2]">
+      <DialogContent className="sm:max-w-md bg-gradient-to-b from-[#0f1419] to-[#0a0c0f] border border-border rounded-2xl">
         <DialogHeader className="space-y-4">
           {/* HyperCognition Logo */}
-          <div className="flex justify-center mb-2 bg-white/5 rounded-xl p-4 backdrop-blur-sm">
+          <div className="flex justify-center mb-2">
             <img 
               src={hypercognitionLogo} 
               alt="HyperCognition" 
-              className="h-16 w-auto brightness-150 contrast-125"
+              className="h-10 w-auto"
             />
           </div>
           
@@ -152,7 +152,7 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
               </div>
               <Button
                 type="submit"
-                className="w-full bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary))] hover:opacity-90 text-black font-semibold transition-all"
+                className="w-full bg-primary/60 text-white outline outline-[1px] outline-white hover:bg-primary/70"
                 disabled={isLoading}
               >
                 {isLoading ? "Sending..." : "Continue with Email"}
@@ -213,13 +213,13 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
             <Button
               onClick={handleWalletConnect}
               variant="outline"
-              className="w-full border-2 border-[hsl(var(--primary))] bg-[hsl(var(--primary))/0.1] hover:bg-[hsl(var(--primary))/0.2] text-[hsl(var(--primary))] font-semibold transition-all"
+              className="w-full border-gray-700 bg-[#16181f] hover:bg-[#1d2029] text-white"
             >
               <Wallet className="h-5 w-5 mr-2" />
               Continue with a wallet
             </Button>
 
-              <p className="text-xs text-center text-[hsl(var(--primary))/0.6] mt-4">
+              <p className="text-xs text-center text-muted-foreground mt-4">
                 Secured Authentication
               </p>
           </div>
