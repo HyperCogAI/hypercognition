@@ -480,7 +480,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               onClick={handleSendMessage} 
               disabled={loading || !message.trim()}
               size="icon"
-              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300"
+              className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/40 hover:border-primary/50 transition-all duration-300"
             >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
