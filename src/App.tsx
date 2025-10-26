@@ -248,7 +248,7 @@ const AppLayout = () => {
             </Suspense>
           </ErrorBoundary>
           {!isAIAssistantPage && (
-            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+            <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-8">
               <AITradingAssistant />
             </div>
           )}
@@ -361,7 +361,7 @@ const AppLayout = () => {
               </Suspense>
             </ErrorBoundary>
             {!isAIAssistantPage && (
-              <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl">
+              <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl mb-12">
                 <AITradingAssistant />
               </div>
             )}
