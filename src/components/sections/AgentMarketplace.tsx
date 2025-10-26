@@ -175,7 +175,7 @@ export const AgentMarketplace = () => {
       {isMobile ? (
         <div className="space-y-6">
           {/* Mobile Spotlight Agent */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-4 w-4 bg-primary rounded-full" />
               <h2 className="text-lg font-semibold">Spotlight Agent</h2>
@@ -184,7 +184,7 @@ export const AgentMarketplace = () => {
           </div>
 
           {/* Mobile Trending */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="h-4 w-4 text-primary" />
               <h2 className="text-lg font-semibold">Trending</h2>
@@ -213,7 +213,7 @@ export const AgentMarketplace = () => {
           </div>
 
           {/* Mobile Network */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-4 backdrop-blur-sm">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-4">
             <div className="flex items-center gap-2 mb-4">
               <Network className="h-4 w-4 text-primary" />
               <h2 className="text-lg font-semibold">Agent Network</h2>
@@ -227,7 +227,7 @@ export const AgentMarketplace = () => {
           {/* Left Column - Trending & Fundamentals */}
           <div className={`space-y-6 ${isTablet ? '' : 'lg:col-span-4'}`}>
           {/* Trending AI Agents */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <TrendingUp className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-semibold">Trending</h2>
@@ -258,7 +258,7 @@ export const AgentMarketplace = () => {
           </div>
 
           {/* Fundamentals */}
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-6">
             <div className="flex items-center gap-2 mb-4">
               <BarChart3 className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-semibold">Fundamentals</h2>
@@ -291,7 +291,7 @@ export const AgentMarketplace = () => {
 
         {/* Middle Column - Spotlight Agent */}
         <div className={isTablet ? '' : 'lg:col-span-4'}>
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-6 h-full">
             <div className="flex items-center gap-2 mb-4">
               <div className="h-5 w-5 bg-primary rounded-full" />
               <h2 className="text-xl font-semibold">Spotlight Agent</h2>
@@ -302,7 +302,7 @@ export const AgentMarketplace = () => {
 
         {/* Right Column - Agent Network */}
         <div className={isTablet ? '' : 'lg:col-span-4'}>
-          <div className="bg-card/30 border border-border/50 rounded-xl p-6 backdrop-blur-sm h-full">
+          <div className="bg-card/30 backdrop-blur-sm border-border/50 rounded-xl p-6 h-full">
             <div className="flex items-center gap-2 mb-4">
               <Network className="h-5 w-5 text-primary" />
               <h2 className="text-xl font-semibold">Agent Network</h2>
