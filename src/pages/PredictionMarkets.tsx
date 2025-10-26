@@ -122,7 +122,7 @@ export default function PredictionMarkets() {
           </div>
 
           <Tabs value={selectedCategory} onValueChange={(v) => setSelectedCategory(v as MarketCategory | 'all')}>
-            <TabsList className="grid w-full max-w-2xl grid-cols-5">
+            <TabsList className="grid w-full max-w-2xl grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-2">
               <TabsTrigger value="all">All</TabsTrigger>
               <TabsTrigger value="ai-agents">AI Agents</TabsTrigger>
               <TabsTrigger value="crypto">Crypto</TabsTrigger>
