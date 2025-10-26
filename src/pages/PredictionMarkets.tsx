@@ -111,7 +111,7 @@ export default function PredictionMarkets() {
       <div className="container mx-auto px-4 py-12">
         {/* Search and Filter */}
         <div className="mb-8 space-y-4">
-          <div className="relative max-w-md">
+          <div className="relative max-w-2xl">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
               placeholder="Search markets..."
