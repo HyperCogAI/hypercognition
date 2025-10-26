@@ -12,21 +12,21 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
   const [progress, setProgress] = useState(0)
 
   useEffect(() => {
-    // Animate progress from 0 to 100 over 2 seconds
+    // Animate progress from 0 to 100 over 1.5 seconds
     const progressInterval = setInterval(() => {
       setProgress(prev => {
         if (prev >= 100) {
           clearInterval(progressInterval)
           return 100
         }
-        return prev + 2
+        return prev + 3
       })
-    }, 40)
+    }, 30)
 
     const timer = setTimeout(() => {
       setIsLoading(false)
-      setTimeout(onComplete, 500) // Allow exit animation to complete
-    }, 2000)
+      setTimeout(onComplete, 400) // Allow exit animation to complete
+    }, 1500)
 
     return () => {
       clearTimeout(timer)
