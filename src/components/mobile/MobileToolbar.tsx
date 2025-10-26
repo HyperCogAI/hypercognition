@@ -1,6 +1,8 @@
 import { NetworkSelectorButton } from '@/components/wallet/NetworkSelectorButton'
 import { UnifiedWalletButton } from '@/components/wallet/UnifiedWalletButton'
 import { LogoCutout } from '@/components/LogoCutout'
+import { Button } from '@/components/ui/button'
+import { Settings } from 'lucide-react'
 import logoUrl from '@/assets/HyperCognition6b.png'
 
 // Preload the logo to prevent fuzzy loading
@@ -23,6 +25,13 @@ export const MobileToolbar = () => {
 
         {/* Wallet buttons on the right */}
         <div className="flex items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-7 w-7 text-muted-foreground/30 hover:text-foreground hover:bg-transparent"
+          >
+            <Settings className="h-4 w-4" />
+          </Button>
           <NetworkSelectorButton />
           <UnifiedWalletButton />
         </div>
