@@ -123,7 +123,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
             {rec.action.toUpperCase()}
           </Badge>
           <span className="font-medium">{rec.agent_symbol}</span>
-          <Badge variant="outline" className="text-xs">
+          <Badge variant="outline" className="text-xs bg-card/40 border-border/40">
             {rec.risk_level} risk
           </Badge>
         </div>
@@ -213,7 +213,6 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
       <CardHeader className="px-4 md:px-6 py-3 md:py-4 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
-            <Bot className="h-5 w-5 text-primary" />
             <span className="hidden sm:inline">AI Trading Assistant</span>
             <span className="sm:hidden">AI Assistant</span>
             <Badge variant="outline" className="ml-2 text-xs bg-card/40 border-border/40">
@@ -289,7 +288,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
           </div>
         </div>
 
-        <Separator />
+        <Separator className="bg-border/40" />
 
         {/* Chat Messages */}
         <ScrollArea className="flex-1 px-4 md:px-6 py-4">
@@ -412,7 +411,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
           </div>
         </ScrollArea>
 
-        <Separator />
+        <Separator className="bg-border/40" />
 
         {/* Message Input */}
         <div className="p-4 md:p-4">
@@ -481,7 +480,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               onClick={handleSendMessage} 
               disabled={loading || !message.trim()}
               size="icon"
-              className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/40 hover:border-primary/50 transition-all duration-300"
+              className="rounded-full border border-border/40 bg-card/40 hover:bg-card/60 backdrop-blur-sm transition-all duration-300"
             >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
