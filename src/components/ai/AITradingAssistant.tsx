@@ -113,7 +113,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
   }
 
   const renderRecommendation = (rec: any, idx: number) => (
-    <div key={idx} className="p-3 bg-card/30 rounded-xl border border-border/30 backdrop-blur-sm">
+    <div key={idx} className="p-3 bg-card/30 rounded-xl border border-border/40 backdrop-blur-sm">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <Badge 
@@ -141,7 +141,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
   )
 
   const renderMarketAnalysis = (analysis: any) => (
-    <div className="p-3 bg-card/30 rounded-xl border border-border/30 backdrop-blur-sm space-y-3">
+    <div className="p-3 bg-card/30 rounded-xl border border-border/40 backdrop-blur-sm space-y-3">
       <div className="flex items-center justify-between">
         <h4 className="font-medium flex items-center gap-2">
           <Brain className="h-4 w-4" />
@@ -209,7 +209,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
   )
 
   return (
-    <Card className="h-[700px] flex flex-col backdrop-blur-md border border-border/50 shadow-xl">
+    <Card className="h-[700px] flex flex-col backdrop-blur-md border border-border/40 shadow-xl">
       <CardHeader className="px-4 md:px-6 py-3 md:py-4 pb-3">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
           <CardTitle className="flex items-center gap-2 text-lg md:text-xl">
@@ -322,7 +322,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
                     className={`rounded-2xl p-3 backdrop-blur-sm shadow-sm transition-all ${
                       msg.type === 'user'
                         ? 'bg-gradient-to-br from-primary/80 to-primary/60 text-primary-foreground'
-                        : 'bg-card/40 border border-border/30'
+                        : 'bg-card/40 border border-border/40'
                     }`}
                   >
                     <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
@@ -347,7 +347,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
                       
                       {/* Portfolio Insights */}
                       {msg.data.portfolio_insights && (
-                        <div className="p-3 bg-card/30 rounded-xl border border-border/30 backdrop-blur-sm">
+                        <div className="p-3 bg-card/30 rounded-xl border border-border/40 backdrop-blur-sm">
                           <h4 className="font-medium mb-2 flex items-center gap-2">
                             <Target className="h-4 w-4" />
                             Portfolio Insights
@@ -399,7 +399,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
                 <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center flex-shrink-0">
                   <Bot className="h-4 w-4 text-primary" />
                 </div>
-                <div className="bg-card/40 backdrop-blur-sm border border-border/30 rounded-2xl p-3">
+                <div className="bg-card/40 backdrop-blur-sm border border-border/40 rounded-2xl p-3">
                   <div className="flex items-center gap-2">
                     <Loader2 className="h-4 w-4 animate-spin" />
                     <span className="text-sm text-muted-foreground">Analyzing market data and generating insights...</span>
@@ -481,7 +481,7 @@ export function AITradingAssistant({ selectedAgent, portfolio, marketData }: AIT
               onClick={handleSendMessage} 
               disabled={loading || !message.trim()}
               size="icon"
-              className="rounded-full bg-primary/10 hover:bg-primary/20 border-0 outline outline-[1px] outline-primary/30 hover:outline-primary/50 transition-all duration-300"
+              className="rounded-full bg-primary/10 hover:bg-primary/20 border border-primary/40 hover:border-primary/50 transition-all duration-300"
             >
             {loading ? (
               <Loader2 className="h-4 w-4 animate-spin" />
