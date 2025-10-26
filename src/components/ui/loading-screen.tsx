@@ -53,7 +53,7 @@ export function LoadingScreen({ onComplete }: LoadingScreenProps) {
               <img 
                 src={hyperLogo} 
                 alt="HyperCognition logo" 
-                className="w-48 h-auto md:w-56 brightness-125 contrast-125"
+                className="w-48 h-auto md:w-56"
               />
             </motion.div>
 
