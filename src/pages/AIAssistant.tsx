@@ -66,18 +66,17 @@ const AIAssistant = () => {
         <div className="max-w-7xl mx-auto space-y-6 md:space-y-12">
           {/* Header */}
           <div className="text-center space-y-4 md:space-y-6 pt-4 md:pt-8 pb-4">
-            <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
-              <Brain className="h-6 w-6 sm:h-8 sm:w-8 text-primary" />
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
-                AI{" "}
-                <span className="text-white">
-                  Trading Assistant
-                </span>
-              </h1>
-              <Badge variant="secondary" className="bg-primary/60 border border-white text-white text-xs sm:text-sm">
-                Powered by GPT-4
-              </Badge>
-            </div>
+          <div className="flex flex-col sm:flex-row items-center justify-center gap-2 sm:gap-3">
+            <h1 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white leading-tight">
+              AI{" "}
+              <span className="text-white">
+                Trading Assistant
+              </span>
+            </h1>
+            <Badge variant="secondary" className="bg-primary/60 border border-white text-white text-xs sm:text-sm">
+              Powered by GPT-5
+            </Badge>
+          </div>
             <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed px-4">
               Get intelligent market insights, personalized trading recommendations, and real-time analysis 
               to make better trading decisions with AI-powered assistance.
