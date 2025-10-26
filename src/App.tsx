@@ -9,6 +9,8 @@ import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { config, WALLETCONNECT_PROJECT_ID } from './config/wagmi'
 import { ConnectionProvider, WalletProvider, WalletModalProvider, wallets, endpoint } from './config/solana'
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
+import { Button } from "@/components/ui/button"
+import { Settings as SettingsIcon } from "lucide-react"
 import { AppSidebar } from "@/components/app-sidebar"
 import { FavoritesProvider } from "@/contexts/FavoritesContext"
 import { AuthProvider } from "@/contexts/AuthContext"
@@ -268,6 +270,13 @@ const AppLayout = () => {
               <div className="sticky top-0 z-50 bg-gradient-to-r from-background/80 to-background/80 backdrop-blur-md border-b border-border/30 px-5 h-28 shadow-lg flex items-center gap-2">
                 <SidebarTrigger className="text-[hsl(215,10%,27%)] hover:bg-muted transition-colors duration-300" />
                 <div className="ml-auto flex items-center gap-2">
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="h-7 w-7 text-muted-foreground/30 hover:text-foreground hover:bg-transparent"
+                  >
+                    <SettingsIcon className="h-4 w-4" />
+                  </Button>
                   <NetworkSelectorButton />
                   <UnifiedWalletButton />
                 </div>
