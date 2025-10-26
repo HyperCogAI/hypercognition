@@ -50,19 +50,19 @@ export default function PredictionMarkets() {
             <div className="grid grid-cols-3 gap-6 max-w-2xl mx-auto pt-8">
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-4">
                 <div className="text-3xl font-bold text-primary">
-                  {totalStats.totalMarkets}
+                  -
                 </div>
                 <div className="text-sm text-muted-foreground">Active Markets</div>
               </div>
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-4">
                 <div className="text-3xl font-bold text-primary">
-                  {formatCurrency(totalStats.totalVolume)}
+                  -
                 </div>
                 <div className="text-sm text-muted-foreground">Total Volume</div>
               </div>
               <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-lg p-4">
                 <div className="text-3xl font-bold text-primary">
-                  {totalStats.activeTraders}
+                  -
                 </div>
                 <div className="text-sm text-muted-foreground">Active Traders</div>
               </div>
