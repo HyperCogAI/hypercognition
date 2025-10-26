@@ -4,7 +4,6 @@ import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import { ThemeProvider } from "next-themes";
 import { WagmiProvider } from 'wagmi'
 import { createWeb3Modal } from '@web3modal/wagmi/react'
 import { config, WALLETCONNECT_PROJECT_ID } from './config/wagmi'
@@ -395,20 +394,18 @@ const App = () => {
         <WalletModalProvider>
           <WagmiProvider config={config}>
             <QueryClientProvider client={queryClient}>
-              <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
-                <AuthProvider>
-                  <FavoritesProvider>
-                    <TooltipProvider>
-                    <Toaster />
-                    <Sonner />
-                    <BrowserRouter>
-                      <ScrollToTop />
-                      <AppLayout />
-                    </BrowserRouter>
-                    </TooltipProvider>
-                  </FavoritesProvider>
-                </AuthProvider>
-              </ThemeProvider>
+              <AuthProvider>
+                <FavoritesProvider>
+                  <TooltipProvider>
+                  <Toaster />
+                  <Sonner />
+                  <BrowserRouter>
+                    <ScrollToTop />
+                    <AppLayout />
+                  </BrowserRouter>
+                  </TooltipProvider>
+                </FavoritesProvider>
+              </AuthProvider>
             </QueryClientProvider>
           </WagmiProvider>
         </WalletModalProvider>

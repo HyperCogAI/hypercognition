@@ -8,8 +8,8 @@ import { setupGlobalErrorHandling, overrideConsole } from "./lib/errorSuppressio
 setupGlobalErrorHandling();
 overrideConsole();
 
-// Dynamic theme-color meta tag that updates based on theme
-(function setupThemeColor() {
+// Ensure browser UI (iOS Safari) matches app background
+(function ensureThemeColor() {
   try {
     const meta = document.querySelector('meta[name="theme-color"]') || (() => {
       const m = document.createElement('meta');
@@ -17,19 +17,9 @@ overrideConsole();
       document.head.appendChild(m);
       return m;
     })();
-    
-    const updateThemeColor = () => {
-      const isDark = document.documentElement.classList.contains('dark');
-      (meta as HTMLMetaElement).content = isDark ? '#0f0f0f' : '#f8f9fa';
-      console.info('[ThemeColor] Applied', (meta as HTMLMetaElement).content, { theme: isDark ? 'dark' : 'light' });
-    };
-    
-    // Set initial color
-    updateThemeColor();
-    
-    // Watch for theme changes
-    const observer = new MutationObserver(updateThemeColor);
-    observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+    // Force a solid dark theme color to avoid any iOS Safari tinting
+    (meta as HTMLMetaElement).content = '#0f0f0f';
+    console.info('[ThemeColor] Applied', (meta as HTMLMetaElement).content, { ua: navigator.userAgent });
   } catch (e) {
     console.warn('[ThemeColor] Failed to set', e);
   }
