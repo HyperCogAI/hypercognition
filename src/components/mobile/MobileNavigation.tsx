@@ -78,13 +78,13 @@ const navigationSections = [
       { icon: Bot, label: 'ACP', path: '/acp', id: 'acp' },
       { icon: UserCog, label: 'Admin', path: '/admin', id: 'admin' },
       { icon: Bell, label: 'Notifications', path: '/notifications', id: 'notifications' },
+      { icon: Wallet, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
     ]
   },
   {
     title: "Trading",
     items: [
       { icon: TrendingUp, label: 'Market Overview', path: '/market-overview', id: 'market-overview' },
-      { icon: Wallet, label: 'Portfolio', path: '/portfolio', id: 'portfolio' },
       { icon: Target, label: 'Trading Signals', path: '/trading-signals', id: 'trading-signals' },
       { icon: Scale, label: 'Prediction Markets', path: '/prediction-markets', id: 'prediction-markets' },
       { icon: XLogo, label: 'X Signals', path: '/alpha-signals', id: 'alpha-signals' },

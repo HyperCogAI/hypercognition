@@ -71,13 +71,14 @@ const coreItems = [
   { title: "ACP", url: "/acp", icon: Bot },
   { title: "Admin", url: "/admin", icon: UserCog },
   { title: "Notifications", url: "/notifications", icon: Bell },
+  { title: "Portfolio", url: "/portfolio", icon: Wallet },
 ]
 
 // Trading and investment items
 const tradingItems = [
   { title: "Market Overview", url: "/market-overview", icon: TrendingUp },
-  { title: "Portfolio", url: "/portfolio", icon: Wallet },
   { title: "Trading Signals", url: "/trading-signals", icon: Target },
+  { title: "Prediction Markets", url: "/prediction-markets", icon: Scale },
   { title: "X Signals", url: "/alpha-signals", icon: XLogo },
   { title: "Telegram Signals", url: "/telegram-signals", icon: TelegramIcon },
 ]
@@ -85,7 +86,6 @@ const tradingItems = [
 // DeFi and crypto features
 const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
-  { title: "Prediction Markets", url: "/prediction-markets", icon: Target },
   { title: "Solana", url: "/solana", icon: SolanaLogo },
   { title: "Solana Staking", url: "/solana-staking", icon: Lock },
   { title: "Staking", url: "/staking", icon: Layers },
