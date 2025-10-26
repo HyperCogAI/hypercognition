@@ -9,6 +9,7 @@ import { CreateMarketModal } from '@/components/prediction-markets/CreateMarketM
 import { MyPositions } from '@/components/prediction-markets/MyPositions'
 import { formatCurrency } from '@/lib/utils'
 import { MarketCategory } from '@/types/predictionMarket'
+import { AnimatedParticles } from '@/components/ui/animated-particles'
 
 export default function PredictionMarkets() {
   const [selectedCategory, setSelectedCategory] = useState<MarketCategory | 'all'>('all')
@@ -29,7 +30,14 @@ export default function PredictionMarkets() {
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
       <div className="relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/5 via-background to-secondary/5" />
+        {/* Animated Particles Background */}
+        <div className="absolute inset-0 z-0 pointer-events-none">
+          <AnimatedParticles />
+        </div>
+        
+        {/* Gradient Overlay */}
+        <div className="absolute inset-0 bg-gradient-to-br from-background/70 via-background/50 to-background/70 z-5" />
+        
         <div className="relative container mx-auto px-4 py-16">
           <div className="text-center space-y-6 max-w-4xl mx-auto">
             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20">
