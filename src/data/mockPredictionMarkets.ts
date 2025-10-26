@@ -100,8 +100,8 @@ export const mockMarkets: PredictionMarket[] = [
   },
   {
     id: '6',
-    question: 'Will Solana (SOL) surpass $200 by Q2 2026?',
-    description: 'This market resolves YES if Solana (SOL) reaches or exceeds $200 USD before June 30, 2026.',
+    question: 'Will Solana (SOL) surpass $330 by Q2 2026?',
+    description: 'This market resolves YES if Solana (SOL) reaches or exceeds $330 USD before June 30, 2026.',
     category: 'crypto',
     status: 'open',
     outcomeType: 'binary',
