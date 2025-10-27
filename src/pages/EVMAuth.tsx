@@ -1,11 +1,12 @@
+import { useState } from "react"
 import { Link, useNavigate } from "react-router-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { useWallet } from "@/hooks/useWallet"
+import { CyberButton } from "@/components/ui/cyber-button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { WalletButton } from "@/components/wallet/WalletButton"
-import { AuthMethodsPanel } from "@/components/auth/AuthMethodsPanel"
 import { SEOHead } from "@/components/seo/SEOHead"
-import { ArrowLeft, Wallet } from "lucide-react"
+import { ArrowLeft, Zap, Wallet } from "lucide-react"
 import newLogo from "@/assets/new-logo.png"
 
 export default function EVMAuth() {
@@ -113,19 +114,6 @@ export default function EVMAuth() {
                 Connect Solana Wallet
               </Link>
             </div>
-          </CardContent>
-        </Card>
-
-        {/* Alternative login methods */}
-        <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
-          <CardHeader className="text-center">
-            <CardTitle>Or continue with</CardTitle>
-            <CardDescription>
-              Sign in with email, Google, Twitter, or any wallet
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <AuthMethodsPanel showWalletOption={true} />
           </CardContent>
         </Card>
 
