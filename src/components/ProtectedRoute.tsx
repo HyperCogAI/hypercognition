@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react"
 import { useAuth } from "@/contexts/AuthContext"
-import { UnifiedAuthModal } from "@/components/auth/UnifiedAuthModal"
+import { Navigate, useLocation } from "react-router-dom"
 
 interface ProtectedRouteProps {
   children: React.ReactNode
@@ -8,18 +7,7 @@ interface ProtectedRouteProps {
 
 export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   const { isLoading, session } = useAuth()
-  const hasAccess = !!session
-  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false)
-
-  useEffect(() => {
-    if (!isLoading && !hasAccess) {
-      console.log('[ProtectedRoute] Opening auth modal - user not authenticated')
-      setIsAuthModalOpen(true)
-    } else if (hasAccess) {
-      console.log('[ProtectedRoute] User authenticated, closing modal')
-      setIsAuthModalOpen(false)
-    }
-  }, [isLoading, hasAccess])
+  const location = useLocation()
 
   if (isLoading) {
     return (
@@ -29,17 +17,9 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     )
   }
 
-  return (
-    <>
-      <UnifiedAuthModal 
-        key={`auth-modal-${isAuthModalOpen}`}
-        isOpen={isAuthModalOpen} 
-        onClose={() => {
-          console.log('[ProtectedRoute] Modal close requested')
-          setIsAuthModalOpen(false)
-        }} 
-      />
-      {hasAccess && children}
-    </>
-  )
+  if (!session) {
+    return <Navigate to="/evm-auth" replace state={{ from: location }} />
+  }
+
+  return <>{children}</>
 }
