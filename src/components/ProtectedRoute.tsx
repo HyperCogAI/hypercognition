@@ -13,7 +13,11 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   useEffect(() => {
     if (!isLoading && !hasAccess) {
+      console.log('[ProtectedRoute] Opening auth modal - user not authenticated')
       setIsAuthModalOpen(true)
+    } else if (hasAccess) {
+      console.log('[ProtectedRoute] User authenticated, closing modal')
+      setIsAuthModalOpen(false)
     }
   }, [isLoading, hasAccess])
 
@@ -25,9 +29,17 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     )
   }
 
-  if (!hasAccess) {
-    return <UnifiedAuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
-  }
-
-  return <>{children}</>
+  return (
+    <>
+      <UnifiedAuthModal 
+        key={`auth-modal-${isAuthModalOpen}`}
+        isOpen={isAuthModalOpen} 
+        onClose={() => {
+          console.log('[ProtectedRoute] Modal close requested')
+          setIsAuthModalOpen(false)
+        }} 
+      />
+      {hasAccess && children}
+    </>
+  )
 }
