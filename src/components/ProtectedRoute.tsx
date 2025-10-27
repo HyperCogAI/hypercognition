@@ -29,17 +29,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
     )
   }
 
-  return (
-    <>
+  if (!hasAccess) {
+    return (
       <UnifiedAuthModal 
-        key={`auth-modal-${isAuthModalOpen}`}
-        isOpen={isAuthModalOpen} 
-        onClose={() => {
-          console.log('[ProtectedRoute] Modal close requested')
-          setIsAuthModalOpen(false)
-        }} 
+        isOpen={true} 
+        onClose={() => {}} 
       />
-      {hasAccess && children}
-    </>
-  )
+    )
+  }
+
+  return <>{children}</>
 }
