@@ -51,7 +51,7 @@ export default function EVMAuth() {
           </div>
         </div>
 
-        <Card className="border-primary/20 bg-card/50 backdrop-blur-sm">
+        <Card className="border-primary/20 bg-card">
           <CardHeader className="text-center">
             <CardTitle className="flex items-center justify-center gap-2">
               <Wallet className="h-5 w-5 text-primary" />

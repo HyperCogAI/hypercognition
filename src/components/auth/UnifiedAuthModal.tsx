@@ -113,7 +113,7 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md bg-gradient-to-b from-[#0f1419] to-[#0a0c0f] border border-border rounded-2xl">
+      <DialogContent className="sm:max-w-md bg-background border border-border rounded-2xl">
         <DialogHeader className="space-y-4">
           {/* HyperCognition Logo */}
           <div className="flex justify-center mb-2">
