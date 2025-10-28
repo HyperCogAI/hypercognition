@@ -31,10 +31,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 
   if (!hasAccess) {
     return (
-      <UnifiedAuthModal 
-        isOpen={true} 
-        onClose={() => {}} 
-      />
+      <div className="relative min-h-[100vh] w-full">
+        <div className="absolute inset-0 z-[60] flex items-center justify-center">
+          <UnifiedAuthModal 
+            isOpen={true} 
+            onClose={() => {}} 
+          />
+        </div>
+      </div>
     )
   }
 
