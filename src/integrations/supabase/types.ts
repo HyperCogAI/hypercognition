@@ -4638,6 +4638,36 @@ export type Database = {
         }
         Relationships: []
       }
+      portfolio_optimizations: {
+        Row: {
+          applied: boolean
+          applied_at: string | null
+          created_at: string
+          id: string
+          optimization_score: number
+          suggestions: Json
+          user_id: string
+        }
+        Insert: {
+          applied?: boolean
+          applied_at?: string | null
+          created_at?: string
+          id?: string
+          optimization_score?: number
+          suggestions?: Json
+          user_id: string
+        }
+        Update: {
+          applied?: boolean
+          applied_at?: string | null
+          created_at?: string
+          id?: string
+          optimization_score?: number
+          suggestions?: Json
+          user_id?: string
+        }
+        Relationships: []
+      }
       portfolio_transactions: {
         Row: {
           asset_id: string
@@ -5216,6 +5246,140 @@ export type Database = {
           referrer_id?: string
           reward_amount?: number
           reward_claimed?: boolean
+        }
+        Relationships: []
+      }
+      risk_alerts: {
+        Row: {
+          acknowledged: boolean
+          acknowledged_at: string | null
+          alert_type: string
+          created_at: string
+          current_value: number
+          id: string
+          limit_type: string
+          limit_value: number
+          message: string
+          risk_limit_id: string | null
+          user_id: string
+        }
+        Insert: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          alert_type: string
+          created_at?: string
+          current_value: number
+          id?: string
+          limit_type: string
+          limit_value: number
+          message: string
+          risk_limit_id?: string | null
+          user_id: string
+        }
+        Update: {
+          acknowledged?: boolean
+          acknowledged_at?: string | null
+          alert_type?: string
+          created_at?: string
+          current_value?: number
+          id?: string
+          limit_type?: string
+          limit_value?: number
+          message?: string
+          risk_limit_id?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "risk_alerts_risk_limit_id_fkey"
+            columns: ["risk_limit_id"]
+            isOneToOne: false
+            referencedRelation: "risk_limits"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      risk_limits: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          limit_type: string
+          limit_value: number
+          updated_at: string
+          user_id: string
+          warning_threshold: number
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          limit_type: string
+          limit_value: number
+          updated_at?: string
+          user_id: string
+          warning_threshold?: number
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          limit_type?: string
+          limit_value?: number
+          updated_at?: string
+          user_id?: string
+          warning_threshold?: number
+        }
+        Relationships: []
+      }
+      risk_metrics: {
+        Row: {
+          beta: number
+          calculated_at: string
+          concentration_risk: number
+          diversification_ratio: number
+          id: string
+          max_drawdown: number
+          metadata: Json | null
+          portfolio_value: number
+          risk_score: number
+          sharpe_ratio: number
+          total_exposure: number
+          user_id: string
+          value_at_risk: number
+          volatility: number
+        }
+        Insert: {
+          beta?: number
+          calculated_at?: string
+          concentration_risk?: number
+          diversification_ratio?: number
+          id?: string
+          max_drawdown?: number
+          metadata?: Json | null
+          portfolio_value?: number
+          risk_score?: number
+          sharpe_ratio?: number
+          total_exposure?: number
+          user_id: string
+          value_at_risk?: number
+          volatility?: number
+        }
+        Update: {
+          beta?: number
+          calculated_at?: string
+          concentration_risk?: number
+          diversification_ratio?: number
+          id?: string
+          max_drawdown?: number
+          metadata?: Json | null
+          portfolio_value?: number
+          risk_score?: number
+          sharpe_ratio?: number
+          total_exposure?: number
+          user_id?: string
+          value_at_risk?: number
+          volatility?: number
         }
         Relationships: []
       }
