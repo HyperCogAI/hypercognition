@@ -186,7 +186,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
+                          <item.icon className={`h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
                           {!isCollapsed && <span className="font-medium">{item.title}</span>}
                         </>
                       )}
@@ -220,7 +220,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
+                          <item.icon className={`h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
                           {!isCollapsed && <span className="font-medium">{item.title}</span>}
                         </>
                       )}
@@ -254,7 +254,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
+                          <item.icon className={`h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
                           {!isCollapsed && <span className="font-medium">{item.title}</span>}
                         </>
                       )}
@@ -288,7 +288,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
+                          <item.icon className={`h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
                           {!isCollapsed && <span className="font-medium">{item.title}</span>}
                         </>
                       )}
@@ -322,7 +322,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
+                          <item.icon className={`h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
                           {!isCollapsed && (
                             <div className="flex items-center justify-between w-full">
                               <span className="font-medium">{item.title}</span>
@@ -361,7 +361,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <item.icon className={`h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
+                          <item.icon className={`h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300`} strokeWidth={2.5} />
                           {!isCollapsed && <span className="font-medium">{item.title}</span>}
                         </>
                       )}
@@ -396,7 +396,7 @@ export function AppSidebar() {
                         rel="noopener noreferrer"
                         className={`${getNavCls({ isActive: false })} visited:text-muted-foreground hover:visited:text-foreground flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent`}
                       >
-                        <item.icon className="h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300" strokeWidth={2.5} />
+                        <item.icon className="h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300" strokeWidth={2.5} />
                         {!isCollapsed && (
                           <div className="flex items-center justify-between w-full">
                             <span className="font-medium">{item.title}</span>
@@ -411,7 +411,7 @@ export function AppSidebar() {
                       >
                         {({ isActive }) => (
                           <>
-                            <item.icon className="h-7 w-7 opacity-100 group-hover/menu:scale-110 transition-all duration-300" strokeWidth={2.5} />
+                            <item.icon className="h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300" strokeWidth={2.5} />
                             {!isCollapsed && <span className="font-medium">{item.title}</span>}
                           </>
                         )}
@@ -438,7 +438,7 @@ export function AppSidebar() {
                     >
                       {({ isActive }) => (
                         <>
-                          <Settings className="h-7 w-7 opacity-100 group-hover/menu:rotate-90 transition-all duration-300" strokeWidth={2.5} />
+                          <Settings className="h-8 w-8 opacity-100 group-hover/menu:rotate-90 transition-all duration-300" strokeWidth={2.5} />
                           {!isCollapsed && <span className="font-medium">Settings</span>}
                         </>
                       )}
