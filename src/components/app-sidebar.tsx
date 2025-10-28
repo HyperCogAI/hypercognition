@@ -94,7 +94,7 @@ const defiItems = [
 const analyticsItems = [
   { title: "Analytics", url: "/analytics", icon: BarChart3 },
   { title: "KOL Analytics", url: "/kol-analytics", icon: TrendingDown },
-  { title: "Compare", url: "/compare", icon: BarChart3 },
+  { title: "Compare", url: "/compare", icon: ArrowLeftRight },
 ]
 
 // Community and social features  
