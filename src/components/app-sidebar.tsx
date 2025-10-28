@@ -182,7 +182,7 @@ export function AppSidebar() {
                     <NavLink 
                       to={item.url} 
                       end={item.url === "/"}
-                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
@@ -216,7 +216,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
@@ -250,7 +250,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
@@ -284,7 +284,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
@@ -318,7 +318,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
@@ -357,7 +357,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive(item.url)}>
                     <NavLink 
                       to={item.url}
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                       className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
@@ -394,7 +394,7 @@ export function AppSidebar() {
                         href={item.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className={`${getNavCls({ isActive: false })} visited:text-muted-foreground hover:visited:text-foreground flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent`}
+                        className={`${getNavCls({ isActive: false })} visited:text-muted-foreground hover:visited:text-foreground flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8`}
                       >
                         <item.icon className="h-8 w-8 opacity-100 group-hover/menu:scale-110 transition-all duration-300" strokeWidth={2.5} />
                         {!isCollapsed && (
@@ -407,7 +407,7 @@ export function AppSidebar() {
                     ) : (
                       <NavLink 
                         to={item.url}
-                        className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent` }
+                        className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu data-[active=true]:bg-transparent active:bg-transparent [&>svg]:!h-8 [&>svg]:!w-8` }
                       >
                         {({ isActive }) => (
                           <>
@@ -434,7 +434,7 @@ export function AppSidebar() {
                   <SidebarMenuButton asChild isActive={isActive('/settings')}>
                     <NavLink 
                       to="/settings"
-                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu` }
+                      className={({ isActive }) => `${getNavCls({ isActive })} flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-300 group/menu [&>svg]:!h-8 [&>svg]:!w-8` }
                     >
                       {({ isActive }) => (
                         <>
