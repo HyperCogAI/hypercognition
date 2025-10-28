@@ -36,49 +36,35 @@ export function AdvancedTradingPage() {
       
       <div className="container mx-auto px-6 py-8 space-y-8">
         {/* Header */}
-        <header className="space-y-4">
-          <div className="flex items-center gap-3">
-            <TrendingUp className="h-8 w-8 text-primary" />
-            <div>
-              <h1 className="text-3xl font-bold">
-                Advanced Trading
-              </h1>
-              <p className="text-muted-foreground">
-                Professional trading tools with advanced order types and comprehensive order management
-              </p>
-            </div>
-          </div>
-        </header>
+        <div className="mb-6">
+          <h1 className="text-3xl md:text-4xl font-bold mb-2">
+            Advanced Trading
+          </h1>
+          <p className="text-muted-foreground">
+            Professional trading tools with advanced order types and comprehensive order management
+          </p>
+        </div>
 
-        <Tabs defaultValue="trading" className="space-y-8">
-          <TabsList className="grid w-full grid-cols-3 gap-2 bg-background border border-border/50 p-1 h-auto rounded-lg">
-            <TabsTrigger 
-              value="trading" 
-              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:bg-muted/70 rounded-md font-medium"
-            >
+        <Tabs defaultValue="trading" className="space-y-6">
+          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-3 gap-1">
+            <TabsTrigger value="trading" className="flex-shrink-0 gap-2">
               <Target className="h-4 w-4" />
               <span className="hidden sm:inline">Advanced Orders</span>
-              <span className="sm:hidden">Orders</span>
+              <span className="sm:inline lg:hidden">Orders</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="management" 
-              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:bg-muted/70 rounded-md font-medium"
-            >
+            <TabsTrigger value="management" className="flex-shrink-0 gap-2">
               <ListOrdered className="h-4 w-4" />
               <span className="hidden sm:inline">Order Management</span>
-              <span className="sm:hidden">Management</span>
+              <span className="sm:inline lg:hidden">Management</span>
             </TabsTrigger>
-            <TabsTrigger 
-              value="analytics" 
-              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:bg-muted/70 rounded-md font-medium"
-            >
+            <TabsTrigger value="analytics" className="flex-shrink-0 gap-2">
               <BarChart3 className="h-4 w-4" />
               <span className="hidden sm:inline">Trading Analytics</span>
-              <span className="sm:hidden">Analytics</span>
+              <span className="sm:inline lg:hidden">Analytics</span>
             </TabsTrigger>
           </TabsList>
 
-          <TabsContent value="trading" className="space-y-6 animate-fade-in">
+          <TabsContent value="trading" className="mt-6">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
               {/* Advanced Order Form */}
               <div>
@@ -156,11 +142,11 @@ export function AdvancedTradingPage() {
             </div>
           </TabsContent>
 
-          <TabsContent value="management" className="animate-fade-in">
+          <TabsContent value="management" className="mt-6">
             <OrderManagementDashboard />
           </TabsContent>
 
-          <TabsContent value="analytics" className="animate-fade-in">
+          <TabsContent value="analytics" className="mt-6">
             <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
               <CardContent className="p-12 text-center">
                 <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 w-fit mx-auto mb-6">
