@@ -30,12 +30,12 @@ serve(async (req) => {
       );
     }
 
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL") ?? "https://xdinlkmqmjlrmunsjswf.supabase.co";
     const SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    if (!SUPABASE_URL || !SERVICE_ROLE) {
+    if (!SERVICE_ROLE) {
       return new Response(
-        JSON.stringify({ error: "Server not configured with Supabase credentials" }),
+        JSON.stringify({ error: "Server not configured with service role key" }),
         { status: 500, headers: { "Content-Type": "application/json", ...corsHeaders } }
       );
     }
