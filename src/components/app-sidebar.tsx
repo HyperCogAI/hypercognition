@@ -106,7 +106,6 @@ const communityItems = [
 
 // Professional and enterprise features
 const professionalItems = [
-  { title: "Enhanced Trading", url: "/enhanced-trading", icon: TrendingUp },
   { title: "Advanced Trading", url: "/advanced-trading", icon: Target },
   { title: "Order Management", url: "/order-management", icon: ListOrdered },
   { title: "Risk Management", url: "/risk-management", icon: Shield },

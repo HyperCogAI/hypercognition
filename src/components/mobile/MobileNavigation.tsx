@@ -120,7 +120,6 @@ const navigationSections = [
     title: "Professional",
     items: [
       { icon: ArrowLeftRight, label: 'Multi-Exchange', path: '/multi-exchange', id: 'multi-exchange' },
-      { icon: TrendingUp, label: 'Enhanced Trading', path: '/enhanced-trading', id: 'enhanced-trading' },
       { icon: Target, label: 'Advanced Trading', path: '/advanced-trading', id: 'advanced-trading' },
       { icon: ListOrdered, label: 'Order Management', path: '/order-management', id: 'order-management' },
       { icon: Shield, label: 'Risk Management', path: '/risk-management', id: 'risk-management' },

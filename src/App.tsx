@@ -55,7 +55,7 @@ const InstitutionalAPIs = lazy(() => import('./pages/InstitutionalAPIs'));
 
 // Lazy loaded components - Trading
 const AdvancedTradingPage = lazy(() => import('./pages/AdvancedTrading'));
-const EnhancedTrading = lazy(() => import('./pages/EnhancedTrading').then(m => ({ default: m.EnhancedTrading })));
+
 const OrderManagement = lazy(() => import('./pages/OrderManagement'));
 const RiskManagement = lazy(() => import('./pages/RiskManagement'));
 const TradingSignals = lazy(() => import('./pages/TradingSignals'));
@@ -189,7 +189,6 @@ const AppLayout = () => {
             <Route path="/evm-auth" element={<LazyEVMAuth />} />
             <Route path="/solana-auth" element={<LazySolanaAuth />} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                <Route path="/enhanced-trading" element={<MarketOverview />} />
                 <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
                 <Route path="/marketplace" element={<Marketplace />} />
                 <Route path="/market-overview" element={<MarketOverview />} />
@@ -302,7 +301,7 @@ const AppLayout = () => {
                   <Route path="/evm-auth" element={<LazyEVMAuth />} />
                   <Route path="/solana-auth" element={<LazySolanaAuth />} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
-                  <Route path="/enhanced-trading" element={<MarketOverview />} />
+                  
                   <Route path="/advanced-trading" element={<AdvancedTradingPage />} />
             <Route path="/real-time-market" element={<RealTimeMarketPage />} />
             <Route path="/ai-assistant" element={<AIAssistant />} />
