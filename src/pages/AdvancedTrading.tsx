@@ -75,7 +75,7 @@ export function AdvancedTradingPage() {
                     currentPrice={selectedAgent.price}
                   />
                 ) : (
-                  <Card className="h-full border border-border/50 bg-gradient-to-br from-background to-muted/20">
+                  <Card className="h-full border border-border/50 bg-card">
                     <CardContent className="p-8 text-center flex flex-col justify-center h-full">
                       <div className="p-3 rounded-lg bg-primary/10 border border-primary/20 w-fit mx-auto mb-4">
                         <TrendingUp className="h-8 w-8 text-primary" />
@@ -92,7 +92,7 @@ export function AdvancedTradingPage() {
               {/* Agent Selection and Market Data */}
               <div className="space-y-6">
                 {/* Top Trading Agents */}
-                <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+                <Card className="border border-border/50 bg-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Top Trading Agents</CardTitle>
                   </CardHeader>
@@ -117,7 +117,7 @@ export function AdvancedTradingPage() {
                 </Card>
 
                 {/* Order Types Guide */}
-                <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+                <Card className="border border-border/50 bg-card">
                   <CardHeader className="pb-3">
                     <CardTitle className="text-lg font-semibold">Order Types Guide</CardTitle>
                   </CardHeader>
@@ -147,7 +147,7 @@ export function AdvancedTradingPage() {
           </TabsContent>
 
           <TabsContent value="analytics" className="mt-6">
-            <Card className="border border-border/50 bg-gradient-to-br from-background to-muted/20">
+            <Card className="border border-border/50 bg-card">
               <CardContent className="p-12 text-center">
                 <div className="p-4 rounded-lg bg-primary/10 border border-primary/20 w-fit mx-auto mb-6">
                   <BarChart3 className="h-12 w-12 text-primary" />
