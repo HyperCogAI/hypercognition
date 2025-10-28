@@ -34,52 +34,49 @@ export function AdvancedTradingPage() {
         keywords="advanced trading, order management, stop loss, take profit, trading dashboard, AI agents"
       />
       
-      <div className="container mx-auto px-4 py-8 space-y-8">
+      <div className="container mx-auto px-6 py-8 space-y-8">
         {/* Header */}
-        <header className="text-center space-y-4">
-          <div className="inline-flex items-center justify-center gap-3 mb-4">
-            <div className="p-2 rounded-lg bg-primary/10 border border-primary/20">
-              <TrendingUp className="h-6 w-6 text-primary" />
+        <header className="space-y-4">
+          <div className="flex items-center gap-3">
+            <TrendingUp className="h-8 w-8 text-primary" />
+            <div>
+              <h1 className="text-3xl font-bold">
+                Advanced Trading
+              </h1>
+              <p className="text-muted-foreground">
+                Professional trading tools with advanced order types and comprehensive order management
+              </p>
             </div>
-            <h1 className="text-3xl font-bold text-white">
-              Advanced Trading
-            </h1>
           </div>
-          
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Professional trading tools with <span className="text-primary font-medium">advanced order types</span> and comprehensive order management
-          </p>
         </header>
 
         <Tabs defaultValue="trading" className="space-y-8">
-          <div className="relative">
-            <TabsList className="grid w-full grid-cols-3 gap-2 bg-background/90 backdrop-blur-xl border border-border/50 p-2 h-auto rounded-xl">
-              <TabsTrigger 
-                value="trading" 
-                className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
-              >
-                <Target className="h-4 w-4" />
-                <span className="hidden sm:inline">Advanced Orders</span>
-                <span className="sm:hidden">Orders</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="management" 
-                className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
-              >
-                <ListOrdered className="h-4 w-4" />
-                <span className="hidden sm:inline">Order Management</span>
-                <span className="sm:hidden">Management</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="analytics" 
-                className="flex items-center gap-2 px-4 py-3 data-[state=active]:bg-gradient-to-r data-[state=active]:from-primary data-[state=active]:to-primary-glow data-[state=active]:text-primary-foreground transition-all duration-300 hover:bg-muted/70 rounded-lg font-medium"
-              >
-                <BarChart3 className="h-4 w-4" />
-                <span className="hidden sm:inline">Trading Analytics</span>
-                <span className="sm:hidden">Analytics</span>
-              </TabsTrigger>
-            </TabsList>
-          </div>
+          <TabsList className="grid w-full grid-cols-3 gap-2 bg-background border border-border/50 p-1 h-auto rounded-lg">
+            <TabsTrigger 
+              value="trading" 
+              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:bg-muted/70 rounded-md font-medium"
+            >
+              <Target className="h-4 w-4" />
+              <span className="hidden sm:inline">Advanced Orders</span>
+              <span className="sm:hidden">Orders</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="management" 
+              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:bg-muted/70 rounded-md font-medium"
+            >
+              <ListOrdered className="h-4 w-4" />
+              <span className="hidden sm:inline">Order Management</span>
+              <span className="sm:hidden">Management</span>
+            </TabsTrigger>
+            <TabsTrigger 
+              value="analytics" 
+              className="flex items-center gap-2 px-4 py-2 data-[state=active]:bg-primary data-[state=active]:text-primary-foreground transition-all hover:bg-muted/70 rounded-md font-medium"
+            >
+              <BarChart3 className="h-4 w-4" />
+              <span className="hidden sm:inline">Trading Analytics</span>
+              <span className="sm:hidden">Analytics</span>
+            </TabsTrigger>
+          </TabsList>
 
           <TabsContent value="trading" className="space-y-6 animate-fade-in">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
