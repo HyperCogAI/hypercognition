@@ -74,7 +74,6 @@ const MarketDetails = lazy(() => import('./pages/MarketDetails'));
 
 const Staking = lazy(() => import('./pages/Staking'));
 const SolanaDashboard = lazy(() => import('./pages/SolanaDashboard'));
-const SolanaStaking = lazy(() => import('./pages/SolanaStaking'));
 const SolanaTradingSignalsPage = lazy(() => import('./pages/SolanaTradingSignals'));
 const TutorialsHub = lazy(() => import('./pages/TutorialsHub'));
 
@@ -200,7 +199,7 @@ const AppLayout = () => {
                 <Route path="/prediction-markets/:id" element={<MarketDetails />} />
                 <Route path="/solana" element={<SolanaDashboard />} />
                 <Route path="/staking" element={<Staking />} />
-                <Route path="/solana-staking" element={<SolanaStaking />} />
+                <Route path="/solana-staking" element={<Staking />} />
                 <Route path="/solana-signals" element={<SolanaTradingSignalsPage />} />
                 <Route path="/referrals" element={<Referrals />} />
                 <Route path="/ai-assistant" element={<AIAssistant />} />
@@ -316,7 +315,7 @@ const AppLayout = () => {
             <Route path="/solana" element={<SolanaDashboard />} />
             
             <Route path="/staking" element={<Staking />} />
-            <Route path="/solana-staking" element={<SolanaStaking />} />
+            <Route path="/solana-staking" element={<Staking />} />
             <Route path="/referrals" element={<Referrals />} />
                   <Route path="/agent/:id" element={<AgentDetail />} />
                   <Route path="/create-agent" element={<ProtectedRoute><CreateAgent /></ProtectedRoute>} />

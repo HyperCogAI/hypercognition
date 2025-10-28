@@ -87,7 +87,6 @@ const tradingItems = [
 const defiItems = [
   { title: "DeFi", url: "/defi", icon: Coins },
   { title: "Solana", url: "/solana", icon: SolanaLogo },
-  { title: "Solana Staking", url: "/solana-staking", icon: Lock },
   { title: "Staking", url: "/staking", icon: Layers },
 ]
 
