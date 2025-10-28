@@ -112,7 +112,7 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen p-4">
+    <div className="flex items-center justify-center min-h-[100vh] p-4">
       <Card className="w-full max-w-md bg-background border border-border rounded-2xl">
         <CardHeader className="space-y-4">
           {/* HyperCognition Logo */}
