@@ -2,7 +2,7 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent, DialogOverlay } from "@/components/ui/dialog"
+import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useAuth } from "@/contexts/AuthContext"
 import { useWallet } from "@/hooks/useWallet"
 import { useSolanaWallet } from "@/hooks/useSolanaWallet"
@@ -116,7 +116,6 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogOverlay className="bg-black/80" />
       <DialogContent className="sm:max-w-md border-border bg-background p-0 gap-0">
         <Card className="border-0 shadow-none bg-transparent">
           <CardHeader className="space-y-4">
