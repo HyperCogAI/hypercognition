@@ -2,7 +2,6 @@ import { useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { useAuth } from "@/contexts/AuthContext"
 import { useWallet } from "@/hooks/useWallet"
 import { useSolanaWallet } from "@/hooks/useSolanaWallet"
@@ -112,143 +111,138 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
     }
   }
 
-  if (!isOpen) return null
-
   return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-md border-border bg-background p-0 gap-0">
-        <Card className="border-0 shadow-none bg-transparent">
-          <CardHeader className="space-y-4">
-            {/* HyperCognition Logo */}
-            <div className="flex justify-center mb-2">
-              <img 
-                src={hypercognitionLogo} 
-                alt="HyperCognition" 
-                className="h-10 w-auto"
-              />
-            </div>
-            
-            <CardTitle className="text-2xl font-bold text-center text-foreground">
-              {emailSent ? "Check your email" : "Log in or sign up"}
-            </CardTitle>
-            <CardDescription className="text-center text-muted-foreground">
-              {emailSent 
-                ? "We sent you a magic link. Click it to sign in. Check your spam folder if you don't see it."
-                : "Choose your preferred sign-in method"
-              }
-            </CardDescription>
-          </CardHeader>
+    <div className="flex items-center justify-center min-h-screen p-4">
+      <Card className="w-full max-w-md bg-background border border-border rounded-2xl">
+        <CardHeader className="space-y-4">
+          {/* HyperCognition Logo */}
+          <div className="flex justify-center mb-2">
+            <img 
+              src={hypercognitionLogo} 
+              alt="HyperCognition" 
+              className="h-10 w-auto"
+            />
+          </div>
+          
+          <CardTitle className="text-2xl font-bold text-center text-white">
+            {emailSent ? "Check your email" : "Log in or sign up"}
+          </CardTitle>
+          <CardDescription className="text-center text-gray-400">
+            {emailSent 
+              ? "We sent you a magic link. Click it to sign in."
+              : "Choose your preferred sign-in method"
+            }
+          </CardDescription>
+        </CardHeader>
 
-          <CardContent>
-            {!emailSent ? (
-              <div className="space-y-4">
-                {/* Email Magic Link */}
-                <form onSubmit={handleMagicLinkSubmit} className="space-y-3">
-                  <div className="relative">
-                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      type="email"
-                      placeholder="your@email.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      className="pl-10 bg-secondary/50 border-border text-foreground placeholder:text-muted-foreground"
-                      disabled={isLoading}
-                    />
-                  </div>
-                  <Button
-                    type="submit"
-                    className="w-full bg-primary text-primary-foreground hover:bg-primary/90"
-                    disabled={isLoading}
-                  >
-                    {isLoading ? "Sending..." : "Continue with Email"}
-                  </Button>
-                </form>
-
+        <CardContent>
+          {!emailSent ? (
+            <div className="space-y-4">
+              {/* Email Magic Link */}
+              <form onSubmit={handleMagicLinkSubmit} className="space-y-3">
                 <div className="relative">
-                  <div className="absolute inset-0 flex items-center">
-                    <span className="w-full border-t border-border" />
-                  </div>
-                  <div className="relative flex justify-center text-xs uppercase">
-                    <span className="bg-background px-2 text-muted-foreground">Or continue with</span>
-                  </div>
+                  <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                  <Input
+                    type="email"
+                    placeholder="your@email.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="pl-10 bg-[#16181f] border-gray-700 text-white placeholder:text-gray-500"
+                    disabled={isLoading}
+                  />
                 </div>
-
-                {/* Google OAuth */}
                 <Button
-                  onClick={handleGoogleSignIn}
-                  variant="outline"
-                  className="w-full border-border bg-secondary/50 hover:bg-secondary text-foreground"
+                  type="submit"
+                  className="w-full bg-primary/60 text-white outline outline-[1px] outline-white hover:bg-primary/70"
                   disabled={isLoading}
                 >
-                  <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
-                    <path
-                      d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-                      fill="#4285F4"
-                    />
-                    <path
-                      d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-                      fill="#34A853"
-                    />
-                    <path
-                      d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-                      fill="#FBBC05"
-                    />
-                    <path
-                      d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-                      fill="#EA4335"
-                    />
-                  </svg>
-                  Google
+                  {isLoading ? "Sending..." : "Continue with Email"}
                 </Button>
+              </form>
 
-                {/* Twitter OAuth */}
-                <Button
-                  onClick={handleTwitterSignIn}
-                  variant="outline"
-                  className="w-full border-border bg-secondary/50 hover:bg-secondary text-foreground"
-                  disabled={isLoading}
-                >
-                  <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
-                  </svg>
-                  Twitter
-                </Button>
-
-                {/* Wallet Connection */}
-                <Button
-                  onClick={handleWalletConnect}
-                  variant="outline"
-                  className="w-full border-border bg-secondary/50 hover:bg-secondary text-foreground"
-                  disabled={isLoading}
-                >
-                  <Wallet className="h-5 w-5 mr-2" />
-                  Continue with a wallet
-                </Button>
-
-                <p className="text-xs text-center text-muted-foreground mt-4">
-                  Secured Authentication
-                </p>
-              </div>
-            ) : (
-              <div className="flex flex-col items-center gap-4 py-8">
-                <div className="h-16 w-16 rounded-full bg-primary/20 border-2 border-primary flex items-center justify-center">
-                  <Check className="h-8 w-8 text-primary" />
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <span className="w-full border-t border-gray-700" />
                 </div>
-                <p className="text-sm text-muted-foreground text-center">
-                  Click the link in your email to complete sign in. Check your spam folder if you don't see it.
-                </p>
-                <Button
-                  variant="ghost"
-                  onClick={() => setEmailSent(false)}
-                  className="text-sm text-primary hover:text-primary/80"
-                >
-                  Try a different email
-                </Button>
+                <div className="relative flex justify-center text-xs uppercase">
+                  <span className="bg-background px-2 text-gray-500">Or continue with</span>
+                </div>
               </div>
-            )}
-          </CardContent>
-        </Card>
-      </DialogContent>
-    </Dialog>
+
+              {/* Google OAuth */}
+              <Button
+                onClick={handleGoogleSignIn}
+                variant="outline"
+                className="w-full border-gray-700 bg-[#16181f] hover:bg-[#1d2029] text-white"
+                disabled={isLoading}
+              >
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24">
+                  <path
+                    d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
+                    fill="#4285F4"
+                  />
+                  <path
+                    d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
+                    fill="#34A853"
+                  />
+                  <path
+                    d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
+                    fill="#FBBC05"
+                  />
+                  <path
+                    d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
+                    fill="#EA4335"
+                  />
+                </svg>
+                Google
+              </Button>
+
+              {/* Twitter OAuth */}
+              <Button
+                onClick={handleTwitterSignIn}
+                variant="outline"
+                className="w-full border-gray-700 bg-[#16181f] hover:bg-[#1d2029] text-white"
+                disabled={isLoading}
+              >
+                <svg className="h-5 w-5 mr-2" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+                </svg>
+                Twitter
+              </Button>
+
+              {/* Wallet Connection */}
+              <Button
+                onClick={handleWalletConnect}
+                variant="outline"
+                className="w-full border-gray-700 bg-[#16181f] hover:bg-[#1d2029] text-white"
+              >
+                <Wallet className="h-5 w-5 mr-2" />
+                Continue with a wallet
+              </Button>
+
+              <p className="text-xs text-center text-muted-foreground mt-4">
+                Secured Authentication
+              </p>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center gap-4 py-8">
+              <div className="h-16 w-16 rounded-full bg-[hsl(var(--primary))/0.2] border-2 border-[hsl(var(--primary))] flex items-center justify-center">
+                <Check className="h-8 w-8 text-[hsl(var(--primary))]" />
+              </div>
+              <p className="text-sm text-gray-400">
+                Click the link in your email to complete sign in
+              </p>
+              <Button
+                variant="ghost"
+                onClick={() => setEmailSent(false)}
+                className="text-sm text-[hsl(var(--primary))] hover:text-[hsl(var(--primary))/0.8]"
+              >
+                Try a different email
+              </Button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
+    </div>
   )
 }
