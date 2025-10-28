@@ -27,8 +27,9 @@ const TelegramIcon = ({ className }: { className?: string }) => (
     fill="currentColor"
     className={className}
     xmlns="http://www.w3.org/2000/svg"
+    strokeWidth="2.5"
   >
-    <g transform="scale(1.1)">
+    <g transform="scale(1.2)">
       <path d="M20.665 3.717l-17.73 6.837c-1.21.486-1.203 1.161-.222 1.462l4.552 1.42 10.532-6.645c.498-.303.953-.14.579.192l-8.533 7.701h-.002l.002.001-.314 4.692c.46 0 .663-.211.921-.46l2.211-2.15 4.599 3.397c.848.467 1.457.227 1.668-.785l3.019-14.228c.309-1.239-.473-1.8-1.282-1.434z"/>
     </g>
   </svg>
@@ -41,8 +42,11 @@ const XLogo = ({ className }: { className?: string }) => (
     fill="currentColor"
     className={className}
     xmlns="http://www.w3.org/2000/svg"
+    strokeWidth="2.5"
   >
-    <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    <g transform="scale(1.1)">
+      <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
+    </g>
   </svg>
 )
 
@@ -53,8 +57,9 @@ const SolanaLogo = ({ className }: { className?: string }) => (
     fill="currentColor"
     className={className}
     xmlns="http://www.w3.org/2000/svg"
+    strokeWidth="2.5"
   >
-    <g transform="scale(0.9)">
+    <g transform="scale(1.0)">
       <path d="M64.6 237.9c2.4-2.4 5.7-3.8 9.2-3.8h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1l62.7-62.7z"/>
       <path d="M64.6 3.8C67.1 1.4 70.4 0 73.8 0h317.4c5.8 0 8.7 7 4.6 11.1l-62.7 62.7c-2.4 2.4-5.7 3.8-9.2 3.8H6.5c-5.8 0-8.7-7-4.6-11.1L64.6 3.8z"/>
       <path d="M333.1 120.1c-2.4-2.4-5.7-3.8-9.2-3.8H6.5c-5.8 0-8.7 7-4.6 11.1l62.7 62.7c2.4 2.4 5.7 3.8 9.2 3.8h317.4c5.8 0 8.7-7 4.6-11.1l-62.7-62.7z"/>
