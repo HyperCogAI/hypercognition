@@ -196,16 +196,22 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
 
         <CardContent>
           {!emailSent ? (
-            <Tabs defaultValue="email-password" className="w-full">
-              <TabsList className="grid w-full grid-cols-3 bg-[#16181f]">
-                <TabsTrigger value="email-password">Email</TabsTrigger>
+            <Tabs defaultValue="login" className="w-full">
+              <TabsList className="grid w-full grid-cols-4 bg-[#16181f]">
+                <TabsTrigger value="login">Login</TabsTrigger>
+                <TabsTrigger value="signup">Sign Up</TabsTrigger>
                 <TabsTrigger value="magic-link">Magic Link</TabsTrigger>
                 <TabsTrigger value="social">Social</TabsTrigger>
               </TabsList>
 
-              {/* Email & Password Tab */}
-              <TabsContent value="email-password" className="space-y-4 mt-4">
-                <EmailPasswordAuth />
+              {/* Login Tab */}
+              <TabsContent value="login" className="space-y-4 mt-4">
+                <EmailPasswordAuth mode="login" />
+              </TabsContent>
+
+              {/* Sign Up Tab */}
+              <TabsContent value="signup" className="space-y-4 mt-4">
+                <EmailPasswordAuth mode="signup" />
               </TabsContent>
 
               {/* Magic Link Tab */}
