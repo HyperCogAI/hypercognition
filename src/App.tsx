@@ -23,6 +23,7 @@ import { NetworkSelectorButton } from "@/components/wallet/NetworkSelectorButton
 import { UnifiedWalletButton } from "@/components/wallet/UnifiedWalletButton"
 import Home from "./pages/Home";
 import NotFound from "./pages/NotFound";
+const LazyAuthPage = lazy(() => import('./pages/Auth'));
 const LazyEVMAuth = lazy(() => import('./pages/EVMAuth'));
 const LazySolanaAuth = lazy(() => import('./pages/SolanaAuth'));
 import Settings from "./pages/Settings";
@@ -186,7 +187,8 @@ const AppLayout = () => {
               <Routes>
                 <Route path="/" element={<Home />} />
                 <Route path="/home" element={<Home />} />
-            <Route path="/auth" element={<LazyEVMAuth />} />
+            <Route path="/auth" element={<LazyAuthPage />} />
+            <Route path="/login" element={<LazyAuthPage />} />
             <Route path="/evm-auth" element={<LazyEVMAuth />} />
             <Route path="/solana-auth" element={<LazySolanaAuth />} />
                 <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
@@ -294,12 +296,12 @@ const AppLayout = () => {
                   </div>
                 </div>
               }>
-                <GlobalAuthTrigger />
                 <ScrollToTop />
                 <Routes>
-                  <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                  <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-                  <Route path="/auth" element={<LazyEVMAuth />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/home" element={<Home />} />
+                  <Route path="/auth" element={<LazyAuthPage />} />
+                  <Route path="/login" element={<LazyAuthPage />} />
                   <Route path="/evm-auth" element={<LazyEVMAuth />} />
                   <Route path="/solana-auth" element={<LazySolanaAuth />} />
                   <Route path="/settings" element={<ProtectedRoute><Settings /></ProtectedRoute>} />
@@ -400,6 +402,7 @@ const App = () => {
                   <Toaster />
                   <Sonner />
                   <BrowserRouter>
+                    <GlobalAuthTrigger />
                     <ScrollToTop />
                     <AppLayout />
                   </BrowserRouter>
