@@ -35,19 +35,24 @@ Deno.serve(async (req) => {
       throw new Error('Missing endpoint parameter');
     }
 
+    // Strip /api/v3 prefix if it exists (since we add it below)
+    const cleanEndpoint = endpoint.startsWith('/api/v3') 
+      ? endpoint.substring(7) // Remove '/api/v3'
+      : endpoint;
+
     // Build the CoinGecko API URL
-    const coinGeckoUrl = `https://api.coingecko.com/api/v3${endpoint}`;
+    const coinGeckoUrl = `https://api.coingecko.com/api/v3${cleanEndpoint}`;
     
-    console.log(`[CoinGecko Proxy] Request: ${endpoint}`);
+    console.log(`[CoinGecko Proxy] Request: ${cleanEndpoint} -> ${coinGeckoUrl}`);
 
     // Check cache first
-    const cacheKey = endpoint;
-    const cacheTTL = getCacheTTL(endpoint);
+    const cacheKey = cleanEndpoint;
+    const cacheTTL = getCacheTTL(cleanEndpoint);
     const now = Date.now();
     const cached = cache.get(cacheKey);
     
     if (cached && (now - cached.timestamp) < cacheTTL) {
-      console.log(`[CoinGecko Proxy] Cache HIT: ${endpoint}`);
+      console.log(`[CoinGecko Proxy] Cache HIT: ${cleanEndpoint}`);
       return new Response(JSON.stringify(cached.data), {
         headers: {
           ...corsHeaders,
@@ -58,7 +63,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    console.log(`[CoinGecko Proxy] Cache MISS: ${endpoint}`);
+    console.log(`[CoinGecko Proxy] Cache MISS: ${cleanEndpoint}`);
 
     // Make request to CoinGecko API with retry on 429
     const doFetch = () => fetch(coinGeckoUrl, {
@@ -111,7 +116,7 @@ Deno.serve(async (req) => {
     // Cache the successful response
     cache.set(cacheKey, { timestamp: now, data });
     
-    console.log(`[CoinGecko Proxy] Success: ${endpoint} (cached for ${cacheTTL}ms)`);
+    console.log(`[CoinGecko Proxy] Success: ${cleanEndpoint} (cached for ${cacheTTL}ms)`);
 
     return new Response(JSON.stringify(data), {
       headers: {
