@@ -243,7 +243,7 @@ export function ComprehensiveTradingDashboard({ limit = 10, searchQuery = "" }: 
         </CardHeader>
         <CardContent>
           <Tabs defaultValue="top" className="w-full">
-            <TabsList className="grid w-full grid-cols-4 mb-6">
+            <TabsList className="grid w-full grid-cols-4 mb-6 bg-[#16181f]">
               <TabsTrigger value="top">Top {limit}</TabsTrigger>
               <TabsTrigger value="gainers">Top Gainers</TabsTrigger>
               <TabsTrigger value="losers">Top Losers</TabsTrigger>
