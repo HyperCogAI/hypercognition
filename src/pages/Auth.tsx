@@ -4,6 +4,7 @@ import { UnifiedAuthModal } from "@/components/auth/UnifiedAuthModal"
 import { PasswordResetForm } from "@/components/auth/PasswordResetForm"
 import { SEOHead } from "@/components/seo/SEOHead"
 import { useAuth } from "@/contexts/AuthContext"
+import { useToast } from "@/hooks/use-toast"
 
 const Auth = () => {
   const navigate = useNavigate()
@@ -11,7 +12,8 @@ const Auth = () => {
   const redirectTo = searchParams.get('redirect') || '/'
   const mode = searchParams.get('mode')
   const [isResetMode, setIsResetMode] = useState(false)
-  const { user, signInWithGoogle, signInWithTwitter, signInWithMagicLink } = useAuth()
+  const { user } = useAuth()
+  const { toast } = useToast()
 
   useEffect(() => {
     // Check for password reset mode from query param or URL hash
@@ -22,37 +24,43 @@ const Auth = () => {
     }
   }, [mode])
 
+  // Handle email confirmation, magic link completion, and password recovery
+  useEffect(() => {
+    const hashParams = new URLSearchParams(window.location.hash.substring(1))
+    const type = hashParams.get('type')
+    const accessToken = hashParams.get('access_token')
+    
+    if ((type === 'signup' || type === 'magiclink' || type === 'recovery') && accessToken) {
+      // Session is already established by Supabase
+      toast({
+        title: type === 'recovery' ? "Password reset ready" : "Authenticated!",
+        description: type === 'recovery' 
+          ? "You can now set a new password" 
+          : "Welcome to HyperCognition"
+      })
+      
+      // Clean hash from URL
+      window.history.replaceState({}, '', window.location.pathname + window.location.search)
+      
+      // For recovery mode, stay on auth page to show password reset form
+      if (type === 'recovery') {
+        setIsResetMode(true)
+        return
+      }
+      
+      // For signup/magiclink, redirect after a brief moment
+      setTimeout(() => {
+        navigate(redirectTo, { replace: true })
+      }, 1000)
+    }
+  }, [navigate, redirectTo, toast])
+
   // Auto-redirect if already authenticated
   useEffect(() => {
     if (user && !isResetMode) {
       navigate(redirectTo, { replace: true })
     }
   }, [user, isResetMode, redirectTo, navigate])
-
-  // Handle OAuth/Magic Link bridging from iframe
-  useEffect(() => {
-    const oauth = searchParams.get('oauth')
-    const magicEmail = searchParams.get('magicEmail')
-    
-    if (oauth === 'google') {
-      signInWithGoogle()
-      const newUrl = new URL(window.location.href)
-      newUrl.searchParams.delete('oauth')
-      window.history.replaceState({}, '', newUrl.toString())
-    } else if (oauth === 'twitter') {
-      signInWithTwitter()
-      const newUrl = new URL(window.location.href)
-      newUrl.searchParams.delete('oauth')
-      window.history.replaceState({}, '', newUrl.toString())
-    }
-    
-    if (magicEmail) {
-      signInWithMagicLink(magicEmail)
-      const newUrl = new URL(window.location.href)
-      newUrl.searchParams.delete('magicEmail')
-      window.history.replaceState({}, '', newUrl.toString())
-    }
-  }, [searchParams, signInWithGoogle, signInWithTwitter, signInWithMagicLink])
 
   return (
     <>

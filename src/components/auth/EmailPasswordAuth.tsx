@@ -88,9 +88,20 @@ export const EmailPasswordAuth = ({ mode }: EmailPasswordAuthProps) => {
     } catch (error: any) {
       let errorMessage = "Failed to create account. Please try again."
       
-      if (error.message?.includes("already registered")) {
+      if (error.message?.includes("already registered") || 
+          error.message?.includes("User already registered")) {
         errorMessage = "This email is already registered. Please sign in instead."
+      } else if (error.message?.includes("Password")) {
+        errorMessage = error.message
+      } else if (error.status === 429) {
+        errorMessage = "Too many requests. Please try again in a few minutes."
+      } else if (error.message?.includes("email")) {
+        errorMessage = "Failed to send confirmation email. Please check your email address."
+      } else if (error.message) {
+        errorMessage = error.message
       }
+      
+      console.error('Signup error:', error)
       
       toast({
         title: "Signup failed",
@@ -114,7 +125,7 @@ export const EmailPasswordAuth = ({ mode }: EmailPasswordAuthProps) => {
 
     setIsSendingReset(true)
     try {
-      const redirectUrl = `${window.location.origin}/auth?mode=reset`
+      const redirectUrl = `${window.location.origin}/auth`
       
       const { error } = await supabase.auth.resetPasswordForEmail(forgotEmail, {
         redirectTo: redirectUrl,
