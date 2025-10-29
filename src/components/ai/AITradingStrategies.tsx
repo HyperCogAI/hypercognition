@@ -138,7 +138,7 @@ export const AITradingStrategies: React.FC = () => {
       </div>
 
       <Tabs defaultValue="strategies" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 bg-[#16181f]">
           <TabsTrigger value="strategies">Strategies</TabsTrigger>
           <TabsTrigger value="backtests">Backtests</TabsTrigger>
           <TabsTrigger value="models">AI Models</TabsTrigger>

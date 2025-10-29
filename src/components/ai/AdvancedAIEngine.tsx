@@ -242,7 +242,7 @@ export const AdvancedAIEngine = () => {
           </div>
 
           <Tabs defaultValue="models" className="space-y-4">
-            <TabsList className="grid w-full grid-cols-3">
+            <TabsList className="grid w-full grid-cols-3 bg-[#16181f]">
               <TabsTrigger value="models">AI Models</TabsTrigger>
               <TabsTrigger value="insights">Insights</TabsTrigger>
               <TabsTrigger value="performance">Performance</TabsTrigger>

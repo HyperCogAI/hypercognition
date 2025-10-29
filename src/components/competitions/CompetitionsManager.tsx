@@ -110,7 +110,7 @@ export const CompetitionsManager = () => {
       </div>
 
       <Tabs defaultValue="competitions" className="w-full">
-        <TabsList className="grid w-full grid-cols-2">
+        <TabsList className="grid w-full grid-cols-2 bg-[#16181f]">
           <TabsTrigger value="competitions">All Competitions</TabsTrigger>
           <TabsTrigger value="leaderboard">Leaderboard</TabsTrigger>
         </TabsList>

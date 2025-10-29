@@ -287,7 +287,7 @@ export const EnterpriseChainAnalytics: React.FC = () => {
       )}
 
       <Tabs defaultValue="tokens" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 gap-1 p-1 h-auto">
+        <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 gap-1 p-1 h-auto bg-[#16181f]">
           <TabsTrigger value="tokens" className="w-full text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1.5">Top AI Tokens</TabsTrigger>
           <TabsTrigger value="liquidity" className="w-full text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1.5">Liquidity Pools</TabsTrigger>
           <TabsTrigger value="comparison" className="w-full text-xs sm:text-sm px-2 py-2 sm:px-3 sm:py-1.5">Chain Comparison</TabsTrigger>

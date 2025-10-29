@@ -279,7 +279,7 @@ export const TradingSignalsPanel: React.FC = () => {
 
       {/* Main Content */}
       <Tabs defaultValue="signals" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-3 h-10 sm:h-12 text-xs sm:text-sm">
+        <TabsList className="grid w-full grid-cols-3 h-10 sm:h-12 text-xs sm:text-sm bg-[#16181f]">
           <TabsTrigger value="signals">Trading Signals</TabsTrigger>
           <TabsTrigger value="alerts">Price Alerts</TabsTrigger>
           <TabsTrigger value="create">Create</TabsTrigger>

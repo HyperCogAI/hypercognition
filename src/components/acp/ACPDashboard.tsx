@@ -302,7 +302,7 @@ export function ACPDashboard() {
 
         {/* Main Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-5 gap-1 scrollbar-hide">
+          <TabsList className="w-full overflow-x-auto flex lg:grid lg:grid-cols-5 gap-1 scrollbar-hide bg-[#16181f]">
             <TabsTrigger value="overview" className="flex-shrink-0">
               Overview
             </TabsTrigger>

@@ -159,7 +159,7 @@ const AdvancedAnalyticsDashboard: React.FC = () => {
       </div>
 
       <Tabs defaultValue="portfolio" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-2 h-12">
+        <TabsList className="grid w-full grid-cols-2 h-12 bg-[#16181f]">
           <TabsTrigger value="portfolio" className="flex items-center gap-2">
             <Wallet className="h-4 w-4" />
             Portfolio Metrics

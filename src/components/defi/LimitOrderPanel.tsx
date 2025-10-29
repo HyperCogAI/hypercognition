@@ -109,7 +109,7 @@ export const LimitOrderPanel = ({ pools }: LimitOrderPanelProps) => {
         </CardHeader>
         <CardContent className="space-y-4">
           <Tabs value={orderType} onValueChange={(v) => setOrderType(v as 'buy' | 'sell')}>
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 bg-[#16181f]">
               <TabsTrigger value="buy" className="data-[state=active]:bg-green-500/10">
                 <TrendingUp className="h-4 w-4 mr-2" />
                 Buy

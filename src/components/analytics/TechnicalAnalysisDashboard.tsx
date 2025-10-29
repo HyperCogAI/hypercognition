@@ -97,7 +97,7 @@ export const TechnicalAnalysisDashboard: React.FC = () => {
       </div>
 
       <Tabs defaultValue="chart" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3 mx-auto">
+        <TabsList className="grid w-full grid-cols-3 lg:w-fit lg:grid-cols-3 mx-auto bg-[#16181f]">
           <TabsTrigger value="chart" className="flex items-center gap-2">
             <BarChart3 className="h-4 w-4" />
             Price Chart

@@ -138,7 +138,7 @@ export function APIMarketplace() {
       </div>
 
       <Tabs defaultValue="marketplace" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-3">
+        <TabsList className="grid w-full grid-cols-3 bg-[#16181f]">
           <TabsTrigger value="marketplace">Marketplace</TabsTrigger>
           <TabsTrigger value="my-subscriptions">My Subscriptions</TabsTrigger>
           <TabsTrigger value="my-keys">API Keys</TabsTrigger>

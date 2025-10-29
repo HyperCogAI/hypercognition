@@ -298,7 +298,7 @@ export const ProfessionalPriceChart = ({
 
       <CardContent>
         <Tabs defaultValue="price" className="w-full">
-          <TabsList className="grid w-full grid-cols-2 mb-4">
+          <TabsList className="grid w-full grid-cols-2 mb-4 bg-[#16181f]">
             <TabsTrigger value="price">Price Chart</TabsTrigger>
             <TabsTrigger value="volume">Volume</TabsTrigger>
           </TabsList>
