@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react"
+import { createPortal } from "react-dom"
 import { useAuth } from "@/contexts/AuthContext"
 import { UnifiedAuthModal } from "@/components/auth/UnifiedAuthModal"
 
@@ -30,13 +31,14 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   }
 
   if (!hasAccess) {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-background/80 backdrop-blur-sm">
+    return createPortal(
+      <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-background/80 backdrop-blur-sm">
         <UnifiedAuthModal 
           isOpen={true} 
           onClose={() => {}} 
         />
-      </div>
+      </div>,
+      document.body
     )
   }
 

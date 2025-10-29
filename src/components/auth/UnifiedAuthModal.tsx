@@ -44,6 +44,20 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
       return
     }
 
+    const inIframe = typeof window !== 'undefined' && window.top !== window.self
+    console.log('[UnifiedAuthModal] Magic Link - inIframe:', inIframe)
+
+    if (inIframe) {
+      const url = new URL(window.location.href)
+      url.searchParams.set('magicEmail', email)
+      window.open(url.toString(), '_blank', 'noopener,noreferrer')
+      toast({
+        title: "Opening in new tab",
+        description: "Complete the sign-in in the new tab"
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       await signInWithMagicLink(email)
@@ -64,6 +78,20 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
   }
 
   const handleGoogleSignIn = async () => {
+    const inIframe = typeof window !== 'undefined' && window.top !== window.self
+    console.log('[UnifiedAuthModal] Google Sign-In - inIframe:', inIframe)
+
+    if (inIframe) {
+      const url = new URL(window.location.href)
+      url.searchParams.set('oauth', 'google')
+      window.open(url.toString(), '_blank', 'noopener,noreferrer')
+      toast({
+        title: "Opening in new tab",
+        description: "Complete Google sign-in in the new tab"
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       await signInWithGoogle()
@@ -79,6 +107,20 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
   }
 
   const handleTwitterSignIn = async () => {
+    const inIframe = typeof window !== 'undefined' && window.top !== window.self
+    console.log('[UnifiedAuthModal] Twitter Sign-In - inIframe:', inIframe)
+
+    if (inIframe) {
+      const url = new URL(window.location.href)
+      url.searchParams.set('oauth', 'twitter')
+      window.open(url.toString(), '_blank', 'noopener,noreferrer')
+      toast({
+        title: "Opening in new tab",
+        description: "Complete Twitter sign-in in the new tab"
+      })
+      return
+    }
+
     setIsLoading(true)
     try {
       await signInWithTwitter()

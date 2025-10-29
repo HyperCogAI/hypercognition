@@ -29,6 +29,7 @@ import Settings from "./pages/Settings";
 import { ProtectedRoute } from "./components/ProtectedRoute";
 import { Footer } from "./components/sections/Footer";
 import { ScrollToTop } from "./components/ScrollToTop";
+import { GlobalAuthTrigger } from "./components/auth/GlobalAuthTrigger";
 
 // Lazy loaded components - Core pages
 const Marketplace = lazy(() => import('./pages/Marketplace'));
@@ -293,10 +294,11 @@ const AppLayout = () => {
                   </div>
                 </div>
               }>
+                <GlobalAuthTrigger />
                 <ScrollToTop />
                 <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/home" element={<Home />} />
+                  <Route path="/" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+                  <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
                   <Route path="/auth" element={<LazyEVMAuth />} />
                   <Route path="/evm-auth" element={<LazyEVMAuth />} />
                   <Route path="/solana-auth" element={<LazySolanaAuth />} />
