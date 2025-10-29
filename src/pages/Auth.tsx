@@ -1,9 +1,11 @@
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useSearchParams } from "react-router-dom"
 import { UnifiedAuthModal } from "@/components/auth/UnifiedAuthModal"
 import { SEOHead } from "@/components/seo/SEOHead"
 
 const Auth = () => {
   const navigate = useNavigate()
+  const [searchParams] = useSearchParams()
+  const redirectTo = searchParams.get('redirect') || '/'
 
   return (
     <>
@@ -14,7 +16,7 @@ const Auth = () => {
       <div className="min-h-screen flex items-center justify-center bg-background">
         <UnifiedAuthModal 
           isOpen={true} 
-          onClose={() => navigate('/')} 
+          onClose={() => navigate(redirectTo)} 
         />
       </div>
     </>

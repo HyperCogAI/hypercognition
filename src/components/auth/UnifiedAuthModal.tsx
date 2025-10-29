@@ -50,32 +50,15 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
     if (inIframe) {
       const safeURL = new URL('/auth', window.location.origin)
       safeURL.searchParams.set('magicEmail', email)
-      const win = window.open(safeURL.toString(), '_blank', 'noopener,noreferrer')
       
-      if (!win || win.closed) {
-        // Popup blocked - show fallback with link
-        toast({
-          title: "Popup blocked",
-          description: (
-            <div className="flex flex-col gap-2">
-              <span>Your browser blocked the popup. Click below to continue:</span>
-              <a 
-                href={safeURL.toString()} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline text-primary hover:text-primary/80"
-              >
-                Open login page
-              </a>
-            </div>
-          ) as any,
-          duration: 10000
-        })
-      } else {
-        toast({
-          title: "Opening in new tab",
-          description: "Complete the sign-in in the new tab"
-        })
+      try {
+        if (window.top && window.top !== window.self) {
+          window.top.location.href = safeURL.toString()
+        } else {
+          window.location.href = safeURL.toString()
+        }
+      } catch {
+        window.location.href = safeURL.toString()
       }
       return
     }
@@ -106,32 +89,15 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
     if (inIframe) {
       const safeURL = new URL('/auth', window.location.origin)
       safeURL.searchParams.set('oauth', 'google')
-      const win = window.open(safeURL.toString(), '_blank', 'noopener,noreferrer')
       
-      if (!win || win.closed) {
-        // Popup blocked - show fallback with link
-        toast({
-          title: "Popup blocked",
-          description: (
-            <div className="flex flex-col gap-2">
-              <span>Your browser blocked the popup. Click below to continue:</span>
-              <a 
-                href={safeURL.toString()} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline text-primary hover:text-primary/80"
-              >
-                Open login page
-              </a>
-            </div>
-          ) as any,
-          duration: 10000
-        })
-      } else {
-        toast({
-          title: "Opening in new tab",
-          description: "Complete Google sign-in in the new tab"
-        })
+      try {
+        if (window.top && window.top !== window.self) {
+          window.top.location.href = safeURL.toString()
+        } else {
+          window.location.href = safeURL.toString()
+        }
+      } catch {
+        window.location.href = safeURL.toString()
       }
       return
     }
@@ -157,32 +123,15 @@ export const UnifiedAuthModal = ({ isOpen, onClose }: UnifiedAuthModalProps) => 
     if (inIframe) {
       const safeURL = new URL('/auth', window.location.origin)
       safeURL.searchParams.set('oauth', 'twitter')
-      const win = window.open(safeURL.toString(), '_blank', 'noopener,noreferrer')
       
-      if (!win || win.closed) {
-        // Popup blocked - show fallback with link
-        toast({
-          title: "Popup blocked",
-          description: (
-            <div className="flex flex-col gap-2">
-              <span>Your browser blocked the popup. Click below to continue:</span>
-              <a 
-                href={safeURL.toString()} 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="underline text-primary hover:text-primary/80"
-              >
-                Open login page
-              </a>
-            </div>
-          ) as any,
-          duration: 10000
-        })
-      } else {
-        toast({
-          title: "Opening in new tab",
-          description: "Complete Twitter sign-in in the new tab"
-        })
+      try {
+        if (window.top && window.top !== window.self) {
+          window.top.location.href = safeURL.toString()
+        } else {
+          window.location.href = safeURL.toString()
+        }
+      } catch {
+        window.location.href = safeURL.toString()
       }
       return
     }
