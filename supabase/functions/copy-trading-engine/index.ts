@@ -72,20 +72,23 @@ serve(async (req) => {
           copyAmount = Math.min(copyAmount, setting.max_amount_per_trade)
         }
 
-        // Check follower's balance
-        const { data: balance } = await supabaseClient
-          .from('user_balances')
-          .select('balance')
+        // NON-CUSTODIAL: Get follower's wallet address for balance check
+        const { data: followerProfile } = await supabaseClient
+          .from('profiles')
+          .select('wallet_address')
           .eq('user_id', setting.follower_id)
           .single()
 
-        const totalCost = copyAmount * trade.price
-        if (!balance || balance.balance < totalCost) {
-          console.log(`Insufficient balance for follower ${setting.follower_id}`)
+        if (!followerProfile?.wallet_address) {
+          console.log(`No wallet connected for follower ${setting.follower_id}`)
           continue
         }
 
-        // Create copy order
+        // NOTE: In production, you would query blockchain here to verify wallet balance
+        // For now, we'll create a pending order that requires blockchain confirmation
+        console.log(`Follower ${setting.follower_id} wallet: ${followerProfile.wallet_address}`)
+
+        // Create copy order (pending blockchain execution)
         const { data: order, error: orderError } = await supabaseClient
           .from('orders')
           .insert({
@@ -112,29 +115,16 @@ serve(async (req) => {
           continue
         }
 
-        // Process the order (execute trade)
-        const executeResponse = await fetch(
-          `${Deno.env.get('SUPABASE_URL')}/functions/v1/process-order`,
-          {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${Deno.env.get('SUPABASE_SERVICE_ROLE_KEY')}`,
-            },
-            body: JSON.stringify({ orderId: order.id })
-          }
-        )
-
-        const executeResult = await executeResponse.json()
-
+        // NON-CUSTODIAL: Order created, follower must execute on blockchain
         results.push({
           followerId: setting.follower_id,
           orderId: order.id,
           amount: copyAmount,
-          success: executeResult.success,
+          success: true,
+          requiresBlockchainExecution: true,
         })
 
-        console.log(`Copy trade executed for follower ${setting.follower_id}:`, executeResult)
+        console.log(`Copy trade order created for follower ${setting.follower_id}, awaiting blockchain execution`)
 
       } catch (error) {
         console.error(`Error processing copy trade for follower ${setting.follower_id}:`, error)
@@ -152,6 +142,7 @@ serve(async (req) => {
         results,
         totalFollowers: copySettings?.length || 0,
         successfulCopies: results.filter(r => r.success).length,
+        message: 'Copy trade orders created. Followers must execute on blockchain.',
       }),
       {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },

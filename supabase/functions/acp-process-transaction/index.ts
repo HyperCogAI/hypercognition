@@ -55,7 +55,6 @@ serve(async (req) => {
     const body: ProcessTransactionRequest = await req.json()
     const startTime = Date.now()
 
-
     // Atomic rate limiting check
     const { data: rateLimitCheck, error: rateLimitError } = await supabaseAdmin
       .rpc('check_acp_rate_limit', {
@@ -155,7 +154,7 @@ serve(async (req) => {
     // Verify recipient exists
     const { data: recipientExists, error: recipientError } = await supabaseAdmin
       .from('profiles')
-      .select('user_id')
+      .select('user_id, wallet_address')
       .eq('user_id', body.to_user_id)
       .single()
 
@@ -163,6 +162,20 @@ serve(async (req) => {
       return new Response(
         JSON.stringify({ error: 'Recipient user not found' }),
         { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    // Get sender wallet address
+    const { data: senderProfile } = await supabaseAdmin
+      .from('profiles')
+      .select('wallet_address')
+      .eq('user_id', user.id)
+      .single()
+
+    if (!senderProfile?.wallet_address) {
+      return new Response(
+        JSON.stringify({ error: 'Sender wallet not connected' }),
+        { status: 400, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
       )
     }
 
@@ -182,34 +195,7 @@ serve(async (req) => {
       escrowUntil = escrowDate.toISOString()
     }
 
-    // Process wallet transaction with atomic balance verification
-    const { data: walletResult, error: walletError } = await supabaseAdmin
-      .rpc('process_wallet_transaction', {
-        from_user_id: user.id,
-        to_user_id: body.to_user_id,
-        amount_param: netAmount,
-        currency_param: currency,
-        transaction_id_param: null
-      })
-
-    if (walletError || !walletResult?.success) {
-      const errorMsg = walletResult?.error || 'Wallet transaction failed'
-      const statusCode = errorMsg === 'insufficient_balance' ? 402 : 500
-      
-      return new Response(
-        JSON.stringify({ 
-          error: errorMsg,
-          message: errorMsg === 'insufficient_balance' 
-            ? `Insufficient balance. Required: ${netAmount} ${currency}, Available: ${walletResult?.current_balance || 0}`
-            : 'Failed to process wallet transaction',
-          current_balance: walletResult?.current_balance,
-          required: walletResult?.required
-        }),
-        { status: statusCode, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-      )
-    }
-
-    // Use atomic transaction creation function
+    // NON-CUSTODIAL: Create pending transaction that awaits blockchain confirmation
     const transactionData = {
       transaction_type: body.transaction_type,
       from_user_id: user.id,
@@ -220,14 +206,18 @@ serve(async (req) => {
       amount: body.amount,
       currency: currency,
       fee: platformFee,
-      status: escrowUntil ? 'processing' : 'completed',
-      payment_method: body.payment_method || 'wallet',
+      status: 'pending', // Always pending until blockchain confirmation
+      payment_method: 'blockchain',
       escrow_until: escrowUntil,
+      is_blockchain: true,
       idempotency_key: body.idempotency_key || null,
       metadata: {
         created_by_function: true,
         timestamp: new Date().toISOString(),
-        wallet_transaction: walletResult,
+        requires_blockchain_execution: true,
+        sender_wallet: senderProfile.wallet_address,
+        recipient_wallet: recipientExists.wallet_address,
+        net_amount: netAmount,
         ...(body.metadata || {})
       }
     }
@@ -253,7 +243,7 @@ serve(async (req) => {
 
     const transaction = txResult.transaction
 
-    console.log(`Transaction processed: ${transaction.id} from ${user.id} to ${body.to_user_id}`)
+    console.log(`NON-CUSTODIAL: Transaction ${transaction.id} created, awaiting blockchain execution`)
 
     // Log operation for monitoring
     await supabaseAdmin.rpc('log_acp_operation', {
@@ -266,14 +256,21 @@ serve(async (req) => {
       execution_time_ms_param: Date.now() - startTime
     })
 
-
     return new Response(
       JSON.stringify({
         success: true,
         transaction: transaction,
         platform_fee: platformFee,
         recipient_receives: body.amount - platformFee,
-        message: 'Transaction processed successfully'
+        blockchain_details: {
+          sender_wallet: senderProfile.wallet_address,
+          recipient_wallet: recipientExists.wallet_address,
+          amount_to_send: netAmount,
+          currency: currency,
+          chain: 'base',
+        },
+        message: 'Transaction created. Please execute on blockchain and submit transaction hash.',
+        requires_blockchain_confirmation: true
       }),
       { 
         status: 201, 

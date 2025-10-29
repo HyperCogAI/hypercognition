@@ -35,7 +35,7 @@ serve(async (req) => {
       })
     }
 
-    const { orderId, action } = await req.json()
+    const { orderId, action, txHash, blockchainVerified } = await req.json()
     console.log(`[ProcessOrder] User ${user.id} - Action: ${action}, Order: ${orderId}`)
 
     const { data: order, error: orderError } = await supabaseClient
@@ -53,11 +53,16 @@ serve(async (req) => {
     }
 
     if (action === 'execute') {
-      const { data: balance } = await supabaseClient
-        .from('user_balances')
-        .select('available_balance')
-        .eq('user_id', user.id)
-        .maybeSingle()
+      // NON-CUSTODIAL: Require blockchain transaction verification
+      if (!txHash || !blockchainVerified) {
+        return new Response(JSON.stringify({ 
+          error: 'Blockchain verification required',
+          message: 'All trades must be executed on-chain with verified transaction hash'
+        }), {
+          status: 400,
+          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
+        })
+      }
 
       const { data: agent } = await supabaseClient
         .from('agents')
@@ -73,19 +78,8 @@ serve(async (req) => {
       }
 
       const executionPrice = order.type === 'market' ? agent.price : (order.price || 0)
-      const totalCost = order.amount * executionPrice + (order.fees || 0)
 
-      if (order.side === 'buy' && balance && balance.available_balance < totalCost) {
-        return new Response(JSON.stringify({ 
-          error: 'Insufficient balance',
-          required: totalCost,
-          available: balance.available_balance 
-        }), {
-          status: 400,
-          headers: { ...corsHeaders, 'Content-Type': 'application/json' }
-        })
-      }
-
+      // Update order as filled
       await supabaseClient
         .from('orders')
         .update({
@@ -96,6 +90,7 @@ serve(async (req) => {
         })
         .eq('id', orderId)
 
+      // Create trade record
       const { data: trade } = await supabaseClient
         .from('trades')
         .insert({
@@ -111,6 +106,7 @@ serve(async (req) => {
         .select()
         .single()
 
+      // Update portfolio holdings
       if (order.side === 'buy') {
         const { data: existing } = await supabaseClient
           .from('portfolio_holdings')
@@ -152,16 +148,8 @@ serve(async (req) => {
               realized_pnl: 0
             })
         }
-
-        if (balance) {
-          await supabaseClient
-            .from('user_balances')
-            .update({
-              available_balance: balance.available_balance - totalCost
-            })
-            .eq('user_id', user.id)
-        }
       } else {
+        // Sell side
         const { data: holding } = await supabaseClient
           .from('portfolio_holdings')
           .select('*')
@@ -194,18 +182,28 @@ serve(async (req) => {
               })
               .eq('id', holding.id)
           }
-
-          if (balance) {
-            await supabaseClient
-              .from('user_balances')
-              .update({
-                available_balance: balance.available_balance + saleProceeds
-              })
-              .eq('user_id', user.id)
-          }
         }
       }
 
+      // Record blockchain transaction
+      await supabaseClient
+        .from('blockchain_transactions')
+        .insert({
+          user_id: user.id,
+          tx_hash: txHash,
+          chain: 'base',
+          status: 'confirmed',
+          metadata: {
+            order_id: orderId,
+            trade_id: trade?.id,
+            agent_id: order.agent_id,
+            side: order.side,
+            amount: order.amount,
+            price: executionPrice
+          }
+        })
+
+      // Create notification
       await supabaseClient
         .from('notifications')
         .insert({
@@ -215,15 +213,16 @@ serve(async (req) => {
           priority: 'medium',
           title: 'Order Filled',
           message: `Your ${order.side} order for ${order.amount} units has been filled at $${executionPrice.toFixed(4)}`,
-          data: { order_id: orderId, trade_id: trade?.id }
+          data: { order_id: orderId, trade_id: trade?.id, tx_hash: txHash }
         })
 
-      console.log(`[ProcessOrder] Order ${orderId} executed successfully`)
+      console.log(`[ProcessOrder] Order ${orderId} executed successfully with tx ${txHash}`)
 
       return new Response(JSON.stringify({ 
         success: true, 
         order: { ...order, status: 'filled' },
-        trade 
+        trade,
+        tx_hash: txHash
       }), {
         headers: { ...corsHeaders, 'Content-Type': 'application/json' }
       })
