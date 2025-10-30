@@ -3,6 +3,10 @@ import { useWallet } from '@/hooks/useWallet'
 import { useSolanaWallet } from '@/hooks/useSolanaWallet'
 import { supabase } from '@/integrations/supabase/client'
 import { User, Session } from '@supabase/supabase-js'
+import type { Database } from '@/integrations/supabase/types'
+
+type UserProfile = Database['public']['Tables']['user_profiles']['Row']
+type UserSettings = Database['public']['Tables']['user_settings']['Row']
 
 interface AuthContextType {
   user: User | null
@@ -11,6 +15,8 @@ interface AuthContextType {
   isConnected: boolean
   isLoading: boolean
   walletType: 'evm' | 'solana' | null
+  profile: UserProfile | null
+  settings: UserSettings | null
   signInWithWallet: () => Promise<void>
   signInWithEmail: (email: string, password: string) => Promise<void>
   signUpWithEmail: (email: string, password: string, displayName?: string) => Promise<void>
@@ -18,6 +24,7 @@ interface AuthContextType {
   signInWithTwitter: () => Promise<void>
   signInWithMagicLink: (email: string) => Promise<void>
   signOut: () => Promise<void>
+  refreshProfile: () => Promise<void>
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined)
@@ -25,6 +32,8 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined)
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null)
   const [session, setSession] = useState<Session | null>(null)
+  const [profile, setProfile] = useState<UserProfile | null>(null)
+  const [settings, setSettings] = useState<UserSettings | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [walletType, setWalletType] = useState<'evm' | 'solana' | null>(null)
   
@@ -243,12 +252,40 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   }
 
+  const refreshProfile = async () => {
+    if (!user?.id) return
+
+    const { data: profileData } = await supabase
+      .from('user_profiles')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+
+    const { data: settingsData } = await supabase
+      .from('user_settings')
+      .select('*')
+      .eq('user_id', user.id)
+      .single()
+
+    setProfile(profileData)
+    setSettings(settingsData)
+  }
+
   const signOut = async () => {
     await supabase.auth.signOut()
     evmWallet.disconnectWallet()
     solanaWallet.disconnectWallet()
     setWalletType(null)
+    setProfile(null)
+    setSettings(null)
   }
+
+  // Load profile on auth state change
+  useEffect(() => {
+    if (user?.id) {
+      refreshProfile()
+    }
+  }, [user?.id])
 
   return (
     <AuthContext.Provider value={{
@@ -258,6 +295,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isConnected,
       isLoading,
       walletType,
+      profile,
+      settings,
       signInWithWallet,
       signInWithEmail,
       signUpWithEmail,
@@ -265,6 +304,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       signInWithTwitter,
       signInWithMagicLink,
       signOut,
+      refreshProfile,
     }}>
       {children}
     </AuthContext.Provider>
