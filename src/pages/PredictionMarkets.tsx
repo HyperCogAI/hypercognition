@@ -117,7 +117,7 @@ export default function PredictionMarkets() {
               placeholder="Search markets..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 border-border/50 hover:border-border focus-visible:border-border"
+              className="pl-10 border-border/70 hover:border-border focus-visible:border-border"
             />
           </div>
 
