@@ -58,7 +58,7 @@ export function ProfileView({ userId, onEditClick, isOwnProfile = false }: Profi
           <div>
             <div className="flex items-center gap-2 mb-1">
               <h2 className="text-2xl font-bold">{profile.display_name}</h2>
-              {profile.email_verified && (
+              {(profile as any).email_verified && (
                 <CheckCircle2 className="h-5 w-5 text-primary" />
               )}
             </div>
@@ -72,16 +72,16 @@ export function ProfileView({ userId, onEditClick, isOwnProfile = false }: Profi
           )}
 
           <div className="flex flex-wrap gap-2">
-            {profile.wallet_address && (
+            {(profile as any).wallet_address && (
               <Badge variant="secondary" className="gap-1">
                 <Wallet className="h-3 w-3" />
-                {profile.wallet_type?.toUpperCase()}
+                {((profile as any).wallet_type as string)?.toUpperCase()}
               </Badge>
             )}
-            {profile.email && (
+            {(profile as any).email && (
               <Badge variant="secondary" className="gap-1">
                 <Mail className="h-3 w-3" />
-                {profile.email_verified ? 'Verified' : 'Unverified'}
+                {(profile as any).email_verified ? 'Verified' : 'Unverified'}
               </Badge>
             )}
           </div>

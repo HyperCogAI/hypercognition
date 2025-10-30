@@ -23,15 +23,14 @@ export function useProfileCompletion() {
     queryFn: async () => {
       if (!user?.id) return 0;
 
-      // Call the function directly via SQL query since it's not in generated types yet
       const { data, error } = await supabase
         .from('user_profiles')
-        .select('profile_completion_percentage')
+        .select('*')
         .eq('user_id', user.id)
         .single();
 
       if (error) throw error;
-      return data?.profile_completion_percentage || 0;
+      return (data as any)?.profile_completion_percentage || 0;
     },
     enabled: !!user?.id,
   });
@@ -103,7 +102,7 @@ export function useProfileCompletion() {
       id: 'email_verified',
       title: 'Verify Email',
       description: 'Verify your email address',
-      completed: !!profile?.email_verified,
+      completed: !!((profile as any)?.email_verified),
       points: 15,
     },
     {
@@ -129,14 +128,14 @@ export function useProfileCompletion() {
       if (profile?.avatar_url) score += 20;
       if (profile?.bio && profile.bio.length > 10) score += 15;
       if (profile?.username) score += 15;
-      if (profile?.email_verified) score += 15;
+      if ((profile as any)?.email_verified) score += 15;
       if (hasWallet) score += 15;
 
       const newScore = Math.min(score, 100);
 
       const { error } = await supabase
         .from('user_profiles')
-        .update({ profile_completion_percentage: newScore })
+        .update({ profile_completion_percentage: newScore } as any)
         .eq('user_id', user.id);
 
       if (error) throw error;

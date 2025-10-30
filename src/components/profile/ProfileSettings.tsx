@@ -30,7 +30,7 @@ export function ProfileSettings() {
               </div>
               <Select
                 value={settings.theme_mode}
-                onValueChange={(value) => updateSettings({ theme_mode: value })}
+                onValueChange={(value: 'light' | 'dark' | 'system') => updateSettings({ theme_mode: value })}
               >
                 <SelectTrigger className="w-32">
                   <SelectValue />
@@ -92,15 +92,15 @@ export function ProfileSettings() {
         </TabsContent>
 
         <TabsContent value="privacy" className="space-y-4 mt-4">
-          <div className="flex items-center justify-between">
-            <div className="space-y-0.5">
-              <Label>Profile Visibility</Label>
-              <p className="text-sm text-muted-foreground">Control who can see your profile</p>
-            </div>
-            <Select
-              value={settings.profile_visibility}
-              onValueChange={(value) => updateSettings({ profile_visibility: value })}
-            >
+            <div className="flex items-center justify-between">
+              <div className="space-y-0.5">
+                <Label>Profile Visibility</Label>
+                <p className="text-sm text-muted-foreground">Control who can see your profile</p>
+              </div>
+              <Select
+                value={settings.profile_visibility}
+                onValueChange={(value: 'public' | 'private' | 'friends') => updateSettings({ profile_visibility: value })}
+              >
               <SelectTrigger className="w-32">
                 <SelectValue />
               </SelectTrigger>

@@ -2,9 +2,6 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
 import { toast } from 'sonner';
-import type { Database } from '@/integrations/supabase/types';
-
-type UserProfileUpdate = Database['public']['Tables']['user_profiles']['Update'];
 
 export type OnboardingStep = 'welcome' | 'connect_wallet' | 'preferences' | 'complete_profile' | 'done';
 
@@ -16,13 +13,9 @@ export function useOnboarding() {
     mutationFn: async (step: number) => {
       if (!user?.id) throw new Error('Not authenticated');
 
-      const updates: UserProfileUpdate = {
-        onboarding_step: step
-      };
-
       const { data, error } = await supabase
         .from('user_profiles')
-        .update(updates)
+        .update({ onboarding_step: step } as any)
         .eq('user_id', user.id)
         .select()
         .single();
@@ -39,14 +32,12 @@ export function useOnboarding() {
     mutationFn: async () => {
       if (!user?.id) throw new Error('Not authenticated');
 
-      const updates: UserProfileUpdate = {
-        onboarding_completed: true,
-        onboarding_step: 99
-      };
-
       const { data, error } = await supabase
         .from('user_profiles')
-        .update(updates)
+        .update({ 
+          onboarding_completed: true,
+          onboarding_step: 99 
+        } as any)
         .eq('user_id', user.id)
         .select()
         .single();
@@ -67,14 +58,12 @@ export function useOnboarding() {
     mutationFn: async () => {
       if (!user?.id) throw new Error('Not authenticated');
 
-      const updates: UserProfileUpdate = {
-        onboarding_completed: true,
-        onboarding_step: -1
-      };
-
       const { data, error } = await supabase
         .from('user_profiles')
-        .update(updates)
+        .update({ 
+          onboarding_completed: true,
+          onboarding_step: -1 
+        } as any)
         .eq('user_id', user.id)
         .select()
         .single();
