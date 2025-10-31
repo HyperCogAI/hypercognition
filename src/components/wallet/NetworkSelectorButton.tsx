@@ -10,7 +10,6 @@ import ethereumLogo from "@/assets/networks/ethereum-coingecko.png"
 import bnbLogo from "@/assets/networks/bnb-coingecko.png"
 import solanaLogo from "@/assets/networks/solana-coingecko.png"
 import baseLogo from "@/assets/networks/base-official.png"
-import hyperLogo from "@/assets/Hyper_Cognition_logo3large-7.png"
 
 const networks = [
   { id: 'base' as NetworkType, name: 'Base', logo: baseLogo },
@@ -36,9 +35,6 @@ export const NetworkSelectorButton = () => {
         </div>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" className="w-48 bg-[#0a0c0f] border-2 border-[hsl(var(--primary))/0.3] z-50 shadow-xl">
-        <div className="px-4 py-3 border-b border-white/10 flex justify-center">
-          <img src={hyperLogo} alt="HyperCognition" className="h-6 w-auto" />
-        </div>
         {networks.map((network) => (
           <DropdownMenuItem 
             key={network.id}
