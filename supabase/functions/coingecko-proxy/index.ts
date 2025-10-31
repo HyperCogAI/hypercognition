@@ -66,11 +66,16 @@ Deno.serve(async (req) => {
     console.log(`[CoinGecko Proxy] Cache MISS: ${cleanEndpoint}`);
 
     // Make request to CoinGecko API with retry on 429
-    const doFetch = () => fetch(coinGeckoUrl, {
-      headers: {
-        'Accept': 'application/json',
-      },
-    });
+    const apiKey = Deno.env.get('COINGECKO_API_KEY');
+    const headers: Record<string, string> = {
+      'Accept': 'application/json',
+    };
+    
+    if (apiKey) {
+      headers['x-cg-demo-api-key'] = apiKey;
+    }
+    
+    const doFetch = () => fetch(coinGeckoUrl, { headers });
 
     let response = await doFetch();
 
