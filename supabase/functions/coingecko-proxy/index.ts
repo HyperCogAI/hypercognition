@@ -8,10 +8,10 @@ const cache = new Map<string, { timestamp: number; data: any }>();
 
 // Cache TTL configurations (in milliseconds)
 const CACHE_CONFIG = {
-  markets: 30_000,      // 30s for market data (frequently changing)
-  chart: 60_000,        // 60s for charts (less volatile)
-  search: 120_000,      // 2m for search/trending (relatively static)
-  default: 30_000       // 30s default
+  markets: 120_000,     // 2min for market data (reduce API calls)
+  chart: 180_000,       // 3min for charts
+  search: 300_000,      // 5min for search/trending
+  default: 120_000      // 2min default
 };
 
 function getCacheTTL(endpoint: string): number {
@@ -90,7 +90,7 @@ Deno.serve(async (req) => {
       const text = await response.text();
       console.error(`[CoinGecko Proxy] API error: ${response.status}`, text);
       
-      // Return stale cached data if available on error
+      // Always return cached data if available on error (even if stale)
       if (cached) {
         console.log('[CoinGecko Proxy] Returning stale cache due to API error');
         return new Response(JSON.stringify(cached.data), {
@@ -98,9 +98,26 @@ Deno.serve(async (req) => {
             ...corsHeaders,
             'Content-Type': 'application/json',
             'X-Cache': 'STALE',
-            'X-Error': 'API_ERROR'
+            'X-Error': `API_ERROR_${response.status}`,
+            'Cache-Control': `public, max-age=${Math.floor(cacheTTL / 1000)}`
           },
         });
+      }
+      
+      // If rate limited and no cache, return a helpful error
+      if (response.status === 429) {
+        return new Response(
+          JSON.stringify({ 
+            error: 'Rate limit exceeded', 
+            message: 'Using reduced refresh rate. Data may be slightly delayed.',
+            success: false,
+            cached: false
+          }),
+          { 
+            status: 503, // Service temporarily unavailable
+            headers: { ...corsHeaders, 'Content-Type': 'application/json' } 
+          }
+        );
       }
       
       return new Response(

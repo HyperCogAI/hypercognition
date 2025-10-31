@@ -49,7 +49,7 @@ class CoinGeckoAPI {
   private lastRequestTime = 0
   private cache = new Map<string, { data: any; timestamp: number }>()
   private pendingRequests = new Map<string, Promise<any>>()
-  private cacheDuration = 30000 // Cache for 30 seconds
+  private cacheDuration = 120000 // Cache for 2 minutes to reduce API calls
 
   private getCacheKey(url: string): string {
     return url
@@ -105,29 +105,21 @@ class CoinGeckoAPI {
         const response = await fetch(proxyUrl)
         
         if (!response.ok) {
-          // Fallback to direct API call if proxy fails
-          console.warn('Proxy failed, falling back to direct API call')
-          await this.rateLimit()
-          const directResponse = await fetch(url)
-          
-          if (!directResponse.ok) {
-            if (directResponse.status === 429) {
-              console.warn('CoinGecko rate limit hit, waiting 10 seconds...')
-              await new Promise(resolve => setTimeout(resolve, 10000))
-              const retryResponse = await fetch(url)
-              if (!retryResponse.ok) {
-                throw new Error(`CoinGecko API error: ${retryResponse.status}`)
-              }
-              const data = await retryResponse.json()
-              this.setCachedData(cacheKey, data)
-              return data
+          // Check if it's a rate limit error from our proxy
+          if (response.status === 503) {
+            const errorData = await response.json()
+            console.warn('Rate limit handled by proxy:', errorData.message)
+            // Return cached data if available
+            const staleCache = this.cache.get(cacheKey)
+            if (staleCache) {
+              console.log('Using stale cache due to rate limit')
+              return staleCache.data
             }
-            throw new Error(`CoinGecko API error: ${directResponse.status}`)
+            throw new Error(errorData.message || 'Service temporarily unavailable')
           }
           
-          const data = await directResponse.json()
-          this.setCachedData(cacheKey, data)
-          return data
+          // For other errors, don't fallback to direct API calls (prevents bypassing rate limits)
+          throw new Error(`CoinGecko proxy error: ${response.status}`)
         }
         
         const data = await response.json()
